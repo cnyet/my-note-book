@@ -1,0 +1,55 @@
+# AI Life Assistant - Core Dependencies
+# Choose one of the following LLM providers:
+anthropic>=0.40.0  # Claude API (original)
+# zhipuai>=2.0.0  # GLM API (alternative)
+
+# Note: If using GLM API, install with: pip install zhipuai
+
+# Web Scraping & API
+requests>=2.32.3
+beautifulsoup4>=4.12.3
+feedparser>=6.0.11
+
+# Configuration
+configparser>=7.0.0
+
+# Vector DB (for RAG in Phase 2)
+# chromadb>=0.5.0  # Temporarily disabled - not compatible with Python 3.14 yet
+
+# For future image generation
+pillow>=10.4.0
+
+# Task scheduling
+APScheduler>=3.10.4
+
+# Data processing
+pandas>=2.2.0
+numpy>=1.24.0
+
+# Weather API support
+python-dateutil>=2.8.2
+
+# Testing
+pytest>=8.3.0
+pytest-cov>=4.1.0
+pytest-mock>=3.14.0
+pytest-xdist>=3.5.0  # Parallel testing
+
+# Type Checking
+mypy>=1.13.0
+pydantic>=2.10.0  # For data validation
+
+# Logging
+structlog>=25.0.0  # Structured logging
+
+# API Server
+fastapi>=0.111.0
+uvicorn>=0.30.0
+sqlalchemy>=2.0.0
+alembic>=1.13.0
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+email-validator>=2.1.0

@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        args: ["--line-length=88"]
+        files: "^agents/|^utils/|^web-app/backend/app/"
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+        files: "^agents/|^utils/|^web-app/backend/app/"
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        files: "^agents/|^utils/|^web-app/backend/app/"
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        files: "^web-app/backend/app/"
+
+      - id: eslint
+        name: eslint
+        entry: npm run lint --prefix web-app
+        language: system
+        types: [javascript, ts, tsx]
+        files: "^web-app/src/"
+
