@@ -13,8 +13,10 @@ class Settings(BaseModel):
     """Application settings"""
 
     # Database
+    # Use absolute path for SQLite database
+    _backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     database_url: str = os.getenv(
-        "DATABASE_URL", "sqlite:///./data/ai_life_assistant.db"
+        "DATABASE_URL", f"sqlite:///{_backend_dir}/data/ai_life_assistant.db"
     )
 
     # JWT

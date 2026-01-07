@@ -4,116 +4,111 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a personal life assistant AI system designed for 大洪 (Hong), a 37-year-old developer in Shanghai. The project implements 5 specialized AI agents to manage different aspects of daily life through intelligent automation and personalized assistance.
+AI Life Assistant - 专为大洪打造的个人生活助理系统，通过 5 个专业 AI 秘书提供全方位生活支持。
 
-**Primary Goal**: Create an efficient, intelligent, and practical life assistant team of 5 AI agents that provide comprehensive daily support, allowing Hong to focus on core responsibilities while maintaining work-life balance.
+**当前状态**: Phase 1 & 2 ✅ 已完成，Phase 3 Web 应用开发中（约30%）
 
-## Architecture
+## Project Structure
 
-### Core System (待实现)
-- `main.py` - Daily workflow scheduler and command center
-- `config.ini` - API keys and system configuration (Note: secrets.ini for sensitive data should be gitignored)
-- `aboutme.md` - User profile containing personal preferences, goals, and family information
-
-### Five Specialized Agents (待实现)
-Located in `/agents/` directory:
-1. **news_secretary.py** - Morning news briefing (AI/tech focus)
-2. **outfit_secretary.py** - Daily outfit recommendations with weather integration
-3. **work_secretary.py** - Work task management and prioritization
-4. **life_secretary.py** - Lifestyle management (diet, exercise, schedules)
-5. **review_secretary.py** - Evening reflection and analysis
-
-### Data Management
-- `data/vector_db/` - RAG knowledge base for long-term memory
-- `data/daily_logs/YYYY-MM-DD/` - Daily organized logs:
-  - `新闻简报.md` - News briefings
-  - `今日穿搭.md` - Outfit recommendations
-  - `今日工作.md` - Work tasks
-  - `今日生活.md` - Lifestyle notes
-  - `今日复盘.md` - Daily reflections
-
-### Utility Modules (待实现)
-Located in `/utils/`:
-- `config_loader.py` - Configuration management
-- `llm_client.py` - Unified LLM interface (Claude Sonnet 3.5 primary, Haiku for lightweight tasks)
-- `rag_manager.py` - Vector database management
-- `file_manager.py` - File operations
-- `lark_api.py` - Feishu integration
-- `image_generator.py` - Image generation interface (Jimeng AI preferred)
-
-## Key Dependencies
-
-### External APIs Required
-- **Anthropic Claude API** - Core LLM functionality (Essential)
-- **Jimeng AI API** - Outfit visualization (Strongly Recommended)
-- **Feishu Open Platform** - Message push notifications (Optional but Recommended)
-- **Weather API** (QWeather/Seniverse/OpenWeatherMap) - Outfit/sport recommendations
-
-### Python Packages
-- Core LLM: anthropic
-- Web scraping: beautifulsoup4, selenium, feedparser
-- RAG Vector DB: chromadb or faiss
-- HTTP: requests
-- Configuration: configparser
-- Scheduling: APScheduler (for advanced automation)
-
-## Workflow Commands
-
-### Manual Workflow Execution
-```bash
-# Execute specific agent
-python main.py --step news      # Run news secretary
-python main.py --step outfit    # Run outfit secretary
-python main.py --step work      # Run work secretary
-python main.py --step life      # Run life secretary
-python main.py --step review    # Run review secretary
-
-# Interactive mode
-python main.py                  # Enter guided workflow
+```
+ai-life-assistant/
+├── backend/              # 🐍 Python 后端
+│   ├── src/
+│   │   ├── agents/       # 5个AI秘书
+│   │   ├── api/          # FastAPI 服务
+│   │   ├── cli/          # CLI 入口
+│   │   ├── core/         # 核心工具
+│   │   ├── integrations/ # 外部集成（LLM/天气）
+│   │   └── utils/        # 工具函数
+│   ├── tests/            # 测试套件
+│   ├── config/           # 配置文件
+│   └── alembic/          # 数据库迁移
+│
+├── frontend/             # ⚛️ Next.js 前端
+│   └── src/
+│       ├── app/          # 路由页面
+│       └── components/   # React 组件
+│
+├── data/                 # 💾 应用数据
+│   └── daily_logs/       # 按日期存储的日志
+│
+├── docs/                 # 📚 文档
+│   ├── getting-started/  # 快速开始指南
+│   └── guides/           # 使用指南
+│
+├── scripts/              # 🛠️ 开发脚本
+│   └── dev/              # 开发环境脚本
+│
+└── [配置文件]
+    ├── CLAUDE.md         # AI 助手指南
+    ├── README.md         # 项目文档
+    ├── rules.md          # 开发规范
+    └── .env              # 环境变量
 ```
 
-### Knowledge Base Management
-- Daily logs auto-generated in `data/daily_logs/YYYY-MM-DD/`
-- Vector DB updates happen during review sessions
-- aboutme.md updates with work experiences and goals
+## Quick Start
 
-### Development Tasks
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# 一键启动所有服务
+./scripts/dev/start-all.sh
 
-# Run tests (when implemented)
-pytest tests/
+# 访问地址
+# 前端: http://localhost:3000
+# 后端API: http://localhost:8000
 
-# Data backup (recommended weekly)
-# Implement backup script for data/ to cloud storage
+# 默认登录
+# 邮箱: dahong@example.com
+# 密码: password123
 ```
 
-## Important Implementation Notes
+## Key Commands
 
-### RAG Knowledge Structure
-The vector database organizes information into:
-- `personal_profile` - Basic info, style preferences, goals, habits
-- `work_experience` - Project management cases, technical solutions, meeting notes
-- `life_records` - Weight changes, diet records, outfit history, exercise data
-- `reflection_insights` - Behavior patterns, emotional patterns, key decisions, milestones
+### Backend
+```bash
+cd backend
+pip install -r requirements/base.txt
+python -m src.cli.main              # CLI 模式
+python -m src.api.server            # API 服务
+pytest                              # 运行测试
+```
 
-### MCP Tool Sets Available
-Each agent has access to:
-- Base tools: get_weather(), get_date(), read_file(), write_file(), search_in_knowledge()
-- Agent-specific specialized tools for their domain
+### Frontend
+```bash
+cd frontend
+pnpm install
+pnpm dev                            # 开发服务器
+pnpm build                          # 构建
+```
 
-### Design Philosophy
-- **Personalization** - Agents learn user preferences through RAG
-- **Proactive Engagement** - Agents initiate conversations based on context
-- **Deep Reflection** - Review secretary facilitates multi-round guided introspection
-- **Growth Together** - System improves through accumulated knowledge
+### CLI Agent Commands
+```bash
+cd backend
+python -m src.cli.main --step news      # 新闻秘书
+python -m src.cli.main --step work      # 工作秘书
+python -m src.cli.main --step outfit    # 穿搭秘书
+python -m src.cli.main --step life      # 生活秘书
+python -m src.cli.main --step review    # 复盘秘书
+```
 
-### Current Status
-**Phase 1 (MVP) Pending**:
-- News secretary (basic version)
-- Work secretary (TODO management)
-- File management mechanism
-- Basic conversation flow
+## Tech Stack
 
-The system is currently in design phase with documentation completed. Implementation of core agents and workflow automation is the immediate priority.
+### Backend
+- **LLM**: Anthropic Claude / 智谱GLM
+- **API**: FastAPI + Uvicorn
+- **DB**: SQLite + SQLAlchemy + Alembic
+- **Test**: pytest
+
+### Frontend
+- **Framework**: Next.js 16 + React 19 + TypeScript
+- **UI**: Tailwind CSS 4 + Radix UI + Framer Motion
+
+## Development Guidelines
+
+### File Limits
+- Python: ≤ 300 lines/file
+- TypeScript: ≤ 300 lines/file
+- Functions: ≤ 50 lines, ≤ 5 params
+
+### Code Style
+- 中文: 注释、业务逻辑
+- 英文: 变量名、技术注释

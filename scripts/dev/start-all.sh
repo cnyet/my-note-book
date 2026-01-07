@@ -65,30 +65,43 @@ trap cleanup SIGINT SIGTERM EXIT
 check_prerequisites() {
     print_info "检查环境..."
     
-    # 检查虚拟环境
-    if [ ! -d "venv" ]; then
-        print_error "虚拟环境不存在"
-        print_info "正在创建虚拟环境..."
-        python3 -m venv venv
-        source venv/bin/activate
-        print_info "正在安装依赖..."
-        pip install -r requirements.txt
-        print_success "虚拟环境创建完成"
+    # Check backend first
+    if [ ! -d "backend" ]; then
+        print_error "backend 目录不存在"
+        exit 1
+    fi
+
+    # Check .venv in backend
+    if [ ! -d "backend/.venv" ]; then
+        print_info "backend/.venv 不存在，尝试使用 uv 创建..."
+        cd backend
+        if command -v uv &> /dev/null; then
+             uv venv
+             source .venv/bin/activate
+             uv pip install -r requirements/base.txt
+        else
+             print_warning "未找到 uv，尝试使用 python3 venv"
+             python3 -m venv .venv
+             source .venv/bin/activate
+             pip install -r requirements/base.txt
+        fi
+        cd ..
+        print_success "后端环境准备完成"
     else
-        print_success "虚拟环境已存在"
+        print_success "后端环境已存在 (backend/.venv)"
     fi
     
-    # 检查 web-app 目录
-    if [ ! -d "web-app" ]; then
-        print_error "web-app 目录不存在"
+    # 检查 frontend 目录
+    if [ ! -d "frontend" ]; then
+        print_error "frontend 目录不存在"
         exit 1
     fi
     
-    # 检查 web-app 依赖
-    if [ ! -d "web-app/node_modules" ]; then
+    # 检查 frontend 依赖
+    if [ ! -d "frontend/node_modules" ]; then
         print_warning "前端依赖未安装"
         print_info "正在安装前端依赖..."
-        cd web-app
+        cd frontend
         if command -v pnpm &> /dev/null; then
             pnpm install
         else
@@ -100,37 +113,35 @@ check_prerequisites() {
         print_success "前端依赖已安装"
     fi
     
-    # 检查 logs 目录
+    # 检查 logs 目录 (at root? or backend/logs?)
+    # Existing structure has backend/logs and assumes script creates root logs?
+    # Original script created logs in root. Let's keep that but ensure it's used.
     if [ ! -d "logs" ]; then
         mkdir -p logs
         print_success "创建 logs 目录"
     fi
-    
-    # 检查 api 目录
-    if [ ! -d "api" ]; then
-        print_error "api 目录不存在"
-        exit 1
-    fi
 }
 
-# 启动后端服务
 start_backend() {
     print_info "启动后端服务..."
     
-    # 激活虚拟环境
-    source venv/bin/activate
+    cd backend
     
-    # 启动后端（后台运行）
-    cd api
-    nohup uvicorn server:app --reload --host 0.0.0.0 --port 8000 > ../logs/backend.log 2>&1 &
+    # Use .venv/bin/uvicorn directly
+    if [ -f ".venv/bin/uvicorn" ]; then
+        nohup .venv/bin/uvicorn src.api.server:app --reload --host 0.0.0.0 --port 8000 > ../logs/backend.log 2>&1 &
+    else
+        # Fallback if activation needed (e.g. windows/weird setup), but direct path is safer
+        source .venv/bin/activate
+        nohup uvicorn src.api.server:app --reload --host 0.0.0.0 --port 8000 > ../logs/backend.log 2>&1 &
+    fi
+    
     BACKEND_PID=$!
     cd ..
     
-    # 等待后端启动
     print_info "等待后端服务启动..."
     sleep 3
     
-    # 检查后端是否启动成功
     if curl -s http://localhost:8000/api/status > /dev/null 2>&1; then
         print_success "后端服务启动成功 (PID: $BACKEND_PID)"
         print_success "后端地址: ${GREEN}http://localhost:8000${NC}"
@@ -141,13 +152,11 @@ start_backend() {
     fi
 }
 
-# 启动前端服务
 start_frontend() {
     print_info "启动前端服务..."
     
-    cd web-app
+    cd frontend
     
-    # 启动前端（后台运行）
     if command -v pnpm &> /dev/null; then
         nohup pnpm dev > ../logs/frontend.log 2>&1 &
     else
@@ -157,11 +166,9 @@ start_frontend() {
     FRONTEND_PID=$!
     cd ..
     
-    # 等待前端启动
     print_info "等待前端服务启动..."
     sleep 5
     
-    # 检查前端是否启动成功
     if curl -s http://localhost:3000 > /dev/null 2>&1; then
         print_success "前端服务启动成功 (PID: $FRONTEND_PID)"
         print_success "前端地址: ${GREEN}http://localhost:3000${NC}"
@@ -171,7 +178,6 @@ start_frontend() {
     fi
 }
 
-# 显示服务状态
 show_status() {
     echo ""
     echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -200,40 +206,25 @@ show_status() {
     echo -e "${PURPLE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 }
 
-# 等待用户中断
 wait_for_interrupt() {
     echo ""
     print_info "服务正在运行中... (按 Ctrl+C 停止)"
     echo ""
-    
-    # 无限循环，等待用户中断
     while true; do
         sleep 1
     done
 }
 
-# 主函数
 main() {
     print_header
     echo ""
-    
-    # 检查环境
     check_prerequisites
     echo ""
-    
-    # 启动后端
     start_backend
     echo ""
-    
-    # 启动前端
     start_frontend
-    
-    # 显示状态
     show_status
-    
-    # 等待用户中断
     wait_for_interrupt
 }
 
-# 运行主函数
 main

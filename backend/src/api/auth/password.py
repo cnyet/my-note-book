@@ -56,6 +56,20 @@ class PasswordManager:
         # Verify
         return bcrypt.checkpw(password_bytes, hashed_bytes)
 
+    def is_password_strong(self, password: str) -> bool:
+        """
+        Check if password meets minimum strength requirements
+
+        Args:
+            password: Password to check
+
+        Returns:
+            True if password is strong enough, False otherwise
+
+        Requirements: 1.2
+        """
+        return len(password) >= 8
+
 
 # Create global instance
 password_manager = PasswordManager()

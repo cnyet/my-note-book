@@ -30,13 +30,13 @@ def create_llm_client(
     provider = config.get('llm', 'provider', 'anthropic').lower()
 
     if provider == 'glm':
-        from utils.glm_client import GLMClient
+        from integrations.llm.glm_client import GLMClient
         api_key = config.get('llm', 'api_key', '')
         base_url = config.get('llm', 'base_url', 'https://open.bigmodel.cn/api/paas/v4')
         return GLMClient(api_key=api_key, base_url=base_url)
 
     elif provider in ['anthropic', 'claude']:
-        from utils.llm_client import LLMClient
+        from integrations.llm.llm_client import LLMClient
         api_key = config.get('llm', 'api_key', '')
         model = config.get('llm', 'main_model', 'claude-3-5-sonnet-20241022')
         return LLMClient(api_key=api_key, model=model)
@@ -79,10 +79,10 @@ class LLMClientUniversal:
             **kwargs: Provider-specific arguments
         """
         if provider.lower() == 'glm':
-            from utils.glm_client import GLMClient
+            from integrations.llm.glm_client import GLMClient
             self.client = GLMClient(**kwargs)
         elif provider.lower() in ['anthropic', 'claude']:
-            from utils.llm_client import LLMClient
+            from integrations.llm.llm_client import LLMClient
             self.client = LLMClient(**kwargs)
         else:
             raise ValueError(f"Unsupported provider: {provider}")

@@ -1,9 +1,10 @@
 """API routes for secretary content."""
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 from datetime import date, datetime
 from typing import List, Optional
 import hashlib
+import logging
 
 from api.database import get_db
 from api.repositories.file_repository import FileRepository, FileNotFoundError, FileReadError
@@ -11,8 +12,10 @@ from api.utils.markdown_parser import MarkdownParser
 from api.schemas.secretary import (
     WorkResponse, WorkTask, ActionResponse, ErrorResponse
 )
+from api.services.secretary_service import get_secretary_service
 
 router = APIRouter(prefix="/api", tags=["secretary"])
+logger = logging.getLogger(__name__)
 
 # Initialize repositories
 file_repo = FileRepository()
@@ -283,3 +286,163 @@ async def get_review(target_date: Optional[date] = None):
             "snippet": None,
             "generated": False
         }
+
+
+# ============================================================
+# Run Endpoints - Generate new content using AI agents
+# ============================================================
+
+@router.post("/news/run", response_model=ActionResponse)
+async def run_news_secretary():
+    """
+    Trigger news secretary to generate a new briefing.
+    
+    Scrapes AI/tech news from TechCrunch, MIT Tech Review, The Verge
+    and generates a summarized briefing using LLM.
+    """
+    logger.info("Starting news secretary run...")
+    try:
+        service = get_secretary_service()
+        result = service.run_news()
+        
+        if result["success"]:
+            logger.info("News secretary completed successfully")
+            return ActionResponse(
+                success=True,
+                message="News briefing generated successfully",
+                data={"summary": result["summary"]}
+            )
+        else:
+            logger.error(f"News secretary failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate news briefing: {result['error']}",
+                data=None
+            )
+    except Exception as e:
+        logger.exception("Unexpected error in news secretary")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/work/run", response_model=ActionResponse)
+async def run_work_secretary():
+    """
+    Trigger work secretary to generate a new work plan.
+    
+    Analyzes schedule and generates prioritized todo list using LLM.
+    """
+    logger.info("Starting work secretary run...")
+    try:
+        service = get_secretary_service()
+        result = service.run_work()
+        
+        if result["success"]:
+            logger.info("Work secretary completed successfully")
+            return ActionResponse(
+                success=True,
+                message="Work plan generated successfully",
+                data={"summary": result["summary"]}
+            )
+        else:
+            logger.error(f"Work secretary failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate work plan: {result['error']}",
+                data=None
+            )
+    except Exception as e:
+        logger.exception("Unexpected error in work secretary")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/outfit/run", response_model=ActionResponse)
+async def run_outfit_secretary():
+    """
+    Trigger outfit secretary to generate clothing recommendations.
+    
+    Fetches weather data and generates personalized outfit suggestions using LLM.
+    """
+    logger.info("Starting outfit secretary run...")
+    try:
+        service = get_secretary_service()
+        result = service.run_outfit()
+        
+        if result["success"]:
+            logger.info("Outfit secretary completed successfully")
+            return ActionResponse(
+                success=True,
+                message="Outfit recommendation generated successfully",
+                data={"summary": result["summary"]}
+            )
+        else:
+            logger.error(f"Outfit secretary failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate outfit recommendation: {result['error']}",
+                data=None
+            )
+    except Exception as e:
+        logger.exception("Unexpected error in outfit secretary")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/life/run", response_model=ActionResponse)
+async def run_life_secretary():
+    """
+    Trigger life secretary to generate daily life management plan.
+    
+    Creates personalized diet, exercise, and schedule recommendations using LLM.
+    """
+    logger.info("Starting life secretary run...")
+    try:
+        service = get_secretary_service()
+        result = service.run_life()
+        
+        if result["success"]:
+            logger.info("Life secretary completed successfully")
+            return ActionResponse(
+                success=True,
+                message="Life plan generated successfully",
+                data={"summary": result["summary"]}
+            )
+        else:
+            logger.error(f"Life secretary failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate life plan: {result['error']}",
+                data=None
+            )
+    except Exception as e:
+        logger.exception("Unexpected error in life secretary")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/review/run", response_model=ActionResponse)
+async def run_review_secretary():
+    """
+    Trigger review secretary to generate daily reflection.
+    
+    Analyzes the day's activities and generates insights using LLM.
+    """
+    logger.info("Starting review secretary run...")
+    try:
+        service = get_secretary_service()
+        result = service.run_review()
+        
+        if result["success"]:
+            logger.info("Review secretary completed successfully")
+            return ActionResponse(
+                success=True,
+                message="Daily review generated successfully",
+                data={"summary": result["summary"]}
+            )
+        else:
+            logger.error(f"Review secretary failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate daily review: {result['error']}",
+                data=None
+            )
+    except Exception as e:
+        logger.exception("Unexpected error in review secretary")
+        raise HTTPException(status_code=500, detail=str(e))

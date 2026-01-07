@@ -86,6 +86,22 @@ class JWTManager:
         except JWTError as e:
             raise JWTError(f"Invalid token: {str(e)}")
 
+    def verify_token(self, token: str) -> bool:
+        """
+        Verify if a token is valid
+
+        Args:
+            token: JWT token string to verify
+
+        Returns:
+            True if token is valid, False otherwise
+        """
+        try:
+            self.decode_token(token)
+            return True
+        except Exception:
+            return False
+
 
 # Create global instance
 jwt_manager = JWTManager()

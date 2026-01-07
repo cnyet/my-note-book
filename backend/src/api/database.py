@@ -2,13 +2,21 @@
 Database configuration and session management
 """
 import os
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
+# Get absolute path to backend directory
+BACKEND_DIR = Path(__file__).parent.parent.parent
+DB_PATH = BACKEND_DIR / "data" / "ai_life_assistant.db"
+
+# Ensure data directory exists
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
 # Database URL - use SQLite for development, PostgreSQL for production
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "sqlite:///./data/ai_life_assistant.db"
+    "DATABASE_URL", f"sqlite:///{DB_PATH}"
 )
 
 # Create engine
