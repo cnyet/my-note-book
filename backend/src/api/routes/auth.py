@@ -1,8 +1,9 @@
 """
 Authentication API routes
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from sqlalchemy.orm import Session
+from datetime import date
 
 from api.database import get_db
 from api.services.auth_service import AuthService
@@ -17,6 +18,8 @@ from api.dependencies import get_current_user
 from api.models.user import User
 from api.middleware.rate_limit import rate_limiter, get_client_ip
 from api.middleware.auth_logger import auth_logger
+from api.repositories.news_repository import NewsRepository
+from api.services.secretary_service import get_secretary_service
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
@@ -94,6 +97,7 @@ async def register(
 async def login(
     credentials: UserLogin,
     request: Request,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     """
@@ -144,6 +148,12 @@ async def login(
         user_id=user.id,
     )
     
+    # Check if news articles exist for today, if not trigger news collection in background
+    news_repo = NewsRepository(db)
+    if not news_repo.has_articles_for_date(date.today()):
+        # Trigger news collection in background
+        background_tasks.add_task(trigger_news_collection, db)
+    
     # Create token
     token = auth_service.create_token_for_user(user, credentials.remember_me)
 
@@ -151,6 +161,24 @@ async def login(
         user=UserResponse.from_orm(user),
         token=token,
     )
+
+
+def trigger_news_collection(db: Session):
+    """Background task to collect news articles."""
+    try:
+        from api.database import SessionLocal
+        # Create a new session for the background task
+        db_session = SessionLocal()
+        try:
+            service = get_secretary_service()
+            service.run_news(db_session=db_session)
+        finally:
+            db_session.close()
+    except Exception as e:
+        # Log error but don't fail the login
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to collect news in background: {e}")
 
 
 @router.get("/me", response_model=UserResponse)

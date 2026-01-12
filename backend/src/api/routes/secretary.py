@@ -8,11 +8,13 @@ import logging
 
 from api.database import get_db
 from api.repositories.file_repository import FileRepository, FileNotFoundError, FileReadError
+from api.repositories.news_repository import NewsRepository
 from api.utils.markdown_parser import MarkdownParser
 from api.schemas.secretary import (
     WorkResponse, WorkTask, ActionResponse, ErrorResponse
 )
 from api.services.secretary_service import get_secretary_service
+from api.models.secretary_content import NewsArticle
 
 router = APIRouter(prefix="/api", tags=["secretary"])
 logger = logging.getLogger(__name__)
@@ -193,27 +195,63 @@ async def generate_work_plan():
 # For now, let's keep the existing simple endpoints
 
 @router.get("/news", response_model=dict)
-async def get_news(target_date: Optional[date] = None):
-    """Get news briefing."""
-    if target_date is None:
-        target_date = date.today()
+async def get_news(
+    target_date: Optional[date] = None, 
+    latest: Optional[int] = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Get news briefing with articles from database.
     
-    try:
-        content = file_repo.read_content("news", target_date)
-        snippet = parser.get_snippet(content)
-        return {
-            "date": target_date,
-            "content": content,
-            "snippet": snippet,
-            "generated": True
-        }
-    except FileNotFoundError:
-        return {
-            "date": target_date,
-            "content": None,
-            "snippet": None,
-            "generated": False
-        }
+    Args:
+        target_date: Specific date to get news for (defaults to today)
+        latest: If provided, return latest N articles regardless of date
+    """
+    news_repo = NewsRepository(db)
+    
+    # If latest parameter is provided, get latest articles
+    if latest:
+        articles = news_repo.get_latest_articles(limit=latest)
+    else:
+        if target_date is None:
+            target_date = date.today()
+        articles = news_repo.get_articles_by_date(target_date)
+    
+    # Convert articles to dict format
+    articles_data = []
+    for article in articles:
+        articles_data.append({
+            "id": article.id,
+            "title": article.title,
+            "source": article.source,
+            "link": article.link,
+            "summary": article.summary,
+            "image_url": article.image_url,
+            "thumbnail_url": article.thumbnail_url,
+            "importance_score": article.importance_score,
+            "category": article.category,
+            "created_at": article.created_at.isoformat() if article.created_at else None,
+        })
+    
+    # Also try to get markdown content from file
+    content = None
+    snippet = None
+    if not latest:  # Only get markdown content if not requesting latest
+        try:
+            if target_date is None:
+                target_date = date.today()
+            content = file_repo.read_content("news", target_date)
+            snippet = parser.get_snippet(content)
+        except FileNotFoundError:
+            pass
+    
+    return {
+        "date": target_date if not latest else None,
+        "content": content,
+        "snippet": snippet,
+        "articles": articles_data,
+        "generated": len(articles) > 0 or content is not None
+    }
 
 
 @router.get("/outfit", response_model=dict)
@@ -293,24 +331,31 @@ async def get_review(target_date: Optional[date] = None):
 # ============================================================
 
 @router.post("/news/run", response_model=ActionResponse)
-async def run_news_secretary():
+async def run_news_secretary(db: Session = Depends(get_db)):
     """
     Trigger news secretary to generate a new briefing.
     
     Scrapes AI/tech news from TechCrunch, MIT Tech Review, The Verge
     and generates a summarized briefing using LLM.
+    Stores articles in database.
     """
     logger.info("Starting news secretary run...")
     try:
         service = get_secretary_service()
-        result = service.run_news()
+        result = service.run_news(db_session=db)
         
         if result["success"]:
             logger.info("News secretary completed successfully")
+            # Get updated articles count
+            news_repo = NewsRepository(db)
+            today_articles = news_repo.get_articles_by_date(date.today())
             return ActionResponse(
                 success=True,
                 message="News briefing generated successfully",
-                data={"summary": result["summary"]}
+                data={
+                    "summary": result["summary"],
+                    "articles_count": len(today_articles)
+                }
             )
         else:
             logger.error(f"News secretary failed: {result['error']}")

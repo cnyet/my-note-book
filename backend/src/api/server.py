@@ -17,6 +17,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from api.routes import auth, secretary
 from api.config import settings
 
+# Import all models to ensure they are registered with Base.metadata
+from api.models.user import User, Session
+from api.models.secretary_content import NewsArticle  # Ensure NewsArticle table is created
+
 app = FastAPI(title="AI Life Assistant API")
 
 # Enable CORS for Next.js frontend
@@ -32,6 +36,10 @@ app.add_middleware(
 app.include_router(auth.router)
 # Include secretary content routes
 app.include_router(secretary.router)
+
+# Initialize database tables on startup
+from api.database import init_db
+init_db()
 
 # Initialize components
 # File manager for legacy endpoints

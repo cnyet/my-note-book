@@ -52,4 +52,4 @@ data/backups/
 *.log
 claude_logs/
 .claude/logs/
-*log*
+logs/

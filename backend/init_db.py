@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from api.database import engine, Base, SessionLocal
 from api.models.user import User
+from api.models.secretary_content import NewsArticle  # Import to register the model
 from api.auth.password import password_manager
 
 def init_database():

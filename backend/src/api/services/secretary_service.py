@@ -32,9 +32,12 @@ class SecretaryService:
             'news': dict(self.config['news']) if 'news' in self.config else {}
         }
 
-    def run_news(self) -> dict:
+    def run_news(self, db_session=None) -> dict:
         """
         Run news secretary agent.
+        
+        Args:
+            db_session: Optional database session for storing articles
         
         Returns:
             dict with success, summary, and error fields
@@ -42,7 +45,7 @@ class SecretaryService:
         try:
             from agents.news_secretary import NewsSecretary
             agent = NewsSecretary(self.config_dict)
-            summary = agent.run(save_to_file=True)
+            summary = agent.run(save_to_file=True, db_session=db_session)
             
             return {
                 "success": True,
@@ -163,5 +166,6 @@ def get_secretary_service() -> SecretaryService:
     if _service is None:
         _service = SecretaryService()
     return _service
+
 
 

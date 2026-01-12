@@ -45,4 +45,9 @@ def get_db():
 
 def init_db():
     """Initialize database - create all tables"""
+    # Import all models to ensure they are registered with Base.metadata
+    from api.models.user import User, Session
+    from api.models.secretary_content import UserAction, ContentIndex, HealthMetric, NewsArticle
+    
+    # Create all tables
     Base.metadata.create_all(bind=engine)
