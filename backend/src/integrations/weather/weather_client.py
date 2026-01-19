@@ -16,7 +16,6 @@ class WeatherClient:
 
     def __init__(self):
         self.config = ConfigLoader()
-        self.llm_client = LLMClient()
         self.provider = self.config.get('weather', 'provider', 'qweather')
         self.api_key = self.config.get('weather', 'api_key')
         self.city = self.config.get('weather', 'city', 'shanghai')

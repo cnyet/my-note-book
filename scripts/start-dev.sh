@@ -65,6 +65,27 @@ cleanup() {
 # 捕获退出信号
 trap cleanup SIGINT SIGTERM EXIT
 
+# 清理占用的端口
+cleanup_ports() {
+    print_info "检查端口占用情况..."
+    
+    # 检查并清理 8000 端口
+    if lsof -ti:8000 > /dev/null 2>&1; then
+        print_warning "端口 8000 被占用，正在清理..."
+        lsof -ti:8000 | xargs kill -9 2>/dev/null || true
+        sleep 1
+        print_success "端口 8000 已释放"
+    fi
+    
+    # 检查并清理 3000 端口
+    if lsof -ti:3000 > /dev/null 2>&1; then
+        print_warning "端口 3000 被占用，正在清理..."
+        lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+        sleep 1
+        print_success "端口 3000 已释放"
+    fi
+}
+
 # 检查必要的目录和文件
 check_prerequisites() {
     print_info "检查环境..."
@@ -150,6 +171,7 @@ show_status() {
 
 main() {
     print_header
+    cleanup_ports
     check_prerequisites
     start_backend
     start_frontend

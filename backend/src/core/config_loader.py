@@ -7,6 +7,13 @@ import os
 import configparser
 from typing import Any, Optional
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 
 class ConfigLoader:
     """Configuration loader for the AI Life Assistant system"""
@@ -25,23 +32,17 @@ class ConfigLoader:
         # Try to load the config
         if os.path.exists(config_path):
             try:
-                self.config.read(config_path, encoding='utf-8')
+                self.config.read(config_path, encoding="utf-8")
                 self.loaded = True
             except Exception as e:
                 print(f"Warning: Failed to load config from {config_path}: {e}")
 
     def get(self, section: str, key: str, default: Any = None) -> Any:
-        """
-        Get a configuration value
+        env_key = f"{section.upper()}_{key.upper()}"
+        env_val = os.environ.get(env_key)
+        if env_val is not None:
+            return env_val
 
-        Args:
-            section: Section name in config
-            key: Key name in section
-            default: Default value if not found
-
-        Returns:
-            Configuration value or default
-        """
         if not self.loaded:
             return default
 

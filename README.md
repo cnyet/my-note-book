@@ -4,26 +4,34 @@
 
 ## ⚡ 快速启动
 
-### 一键启动
+### 一键启动（推荐）
 
 ```bash
-./scripts/dev/start-all.sh
+./scripts/start-dev.sh
 ```
 
+**特性：**
+- ✅ 自动检测并清理端口占用
+- ✅ 同时启动后端和前端服务
+- ✅ 实时日志输出
+- ✅ 优雅退出（Ctrl+C）
+
+**访问地址：**
 - 后端 API: http://localhost:8000
 - 前端 Web: http://localhost:3000
 - API 文档: http://localhost:8000/docs
 
-### 默认登录
-
-- **邮箱**: `dahong@example.com`
-- **密码**: `password123`
-
 ### 停止服务
 
 ```bash
-./scripts/dev/stop-all.sh
+# 方法 1: 在启动终端按 Ctrl+C（推荐）
+# 方法 2: 使用停止脚本
+./scripts/stop-dev.sh
 ```
+
+### 故障排除
+
+如果遇到端口占用问题，启动脚本会自动清理。详见：[端口冲突解决方案](docs/troubleshooting/port-conflict.md)
 
 ---
 

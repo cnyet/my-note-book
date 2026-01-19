@@ -15,93 +15,80 @@ import re
 # Add parent directory to path to import utils
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from integrations.llm.llm_client_v2 import create_llm_client
-from utils.file_manager import FileManager
+from agents.base import BaseAgent
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
+import re
 
-logger = logging.getLogger(__name__)
 
-class ReviewSecretary:
-    """AI-powered evening review and reflection secretary."""
+class ReviewAgent(BaseAgent):
+    """AI-powered evening review and reflection agent."""
 
-    def __init__(self, config: Dict, config_path: str = "config/config.ini"):
-        """
-        Initialize review secretary.
-
-        Args:
-            config: Configuration dictionary containing API keys and settings
-            config_path: Path to config.ini file (fallback)
-        """
-        self.config = config
-        self.llm_client = create_llm_client(config_path=config_path)
-        self.file_manager = FileManager(config.get('data', {}))
+    def __init__(self, **kwargs):
+        super().__init__(name="Review", **kwargs)
 
         # Reflection dimensions
         self.reflection_dimensions = {
-            'work': {
-                'name': '工作表现',
-                'prompts': [
-                    '今天完成了哪些重要任务？',
-                    '遇到了什么挑战？如何解决的？',
-                    '学到了什么新知识或技能？',
-                    '时间管理如何？',
-                    '工作满意度如何？'
-                ]
+            "work": {
+                "name": "工作表现",
+                "prompts": [
+                    "今天完成了哪些重要任务？",
+                    "遇到了什么挑战？如何解决的？",
+                    "学到了什么新知识或技能？",
+                    "时间管理如何？",
+                    "工作满意度如何？",
+                ],
             },
-            'personal': {
-                'name': '个人成长',
-                'prompts': [
-                    '今天有什么新的感悟？',
-                    '情绪状态如何？',
-                    '坚持了哪些好习惯？',
-                    '有哪些需要改进的地方？',
-                    '个人目标的进展如何？'
-                ]
+            "personal": {
+                "name": "个人成长",
+                "prompts": [
+                    "今天有什么新的感悟？",
+                    "情绪状态如何？",
+                    "坚持了哪些好习惯？",
+                    "有哪些需要改进的地方？",
+                    "个人目标的进展如何？",
+                ],
             },
-            'health': {
-                'name': '健康管理',
-                'prompts': [
-                    '运动计划执行情况？',
-                    '饮食是否健康规律？',
-                    '睡眠质量如何？',
-                    '压力水平如何？',
-                    '身体状况如何？'
-                ]
+            "health": {
+                "name": "健康管理",
+                "prompts": [
+                    "运动计划执行情况？",
+                    "饮食是否健康规律？",
+                    "睡眠质量如何？",
+                    "压力水平如何？",
+                    "身体状况如何？",
+                ],
             },
-            'relationships': {
-                'name': '人际关系',
-                'prompts': [
-                    '与家人/朋友的互动？',
-                    '工作中的协作如何？',
-                    '是否有有意义的对话？',
-                    '帮助或被帮助的经历？',
-                    '需要维护的关系？'
-                ]
+            "relationships": {
+                "name": "人际关系",
+                "prompts": [
+                    "与家人/朋友的互动？",
+                    "工作中的协作如何？",
+                    "是否有有意义的对话？",
+                    "帮助或被帮助的经历？",
+                    "需要维护的关系？",
+                ],
             },
-            'gratitude': {
-                'name': '感恩与成就',
-                'prompts': [
-                    '今天值得感恩的事情？',
-                    '让自己感到骄傲的成就？',
-                    '收到的善意或帮助？',
-                    '美好的瞬间？',
-                    '自己的进步？'
-                ]
-            }
+            "gratitude": {
+                "name": "感恩与成就",
+                "prompts": [
+                    "今天值得感恩的事情？",
+                    "让自己感到骄傲的成就？",
+                    "收到的善意或帮助？",
+                    "美好的瞬间？",
+                    "自己的进步？",
+                ],
+            },
         }
 
-    def run(self, save_to_file: bool = True, interactive: bool = False) -> str:
+    def run(
+        self, save_to_file: bool = True, interactive: bool = False, **kwargs
+    ) -> str:
         """
-        Run the review secretary workflow.
-
-        Args:
-            save_to_file: Whether to save the review to file
-            interactive: Whether to run in interactive mode
-
-        Returns:
-            Generated review and reflection in markdown format
+        Run the review agent workflow.
         """
         try:
-            print("🌙 Review Secretary - Time for daily reflection...")
+            print("🌙 Review Agent - Time for daily reflection...")
 
             # Collect today's data
             today_data = self._collect_today_data()
@@ -122,13 +109,13 @@ class ReviewSecretary:
 
             # Save to file if requested
             if save_to_file:
-                self._save_review(review)
+                self._save_log("review", review, "今日复盘")
                 print("\n✅ Review saved to today's logs")
 
             return review
 
         except Exception as e:
-            logger.error(f"Error in review secretary: {e}")
+            self.logger.error(f"Error in review agent: {e}")
             return f"❌ Failed to complete review: {str(e)}"
 
     def _collect_today_data(self) -> Dict:
@@ -138,33 +125,29 @@ class ReviewSecretary:
         Returns:
             Dictionary containing all today's information
         """
-        today = datetime.now().strftime('%Y-%m-%d')
-        data = {
-            'date': today,
-            'files': {},
-            'summary': {}
-        }
+        today = datetime.now().strftime("%Y-%m-%d")
+        data = {"date": today, "files": {}, "summary": {}}
 
         # Try to read today's log files
         file_types = [
-            ('新闻简报.md', 'news'),
-            ('今日穿搭.md', 'outfit'),
-            ('今日工作.md', 'work'),
-            ('今日生活.md', 'life')
+            ("新闻简报.md", "news"),
+            ("今日穿搭.md", "outfit"),
+            ("今日工作.md", "work"),
+            ("今日生活.md", "life"),
         ]
 
         for filename, file_type in file_types:
             filepath = f"data/daily_logs/{today}/{filename}"
             if os.path.exists(filepath):
                 try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
+                    with open(filepath, "r", encoding="utf-8") as f:
                         content = f.read()
-                        data['files'][file_type] = content
+                        data["files"][file_type] = content
                 except Exception as e:
-                    logger.error(f"Error reading {filename}: {e}")
+                    self.logger.error(f"Error reading {filename}: {e}")
 
         # Generate summaries from the content
-        data['summary'] = self._generate_summaries(data['files'])
+        data["summary"] = self._generate_summaries(data["files"])
 
         return data
 
@@ -181,139 +164,134 @@ class ReviewSecretary:
         summaries = {}
 
         # Work summary
-        if 'work' in files:
-            summaries['work'] = self._extract_work_summary(files['work'])
+        if "work" in files:
+            summaries["work"] = self._extract_work_summary(files["work"])
 
         # Life summary
-        if 'life' in files:
-            summaries['life'] = self._extract_life_summary(files['life'])
+        if "life" in files:
+            summaries["life"] = self._extract_life_summary(files["life"])
 
         # News summary
-        if 'news' in files:
-            summaries['news'] = self._extract_news_summary(files['news'])
+        if "news" in files:
+            summaries["news"] = self._extract_news_summary(files["news"])
 
         # Outfit summary
-        if 'outfit' in files:
-            summaries['outfit'] = self._extract_outfit_summary(files['outfit'])
+        if "outfit" in files:
+            summaries["outfit"] = self._extract_outfit_summary(files["outfit"])
 
         return summaries
 
     def _extract_work_summary(self, content: str) -> Dict:
         """Extract work-related summary from work log."""
         summary = {
-            'tasks_completed': [],
-            'tasks_pending': [],
-            'highlights': [],
-            'challenges': []
+            "tasks_completed": [],
+            "tasks_pending": [],
+            "highlights": [],
+            "challenges": [],
         }
 
-        lines = content.split('\n')
+        lines = content.split("\n")
         current_section = None
 
         for line in lines:
             line = line.strip()
 
             # Identify sections
-            if '高优先级' in line:
-                current_section = 'high_priority'
-            elif '中优先级' in line:
-                current_section = 'medium_priority'
-            elif '低优先级' in line:
-                current_section = 'low_priority'
-            elif line.startswith('- [x]') or line.startswith('- [X]'):
+            if "高优先级" in line:
+                current_section = "high_priority"
+            elif "中优先级" in line:
+                current_section = "medium_priority"
+            elif "低优先级" in line:
+                current_section = "low_priority"
+            elif line.startswith("- [x]") or line.startswith("- [X]"):
                 # Completed task
-                task = line.replace('- [x]', '').replace('- [X]', '').strip()
-                summary['tasks_completed'].append(task)
-            elif line.startswith('- [ ]'):
+                task = line.replace("- [x]", "").replace("- [X]", "").strip()
+                summary["tasks_completed"].append(task)
+            elif line.startswith("- [ ]"):
                 # Pending task
-                task = line.replace('- [ ]', '').strip()
-                summary['tasks_pending'].append(task)
+                task = line.replace("- [ ]", "").strip()
+                summary["tasks_pending"].append(task)
 
         # Extract highlights from completed tasks
-        for task in summary['tasks_completed']:
-            if any(keyword in task.lower() for keyword in ['完成', '实现', '解决', '优化']):
-                summary['highlights'].append(task)
+        for task in summary["tasks_completed"]:
+            if any(
+                keyword in task.lower() for keyword in ["完成", "实现", "解决", "优化"]
+            ):
+                summary["highlights"].append(task)
 
         return summary
 
     def _extract_life_summary(self, content: str) -> Dict:
         """Extract life-related summary from life log."""
         summary = {
-            'exercise_completed': False,
-            'meals': [],
-            'sleep_target': None,
-            'water_intake': 0,
-            'health_tips': []
+            "exercise_completed": False,
+            "meals": [],
+            "sleep_target": None,
+            "water_intake": 0,
+            "health_tips": [],
         }
 
         # Check for exercise
-        if any(keyword in content for keyword in ['运动', '锻炼', '健身', '跑步']):
-            summary['exercise_completed'] = True
+        if any(keyword in content for keyword in ["运动", "锻炼", "健身", "跑步"]):
+            summary["exercise_completed"] = True
 
         # Extract meals
-        meal_keywords = ['早餐', '午餐', '晚餐']
+        meal_keywords = ["早餐", "午餐", "晚餐"]
         for keyword in meal_keywords:
             if keyword in content:
-                summary['meals'].append(keyword)
+                summary["meals"].append(keyword)
 
         # Extract water intake
-        water_match = re.search(r'饮水.*?(\d+)\s*(ml|毫升)', content)
+        water_match = re.search(r"饮水.*?(\d+)\s*(ml|毫升)", content)
         if water_match:
-            summary['water_intake'] = int(water_match.group(1))
+            summary["water_intake"] = int(water_match.group(1))
 
         # Extract health tips
-        lines = content.split('\n')
+        lines = content.split("\n")
         for line in lines:
-            if '小贴士' in line or '提醒' in line:
-                summary['health_tips'].append(line.strip())
+            if "小贴士" in line or "提醒" in line:
+                summary["health_tips"].append(line.strip())
 
         return summary
 
     def _extract_news_summary(self, content: str) -> Dict:
         """Extract news-related summary from news log."""
-        summary = {
-            'headlines': [],
-            'topics': []
-        }
+        summary = {"headlines": [], "topics": []}
 
         # Extract headlines
-        lines = content.split('\n')
+        lines = content.split("\n")
         for line in lines:
-            if line.startswith('###'):
+            if line.startswith("###"):
                 # This is a news item
-                summary['headlines'].append(line.replace('###', '').strip())
+                summary["headlines"].append(line.replace("###", "").strip())
 
         # Identify topics
-        topic_keywords = ['AI', '人工智能', '技术', '科技', '开发', '编程']
-        for headline in summary['headlines']:
+        topic_keywords = ["AI", "人工智能", "技术", "科技", "开发", "编程"]
+        for headline in summary["headlines"]:
             for keyword in topic_keywords:
                 if keyword in headline:
-                    summary['topics'].append(keyword)
+                    summary["topics"].append(keyword)
                     break
 
         return summary
 
     def _extract_outfit_summary(self, content: str) -> Dict:
         """Extract outfit-related summary from outfit log."""
-        summary = {
-            'main_outfit': '',
-            'weather_considered': False,
-            'special_notes': []
-        }
+        summary = {"main_outfit": "", "weather_considered": False, "special_notes": []}
 
         # Check if weather was considered
-        if '天气' in content or '温度' in content:
-            summary['weather_considered'] = True
+        if "天气" in content or "温度" in content:
+            summary["weather_considered"] = True
 
         # Extract main outfit items
-        lines = content.split('\n')
+        lines = content.split("\n")
         for line in lines:
-            if any(keyword in line for keyword in ['上装', '下装', '鞋履']):
-                summary['main_outfit'] += line.strip() + '; '
+            if any(keyword in line for keyword in ["上装", "下装", "鞋履"]):
+                summary["main_outfit"] += line.strip() + "; "
 
         # Extract special notes
-        if '提示' in content or '贴士' in content:
-            summary['special_notes'].append('有特殊穿搭建议')
+        if "提示" in content or "贴士" in content:
+            summary["special_notes"].append("有特殊穿搭建议")
 
         return summary
 
@@ -340,7 +318,7 @@ class ReviewSecretary:
 
             dimension_thoughts = []
 
-            for prompt in info['prompts']:
+            for prompt in info["prompts"]:
                 print(f"\n{prompt}")
                 response = input("→ ").strip()
                 if response:
@@ -351,16 +329,16 @@ class ReviewSecretary:
         # Ask for overall mood
         print("\n😊 整体心情如何？")
         mood = input("→ ").strip()
-        reflections['overall_mood'] = mood
+        reflections["overall_mood"] = mood
 
         # Ask for tomorrow's focus
         print("\n🎯 明天最想专注的3件事？")
         tomorrow_focus = []
         for i in range(3):
-            item = input(f"{i+1}. ").strip()
+            item = input(f"{i + 1}. ").strip()
             if item:
                 tomorrow_focus.append(item)
-        reflections['tomorrow_focus'] = tomorrow_focus
+        reflections["tomorrow_focus"] = tomorrow_focus
 
         # Generate comprehensive review
         return self._compile_reflection(reflections, today_data)
@@ -399,22 +377,17 @@ class ReviewSecretary:
 - 提供具体、可执行的见解
 - 保持积极向上的基调
 
-请确保反思既有深度又易于理解，帮助用户获得真正的价值。"""
+请确保反思既有深度又易于理解，帮助用户获得真正的价值。""",
             },
-            {
-                "role": "user",
-                "content": context
-            }
+            {"role": "user", "content": context},
         ]
 
-        response = self.llm_client.send_message(
-            messages=messages,
-            max_tokens=2500,
-            temperature=0.8
+        response = self.llm.send_message(
+            messages=messages, max_tokens=2500, temperature=0.8
         )
 
-        if response and response.get('content'):
-            return response['content']
+        if response and isinstance(response, str):
+            return response
 
         # Fallback to basic reflection
         return self._generate_basic_reflection(today_data)
@@ -429,8 +402,8 @@ class ReviewSecretary:
         Returns:
             Formatted context string
         """
-        today = datetime.now().strftime('%Y年%m月%d日 %A')
-        summaries = today_data.get('summary', {})
+        today = datetime.now().strftime("%Y年%m月%d日 %A")
+        summaries = today_data.get("summary", {})
 
         context = f"""请为{today}生成一份深度个人复盘。
 
@@ -441,43 +414,45 @@ class ReviewSecretary:
 ### 工作方面
 """
 
-        if 'work' in summaries:
-            work_summary = summaries['work']
-            if work_summary.get('tasks_completed'):
+        if "work" in summaries:
+            work_summary = summaries["work"]
+            if work_summary.get("tasks_completed"):
                 context += f"**已完成的任务**：\n"
-                for task in work_summary['tasks_completed'][:3]:  # Limit to 3 tasks
+                for task in work_summary["tasks_completed"][:3]:  # Limit to 3 tasks
                     context += f"- {task}\n"
 
-            if work_summary.get('highlights'):
+            if work_summary.get("highlights"):
                 context += f"\n**今日亮点**：\n"
-                for highlight in work_summary['highlights']:
+                for highlight in work_summary["highlights"]:
                     context += f"- {highlight}\n"
 
-            if work_summary.get('tasks_pending'):
+            if work_summary.get("tasks_pending"):
                 context += f"\n**待完成任务**：{len(work_summary['tasks_pending'])}项\n"
 
         context += "\n### 生活方面\n"
 
-        if 'life' in summaries:
-            life_summary = summaries['life']
+        if "life" in summaries:
+            life_summary = summaries["life"]
             context += f"- **运动情况**：{'已完成' if life_summary.get('exercise_completed') else '未完成'}\n"
 
-            if life_summary.get('water_intake', 0) > 0:
+            if life_summary.get("water_intake", 0) > 0:
                 context += f"- **饮水量**：{life_summary['water_intake']}ml\n"
 
-            if life_summary.get('meals'):
+            if life_summary.get("meals"):
                 context += f"- **餐饮记录**：已记录{len(life_summary['meals'])}餐\n"
 
         context += "\n### 其他信息\n"
 
-        if 'news' in summaries:
-            news_summary = summaries['news']
-            if news_summary.get('topics'):
-                context += f"- **关注的资讯主题**：{', '.join(set(news_summary['topics']))}\n"
+        if "news" in summaries:
+            news_summary = summaries["news"]
+            if news_summary.get("topics"):
+                context += (
+                    f"- **关注的资讯主题**：{', '.join(set(news_summary['topics']))}\n"
+                )
 
-        if 'outfit' in summaries:
-            outfit_summary = summaries['outfit']
-            if outfit_summary.get('weather_considered'):
+        if "outfit" in summaries:
+            outfit_summary = summaries["outfit"]
+            if outfit_summary.get("weather_considered"):
                 context += f"- **穿搭**：已考虑天气因素\n"
 
         context += """
@@ -559,8 +534,8 @@ class ReviewSecretary:
         Returns:
             Basic reflection document
         """
-        today = datetime.now().strftime('%Y年%m月%d日')
-        summaries = today_data.get('summary', {})
+        today = datetime.now().strftime("%Y年%m月%d日")
+        summaries = today_data.get("summary", {})
 
         reflection = f"""# 今日复盘 - {today}
 
@@ -569,30 +544,30 @@ class ReviewSecretary:
 ### 工作完成情况
 """
 
-        if 'work' in summaries:
-            work_summary = summaries['work']
-            completed = len(work_summary.get('tasks_completed', []))
-            pending = len(work_summary.get('tasks_pending', []))
+        if "work" in summaries:
+            work_summary = summaries["work"]
+            completed = len(work_summary.get("tasks_completed", []))
+            pending = len(work_summary.get("tasks_pending", []))
 
             reflection += f"- **完成任务**：{completed}项\n"
             reflection += f"- **待办任务**：{pending}项\n"
 
-            if work_summary.get('highlights'):
+            if work_summary.get("highlights"):
                 reflection += "\n**主要成就**：\n"
-                for highlight in work_summary['highlights'][:3]:
+                for highlight in work_summary["highlights"][:3]:
                     reflection += f"- {highlight}\n"
 
         reflection += "\n### 生活管理\n"
 
-        if 'life' in summaries:
-            life_summary = summaries['life']
+        if "life" in summaries:
+            life_summary = summaries["life"]
             reflection += f"- **运动**：{'✅ 已完成' if life_summary.get('exercise_completed') else '⏳ 未完成'}\n"
 
-            if life_summary.get('water_intake', 0) > 0:
-                water_ratio = life_summary['water_intake'] / 2000 * 100
+            if life_summary.get("water_intake", 0) > 0:
+                water_ratio = life_summary["water_intake"] / 2000 * 100
                 reflection += f"- **饮水**：{life_summary['water_intake']}ml ({water_ratio:.0f}%)\n"
 
-            meals = len(life_summary.get('meals', []))
+            meals = len(life_summary.get("meals", []))
             reflection += f"- **餐饮记录**：{meals}/3餐\n"
 
         reflection += """
@@ -667,7 +642,7 @@ class ReviewSecretary:
         Returns:
             Compiled reflection document
         """
-        today = datetime.now().strftime('%Y年%m月%d日')
+        today = datetime.now().strftime("%Y年%m月%d日")
 
         review = f"""# 今日复盘 - {today}
 
@@ -684,17 +659,17 @@ class ReviewSecretary:
                 review += "\n"
 
         # Add overall mood
-        if 'overall_mood' in reflections:
+        if "overall_mood" in reflections:
             review += f"## 😊 整体心情\n\n{reflections['overall_mood']}\n\n"
 
         # Add tomorrow focus
-        if 'tomorrow_focus' in reflections and reflections['tomorrow_focus']:
+        if "tomorrow_focus" in reflections and reflections["tomorrow_focus"]:
             review += "## 🎯 明日重点关注\n\n"
-            for i, focus in enumerate(reflections['tomorrow_focus'], 1):
+            for i, focus in enumerate(reflections["tomorrow_focus"], 1):
                 review += f"{i}. {focus}\n"
 
         # Add AI insights
-        review += "\n" + "="*50 + "\n\n"
+        review += "\n" + "=" * 50 + "\n\n"
         review += "## 🤖 AI洞察与建议\n\n"
 
         # Generate some insights based on the reflections
@@ -712,7 +687,7 @@ class ReviewSecretary:
 晚安，期待明天更好的你！🌙
 
 ---
-*复盘完成时间：{datetime.now().strftime('%H:%M')}*
+*复盘完成时间：{datetime.now().strftime("%H:%M")}*
 """
 
         return review
@@ -731,120 +706,63 @@ class ReviewSecretary:
         insights = []
 
         # Analyze work completion
-        if 'work' in today_data.get('summary', {}):
-            work_summary = today_data['summary']['work']
-            completed = len(work_summary.get('tasks_completed', []))
-            pending = len(work_summary.get('tasks_pending', []))
+        if "work" in today_data.get("summary", {}):
+            work_summary = today_data["summary"]["work"]
+            completed = len(work_summary.get("tasks_completed", []))
+            pending = len(work_summary.get("tasks_pending", []))
 
             if completed > 0:
-                insights.append(f"✅ **执行力认可**：今天完成了{completed}项任务，展现了良好的执行力。")
+                insights.append(
+                    f"✅ **执行力认可**：今天完成了{completed}项任务，展现了良好的执行力。"
+                )
 
             if pending > 3:
-                insights.append(f"💡 **任务管理建议**：还有{pending}项待办，明天考虑优先级排序或拆分大任务。")
+                insights.append(
+                    f"💡 **任务管理建议**：还有{pending}项待办，明天考虑优先级排序或拆分大任务。"
+                )
 
         # Analyze health habits
-        if 'life' in today_data.get('summary', {}):
-            life_summary = today_data['summary']['life']
+        if "life" in today_data.get("summary", {}):
+            life_summary = today_data["summary"]["life"]
 
-            if not life_summary.get('exercise_completed'):
-                insights.append("🏃‍♂️ **运动提醒**：今天没有运动记录，明天记得安排时间活动身体。")
+            if not life_summary.get("exercise_completed"):
+                insights.append(
+                    "🏃‍♂️ **运动提醒**：今天没有运动记录，明天记得安排时间活动身体。"
+                )
 
-            water_ratio = life_summary.get('water_intake', 0) / 2000
+            water_ratio = life_summary.get("water_intake", 0) / 2000
             if water_ratio < 0.8:
-                insights.append(f"💧 **饮水建议**：今天饮水量不足目标，明天记得按时喝水。")
+                insights.append(
+                    f"💧 **饮水建议**：今天饮水量不足目标，明天记得按时喝水。"
+                )
 
         # Emotional insights
-        if 'overall_mood' in reflections:
-            mood = reflections['overall_mood'].lower()
-            if any(word in mood for word in ['好', '不错', '开心', '满足']):
+        if "overall_mood" in reflections:
+            mood = reflections["overall_mood"].lower()
+            if any(word in mood for word in ["好", "不错", "开心", "满足"]):
                 insights.append("😊 **积极心态**：保持这样的积极情绪，它是前进的动力。")
-            elif any(word in mood for word in ['累', '疲惫', '压力']):
+            elif any(word in mood for word in ["累", "疲惫", "压力"]):
                 insights.append("🌸 **关怀提醒**：感到疲惫时记得适当休息，照顾好自己。")
 
         # Tomorrow focus validation
-        if 'tomorrow_focus' in reflections and len(reflections['tomorrow_focus']) == 3:
-            insights.append("🎯 **目标设定**：明天的3个重点目标很明确，这样有助于聚焦精力。")
-
-        return "\n".join(insights) if insights else "今天的反思很有深度，继续保持这种自省的习惯！"
-
-    def _save_review(self, review: str):
-        """
-        Save review to file.
-
-        Args:
-            review: Review content
-        """
-        try:
-            # Add timestamp header
-            timestamp = datetime.now().strftime('%Y年%m月%d日 %H:%M')
-            content = f"{review}\n\n---\n*生成时间: {timestamp}*"
-
-            self.file_manager.save_daily_file(
-                file_type='review',
-                content=content,
-                custom_filename='今日复盘.md'
+        if "tomorrow_focus" in reflections and len(reflections["tomorrow_focus"]) == 3:
+            insights.append(
+                "🎯 **目标设定**：明天的3个重点目标很明确，这样有助于聚焦精力。"
             )
 
-        except Exception as e:
-            logger.error(f"Failed to save review: {e}")
+        return (
+            "\n".join(insights)
+            if insights
+            else "今天的反思很有深度，继续保持这种自省的习惯！"
+        )
 
-    def get_weekly_summary(self) -> str:
-        """
-        Generate weekly review summary.
+    def _save_log(self, file_type: str, content: str, title: str) -> bool:
+        return super()._save_log(file_type, content, title)
 
-        Returns:
-            Weekly summary report
-        """
-        # This would analyze the past week's reviews
-        # For now, return a template
-        return """# 本周回顾总结
-
-## 📊 数据概览
-- 复盘天数：X天
-- 平均工作完成率：XX%
-- 运动天数：X天
-
-## 🌟 本周亮点
-1. [亮点1]
-2. [亮点2]
-3. [亮点3]
-
-## 📈 进步轨迹
-- [进步1]
-- [进步2]
-
-## 💪 挑战与成长
-- [挑战1] - 学到了[经验]
-- [挑战2] - 改进了[方面]
-
-## 🎯 下周重点
-1. [重点1]
-2. [重点2]
-3. [重点3]
-
-## 🏆 成就解锁
-- [成就1]
-- [成就2]
-
-继续加油，每一天都是成长的机会！
-"""
 
 if __name__ == "__main__":
-    # Example usage
-    import configparser
-
-    # Load configuration
-    config = configparser.ConfigParser()
-    config.read('../config/config.ini')
-
-    # Convert to dictionary
-    config_dict = {
-        'llm': dict(config['llm']) if 'llm' in config else {},
-        'data': dict(config['data']) if 'data' in config else {}
-    }
-
-    # Create and run review secretary
-    secretary = ReviewSecretary(config_dict)
+    # Create and run review agent
+    agent = ReviewAgent()
 
     # Run interactive reflection
-    secretary.run(interactive=True)
+    agent.run(interactive=True)

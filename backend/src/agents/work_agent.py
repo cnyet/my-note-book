@@ -5,19 +5,26 @@ Responsible for work task management, TODO tracking, and daily planning
 
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from integrations.llm.llm_client_v2 import create_llm_client
-from utils.file_manager import FileManager
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
+from agents.base import BaseAgent
 from datetime import datetime
-import configparser
 import json
 
 
 class WorkTask:
-    """Simple work task model"""
-    def __init__(self, title: str, priority: str = "medium", estimated_time: str = "",
-                 location: str = "", people: str = "", notes: str = ""):
+    """Simple work task model for individual activities."""
+
+    def __init__(
+        self,
+        title: str,
+        priority: str = "medium",
+        estimated_time: str = "",
+        location: str = "",
+        people: str = "",
+        notes: str = "",
+    ):
         self.title = title
         self.priority = priority.lower()
         self.estimated_time = estimated_time
@@ -36,45 +43,29 @@ class WorkTask:
             "people": self.people,
             "notes": self.notes,
             "completed": self.completed,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }
 
     @classmethod
     def from_dict(cls, data):
-        task = cls(data["title"], data["priority"], data.get("estimated_time", ""),
-                   data.get("location", ""), data.get("people", ""), data.get("notes", ""))
+        task = cls(
+            data["title"],
+            data["priority"],
+            data.get("estimated_time", ""),
+            data.get("location", ""),
+            data.get("people", ""),
+            data.get("notes", ""),
+        )
         task.completed = data.get("completed", False)
         task.created_at = data.get("created_at", datetime.now().isoformat())
         return task
 
 
-class WorkSecretary:
-    """AI-powered work task management and planning secretary."""
+class WorkAgent(BaseAgent):
+    """AI-powered work task management and planning agent."""
 
-    def __init__(self, config_dict=None, config_path: str = "config/config.ini"):
-        """
-        Initialize the work secretary.
-
-        Args:
-            config_dict: Configuration dictionary (preferred)
-            config_path: Path to config.ini file (fallback)
-        """
-        if config_dict:
-            self.config_dict = config_dict
-            self.config = None
-        else:
-            self.config = configparser.ConfigParser()
-            self.config.read(config_path)
-            self.config_dict = {
-                'llm': dict(self.config['llm']) if 'llm' in self.config else {},
-                'data': dict(self.config['data']) if 'data' in self.config else {}
-            }
-
-        # Initialize LLM client
-        self.llm = create_llm_client(config_path=config_path)
-
-        # Initialize file manager
-        self.file_manager = FileManager(self.config_dict.get('data', {}))
+    def __init__(self, **kwargs):
+        super().__init__(name="Work", **kwargs)
 
     def get_previous_day_tasks(self) -> list:
         """
@@ -88,25 +79,25 @@ class WorkSecretary:
             return []
 
         previous_day = daily_dirs[1]  # Second newest
-        work_content = self.file_manager.read_daily_file('work', previous_day)
+        work_content = self.file_manager.read_daily_file("work", previous_day)
 
         if not work_content:
             return []
 
         # Extract incomplete tasks from markdown
         incomplete_tasks = []
-        lines = work_content.split('\n')
+        lines = work_content.split("\n")
         in_todo_section = False
 
         for line in lines:
-            if '## 今日TODO' in line or '## To-Do List' in line:
+            if "## 今日TODO" in line or "## To-Do List" in line:
                 in_todo_section = True
                 continue
-            if in_todo_section and line.startswith('## '):
+            if in_todo_section and line.startswith("## "):
                 break
-            if in_todo_section and '[ ]' in line:
-                task_title = line.replace('[ ]', '').strip()
-                if task_title and not task_title.startswith('-'):
+            if in_todo_section and "[ ]" in line:
+                task_title = line.replace("[ ]", "").strip()
+                if task_title and not task_title.startswith("-"):
                     incomplete_tasks.append(WorkTask(task_title))
 
         return incomplete_tasks
@@ -139,7 +130,9 @@ class WorkSecretary:
         meetings = []
         meeting_count = 0
         while True:
-            meeting = input(f"Meeting {meeting_count + 1} (or press Enter to skip): ").strip()
+            meeting = input(
+                f"Meeting {meeting_count + 1} (or press Enter to skip): "
+            ).strip()
             if not meeting:
                 break
             meetings.append(meeting)
@@ -169,13 +162,13 @@ class WorkSecretary:
         work_info = f"""# Work Information - {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
 ## Previous Day Incomplete Tasks
-{f'- ' + '\n- '.join([t.title for t in incomplete_tasks]) if incomplete_tasks else "None - all tasks completed! ✨"}
+{f"- " + "\n- ".join([t.title for t in incomplete_tasks]) if incomplete_tasks else "None - all tasks completed! ✨"}
 
 ## Today's Meetings
-{f'1. ' + '\n2. '.join(meetings) if meetings else "No scheduled meetings"}
+{f"1. " + "\n2. ".join(meetings) if meetings else "No scheduled meetings"}
 
 ## Main Work Tasks
-{f'1. ' + '\n2. '.join(work_tasks) if work_tasks else "No specific tasks defined"}
+{f"1. " + "\n2. ".join(work_tasks) if work_tasks else "No specific tasks defined"}
 
 ## Top Priority
 {priorities if priorities else "Not specified"}
@@ -240,30 +233,32 @@ class WorkSecretary:
             user_message=work_info,
             system_prompt=system_prompt,
             max_tokens=3000,
-            temperature=0.5
+            temperature=0.5,
         )
 
         return todo_content
 
-    def execute(self, interactive: bool = True, save_to_file: bool = True) -> str:
+    def execute(self, interactive: bool = False, save_to_file: bool = True) -> str:
         """
         Execute work planning
-
-        Args:
-            interactive: Whether to collect info interactively
-            save_to_file: Whether to save the TODO list to file
-
-        Returns:
-            str: Generated TODO list
         """
         print("=" * 60)
-        print("💼 Work Secretary Starting...")
+        print("💼 Work Agent Starting...")
         print("=" * 60)
 
         if interactive:
             work_info = self.collect_today_work_info()
         else:
-            work_info = "No work information provided. Please provide context."
+            # Build work_info automatically for non-interactive mode
+            incomplete_tasks = self.get_previous_day_tasks()
+            work_info = f"""# Automatically Collected Work Information - {datetime.now().strftime("%Y-%m-%d %H:%M")}
+
+## Previous Day Incomplete Tasks
+{f"- " + "\n- ".join([t.title for t in incomplete_tasks]) if incomplete_tasks else "None - all tasks completed! ✨"}
+
+## Note
+This plan was generated automatically without additional user input. Focus on completing rollover tasks and common daily work items.
+"""
 
         todo_list = self.generate_todo_list(work_info)
 
@@ -271,18 +266,9 @@ class WorkSecretary:
             print("❌ Failed to generate TODO list")
             return ""
 
-        # Add header with timestamp
-        final_todo = f"""# 今日工作规划 - {datetime.now().strftime("%Y年%m月%d日 %H:%M")}
-
-{todo_list}
-
----
-*Generated by AI Life Assistant*
-"""
-
         # Save to file
         if save_to_file:
-            success = self.file_manager.save_daily_file('work', final_todo)
+            success = self._save_log("work", todo_list, "今日工作规划")
             if success:
                 today_dir = self.file_manager.get_today_dir()
                 print(f"\n✅ Work plan saved to {today_dir}/今日工作.md")
@@ -291,29 +277,22 @@ class WorkSecretary:
         print("✨ Work Planning Completed!")
         print("=" * 60)
 
-        return final_todo
+        return todo_list
 
-    def run(self, interactive: bool = True, save_to_file: bool = True) -> str:
+    def run(self, interactive: bool = False, save_to_file: bool = True) -> str:
         """
-        Run the work secretary workflow (alias for execute).
-
-        Args:
-            interactive: Whether to run in interactive mode
-            save_to_file: Whether to save the TODO list to file
-
-        Returns:
-            Generated TODO list in markdown format
+        Run the work agent workflow (alias for execute).
         """
         return self.execute(interactive=interactive, save_to_file=save_to_file)
 
 
 def main():
-    """Command line interface for Work Secretary"""
-    print("Starting Work Secretary...")
+    """Command line interface for Work Agent"""
+    print("Starting Work Agent...")
 
     try:
-        secretary = WorkSecretary()
-        todo_list = secretary.execute(interactive=True)
+        agent = WorkAgent()
+        todo_list = agent.execute(interactive=True)
 
         # Print the TODO list
         print("\n" + todo_list)

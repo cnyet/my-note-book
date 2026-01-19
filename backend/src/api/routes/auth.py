@@ -1,6 +1,7 @@
 """
 Authentication API routes
 """
+
 from fastapi import APIRouter, Depends, HTTPException, status, Request, BackgroundTasks
 from sqlalchemy.orm import Session
 from datetime import date
@@ -19,12 +20,14 @@ from api.models.user import User
 from api.middleware.rate_limit import rate_limiter, get_client_ip
 from api.middleware.auth_logger import auth_logger
 from api.repositories.news_repository import NewsRepository
-from api.services.secretary_service import get_secretary_service
+from api.services.agent_service import get_agent_service
 
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
 
 
-@router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED
+)
 async def register(
     user_data: UserCreate,
     request: Request,
@@ -71,7 +74,7 @@ async def register(
             success=False,
             details=str(e),
         )
-        
+
         # Handle validation errors (email exists, password too short)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -85,7 +88,7 @@ async def register(
             success=False,
             details="Unexpected error",
         )
-        
+
         # Handle unexpected errors
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -107,10 +110,10 @@ async def login(
     """
     # Get client IP
     client_ip = get_client_ip(request)
-    
+
     # Check rate limit before attempting authentication
     rate_limiter.check_rate_limit(client_ip)
-    
+
     auth_service = AuthService(db)
 
     # Authenticate user
@@ -122,7 +125,7 @@ async def login(
     if not user:
         # Record failed attempt
         rate_limiter.record_failed_attempt(client_ip, credentials.email)
-        
+
         # Log failed login
         auth_logger.log_login_attempt(
             email=credentials.email,
@@ -130,7 +133,7 @@ async def login(
             success=False,
             details="Invalid credentials",
         )
-        
+
         # Return generic error to avoid revealing if email exists
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -139,7 +142,7 @@ async def login(
 
     # Clear failed attempts on successful login
     rate_limiter.clear_failed_attempts(client_ip)
-    
+
     # Log successful login
     auth_logger.log_login_attempt(
         email=credentials.email,
@@ -147,13 +150,13 @@ async def login(
         success=True,
         user_id=user.id,
     )
-    
+
     # Check if news articles exist for today, if not trigger news collection in background
     news_repo = NewsRepository(db)
     if not news_repo.has_articles_for_date(date.today()):
         # Trigger news collection in background
         background_tasks.add_task(trigger_news_collection, db)
-    
+
     # Create token
     token = auth_service.create_token_for_user(user, credentials.remember_me)
 
@@ -167,16 +170,18 @@ def trigger_news_collection(db: Session):
     """Background task to collect news articles."""
     try:
         from api.database import SessionLocal
+
         # Create a new session for the background task
         db_session = SessionLocal()
         try:
-            service = get_secretary_service()
+            service = get_agent_service()
             service.run_news(db_session=db_session)
         finally:
             db_session.close()
     except Exception as e:
         # Log error but don't fail the login
         import logging
+
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to collect news in background: {e}")
 
@@ -204,14 +209,14 @@ async def logout(
     Requirements: 8.3, 3.3, 5.5, 7.4
     """
     client_ip = get_client_ip(request)
-    
+
     # Log logout event
     auth_logger.log_logout(
         user_id=current_user.id,
         email=current_user.email,
         ip_address=client_ip,
     )
-    
+
     # JWT tokens are stateless, so logout is handled client-side
     # by clearing the token from storage
     return {"message": "Successfully logged out"}
@@ -298,7 +303,7 @@ async def update_profile(
                 ip_address=client_ip,
                 success=True,
             )
-        
+
         if any(c in changes for c in ["name", "email"]):
             auth_logger.log_profile_update(
                 user_id=current_user.id,

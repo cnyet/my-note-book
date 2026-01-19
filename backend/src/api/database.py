@@ -1,6 +1,7 @@
 """
 Database configuration and session management
 """
+
 import os
 from pathlib import Path
 from sqlalchemy import create_engine
@@ -15,9 +16,7 @@ DB_PATH = BACKEND_DIR / "data" / "ai_life_assistant.db"
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # Database URL - use SQLite for development, PostgreSQL for production
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", f"sqlite:///{DB_PATH}"
-)
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
 # Create engine
 # For SQLite, we need check_same_thread=False
@@ -47,7 +46,14 @@ def init_db():
     """Initialize database - create all tables"""
     # Import all models to ensure they are registered with Base.metadata
     from api.models.user import User, Session
-    from api.models.secretary_content import UserAction, ContentIndex, HealthMetric, NewsArticle
-    
+    from api.models.agent_content import (
+        UserAction,
+        ContentIndex,
+        HealthMetric,
+        NewsArticle,
+        WorkTask,
+        DailyReflection,
+    )
+
     # Create all tables
     Base.metadata.create_all(bind=engine)

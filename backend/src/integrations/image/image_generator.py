@@ -17,7 +17,6 @@ class ImageGenerator:
 
     def __init__(self):
         self.config = ConfigLoader()
-        self.llm_client = LLMClient()
         self.base_url = self.config.get('jimeng', 'base_url', 'https://api.jimeng.jianying.com')
         self.api_key = self.config.get('jimeng', 'api_key')
         self.output_dir = os.path.join('data', 'daily_logs', datetime.now().strftime('%Y-%m-%d'))

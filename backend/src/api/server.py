@@ -14,12 +14,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # New endpoints should use api.services.secretary_service instead
 
 # Import authentication routes
-from api.routes import auth, secretary
+from api.routes import auth, agent
+from api.models.agent_content import NewsArticle  # Ensure NewsArticle table is created
 from api.config import settings
-
-# Import all models to ensure they are registered with Base.metadata
-from api.models.user import User, Session
-from api.models.secretary_content import NewsArticle  # Ensure NewsArticle table is created
 
 app = FastAPI(title="AI Life Assistant API")
 
@@ -34,21 +31,26 @@ app.add_middleware(
 
 # Include authentication routes
 app.include_router(auth.router)
-# Include secretary content routes
-app.include_router(secretary.router)
+# Include agent content routes
+app.include_router(agent.router)
+
 
 # Initialize database tables on startup
 from api.database import init_db
+
 init_db()
 
 # Initialize components
 # File manager for legacy endpoints
 from api.repositories.file_repository import FileRepository
+
 file_repo = FileRepository()
+
 
 @app.get("/api/status")
 async def get_status():
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
+
 
 # Legacy endpoints removed - all functionality now in api.routes.secretary
 

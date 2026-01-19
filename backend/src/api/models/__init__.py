@@ -2,6 +2,26 @@
 Database models for AI Life Assistant API
 """
 from api.models.user import User, Session
-from api.models.secretary_content import UserAction, ContentIndex, HealthMetric, NewsArticle
+from api.models.agent_content import (
+    UserAction,
+    ContentIndex,
+    HealthMetric,
+    NewsArticle,
+    WorkTask,
+    DailyReflection,
+)
+from api.models.conversation_summaries import ConversationSummary
+from api.models.semantic_memory import SemanticMemory
 
-__all__ = ["User", "Session", "UserAction", "ContentIndex", "HealthMetric", "NewsArticle"]
+__all__ = [
+    "User",
+    "Session",
+    "UserAction",
+    "ContentIndex",
+    "HealthMetric",
+    "NewsArticle",
+    "WorkTask",
+    "DailyReflection",
+    "ConversationSummary",
+    "SemanticMemory",
+]
