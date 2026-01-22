@@ -29,6 +29,7 @@ from api.utils.markdown_parser import MarkdownParser
 from api.schemas.agent import WorkResponse, WorkTask, ActionResponse, ErrorResponse
 from api.services.agent_service import get_agent_service
 from api.models.agent_content import NewsArticle
+from core.chief_of_staff import ChiefOfStaff # v2.0 Unified Orchestrator
 
 router = APIRouter(prefix="/api", tags=["agent"])
 logger = logging.getLogger(__name__)
@@ -109,8 +110,6 @@ async def get_work_plan(
 ):
     """
     Get work plan for a specific date (defaults to today).
-
-    Returns structured task list with priorities and time estimates.
     """
     if target_date is None:
         target_date = date.today()
@@ -196,19 +195,12 @@ async def get_work_calendar():
 async def generate_work_plan():
     """
     Trigger generation of new work plan.
-
-    Note: This endpoint would typically call the AI agent to generate content.
-    For now, it returns a placeholder response.
     """
     return ActionResponse(
         success=False,
         message="Work plan generation not yet implemented. Use the CLI to generate content.",
         data={"cli_command": "python main.py --step work"},
     )
-
-
-# Similar endpoints for other agents can be added here
-# For now, let's keep the existing simple endpoints
 
 
 @router.get("/news", response_model=dict)
@@ -219,10 +211,6 @@ async def get_news(
 ):
     """
     Get news briefing with articles from database.
-
-    Args:
-        target_date: Specific date to get news for (defaults to today)
-        latest: If provided, return latest N articles regardless of date
     """
     news_repo = NewsRepository(db)
 
@@ -257,7 +245,7 @@ async def get_news(
     # Also try to get markdown content from file
     content = None
     snippet = None
-    if not latest:  # Only get markdown content if not requesting latest
+    if not latest:
         try:
             if target_date is None:
                 target_date = date.today()
@@ -347,11 +335,6 @@ async def get_review(target_date: Optional[date] = None):
         }
 
 
-# ============================================================
-# Run Endpoints - Generate new content using AI agents
-# ============================================================
-
-
 @router.post("/news/run", response_model=ActionResponse)
 async def run_news_agent(db: Session = Depends(get_db)):
     """
@@ -364,7 +347,6 @@ async def run_news_agent(db: Session = Depends(get_db)):
 
         if result["success"]:
             logger.info("News agent completed successfully")
-            # Get updated articles count
             news_repo = NewsRepository(db)
             today_articles = news_repo.get_articles_by_date(date.today())
             return ActionResponse(
@@ -528,8 +510,6 @@ async def stream_daily_pipeline():
     """
 
     async def event_generator():
-        from core.coordinator import ChiefOfStaff
-
         orchestrator = ChiefOfStaff()
 
         steps = [
@@ -557,8 +537,6 @@ async def stream_daily_pipeline():
 async def run_daily_pipeline(db: Session = Depends(get_db)):
     logger.info("Starting full daily pipeline...")
     try:
-        from core.coordinator import ChiefOfStaff
-
         orchestrator = ChiefOfStaff()
         results = orchestrator.run_daily_pipeline()
 

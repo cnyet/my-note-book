@@ -12,6 +12,7 @@ from api.models.agent_content import (
 )
 from api.models.conversation_summaries import ConversationSummary
 from api.models.semantic_memory import SemanticMemory
+from api.models.blog import BlogPost
 
 __all__ = [
     "User",
@@ -24,4 +25,5 @@ __all__ = [
     "DailyReflection",
     "ConversationSummary",
     "SemanticMemory",
+    "BlogPost",
 ]

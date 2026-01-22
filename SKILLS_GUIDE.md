@@ -24,3 +24,8 @@ This project is now configured with the following specialized skills. You can in
 ## 5. Oracle (Technical Advisor)
 - **Purpose**: High-level architectural reasoning and complex debugging.
 - **Usage**: When you hit a "wall" or need a second opinion on a critical design decision.
+
+## 6. UI/UX Pro Max
+- **Purpose**: Expert-level frontend engineering for premium visual quality.
+- **Expertise**: Advanced Framer Motion, A11y, Design Systems, Mobile-First.
+- **Usage**: When you need to build high-end components or "wow" the user with aesthetics.

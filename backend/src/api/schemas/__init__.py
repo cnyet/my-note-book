@@ -8,6 +8,11 @@ from api.schemas.auth import (
     TokenResponse,
     UserUpdate,
 )
+from api.schemas.blog import (
+    BlogPostCreate,
+    BlogPostUpdate,
+    BlogPostResponse,
+)
 
 __all__ = [
     "UserCreate",
@@ -15,4 +20,7 @@ __all__ = [
     "UserResponse",
     "TokenResponse",
     "UserUpdate",
+    "BlogPostCreate",
+    "BlogPostUpdate",
+    "BlogPostResponse",
 ]

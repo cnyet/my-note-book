@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # New endpoints should use api.services.secretary_service instead
 
 # Import authentication routes
-from api.routes import auth, agent
+from api.routes import auth, agent, blog, conversation, news
 from api.models.agent_content import NewsArticle  # Ensure NewsArticle table is created
 from api.config import settings
 
@@ -33,6 +33,15 @@ app.add_middleware(
 app.include_router(auth.router)
 # Include agent content routes
 app.include_router(agent.router)
+
+# Include blog routes
+app.include_router(blog.router)
+
+# Include conversation routes
+app.include_router(conversation.router)
+
+# Include news routes
+app.include_router(news.router)
 
 
 # Initialize database tables on startup

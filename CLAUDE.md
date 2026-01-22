@@ -131,3 +131,16 @@ python -m src.cli.main --step review    # 复盘秘书
 ### Code Style
 - 中文: 注释、业务逻辑
 - 英文: 变量名、技术注释
+
+## AI Assistance & Local Skills
+
+本项目包含自定义的 AI 辅助技能（Local Skills），用于指导 AI 助手执行高标准的特定任务。
+
+### 如何使用本地技能
+- **存储位置**: `.opencode/skills/{skill-name}/SKILL.md`
+- **激活机制**: 当用户提到某个技能名称（如 `ui-ux-pro-max-skill`）时，AI 助手**必须优先**读取对应的 `SKILL.md` 文件，并将其中的指令内化为当前任务的最高优先级规范。
+- **避免报错**: 严禁使用系统工具 `skill [name=...]` 来调用这些本地技能，应直接使用 `read` 工具获取其内容。
+
+### 核心本地技能列表
+1. **ui-ux-pro-max-skill**: 高级 UI/UX 工程规范（Framer Motion 动画、Tailwind 4 最佳实践、像素级还原）。
+2. **conversation-accuracy-skill**: 对话准确性治理规范（分层记忆架构、滑动窗口管理、动态 Token 分配）。

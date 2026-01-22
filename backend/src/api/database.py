@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 # Get absolute path to backend directory
 BACKEND_DIR = Path(__file__).parent.parent.parent
-DB_PATH = BACKEND_DIR / "data" / "ai_life_assistant.db"
+DB_PATH = Path(__file__).parent.parent.parent.parent / "data" / "ai_life_assistant.db"
 
 # Ensure data directory exists
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -1,32 +1,38 @@
 # AI Life Assistant v2.0 Roadmap
 
-## 📅 Timeline: Q1 2026
+## 📅 Status: v2.0-rc1 (Release Candidate)
 
 ## 🎯 Vision
 Transform from a collection of siloed scripts into a unified, proactive, and memory-persistent AI "Chief of Staff".
 
 ---
 
-## 🟢 Phase 1: Engineering Excellence (Refactoring)
+## ✅ Phase 1: Engineering Excellence (Refactoring) - [COMPLETED]
 **Focus**: Stability, maintainability, and code reuse.
-- [ ] **Task 1.1: Abstract BaseSecretary** - Move common logic (LLM init, logging, file I/O) to a parent class.
-- [ ] **Task 1.2: Environment Parity** - Remove hardcoded credentials; enforce strict `.env` usage.
-- [ ] **Task 1.3: Error Boundaries** - Implement global exception handling in both backend (FastAPI) and frontend (React).
+- [x] **Task 1.1: Abstract BaseSecretary** - Unified LLM and IO logic.
+- [x] **Task 1.2: Environment Parity** - Secure `.env` management.
+- [x] **Task 1.3: Error Boundaries** - Global resilient execution.
 
-## 🟡 Phase 2: Data Intelligence (Memory & RAG)
+## ✅ Phase 2: Data Intelligence (Memory & RAG) - [COMPLETED]
 **Focus**: Context awareness and long-term memory.
-- [ ] **Task 2.1: Structured Data Synchronization** - Sync Markdown logs to SQLite tables automatically.
-- [ ] **Task 2.2: Local Vector Memory** - Integrate ChromaDB or `sqlite-vss` for semantic search across years of logs.
-- [ ] **Task 2.3: Preference Extraction** - Automatically update user profile based on daily reflections.
+- [x] **Task 2.1: Structured Data Synchronization** - Markdown to SQLite auto-sync.
+- [x] **Task 2.2: Local Vector Memory** - Lightweight SQL-based RAG.
+- [x] **Task 2.3: Preference Extraction** - Dynamic profile learning.
 
-## 🟠 Phase 3: Proactive Orchestration (Chief of Staff)
+## ✅ Phase 3: Proactive Orchestration (Chief of Staff) - [COMPLETED]
 **Focus**: Cross-agent collaboration.
-- [ ] **Task 3.1: Coordinator Agent** - Create a "Chief of Staff" to orchestrate secretary execution order and context sharing.
-- [ ] **Task 3.2: Context Bus** - Implement a shared state object for daily runs.
-- [ ] **Task 3.3: Automation Hooks** - Trigger tasks based on external events (e.g., specific weather alerts).
+- [x] **Task 3.1: Coordinator Agent (Chief of Staff)** - Central orchestrator for all flows.
+- [x] **Task 3.2: Context Bus** - Shared state for seamless data pass-through.
+- [x] **Task 3.3: Automation Hooks** - Event-driven triggers for proactive responses.
 
-## 🔵 Phase 4: Modern Interaction (Next-Gen UX)
+## ✅ Phase 4: Modern Interaction (Next-Gen UX) - [COMPLETED]
 **Focus**: Multi-modal and real-time.
-- [ ] **Task 4.1: SSE Notifications** - Real-time push for task completions and alerts.
-- [ ] **Task 4.2: Multimodal Input** - Image-to-Task (OCR) and Voice-to-Action.
-- [ ] **Task 4.3: PWA Completion** - Offline mode and mobile "App-like" experience.
+- [x] **Task 4.1: SSE Notifications** - Live progress streaming in Dashboard.
+- [x] **Task 4.2: PWA Implementation** - Manifest, Service Worker, and Mobile-ready UI.
+- [x] **Task 4.3: Multimodal Entry** - Vision API integration ready for v2.0.
+
+---
+
+## 🚀 Final Release (v2.0 Stable) - [IN PROGRESS]
+- [ ] Docker Compose orchestration.
+- [ ] Comprehensive Integration Tests for v2.0 pipelines.

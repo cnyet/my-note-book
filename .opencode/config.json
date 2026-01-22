@@ -1,0 +1,8 @@
+{
+  "skills": {
+    "path": "./skills",
+    "enabled": [
+      "ui-ux-pro-max-skill"
+    ]
+  }
+}

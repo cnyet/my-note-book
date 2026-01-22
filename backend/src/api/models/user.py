@@ -31,6 +31,8 @@ class User(Base):
 
     # Relationships
     sessions = relationship("Session", back_populates="user", cascade="all, delete-orphan")
+    blog_posts = relationship("BlogPost", back_populates="author", cascade="all, delete-orphan")
+    blog_posts = relationship("BlogPost", back_populates="author", cascade="all, delete-orphan")
 
 
 class Session(Base):

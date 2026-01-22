@@ -1,38 +1,82 @@
 """
 Context Orchestrator for AI Life Assistant v2.0
-Assembles multi-layer context (Short-term window + Long-term memory + Current input).
+Implements the Four-Layer Memory Architecture from conversation-accuracy-skill.
 """
-from typing import List, Dict, Any, Optional
-import json
-from core.memory_manager import MemoryManager
+import logging
+from typing import List, Dict, Optional
+from datetime import date
+from core.enhanced_memory import EnhancedMemoryManager
+from api.database import SessionLocal
+from api.repositories.conversation_repository import ConversationRepository
+
+logger = logging.getLogger(__name__)
 
 class ContextOrchestrator:
+    """
+    Assembles context following the tiered strategy:
+    1. Short-term: Last 3-5 turns (Sliding Window)
+    2. Mid-term: Key points from last 24h (Summaries)
+    3. Long-term: Semantic search (Vector/Keyword Memory)
+    4. Orchestration: Token budget management
+    """
+    
     def __init__(self, llm_client):
-        self.memory_mgr = MemoryManager(llm_client)
+        self.llm = llm_client
+        self.memory_mgr = EnhancedMemoryManager(llm_client)
         
-    def assemble_full_context(self, agent_type: str, current_prompt: str, short_term_history: List[Dict]) -> List[Dict]:
+    def assemble_context(self, agent_type: str, user_query: str, sliding_window: List[Dict]) -> List[Dict]:
         """
-        Assemble a complete message list for the LLM.
-        Layers:
-        1. Long-term relevant context (from Database)
-        2. Short-term dialogue history (Sliding Window)
-        3. Current user prompt
+        Build the message list layer by layer.
         """
         messages = []
         
-        # 1. Retrieve and format Long-term Context
-        historical_context = self.memory_mgr.search_memories(current_prompt)
-        if historical_context:
+        # --- LAYER 1: System Instructions (Core Identity) ---
+        # (This is usually handled by the specific agent subclass, 
+        # but we preserve space for it in the budget)
+        
+        # --- LAYER 2: Long-term Memory (Semantic Context) ---
+        long_term = self.memory_mgr.get_relevant_context(user_query)
+        if long_term:
             messages.append({
-                "role": "system", 
-                "content": f"You have access to the following relevant historical context about the user:\n{historical_context}"
+                "role": "system",
+                "content": f"### 长期背景 (Long-term Context)\n{long_term}"
             })
             
-        # 2. Add Short-term History (The Sliding Window)
-        if short_term_history:
-            messages.extend(short_term_history)
+        # --- LAYER 3: Mid-term Summary (Recent Facts/Decisions) ---
+        mid_term = self._get_recent_summary(agent_type)
+        if mid_term:
+            messages.append({
+                "role": "system",
+                "content": f"### 近期摘要 (Mid-term Summary)\n{mid_term}"
+            })
             
-        # 3. Current Prompt
-        messages.append({"role": "user", "content": current_prompt})
+        # --- LAYER 4: Short-term Context (Sliding Window) ---
+        if sliding_window:
+            messages.extend(sliding_window)
+            
+        # Current Interaction
+        messages.append({"role": "user", "content": user_query})
         
+        logger.info(f"Assembled context for {agent_type} with {len(messages)} segments.")
         return messages
+
+    def _get_recent_summary(self, agent_type: str) -> Optional[str]:
+        """Fetch the most recent daily summary from DB."""
+        db = SessionLocal()
+        try:
+            repo = ConversationRepository(db)
+            summary = repo.get_latest_summary(agent_type)
+            if not summary:
+                return None
+                
+            text = f"日期: {summary.summary_date}\n摘要: {summary.content_summary}"
+            if summary.key_decisions:
+                text += f"\n关键决策: {summary.key_decisions}"
+            if summary.action_items:
+                text += f"\n待办事项: {summary.action_items}"
+            return text
+        except Exception as e:
+            logger.error(f"Error fetching mid-term summary: {e}")
+            return None
+        finally:
+            db.close()
