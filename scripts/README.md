@@ -20,7 +20,7 @@
 ---
 
 ### 2. [start-dev.sh](start-dev.sh) - 开发启动
-**用途**: 一键启动后端 (Python/Uvicorn) 和前端 (Next.js/React) 开发服务。
+**用途**: 一键启动后端 (Python/Uvicorn) 和前端 (Next.js/React) 开发服务。同时支持按 `Ctrl+C` 自动停止服务并清理端口。
 
 ```bash
 ./scripts/start-dev.sh
@@ -30,7 +30,7 @@
 - ✅ 后台并行启动前后端服务
 - ✅ 自动清理遗留端口占用
 - ✅ 实时日志写入 `logs/`
-- ✅ 监听 Ctrl+C 一键停止服务
+- ✅ 监听 Ctrl+C 一键停止服务并释放端口 8000/3000
 
 ---
 
