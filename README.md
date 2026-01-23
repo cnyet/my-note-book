@@ -63,7 +63,7 @@ ai-life-assistant/
 - **Phase 4 (现代化交互)**: 100% ✅
 - **v2.0 Stable (发布准备)**: 进行中... 🚧
 
-详情请参阅: [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | [CHANGELOG.md](docs/CHANGELOG.md)
+详情请参阅: [PROJECT_STATUS.md](docs/v2/PROJECT_STATUS.md) | [CHANGELOG.md](docs/CHANGELOG.md)
 
 ---
 项目作者: 大洪  
