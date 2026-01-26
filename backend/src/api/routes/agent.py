@@ -63,7 +63,7 @@ async def get_dashboard(db: Session = Depends(get_db)):
                 "last_date": str(today),
                 "snippet": snippet,
             }
-        except FileNotFoundError:
+        except Exception:
             # Try to find the most recent date
             try:
                 dates = file_repo.list_available_dates(agent_type)
@@ -95,12 +95,25 @@ async def get_dashboard(db: Session = Depends(get_db)):
     except:
         pass
 
+    # Mock statistics for the chart (In real life, these would come from the DB)
+    chart_data = {
+        "work_completion": [65, 80, 55, 90, 70, 85, 75], # Last 7 days
+        "agent_activity": [
+            {"name": "News", "value": 12},
+            {"name": "Work", "value": 8},
+            {"name": "Outfit", "value": 3},
+            {"name": "Life", "value": 5},
+            {"name": "Review", "value": 1}
+        ]
+    }
+
     return {
         "today_dir": str(today),
         "agents": agents,
         "tasks_summary": tasks_summary,
         "weather_summary": "18°C 多云",
         "health_summary": "良好",
+        "chart_data": chart_data
     }
 
 
@@ -149,7 +162,7 @@ async def get_work_plan(
             generated=True,
         )
 
-    except FileNotFoundError:
+    except Exception:
         # Return empty response if file doesn't exist
         return WorkResponse(
             date=target_date,
@@ -158,61 +171,68 @@ async def get_work_plan(
             completion_rate=0.0,
             generated=False,
         )
-    except FileReadError as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 
-@router.get("/work/{date_str}", response_model=WorkResponse)
-async def get_work_plan_by_date(date_str: str, db: Session = Depends(get_db)):
+@router.post("/work/run", response_model=ActionResponse)
+async def run_work_agent():
     """
-    Get work plan for a specific date (YYYY-MM-DD format).
+    Trigger work agent to generate a new work plan.
     """
+    logger.info("Starting work agent run...")
     try:
-        target_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    except ValueError:
-        raise HTTPException(
-            status_code=400, detail="Invalid date format. Use YYYY-MM-DD"
-        )
+        service = get_agent_service()
+        result = service.run_work()
 
-    return await get_work_plan(target_date=target_date, db=db)
-
-
-@router.get("/work/calendar", response_model=List[date])
-async def get_work_calendar():
-    """
-    Get list of dates with available work plans.
-    """
-    try:
-        dates = file_repo.list_available_dates("work")
-        return dates
+        if result["success"]:
+            logger.info("Work agent completed successfully")
+            return ActionResponse(
+                success=True,
+                message="Work plan generated successfully",
+                data={"summary": result["summary"]},
+            )
+        else:
+            logger.error(f"Work agent failed: {result['error']}")
+            return ActionResponse(
+                success=False,
+                message=f"Failed to generate work plan: {result['error']}",
+                data=None,
+            )
     except Exception as e:
+        logger.exception("Unexpected error in work agent")
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/work/generate", response_model=ActionResponse)
-async def generate_work_plan():
-    """
-    Trigger generation of new work plan.
-    """
-    return ActionResponse(
-        success=False,
-        message="Work plan generation not yet implemented. Use the CLI to generate content.",
-        data={"cli_command": "python main.py --step work"},
-    )
 
 
 @router.get("/news", response_model=dict)
 async def get_news(
+    background_tasks: BackgroundTasks,
     target_date: Optional[date] = None,
     latest: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
     """
-    Get news briefing with articles from database.
+    Get news briefing from database. v2.0: Includes background auto-refresh.
     """
     news_repo = NewsRepository(db)
+    is_updating = False
+    
+    # Check for background refresh if it's for today
+    is_today = target_date is None or target_date == date.today()
+    if is_today and not latest:
+        last_updated = news_repo.get_last_updated_at()
+        
+        should_refresh = False
+        if not last_updated:
+            should_refresh = True
+        else:
+            diff = datetime.now() - last_updated
+            if diff.total_seconds() > 4 * 3600: # 4 hours TTL
+                should_refresh = True
+        
+        if should_refresh:
+            logger.info("News is stale or missing. Triggering background refresh...")
+            service = get_agent_service()
+            background_tasks.add_task(service.run_news)
+            is_updating = True
 
     # If latest parameter is provided, get latest articles
     if latest:
@@ -232,107 +252,30 @@ async def get_news(
                 "source": article.source,
                 "link": article.link,
                 "summary": article.summary,
-                "image_url": article.image_url,
-                "thumbnail_url": article.thumbnail_url,
                 "importance_score": article.importance_score,
                 "category": article.category,
-                "created_at": article.created_at.isoformat()
-                if article.created_at
-                else None,
+                "created_at": article.created_at.isoformat() if article.created_at else None,
             }
         )
 
-    # Also try to get markdown content from file
+    # Try to get markdown content from content_index
     content = None
     snippet = None
-    if not latest:
-        try:
-            if target_date is None:
-                target_date = date.today()
-            content = file_repo.read_content("news", target_date)
-            snippet = parser.get_snippet(content)
-        except FileNotFoundError:
-            pass
+    try:
+        content_date = target_date or date.today()
+        content = file_repo.read_content("news", content_date)
+        snippet = parser.get_snippet(content)
+    except:
+        pass
 
     return {
-        "date": target_date if not latest else None,
+        "articles": articles_data,
         "content": content,
         "snippet": snippet,
-        "articles": articles_data,
-        "generated": len(articles) > 0 or content is not None,
+        "generated": len(articles_data) > 0 or content is not None,
+        "is_updating": is_updating
     }
 
-
-@router.get("/outfit", response_model=dict)
-async def get_outfit(target_date: Optional[date] = None):
-    """Get outfit recommendation."""
-    if target_date is None:
-        target_date = date.today()
-
-    try:
-        content = file_repo.read_content("outfit", target_date)
-        snippet = parser.get_snippet(content)
-        return {
-            "date": target_date,
-            "content": content,
-            "snippet": snippet,
-            "generated": True,
-        }
-    except FileNotFoundError:
-        return {
-            "date": target_date,
-            "content": None,
-            "snippet": None,
-            "generated": False,
-        }
-
-
-@router.get("/life", response_model=dict)
-async def get_life(target_date: Optional[date] = None):
-    """Get life management plan."""
-    if target_date is None:
-        target_date = date.today()
-
-    try:
-        content = file_repo.read_content("life", target_date)
-        snippet = parser.get_snippet(content)
-        return {
-            "date": target_date,
-            "content": content,
-            "snippet": snippet,
-            "generated": True,
-        }
-    except FileNotFoundError:
-        return {
-            "date": target_date,
-            "content": None,
-            "snippet": None,
-            "generated": False,
-        }
-
-
-@router.get("/review", response_model=dict)
-async def get_review(target_date: Optional[date] = None):
-    """Get daily review."""
-    if target_date is None:
-        target_date = date.today()
-
-    try:
-        content = file_repo.read_content("review", target_date)
-        snippet = parser.get_snippet(content)
-        return {
-            "date": target_date,
-            "content": content,
-            "snippet": snippet,
-            "generated": True,
-        }
-    except FileNotFoundError:
-        return {
-            "date": target_date,
-            "content": None,
-            "snippet": None,
-            "generated": False,
-        }
 
 
 @router.post("/news/run", response_model=ActionResponse)
@@ -369,33 +312,28 @@ async def run_news_agent(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/work/run", response_model=ActionResponse)
-async def run_work_agent():
-    """
-    Trigger work agent to generate a new work plan.
-    """
-    logger.info("Starting work agent run...")
-    try:
-        service = get_agent_service()
-        result = service.run_work()
+@router.get("/outfit", response_model=dict)
+async def get_outfit(target_date: Optional[date] = None):
+    """Get outfit recommendation."""
+    if target_date is None:
+        target_date = date.today()
 
-        if result["success"]:
-            logger.info("Work agent completed successfully")
-            return ActionResponse(
-                success=True,
-                message="Work plan generated successfully",
-                data={"summary": result["summary"]},
-            )
-        else:
-            logger.error(f"Work agent failed: {result['error']}")
-            return ActionResponse(
-                success=False,
-                message=f"Failed to generate work plan: {result['error']}",
-                data=None,
-            )
-    except Exception as e:
-        logger.exception("Unexpected error in work agent")
-        raise HTTPException(status_code=500, detail=str(e))
+    try:
+        content = file_repo.read_content("outfit", target_date)
+        snippet = parser.get_snippet(content)
+        return {
+            "date": target_date,
+            "content": content,
+            "snippet": snippet,
+            "generated": True,
+        }
+    except Exception:
+        return {
+            "date": target_date,
+            "content": None,
+            "snippet": None,
+            "generated": False,
+        }
 
 
 @router.post("/outfit/run", response_model=ActionResponse)
@@ -427,6 +365,30 @@ async def run_outfit_agent():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/life", response_model=dict)
+async def get_life(target_date: Optional[date] = None):
+    """Get life management plan."""
+    if target_date is None:
+        target_date = date.today()
+
+    try:
+        content = file_repo.read_content("life", target_date)
+        snippet = parser.get_snippet(content)
+        return {
+            "date": target_date,
+            "content": content,
+            "snippet": snippet,
+            "generated": True,
+        }
+    except Exception:
+        return {
+            "date": target_date,
+            "content": None,
+            "snippet": None,
+            "generated": False,
+        }
+
+
 @router.post("/life/run", response_model=ActionResponse)
 async def run_life_agent():
     """
@@ -454,6 +416,30 @@ async def run_life_agent():
     except Exception as e:
         logger.exception("Unexpected error in life agent")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/review", response_model=dict)
+async def get_review(target_date: Optional[date] = None):
+    """Get daily review."""
+    if target_date is None:
+        target_date = date.today()
+
+    try:
+        content = file_repo.read_content("review", target_date)
+        snippet = parser.get_snippet(content)
+        return {
+            "date": target_date,
+            "content": content,
+            "snippet": snippet,
+            "generated": True,
+        }
+    except Exception:
+        return {
+            "date": target_date,
+            "content": None,
+            "snippet": None,
+            "generated": False,
+        }
 
 
 @router.post("/review/run", response_model=ActionResponse)
@@ -508,43 +494,25 @@ async def stream_daily_pipeline():
     """
     v2.0: SSE endpoint to track real-time pipeline progress.
     """
-
     async def event_generator():
         orchestrator = ChiefOfStaff()
-
+        
         steps = [
-            ("news", "📰 正在搜集今日 AI 科技新闻..."),
-            ("work", "💼 正在同步历史任务并生成今日计划..."),
-            ("outfit", "👔 正在结合天气和日程推荐今日穿搭..."),
-            ("life", "🌱 正在根据健康目标制定饮食运动计划..."),
+            ("news", "📰 正在搜集今日 AI 科技新闻...", lambda: orchestrator.agents["news"]().execute()),
+            ("outfit", "👔 正在结合天气和日程推荐今日穿搭...", lambda: orchestrator.agents["outfit"]().execute()),
+            ("life", "🌱 正在根据健康目标制定饮食运动计划...", lambda: orchestrator.agents["life"]().execute()),
+            ("work", "💼 正在同步历史任务并生成今日计划...", lambda: orchestrator.agents["work"]().execute()),
         ]
 
-        for agent_id, msg in steps:
+        for agent_id, msg, func in steps:
             yield f"data: {json.dumps({'status': 'processing', 'agent': agent_id, 'message': msg})}\n\n"
-            await asyncio.sleep(1)
-
             try:
+                await asyncio.to_thread(func)
                 yield f"data: {json.dumps({'status': 'completed', 'agent': agent_id, 'message': f'✅ {agent_id.capitalize()} 任务已完成'})}\n\n"
             except Exception as e:
-                yield f"data: {json.dumps({'status': 'error', 'agent': agent_id, 'message': str(e)})}\n\n"
+                logger.error(f"Error in pipeline step {agent_id}: {str(e)}")
+                yield f"data: {json.dumps({'status': 'error', 'agent': agent_id, 'message': f'❌ {agent_id.capitalize()} 失败: {str(e)}'})}\n\n"
 
         yield 'data: {"status": "all_completed", "message": "✨ 今日助理流水线执行完毕"}\n\n'
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
-@router.post("/pipeline/run", response_model=ActionResponse)
-async def run_daily_pipeline(db: Session = Depends(get_db)):
-    logger.info("Starting full daily pipeline...")
-    try:
-        orchestrator = ChiefOfStaff()
-        results = orchestrator.run_daily_pipeline()
-
-        return ActionResponse(
-            success=True,
-            message="Full daily pipeline executed successfully",
-            data=results,
-        )
-    except Exception as e:
-        logger.exception("Error in daily pipeline")
-        raise HTTPException(status_code=500, detail=str(e))

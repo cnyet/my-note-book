@@ -86,7 +86,7 @@ cleanup_ports() {
     fi
 }
 
-# 检查必要的目录和文件
+# 检查必要的目录和文件以及外部依赖（Docker, Ollama）
 check_prerequisites() {
     print_info "检查环境..."
     
@@ -110,6 +110,66 @@ check_prerequisites() {
     if [ ! -d "frontend/node_modules" ]; then
         print_warning "前端依赖未安装，请运行 ./scripts/setup.sh"
         exit 1
+    fi
+
+    # Docker 检查
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker 未安装，请先安装 Docker"
+        exit 1
+    fi
+
+    if ! docker info &> /dev/null; then
+        print_warning "Docker 守护进程未启动，尝试启动 Docker..."
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            open --background -a Docker
+        elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+            sudo systemctl start docker
+        fi
+        
+        # 等待 Docker 启动
+        print_info "等待 Docker 启动 (最多 30 秒)..."
+        for i in {1..30}; do
+            if docker info &> /dev/null; then
+                print_success "Docker 已启动"
+                break
+            fi
+            sleep 1
+            if [ $i -eq 30 ]; then
+                print_error "无法启动 Docker，请手动启动 Docker 后重试"
+                exit 1
+            fi
+        done
+    fi
+
+    # Ollama 检查
+    if ! lsof -i :11434 > /dev/null 2>&1; then
+        print_warning "Ollama 未运行，尝试启动 Ollama..."
+        if command -v ollama &> /dev/null; then
+            nohup ollama serve > logs/ollama.log 2>&1 &
+            print_info "等待 Ollama 服务就绪..."
+            for i in {1..10}; do
+                if curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
+                    print_success "Ollama 已启动"
+                    break
+                fi
+                sleep 1
+            done
+        else
+            print_error "未找到 ollama 命令，请先安装 Ollama"
+            exit 1
+        fi
+    else
+        print_success "Ollama 正在运行"
+    fi
+
+    # 启动 LobeChat 容器
+    if [ -f "docker-compose.yml" ]; then
+        print_info "启动 LobeChat 容器..."
+        if docker compose up -d; then
+            print_success "LobeChat 容器已启动"
+        else
+            print_error "无法启动 LobeChat 容器"
+        fi
     fi
     
     # 日志目录

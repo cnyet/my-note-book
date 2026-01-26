@@ -2,54 +2,51 @@
 
 ## 1. 前言：在信息爆炸中保持清醒
 
-`NewsAgent` 的使命是在每天数以万计的科技动态中，为你精准捕捉那些真正影响未来的 AI 和技术变革。它不只是简单的搬运，更是具备“洞察力”的专业编辑。
+`NewsAgent` 的使命是在每天数以万计的科技动态中，为你精准捕捉那些真正影响未来的 AI 和技术变革。在 v2.0 中，它实现了从“文本生成”到“数据资产化”的跨越。
 
 ---
 
 ## 2. 核心功能
 
-- **📡 多源自动化采集**：覆盖 TechCrunch、The Verge、MIT Technology Review 等顶级科技媒体。
-- **🧠 智能脱水摘要**：利用 LLM 自动过滤软文与噪音，提取核心技术突破与行业影响。
-- **🌍 跨语言无缝转换**：自动将英文前沿内容翻译为高可读性的专业中文简报。
-- **🔗 历史语义关联**：(v2.0) 自动识别并标注与过往新闻的逻辑关联。
+- **📡 结构化采集**：实时订阅 TechCrunch, MIT Tech Review, Hugging Face 等权威 RSS 源。
+- **🧠 智能脱水**：LLM 自动过滤噪音，提取核心技术突破。
+- **💾 数据库持久化 (v2.0)**：生成的每一条精选新闻都会自动存入数据库 `news_articles` 表，不再产生本地 md 文件。
+- **🔗 语义关联**：通过 `VectorMemory` 识别与过往新闻的逻辑关联。
 
 ---
 
 ## 3. 操作步骤
 
-### 🟢 场景一：获取今日科技早餐 (CLI 运行)
-这是最常见的使用场景，建议作为晨间例程的第一步。
+### 🟢 场景一：Dashboard 一键生成
+在 Web 端 Dashboard 点击“生成简报”按钮。
+1.  系统后台将触发爬虫抓取最新 RSS。
+2.  LLM 完成筛选并解析出结构化条目。
+3.  数据实时存入 DB，前端通过 `/api/news?latest=10` 接口即时展示。
 
-1.  **运行命令**：
-    ```bash
-    cd backend
-    python -m src.cli.main --step news
-    ```
-2.  **查看结果**：生成的简报将自动保存至 `data/daily_logs/YYYY-MM-DD/news.md`。
-
-### 🔵 场景二：扩展新闻源
-当你发现更具价值的信息源时，可以手动进行配置。
-
-1.  **修改代码**：定位至 `backend/src/agents/news_agent.py`。
-2.  **更新列表**：在 `sources` 数组中添加新的 RSS Feed 地址。
-3.  **重新测试**：运行 `python -m src.agents.news_agent` 验证采集有效性。
+### 🔵 场景二：CLI 调试
+```bash
+cd backend
+python -m src.cli.main --step news
+```
 
 ---
 
-## 4. 常见问题 (FAQ)
+## 4. 数据源配置
+定位至 `backend/src/agents/news_agent.py` 中的 `sources` 列表进行修改。
 
-| 问题 | 解答 |
+| 预设源 | 专注领域 |
 | :--- | :--- |
-| **抓取失败怎么办？** | 系统会自动跳过异常源并记录日志，不影响其他源的生成。 |
-| **摘要不够详细？** | 可在 `config/config.ini` 中调整 `articles_per_summary` 参数。 |
+| TechCrunch AI | 创业与投融资 |
+| MIT Tech Review | 学术突破与前沿科研 |
+| The Verge AI | 产品、政策与评论 |
+| Hugging Face | 开源模型与开发者趋势 |
 
 ---
 
 ## 5. 结语
-
 `NewsAgent` 旨在为你节省每天浏览网页的 30 分钟，将精力集中在深度的思考与创造上。
 
 ---
 *分类：用户指南*
-*发布日期：2026-01-22*
-*作者：Sisyphus*
+*版本：v2.0 (DB-Only)*
+*更新日期：2026-01-23*

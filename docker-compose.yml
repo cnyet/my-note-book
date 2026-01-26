@@ -1,0 +1,15 @@
+services:
+  lobe-chat:
+    image: lobehub/lobe-chat
+    container_name: lobe-chat
+    ports:
+      - "3210:3210"
+    environment:
+      - OLLAMA_PROXY_URL=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+networks:
+  default:
+    name: ai-life-assistant-network

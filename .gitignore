@@ -54,3 +54,4 @@ data/backups/
 claude_logs/
 .claude/logs/
 logs/
+tests/

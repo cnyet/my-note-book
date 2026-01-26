@@ -38,7 +38,7 @@ class AgentService:
             from agents.news_agent import NewsAgent
 
             agent = NewsAgent(config_dict=self.config_dict)
-            summary = agent.run(save_to_file=True, db_session=db_session)
+            summary = agent.execute(save_to_file=True, db_session=db_session)
 
             return {"success": True, "summary": summary, "error": None}
         except Exception as e:
@@ -50,7 +50,7 @@ class AgentService:
             from agents.work_agent import WorkAgent
 
             agent = WorkAgent(config_dict=self.config_dict)
-            summary = agent.run(interactive=False, save_to_file=True)
+            summary = agent.execute(interactive=False, save_to_file=True)
 
             return {"success": True, "summary": summary, "error": None}
         except Exception as e:
@@ -62,7 +62,7 @@ class AgentService:
             from agents.outfit_agent import OutfitAgent
 
             agent = OutfitAgent(config_dict=self.config_dict)
-            summary = agent.run(save_to_file=True)
+            summary = agent.execute(save_to_file=True)
 
             return {"success": True, "summary": summary, "error": None}
         except Exception as e:
@@ -74,7 +74,7 @@ class AgentService:
             from agents.life_agent import LifeAgent
 
             agent = LifeAgent(config_dict=self.config_dict)
-            summary = agent.run(save_to_file=True)
+            summary = agent.execute(save_to_file=True)
 
             return {"success": True, "summary": summary, "error": None}
         except Exception as e:
@@ -86,7 +86,7 @@ class AgentService:
             from agents.review_agent import ReviewAgent
 
             agent = ReviewAgent(config_dict=self.config_dict)
-            summary = agent.run(save_to_file=True)
+            summary = agent.execute(save_to_file=True)
 
             return {"success": True, "summary": summary, "error": None}
         except Exception as e:

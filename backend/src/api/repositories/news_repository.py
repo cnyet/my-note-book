@@ -111,3 +111,9 @@ class NewsRepository:
         )
         self.db.commit()
         return deleted
+
+    def get_last_updated_at(self) -> Optional[datetime]:
+        """Get the timestamp of the latest article created."""
+        from sqlalchemy import func
+        result = self.db.query(func.max(NewsArticle.created_at)).scalar()
+        return result

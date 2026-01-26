@@ -1,7 +1,7 @@
 """
 Chief of Staff Module - v2.0
 The central orchestrator that manages agent execution order and context sharing.
-Includes Automation Hooks support.
+Updated to include all 5 agents (News, Work, Outfit, Life, Review).
 """
 import logging
 import asyncio
@@ -11,7 +11,8 @@ from core.automation_hooks import HookManager
 from agents.news_agent import NewsAgent
 from agents.work_agent import WorkAgent
 from agents.review_agent import ReviewAgent
-# Note: Outfit and Life agents will be imported here once fully refactored to BaseAgent
+from agents.outfit_agent import OutfitAgent
+from agents.life_agent import LifeAgent
 
 logger = logging.getLogger(__name__)
 
@@ -27,14 +28,16 @@ class ChiefOfStaff:
             "news": NewsAgent,
             "work": WorkAgent,
             "review": ReviewAgent,
+            "outfit": OutfitAgent,
+            "life": LifeAgent
         }
 
     def run_morning_flow(self) -> Dict[str, str]:
         """
-        Executes the morning sequence: News -> Work (with News context)
+        Executes the morning sequence: News -> Outfit -> Life -> Work
         """
         results = {}
-        logger.info("Starting Morning Flow...")
+        logger.info("Starting Morning Flow (v2.0 Full)...")
 
         # 1. Run News
         news_agent = NewsAgent(config_path=self.config_path)
@@ -42,13 +45,23 @@ class ChiefOfStaff:
         self.bus.set("news_briefing", news_result)
         results["news"] = news_result
 
-        # 2. Process Hooks (e.g., check for breaking news)
+        # 2. Process Hooks (e.g., check for breaking news/weather triggers)
         self.hook_manager.process_hooks(self.bus.get_all())
 
-        # 3. Run Work (Injected with News context)
+        # 3. Run Outfit (Weather integrated)
+        outfit_agent = OutfitAgent(config_path=self.config_path)
+        outfit_result = outfit_agent.execute()
+        self.bus.set("outfit_recommendation", outfit_result)
+        results["outfit"] = outfit_result
+
+        # 4. Run Life (Health/Diet)
+        life_agent = LifeAgent(config_path=self.config_path)
+        life_result = life_agent.execute()
+        self.bus.set("life_plan", life_result)
+        results["life"] = life_result
+
+        # 5. Run Work (Injected with News context)
         work_agent = WorkAgent(config_path=self.config_path)
-        
-        # Check for urgent notifications from hooks
         urgent = self.bus.get("urgent_notification", "")
         work_prefix = f"URGENT: {urgent}\n" if urgent else ""
         
@@ -82,6 +95,7 @@ class ChiefOfStaff:
 
     def run_daily_pipeline(self) -> Dict[str, Any]:
         """
-        Consolidated pipeline for API compatibility (backward compatibility with coordinator.py).
+        Consolidated pipeline for API and CLI compatibility.
         """
         return self.run_full_day()
+

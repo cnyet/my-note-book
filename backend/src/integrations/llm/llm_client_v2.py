@@ -9,8 +9,8 @@ from core.config_loader import ConfigLoader
 
 
 def create_llm_client(
-    config: Optional[ConfigLoader] = None, 
-    config_path: str = "config/config.ini"
+    config: Optional[ConfigLoader] = None,
+    config_path: str = "/Users/yet/ClaudeCode/sub-agents/backend/config/config.ini",
 ) -> Union[Any, None]:
     """
     Factory function to create LLM client based on configuration
@@ -27,18 +27,27 @@ def create_llm_client(
         config = ConfigLoader(config_path)
 
     # Get provider from config
-    provider = config.get('llm', 'provider', 'anthropic').lower()
+    provider = config.get("llm", "provider", "anthropic").lower()
 
-    if provider == 'glm':
+    if provider == "glm":
         from integrations.llm.glm_client import GLMClient
-        api_key = config.get('llm', 'api_key', '')
-        base_url = config.get('llm', 'base_url', 'https://open.bigmodel.cn/api/paas/v4')
+
+        api_key = config.get("llm", "api_key", "")
+        base_url = config.get("llm", "base_url", "https://open.bigmodel.cn/api/paas/v4")
         return GLMClient(api_key=api_key, base_url=base_url)
 
-    elif provider in ['anthropic', 'claude']:
+    elif provider == "ollama":
+        from integrations.llm.ollama_client import OllamaClient
+
+        base_url = config.get("llm", "base_url", "http://localhost:11434")
+        model = config.get("llm", "main_model", "deepseek-r1")
+        return OllamaClient(base_url=base_url, model=model)
+
+    elif provider in ["anthropic", "claude"]:
         from integrations.llm.llm_client import LLMClient
-        api_key = config.get('llm', 'api_key', '')
-        model = config.get('llm', 'main_model', 'claude-3-5-sonnet-20241022')
+
+        api_key = config.get("llm", "api_key", "")
+        model = config.get("llm", "main_model", "claude-3-5-sonnet-20241022")
         return LLMClient(api_key=api_key, model=model)
 
     else:
@@ -51,7 +60,10 @@ class LLMClientUniversal:
     Universal LLM Client that automatically selects provider based on config
     """
 
-    def __init__(self, config_path: str = "config/config.ini") -> None:
+    def __init__(
+        self,
+        config_path: str = "/Users/yet/ClaudeCode/sub-agents/backend/config/config.ini",
+    ) -> None:
         """
         Initialize the universal LLM client
 
@@ -67,7 +79,7 @@ class LLMClientUniversal:
 
     def get_provider(self) -> str:
         """Get the current provider name"""
-        provider: str = self.config.get('llm', 'provider', 'anthropic')
+        provider: str = self.config.get("llm", "provider", "anthropic")
         return provider
 
     def switch_provider(self, provider: str, **kwargs: Any) -> None:
@@ -78,11 +90,13 @@ class LLMClientUniversal:
             provider: Provider name ('glm' or 'anthropic')
             **kwargs: Provider-specific arguments
         """
-        if provider.lower() == 'glm':
+        if provider.lower() == "glm":
             from integrations.llm.glm_client import GLMClient
+
             self.client = GLMClient(**kwargs)
-        elif provider.lower() in ['anthropic', 'claude']:
+        elif provider.lower() in ["anthropic", "claude"]:
             from integrations.llm.llm_client import LLMClient
+
             self.client = LLMClient(**kwargs)
         else:
             raise ValueError(f"Unsupported provider: {provider}")
