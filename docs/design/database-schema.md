@@ -29,8 +29,9 @@
 | name | VARCHAR(100) | NOT NULL | 名称 |
 | slug | VARCHAR(100) | UNIQUE NOT NULL | URL标识 |
 | description | TEXT | - | 描述 |
-| icon_url | VARCHAR(500) | - | 图标URL |
-| api_endpoint | VARCHAR(500) | - | API端点 |
+| icon_url | VARCHAR(500) | - | 图标相对路径 |
+| external_url | VARCHAR(500) | - | 外部跳转链接 (如 LobeChat 助手链接) |
+| api_endpoint | VARCHAR(500) | - | 内部 API 端点 (可选) |
 | config | JSON | - | 配置信息 (JSON格式) |
 | sort_order | INTEGER | DEFAULT 0 | 排序权重 |
 | is_active | BOOLEAN | DEFAULT TRUE | 是否激活 |
@@ -46,7 +47,9 @@
 | slug | VARCHAR(255) | UNIQUE NOT NULL | URL标识 |
 | content | TEXT | NOT NULL | 内容 (Markdown) |
 | excerpt | TEXT | - | 摘要 |
-| cover_image | VARCHAR(500) | - | 封面图URL |
+| cover_image | VARCHAR(500) | - | 封面图相对路径 |
+| seo_title | VARCHAR(255) | - | SEO 标题 (可选) |
+| seo_description | VARCHAR(500) | - | SEO 描述 |
 | status | VARCHAR(20) | DEFAULT 'draft' | 状态 (draft/published) |
 | published_at | DATETIME | - | 发布时间 |
 | created_by | INTEGER | FOREIGN KEY | 作者ID |
@@ -77,9 +80,11 @@
 | name | VARCHAR(100) | NOT NULL | 名称 |
 | slug | VARCHAR(100) | UNIQUE NOT NULL | URL标识 |
 | description | TEXT | - | 描述 |
-| icon_url | VARCHAR(500) | - | 图标URL |
+| icon_url | VARCHAR(500) | - | 图标相对路径 |
 | category_id | INTEGER | FOREIGN KEY | 分类ID |
 | url | VARCHAR(500) | - | 访问链接 |
+| seo_title | VARCHAR(255) | - | SEO 标题 |
+| seo_description | VARCHAR(500) | - | SEO 描述 |
 | sort_order | INTEGER | DEFAULT 0 | 排序权重 |
 | is_active | BOOLEAN | DEFAULT TRUE | 是否激活 |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
@@ -105,13 +110,23 @@
 | slug | VARCHAR(100) | UNIQUE NOT NULL | URL标识 |
 | description | TEXT | - | 描述 |
 | status | VARCHAR(20) | DEFAULT 'experimental' | 状态 |
-| media_url | VARCHAR(500) | - | 媒体URL |
+| media_url | VARCHAR(500) | - | 媒体相对路径 |
 | demo_url | VARCHAR(500) | - | Demo链接 |
+| online_count | INTEGER | DEFAULT 0 | 在线用户计数 (轮询更新) |
 | category_id | INTEGER | FOREIGN KEY | 分类ID |
 | sort_order | INTEGER | DEFAULT 0 | 排序权重 |
 | is_active | BOOLEAN | DEFAULT TRUE | 是否激活 |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
 | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
+
+### 工具关联表 (tool_relations)
+*用于支持“相关工具推荐”模式*
+
+| 字段 | 类型 | 约束 | 说明 |
+|------|------|------|------|
+| tool_id | INTEGER | FOREIGN KEY | 主工具ID |
+| related_id | INTEGER | FOREIGN KEY | 关联工具ID |
+| PRIMARY KEY | (tool_id, related_id) | - | 复合主键 |
 
 ---
 
@@ -165,11 +180,16 @@ users (1) ────< (N) blog_posts
 agents (独立表，无复杂关联)
 
 categories (1) ────< (N) tools
+               │      │
+               │      └── (N) tools (通过 tool_relations 自关联)
                │
                └───< (N) labs
 ```
 
 ---
 
-**最后更新**: 2026-01-30  
-**关联计划**: [MVP开发计划](../../.sisyphus/plans/work-agents-mvp.md)
+**版本**: v1.2 (Genesis Edition)  
+**日期**: 2026-02-02  
+**存储策略**: 所有媒体文件（图片、图标）均存储为相对于 `frontend/public` 的**相对路径**（例如 `/uploads/hero.png`）。
+**最后更新**: 2026-02-02  
+**关联计划**: [项目实施计划](../implement/implement-plan.md)

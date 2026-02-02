@@ -1,6 +1,5 @@
 # work-agents 项目实施计划
-
-> **Plan B 平衡方案** | 工期: 21-28天 | 任务数: 107项
+> 项目实施总计划，确保按计划高质量完成
 
 ## 📋 项目总览
 
@@ -108,29 +107,33 @@
 
 ## 详细任务清单
 
-### 📋 工作流程说明
+### 📋 AI 执行协议与工作流 (The Squad Workflow)
 
-在每个开发阶段完成后，必须执行以下验证步骤：
+本项目采用 **UltraWork (ULW)** 自主执行协议，所有 AI Agent 必须遵守以下流程：
 
-1. **@oracle**: 代码审查 (Code review)
-2. **@momus**: 需求与实现验证 (Requirements and implementation verification)
-3. **@librarian**: 更新相关文档 (Update relevant documentation - progress and status)
-4. **@general**: 总结执行任务结果 (Summarize execution results)
-5. 等待下一个任务指令 (Wait for next task command)
+#### 1. 任务启动 (Sync & Handshake)
+- **OpenSpec 挂载**: 开始任何阶段前，必须运行 `/openspec-apply <change-id>`。
+- **环境感知**: 查阅 `docs/guides/agentic-environment.md`。
+- **视觉溯源**: 查阅 `frontend/design-assets/` 下的高保真设计稿（P0 优先级）。
 
-> **English Version**: After each development phase is completed, the following steps **MUST** be executed:
-> 
-> 1. **@oracle**: Code review
-> 2. **@momus**: Requirements and implementation verification
-> 3. **@librarian**: Update relevant documentation (progress and status)
-> 4. **@general**: Summarize execution results
-> 5. Wait for next task command
+#### 2. 深度执行 (Deep Action)
+- **实时状态更新**: 在每个原子任务（`- [ ]`）完成后，必须**立即**更新 `implement-plan.md` 对应项为 `- [x]`。
+- **职责分配**:
+    - 逻辑/架构: 由 **Hephaestus** 执行。
+    - UI/UX/动画: 由 **Frontend Eng** 执行。
+- **减重执行**: 派遣 **Librarian** 检索背景资料，主 Agent 保持 Context 清洁。
 
-#### 执行确认规则 (Execution Confirmation Rule)
+#### 3. 质量闭环 (Verify & Pass)
+- **强制自检**: 提交前必运行 `scripts/lint.sh` 和 `scripts/test.sh`。
+- **Oracle 审计**: 若连续失败 3 次或遭遇技术瓶颈，必须召唤 **Oracle** 或触发 `/ultrathink`。
 
-在开发计划经过审查和批准后，AI agents **必须** 等待明确的 "确认/开始" 执行指令才能继续推进。AI agents **不得** 擅自行动或在没有确认的情况下开始执行。
+#### 4. 归档与结算 (Archive)
+- **真相归档**: 阶段完成后运行 `/openspec-archive <change-id>`。
+- **记忆固化**: 将踩坑经验和最佳实践追加至 `.sisyphus/notepads/`。
+- **进度更新**: 更新本计划的【进度追踪】表格并通知用户。
 
-> **English Version**: After a development plan is reviewed and approved, AI agents **MUST** wait for an explicit "confirm/start" execution command before proceeding. AI agents **MUST NOT** act unilaterally or start execution without confirmation.
+#### 执行确认规则
+AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "ulw", "开始"）后方可启动代码修改。严禁在未经确认的情况下擅自变更生产代码。
 
 ### ✅ 阶段 0: 项目初始化 (1天) - 已完成
 
@@ -161,6 +164,7 @@
 - [ ] 配置 SQLite 数据库
 - [ ] 配置 Alembic 迁移工具
 - [ ] 设置项目目录结构
+- [ ] **创建 Admin 路由聚合与 Media 服务模板** (预留 CRUD 接口)
 - [ ] 配置 Ruff + MyPy
 
 #### 1.3 开发环境配置
@@ -194,6 +198,7 @@
 #### 2.2 后端认证 API
 - [ ] 用户注册 API
 - [ ] 用户登录 API (JWT)
+- [ ] **Token 刷新与自愈机制** (防止 UI 闪烁)
 - [ ] Token 刷新机制
 - [ ] 密码加密存储 (bcrypt)
 - [ ] 退出登录
@@ -272,6 +277,7 @@
 
 #### 4.1 Home 页面
 - [ ] Hero 区域 (大标题 + CTA)
+- [ ] **对齐设计稿**: `frontend/design-assets/pages/home-v1.png`
 - [ ] 核心价值展示区
 - [ ] 功能特性介绍
 - [ ] Footer 区域
@@ -281,6 +287,8 @@
 - [ ] **Hero 动画效果** (打字机效果、按钮 hover 特效)
 
 #### 4.2 Agents 页面
+- [ ] Agents 页面基础布局
+- [ ] **对齐设计稿**: `frontend/design-assets/pages/agents-v1.png`
 - [ ] LobeChat iframe 集成
 - [ ] Agent 卡片展示区
 - [ ] Tab 导航切换
@@ -440,6 +448,7 @@
 - [ ] 生产环境配置
 - [ ] Docker 配置
 - [ ] Nginx 配置
+- [ ] **生成 `scripts/deploy.sh` 生产环境一键拉起脚本**
 
 **交付物**:
 - ✅ 测试覆盖率报告

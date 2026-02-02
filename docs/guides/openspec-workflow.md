@@ -428,4 +428,7 @@ openspec archive <change-id> --yes  # 标记完成
 
 ---
 
+## 外部文档
+- [OpenSpec](https://github.com/Fission-AI/OpenSpec)
+
 **最后更新**: 2026-01-31

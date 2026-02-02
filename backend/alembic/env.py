@@ -8,7 +8,7 @@ from alembic import context
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.database import Base
+from src.core.database import Base
 
 # this is the Alembic Config object, and provides access to the values
 config = context.config
@@ -18,7 +18,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Get database URL from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./work-agents.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/work_agents.db")
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # target_metadata for auto-migration
@@ -40,7 +40,7 @@ def run_migrations_offline() -> None:
 
 def run_migrations() -> None:
     """Run migrations synchronously."""
-    from src.database import engine
+    from src.core.database import engine
     with engine.connect() as connection:
         context.configure(
             connection=connection,

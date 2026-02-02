@@ -377,4 +377,8 @@ openspec archive <id> --yes
 
 ---
 
+## 外部文档
+- [OpenCode](https://github.com/anomalyco/opencode)
+- [OpenCode Docs](https://opencode.ai/docs/)
+
 **最后更新**: 2026-01-31

@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sess
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Load environment variables
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./work-agents.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/work_agents.db")
 
 # Synchronous engine (for migrations)
 engine = create_engine(DATABASE_URL, echo=True)

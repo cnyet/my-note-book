@@ -32,6 +32,5 @@ frontend/
 
 ## 快速导航
 
-- **实施计划**: [../implement/implement-plan.md](../implement/implement-plan.md)
-- **MVP计划**: [../../.sisyphus/plans/work-agents-mvp.md](../../.sisyphus/plans/work-agents-mvp.md)
+- **实施计划**: [../implement/implement-plan.md](../implement/implement-plan.md) (总计划)
 - **需求文档**: [../requirement.md](../requirement.md)

@@ -37,7 +37,8 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                      数据存储层                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   SQLite DB   │  │ 文件存储 (本地) │  │ Redis (可选)  │       │
+│  │   SQLite DB   │  │ 本地文件存储   │  │ 内存缓存 (PY) │       │
+│  │(work_agents.db)│  │(/public/ups) │  │ (Polling)    │       │
 │  └──────────────┘  └──────────────┘  └──────────────┘       │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -51,12 +52,23 @@
 | Next.js | 15.4 | React 框架，SSR/SSG |
 | React | 19 | UI 库 |
 | TypeScript | 5.x | 类型安全 |
-| Tailwind CSS | 4.x | 样式框架 |
-| Shadcn/UI | latest | 组件库 |
-| TanStack Query | 5.x | 数据获取和缓存 |
+| Tailwind CSS | 4.x | 样式框架 (Genesis Tokens) |
+| Shadcn/UI | latest | 基础组件库 |
+| Framer Motion | 6.x+ | 物理动效/磁力交互/Glitch |
+| TanStack Query | 5.x | 数据获取和轮询 (Polling) |
 | Zustand | 4.x | 状态管理 |
 | React Hook Form | 7.x | 表单管理 |
 | Zod | 3.x | Schema 验证 |
+
+### 2.3 AI 增强技术栈
+*本项目深度集成 AI 协作流程*
+
+| 技术 | 用途 |
+|------|------|
+| **OpenSpec** | 规范驱动开发 (Spec-driven Development) |
+| **MCP** | Model Context Protocol (Fetch/Search 集成) |
+| **Prometheus** | 规划代理 (Task Scaffolding) |
+| **Sisyphus** | 执行代理 (Code/Doc Implementation) |
 
 ### 2.2 后端技术栈
 
@@ -73,108 +85,91 @@
 
 ## 3. 目录结构设计
 
-### 3.1 后端目录结构
+根据 `GEMINI.md` 标准及 `Genesis` 版迭代需求，系统目录结构设计如下。
+
+### 3.0 项目全局目录
+
+```
+.
+├── backend/            # FastAPI 后端项目
+├── frontend/           # Next.js 前端项目 (Genesis Edition)
+├── docs/               # 项目文档资产
+│   ├── adr/            # 架构决策记录
+│   ├── implement/      # 实施计划与任务跟踪
+│   ├── design/         # UI/UX 与技术规范
+│   └── guides/         # 开发与环境指南
+├── openspec/           # Spec-driven 开发规范中心
+│   ├── specs/          # 现状 (Single Source of Truth)
+│   ├── changes/        # 功能提案 (Proposals)
+│   └── project.md      # 项目全局上下文
+├── scripts/            # 全入口运营/运维脚本 (REQUIRED)
+├── logs/               # 运行日志 (No-sensitive, gitignored)
+├── .sisyphus/          # 执行代理工作状态 (Opaque)
+└── .agent/             # AI 助手私有配置
+```
+
+### 3.1 后端目录结构 (backend/)
 
 ```
 backend/
-├── src/
-│   ├── api/                    # API 路由层
-│   │   ├── v1/
-│   │   │   ├── __init__.py
-│   │   │   ├── auth.py         # 认证相关路由
-│   │   │   ├── agents.py       # Agents API
-│   │   │   ├── blog.py         # Blog API
-│   │   │   ├── tools.py        # Tools API
-│   │   │   └── labs.py         # Labs API
-│   │   └── deps.py             # 依赖注入
-│   ├── core/                   # 核心配置
-│   │   ├── __init__.py
-│   │   ├── config.py           # 配置管理
-│   │   ├── security.py         # 安全相关
-│   │   └── database.py         # 数据库连接
-│   ├── models/                 # 数据库模型
-│   │   ├── __init__.py
+├── alembic/                # 数据库迁移记录 (DB Schema v1.2)
+├── data/                   # 数据库与持久化层 (REQUIRED)
+│   └── work_agents.db      # SQLite 主数据库文件
+├── src/                    # 核心源码目录
+│   ├── api/                # 接口路由层
+│   │   ├── v1/             # 基础业务 API (Auth, Home, Agents...)
+│   │   │   ├── admin/      # 管理后端专用接口 (CRUD)
+│   │   │   │   ├── agents.py
+│   │   │   │   ├── blog.py
+│   │   │   │   ├── tools.py
+│   │   │   │   ├── labs.py
+│   │   │   │   └── media.py
+│   │   │   └── __init__.py
+│   │   └── deps.py         # 依赖注入 (DB Session, Auth)
+│   ├── core/               # 核心系统配置
+│   │   ├── config.py       # Pydantic Settings
+│   │   ├── security.py     # JWT & Hashing
+│   │   └── database.py     # SQLAlchemy Engine/Session
+│   ├── models/             # 数据库 ORM 模型
 │   │   ├── user.py
 │   │   ├── agent.py
-│   │   ├── blog.py
+│   │   ├── blog_post.py
+│   │   ├── tag.py
 │   │   ├── tool.py
+│   │   ├── category.py
 │   │   └── lab.py
-│   ├── schemas/                # Pydantic Schemas
-│   │   ├── __init__.py
-│   │   ├── user.py
-│   │   ├── agent.py
-│   │   ├── blog.py
-│   │   ├── tool.py
-│   │   └── lab.py
-│   ├── services/               # 业务逻辑层
-│   │   ├── __init__.py
-│   │   ├── auth_service.py
-│   │   ├── crud_service.py
-│   │   └── file_service.py
-│   ├── utils/                  # 工具函数
-│   │   ├── __init__.py
-│   │   └── helpers.py
-│   └── main.py                 # 应用入口
-├── tests/                      # 测试
-│   ├── __init__.py
-│   ├── conftest.py
-│   ├── test_auth.py
-│   └── test_api/
-├── alembic/                    # 数据库迁移
-│   └── versions/
-├── uploads/                    # 文件上传目录
-├── .env.example
-├── requirements.txt
-└── pyproject.toml
+│   ├── schemas/            # Pydantic 数据模型 (DTOs)
+│   ├── services/           # 业务逻辑服务层 (File, Auth, CRUD)
+│   ├── utils/              # 通用工具函数
+│   └── main.py             # FastAPI 应用入口
+├── tests/                  # 自动化测试 (pytest)
+├── .env.example            # 环境变量模板
+├── pyproject.toml          # 项目元数据
+└── requirements.txt        # 依赖包列表
 ```
 
-### 3.2 前端目录结构
+### 3.2 前端目录结构 (frontend/)
 
 ```
-frontend/
-├── src/
-│   ├── app/                    # App Router
-│   │   ├── (frontend)/         # 前台路由组
-│   │   │   ├── page.tsx        # 首页
-│   │   │   ├── agents/
-│   │   │   ├── tools/
-│   │   │   ├── labs/
-│   │   │   └── blog/
-│   │   ├── (dashboard)/        # 后台路由组
-│   │   │   ├── dashboard/
-│   │   │   ├── admin/
-│   │   │   │   ├── agents/
-│   │   │   │   ├── blog/
-│   │   │   │   ├── tools/
-│   │   │   │   └── labs/
-│   │   │   └── settings/
-│   │   ├── auth/               # 认证页面
-│   │   │   ├── login/
-│   │   │   └── register/
-│   │   ├── layout.tsx          # 根布局
-│   │   └── globals.css
-│   ├── components/             # React 组件
-│   │   ├── ui/                 # Shadcn UI 组件
-│   │   ├── layout/             # 布局组件
-│   │   ├── features/           # 功能组件
-│   │   └── shared/             # 共享组件
-│   ├── lib/                    # 工具库
-│   │   ├── api.ts              # API 客户端
-│   │   ├── utils.ts            # 工具函数
-│   │   └── hooks/              # 自定义 Hooks
-│   ├── store/                  # 状态管理
-│   │   └── auth.ts
-│   ├── types/                  # TypeScript 类型
-│   │   └── index.ts
-│   └── styles/                 # 样式文件
-├── public/                     # 静态资源
-│   ├── images/
-│   └── icons/
-├── .env.example
-├── next.config.js
-├── tailwind.config.js
-├── tsconfig.json
-└── package.json
+src/
+├── app/                    # App Router (Next.js 15)
+│   ├── (frontend)/         # 前台游乐园 (Home, Agents, Tools, Labs, Blog)
+│   ├── (dashboard)/        # 管理中枢 (Dashboard, Admin CRUD, Settings)
+│   ├── auth/               # 认证流程 (Login/Register)
+│   ├── layout.tsx          # 根布局 (Genesis Theme)
+│   └── globals.css         /* Tailwind 4 & Genesis Variables */
+├── components/             # React 组件库
+│   ├── ui/                 # Shadcn/UI 基础组件
+│   ├── layout/             # Navbar, Footer, Sidebar
+│   └── features/           # 页面级功能组件 (ParticleBg, OnlinePulse)
+├── lib/                    # 核心库 (API Client, Utils)
+├── hooks/                  # 自定义 React Hooks
+├── store/                  # 状态管理 (Zustand)
+└── types/                  # TypeScript 类型定义
+public/                     # 静态资源与持久化存储
+└── uploads/                # 用户上传的媒体文件 (相对路径引用)
+next.config.ts              # Next.js 配置文件
+tailwind.config.ts          # Genesis 设计令牌配置
 ```
 
 ## 4. 数据流设计
@@ -257,10 +252,12 @@ frontend/
 
 ### 6.3 数据安全
 
-- **SQL 注入**: 使用 ORM 参数化查询
-- **XSS 防护**: 前端输入转义
-- **CSRF 防护**: SameSite Cookie
-- **环境变量**: 敏感信息不硬编码
+- **速率限制 (Rate Limiting)**:
+  - 登录接口: 同一 IP 限制 10 次/分钟。
+  - 全局 API: 限制 100 次/分钟。
+- **SQL 注入**: 使用 SQLAlchemy 参数化查询。
+- **XSS 防护**: Content Security Policy (CSP) + 前端转义。
+- **CSRF 防护**: SameSite Cookie 策略。
 
 ## 7. 性能优化策略
 
@@ -273,10 +270,10 @@ frontend/
 
 ### 7.2 后端优化
 
-- **数据库索引**: 关键字段建立索引
-- **连接池**: SQLAlchemy 连接池
-- **异步处理**: FastAPI 异步路由
-- **缓存层**: Redis 缓存热数据 (可选)
+- **并发处理**: 对于 SQLite 写操作，使用 FastAPI/SQLAlchemy 串行化队列。
+- **数据库索引**: 针对 `slug`, `category_id`, `published_at` 建立索引。
+- **轮询优化**: Labs 在线人数组件使用 TanStack Query 维持 60s 轮询周期。
+- **缓存层**: 应用层内存缓存热点数据 (如 Tools/Agents 列表)。
 
 ## 8. 部署架构
 
@@ -290,16 +287,25 @@ frontend/
     ┌─────────────────┐    ┌─────────────────┐
     │   Next.js App   │    │  FastAPI App    │
     │   (Port 3000)   │    │  (Port 8000)    │
-    └─────────────────┘    └────────┬────────┘
-                                    │
-                                    ↓
-                           ┌─────────────────┐
-                           │   SQLite DB     │
-                           │  (work_agents.db)│
-                           └─────────────────┘
+    └────────┬────────┘    └────────┬────────┘
+             │                      │
+             ↓                      ↓
+    ┌────────────────────────────────────────┐
+    │              持久化存储层                │
+    │  - backend/data/work_agents.db (SQLite)│
+    │  - frontend/public/uploads (Media)     │
+    └────────────────────────────────────────┘
 ```
+
+## 9. 设计系统集成 (Genesis Integration)
+
+- **核心配方**: Abyss (#0a0a0f) + Electric Cyan (#00f2ff) + Neon Purple (#bc13fe)。
+- **动效标准**: 
+  - 统一使用 `Spring` 物理引擎（stiffness: 100, damping: 20）。
+  - Agent 跳转集成 `AgentBridge` 扫描线动效。
+- **性能红线**: 首屏 LCP < 1.5s，API 响应 P95 < 200ms。
 
 ---
 
-**文档版本**: v0.1.0  
-**最后更新**: 2026-01-30
+**文档版本**: v0.2.0 (Aligned with PRD v1.2)  
+**最后更新**: 2026-02-02

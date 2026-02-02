@@ -8,6 +8,10 @@ Always open `@/openspec/AGENTS.md` when the request:
 - Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
 - Sounds ambiguous and you need the authoritative spec before coding
 
+## Rule Locations
+- **Claude Rules**: `~/.claude/CLAUDE.md`
+- **Gemini Rules**: `~/.gemini/GEMINI.md`
+
 Use `@/openspec/AGENTS.md` to learn:
 - How to create and apply change proposals
 - Spec format and conventions

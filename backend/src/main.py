@@ -7,6 +7,15 @@ load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Import API routers
+from .api.v1.auth import router as auth_router
+from .api.v1.home import router as home_router
+from .api.v1.agents import router as agents_router
+from .api.v1.blog import router as blog_router
+from .api.v1.tools import router as tools_router
+from .api.v1.labs import router as labs_router
+from .api.v1.admin import router as admin_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +41,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include API routers
+app.include_router(auth_router, prefix="/api/v1")
+app.include_router(home_router, prefix="/api/v1")
+app.include_router(agents_router, prefix="/api/v1")
+app.include_router(blog_router, prefix="/api/v1")
+app.include_router(tools_router, prefix="/api/v1")
+app.include_router(labs_router, prefix="/api/v1")
+app.include_router(admin_router, prefix="/api/v1")
+
 
 @app.get("/health")
 async def health_check():
@@ -51,4 +69,5 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

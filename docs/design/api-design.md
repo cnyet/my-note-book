@@ -57,8 +57,8 @@
 | 401 | Unauthorized | 未认证或Token过期 |
 | 403 | Forbidden | 无权限访问 |
 | 404 | Not Found | 资源不存在 |
-| 422 | Unprocessable Entity | 业务逻辑验证失败 |
-| 429 | Too Many Requests | 频率限制 |
+| 422 | Unprocessable Entity | 业务逻辑验证失败 (Pydantic 验证等) |
+| 429 | Too Many Requests | **频率限制**: 登录 (10/min), 全局 (100/min) |
 | 500 | Internal Server Error | 服务器内部错误 |
 
 ---
@@ -68,15 +68,15 @@
 ### 公开端点 (无需认证)
 
 ```
-GET    /api/v1/home              # 首页数据
-GET    /api/v1/agents            # Agents列表
+GET    /api/v1/home              # 首页数据 (聚合)
+GET    /api/v1/agents            # Agents列表 (含 external_url)
 GET    /api/v1/agents/{slug}     # Agent详情
-GET    /api/v1/tools             # Tools列表
-GET    /api/v1/tools/{slug}      # Tool详情
-GET    /api/v1/labs              # Labs列表
-GET    /api/v1/labs/{slug}       # Lab详情
-GET    /api/v1/blog              # 博客列表
-GET    /api/v1/blog/{slug}       # 博客详情
+GET    /api/v1/tools             # Tools列表 (分类过滤)
+GET    /api/v1/tools/{slug}      # Tool详情 (含 related_tools)
+GET    /api/v1/labs              # Labs列表 (含 online_count)
+GET    /api/v1/labs/{slug}       # Lab详情 (用于轮询 online_count)
+GET    /api/v1/blog              # 博客列表 (分页)
+GET    /api/v1/blog/{slug}       # 博客详情 (含 SEO Metadata)
 GET    /api/v1/blog/tags         # 博客标签
 GET    /api/v1/blog/search       # 博客搜索
 ```
@@ -98,30 +98,22 @@ PUT    /api/v1/auth/password     # 修改密码
 ```
 # Agents管理
 GET    /api/v1/admin/agents      # Agents列表
-POST   /api/v1/admin/agents      # 创建Agent
+POST   /api/v1/admin/agents      # 创建Agent (含 external_url)
 GET    /api/v1/admin/agents/{id} # Agent详情
 PUT    /api/v1/admin/agents/{id} # 更新Agent
 DELETE /api/v1/admin/agents/{id} # 删除Agent
-PATCH  /api/v1/admin/agents/{id}/sort  # 排序
 
 # Blog管理
 GET    /api/v1/admin/blog        # 文章列表
-POST   /api/v1/admin/blog        # 创建文章
+POST   /api/v1/admin/blog        # 创建文章 (含 seo_title, seo_description)
 GET    /api/v1/admin/blog/{id}   # 文章详情
 PUT    /api/v1/admin/blog/{id}   # 更新文章
 DELETE /api/v1/admin/blog/{id}   # 删除文章
-PATCH  /api/v1/admin/blog/{id}/status  # 发布/下架
-POST   /api/v1/admin/blog/{id}/publish # 立即发布
-
-# Tags管理
-GET    /api/v1/admin/tags        # 标签列表
-POST   /api/v1/admin/tags        # 创建标签
-PUT    /api/v1/admin/tags/{id}   # 更新标签
-DELETE /api/v1/admin/tags/{id}   # 删除标签
+PATCH  /api/v1/admin/blog/{id}/status  # 发布/下架状态
 
 # Tools管理
 GET    /api/v1/admin/tools       # Tools列表
-POST   /api/v1/admin/tools       # 创建Tool
+POST   /api/v1/admin/tools       # 创建Tool (含 seo 字段及相关工具列表)
 GET    /api/v1/admin/tools/{id}  # Tool详情
 PUT    /api/v1/admin/tools/{id}  # 更新Tool
 DELETE /api/v1/admin/tools/{id}  # 删除Tool
@@ -133,11 +125,10 @@ GET    /api/v1/admin/labs/{id}   # Lab详情
 PUT    /api/v1/admin/labs/{id}   # 更新Lab
 DELETE /api/v1/admin/labs/{id}   # 删除Lab
 
-# Categories管理
+# 其他管理
 GET    /api/v1/admin/categories  # 分类列表
-POST   /api/v1/admin/categories  # 创建分类
-PUT    /api/v1/admin/categories/{id}  # 更新分类
-DELETE /api/v1/admin/categories/{id}  # 删除分类
+GET    /api/v1/admin/tags        # 标签列表
+POST   /api/v1/admin/media/upload # 媒体上传 (返回相对路径)
 ```
 
 ---
@@ -180,5 +171,5 @@ FastAPI自动生成OpenAPI规范，访问：`/api/v1/docs`
 
 ---
 
-**最后更新**: 2026-01-30  
-**关联计划**: [MVP开发计划](../../.sisyphus/plans/work-agents-mvp.md)
+**最后更新**: 2026-02-02 (Aligned with PRD v1.2)  
+**关联计划**: [项目实施计划](../implement/implement-plan.md)

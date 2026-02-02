@@ -309,86 +309,15 @@ AI agents **必须** 遵守执行确认规则：
 - 在开始任何计划执行前，等待明确的 "确认/开始" 指令
 - 不得在没有明确授权的情况下自行启动任何计划
 - 计划执行前必须收到人类操作员或上级系统的明确启动命令
+- **语言一致性**: 必须使用与用户提问相同的语言进行回复。
 
 ---
-
 
 ## 5. 详细规则文件索引
 
-位置: ~/.claude/rules/
-
-| 文件 | 优先级 | 内容 |
-|------|-------|------|
-| conversation-accuracy.md | 必读 | AI会话治理与记忆管理 |
-| frontend.md | 建议 | JS/TS/React/Vue/CSS/TailwindCSS |
-| backend.md | 建议 | Node.js/Python/Go/Java/Rust |
-| api.md | 建议 | REST/GraphQL/gRPC/WebSocket |
-| database.md | 建议 | SQL/NoSQL/ORM最佳实践 |
-| devops.md | 建议 | Docker/K8s/CI/CD/云平台 |
+Claude规范位置: ~/.claude/CLAUDE.md
+Gemini规范位置: ~/.gemini/GEMINI.md
 
 ---
 
-## 6. 项目结构约定
-
-```
-work-agents/
-├── backend/              # FastAPI 后端
-│   ├── src/
-│   │   ├── api/          # API 路由
-│   │   ├── models/       # 数据库模型
-│   │   ├── schemas/      # Pydantic schemas
-│   │   ├── services/     # 业务逻辑
-│   │   └── main.py       # 应用入口
-│   ├── tests/            # 后端测试
-│   ├── .env.example      # 环境变量示例
-│   └── requirements.txt  # Python 依赖
-├── frontend/             # Next.js 前端
-│   ├── src/
-│   │   ├── app/          # App Router 页面
-│   │   ├── components/   # React 组件
-│   │   ├── lib/          # 工具函数
-│   │   └── styles/       # 样式文件
-│   ├── public/           # 静态资源
-│   └── package.json      # Node 依赖
-├── scripts/              # 项目脚本
-├── docs/                 # 项目文档
-│   ├── implement/        # 实施计划
-│   ├── design/           # 设计规范
-│   └── guides/           # 开发指南
-├── .sisyphus/
-│   ├── plans/            # 工作计划
-│   ├── notepads/         # 运行时笔记
-│   └── drafts/           # 草稿文件
-└── logs/                 # 运行日志
-```
-
----
-
-## 7. 快速参考
-
-### 启动开发
-```bash
-./scripts/start-dev.sh
-# 前端: http://localhost:3000
-# 后端: http://localhost:8000/docs
-```
-
-### 常用命令
-```bash
-./scripts/setup.sh      # 环境初始化
-./scripts/lint.sh       # 代码检查
-./scripts/test.sh       # 运行测试
-./scripts/build.sh      # 构建生产版本
-./scripts/clean.sh      # 清理项目
-```
-
-### 寻求帮助
-- `/oracle` - 技术咨询
-- `/prometheus` - 规划咨询
-- `/librarian` - 文档查找
-- `AGENTS.md` - 项目编码指南
-- `docs/guides/` - 开发指南目录
-
----
-
-**更新日期**: 2026-01-31
+**更新日期**: 2026-02-02
