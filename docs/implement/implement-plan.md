@@ -1,5 +1,5 @@
-# work-agents 项目实施计划
-> 项目实施总计划，确保按计划高质量完成
+# work-agents 项目实施计划（需求跟踪列表）
+> 项目需求跟踪列表，实际执行计划请参考 openspec/specs/
 
 ## 📋 项目总览
 
@@ -15,14 +15,13 @@
 ### ✅ 包含
 - **全部5个页面**: Home, Agents, Tools, Labs, Blog
 - **用户认证**: 注册/登录/JWT + OAuth (GitHub/Google)
+- **WebSocket 服务**: 实时双向通信、在线用户计数、状态同步
 - **Blog 系统**: CRUD操作、富文本编辑、标签分类
 - **Tools/Labs 展示**: 列表展示、搜索功能
 - **管理后台**: 完整CRUD功能
 - **文件上传**: 图片上传、存储
 
 ### ❌ 不包含
-- WebSocket 实时计数器
-- Lab 游戏/高级交互功能
 - Blog 评论系统
 - 高级数据分析
 
@@ -91,6 +90,7 @@
 - **Styling**: Tailwind CSS 4
 - **UI Components**: Shadcn/UI
 - **State Management**: TanStack Query + Zustand
+- **WebSocket Client**: 实时通信、双向数据流、状态同步
 - **Forms**: React Hook Form + Zod
 - **Editor**: Tiptap
 
@@ -98,6 +98,8 @@
 - **Language**: Python 3.11+
 - **Framework**: FastAPI
 - **ORM**: SQLAlchemy 2.0
+- **WebSocket Server**: 实时通信服务、连接管理、消息广播
+- **Orchestration Engine**: Agent 间协调与通信协议
 - **Database**: SQLite
 - **Migration**: Alembic
 - **Validation**: Pydantic 2.x
@@ -150,29 +152,29 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
 **优先级**: P0 (关键路径)
 
 #### 1.1 前端项目初始化
-- [ ] 初始化 Next.js 15 项目 (App Router)
-- [ ] 配置 TypeScript (strict 模式)
-- [ ] 配置 Tailwind CSS 4
-- [ ] 配置 ESLint + Prettier
-- [ ] 安装 Shadcn/UI 组件库
-- [ ] 配置路径别名 (@/...)
-- [ ] 配置 dark/light 主题
+- [x] 初始化 Next.js 15 项目 (App Router)
+- [x] 配置 TypeScript (strict 模式)
+- [x] 配置 Tailwind CSS 4
+- [x] 配置 ESLint + Prettier
+- [x] 安装 Shadcn/UI 组件库
+- [x] 配置路径别名 (@/...)
+- [x] 配置 dark/light 主题
 
 #### 1.2 后端项目初始化
-- [ ] 初始化 FastAPI 项目
-- [ ] 配置 SQLAlchemy ORM
-- [ ] 配置 SQLite 数据库
-- [ ] 配置 Alembic 迁移工具
-- [ ] 设置项目目录结构
+- [x] 初始化 FastAPI 项目
+- [x] 配置 SQLAlchemy ORM
+- [x] 配置 SQLite 数据库
+- [x] 配置 Alembic 迁移工具
+- [x] 设置项目目录结构
 - [ ] **创建 Admin 路由聚合与 Media 服务模板** (预留 CRUD 接口)
 - [ ] 配置 Ruff + MyPy
 
 #### 1.3 开发环境配置
-- [ ] 配置前后端代理 (Next.js rewrites)
-- [ ] 配置 CORS 跨域
-- [ ] 配置统一日志系统
-- [ ] 配置统一异常处理
-- [ ] 创建 API 响应封装
+- [x] 配置前后端代理 (Next.js rewrites)
+- [x] 配置 CORS 跨域
+- [x] 配置统一日志 system
+- [x] 配置统一异常处理
+- [x] 创建 API 响应封装
 
 **交付物**:
 - ✅ 可运行的前后端项目骨架
@@ -289,7 +291,10 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
 #### 4.2 Agents 页面
 - [ ] Agents 页面基础布局
 - [ ] **对齐设计稿**: `frontend/design-assets/pages/agents-v1.png`
-- [ ] LobeChat iframe 集成
+- [ ] LobeChat 集成（通过 Orchestration Protocol 进行跨 Agent 消息传递和上下文共享）
+- [ ] 实现 Agent 间通信协议（Orchestration Protocol）
+- [ ] 跨 Agent 消息传递机制
+- [ ] 统一身份认证 (SSO) 机制
 - [ ] Agent 卡片展示区
 - [ ] Tab 导航切换
 - [ ] 5 个 AI Agent 展示卡片
@@ -366,7 +371,7 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
 - [ ] Tools 卡片
 
 #### 6.2 Labs 页面
-- [ ] Labs 列表页
+- [ ] Labs 列表页（含 WebSocket 实时在线用户计数器）
 - [ ] 产品状态标签
 - [ ] Labs 卡片
 
@@ -450,11 +455,29 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
 - [ ] Nginx 配置
 - [ ] **生成 `scripts/deploy.sh` 生产环境一键拉起脚本**
 
-**交付物**:
-- ✅ 测试覆盖率报告
-- ✅ 性能优化
-- ✅ 安全审计
-- ✅ 部署配置
+---
+
+### 🟢 阶段 9: 系统能力实现 (System Capabilities)
+
+#### 9.1 Memory Management
+- [ ] 实现 Agent 状态和长期记忆的持久化存储
+- [ ] 实现记忆过期与清理机制
+- [ ] 实现用户与 Agent 记忆关联
+
+#### 9.2 Observability
+- [ ] 实现执行追踪系统
+- [ ] 实现日志记录系统
+- [ ] 实现监控仪表板
+
+#### 9.3 Identity Propagation
+- [ ] 实现基于 JWT 的统一身份认证协议
+- [ ] 实现跨 Agent 和服务的身份同步
+- [ ] 实现统一会话管理
+
+#### 9.4 Message Bus
+- [ ] 实现多 Agent 间异步消息传递机制
+- [ ] 实现事件流处理系统
+- [ ] 实现消息关联与追踪机制
 
 ---
 
@@ -463,15 +486,16 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
 | 阶段 | 状态 | 工期 | 任务数 |
 |------|------|------|--------|
 | 阶段 0 | ✅ 完成 | 1天 | 5 |
-| 阶段 1 | ⏸️ 待开始 | 2-3天 | 16 |
+| 阶段 1 | ✅ 完成 | 2-3天 | 16 |
 | 阶段 2 | ⏸️ 待开始 | 2-3天 | 13 |
 | 阶段 3 | ⏸️ 待开始 | 2天 | 10 |
-| 阶段 4 | ⏸️ 待开始 | 3-4天 | 18 |
+| 阶段 4 | ⏸️ 待开始 | 3-4天 | 21 |
 | 阶段 5 | ⏸️ 待开始 | 4-5天 | 22 |
 | 阶段 6 | ⏸️ 待开始 | 2-3天 | 10 |
 | 阶段 7 | ⏸️ 待开始 | 3-4天 | 12 |
 | 阶段 8 | ⏸️ 待开始 | 2-3天 | 10 |
-| **合计** | | **21-28天** | **116** |
+| 阶段 9 | ⏸️ 待开始 | 2-3天 | 12 |
+| **合计** | | **21-28天** | **131** |
 
 ---
 

@@ -120,39 +120,99 @@
 | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
 
 ### 工具关联表 (tool_relations)
-*用于支持“相关工具推荐”模式*
+ *用于支持“相关工具推荐”模式*
 
-| 字段 | 类型 | 约束 | 说明 |
-|------|------|------|------|
-| tool_id | INTEGER | FOREIGN KEY | 主工具ID |
-| related_id | INTEGER | FOREIGN KEY | 关联工具ID |
-| PRIMARY KEY | (tool_id, related_id) | - | 复合主键 |
+ | 字段 | 类型 | 约束 | 说明 |
+ |------|------|------|------|
+ | tool_id | INTEGER | FOREIGN KEY | 主工具ID |
+ | related_id | INTEGER | FOREIGN KEY | 关联工具ID |
+ | PRIMARY KEY | (tool_id, related_id) | - | 复合主键 |
+
+### Agent消息表 (agent_messages)
+ *用于存储Agent间的通信日志*
+
+ | 字段 | 类型 | 约束 | 说明 |
+ |------|------|------|------|
+ | id | INTEGER | PRIMARY KEY | 自增主键 |
+ | sender_agent_id | INTEGER | FOREIGN KEY | 发送方Agent ID |
+ | receiver_agent_id | INTEGER | FOREIGN KEY | 接收方Agent ID |
+ | message_type | VARCHAR(50) | NOT NULL | 消息类型 (text/command/event/response) |
+ | content | TEXT | NOT NULL | 消息内容 |
+ | context_data | JSON | - | 上下文数据 (JSON格式) |
+ | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
+ | correlation_id | VARCHAR(100) | - | 关联ID，用于追踪消息链 |
+
+### Agent记忆表 (agent_memories)
+ *用于存储Agent的长期记忆和状态*
+
+ | 字段 | 类型 | 约束 | 说明 |
+ |------|------|------|------|
+ | id | INTEGER | PRIMARY KEY | 自增主键 |
+ | agent_id | INTEGER | FOREIGN KEY | 关联Agent ID |
+ | user_id | INTEGER | FOREIGN KEY | 关联用户ID |
+ | memory_type | VARCHAR(50) | NOT NULL | 记忆类型 (fact/conversation/context) |
+ | content | TEXT | NOT NULL | 记忆内容 |
+ | importance_score | FLOAT | DEFAULT 0.5 | 重要性评分 (0.0-1.0) |
+ | expires_at | DATETIME | - | 过期时间 |
+ | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
+ | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
+
+### 用户身份表 (user_identities)
+ *用于存储SSO和身份传播相关信息*
+
+ | 字段 | 类型 | 约束 | 说明 |
+ |------|------|------|------|
+ | id | INTEGER | PRIMARY KEY | 自增主键 |
+ | user_id | INTEGER | FOREIGN KEY | 关联用户ID |
+ | provider | VARCHAR(50) | NOT NULL | 认证提供商 (internal/jwt/oauth) |
+ | provider_user_id | VARCHAR(255) | - | 第三方平台用户ID |
+ | jwt_token | TEXT | - | JWT令牌 (加密存储) |
+ | refresh_token | TEXT | - | 刷新令牌 (加密存储) |
+ | scopes | JSON | - | 权限范围 (JSON格式) |
+ | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
+ | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
 
 ---
 
 ## 索引策略
 
-```sql
--- 用户认证索引
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_username ON users(username);
-
--- 博客全文搜索索引 (SQLite FTS5)
-CREATE VIRTUAL TABLE blog_posts_fts USING fts5(title, content, excerpt);
-
--- 分类查询优化
-CREATE INDEX idx_tools_category ON tools(category_id);
-CREATE INDEX idx_labs_category ON labs(category_id);
-
--- 状态筛选索引
-CREATE INDEX idx_blog_status ON blog_posts(status);
-CREATE INDEX idx_blog_published ON blog_posts(published_at);
-
--- 排序优化
-CREATE INDEX idx_sort_order ON agents(sort_order);
-CREATE INDEX idx_tools_sort ON tools(sort_order);
-CREATE INDEX idx_labs_sort ON labs(sort_order);
-```
+ ```sql
+ -- 用户认证索引
+ CREATE INDEX idx_users_email ON users(email);
+ CREATE INDEX idx_users_username ON users(username);
+ 
+ -- 博客全文搜索索引 (SQLite FTS5)
+ CREATE VIRTUAL TABLE blog_posts_fts USING fts5(title, content, excerpt);
+ 
+ -- 分类查询优化
+ CREATE INDEX idx_tools_category ON tools(category_id);
+ CREATE INDEX idx_labs_category ON labs(category_id);
+ 
+ -- 状态筛选索引
+ CREATE INDEX idx_blog_status ON blog_posts(status);
+ CREATE INDEX idx_blog_published ON blog_posts(published_at);
+ 
+ -- 排序优化
+ CREATE INDEX idx_sort_order ON agents(sort_order);
+ CREATE INDEX idx_tools_sort ON tools(sort_order);
+ CREATE INDEX idx_labs_sort ON labs(sort_order);
+ 
+ -- Agent消息索引
+ CREATE INDEX idx_agent_messages_sender ON agent_messages(sender_agent_id);
+ CREATE INDEX idx_agent_messages_receiver ON agent_messages(receiver_agent_id);
+ CREATE INDEX idx_agent_messages_timestamp ON agent_messages(created_at);
+ CREATE INDEX idx_agent_messages_correlation ON agent_messages(correlation_id);
+ 
+ -- Agent记忆索引
+ CREATE INDEX idx_agent_memories_agent ON agent_memories(agent_id);
+ CREATE INDEX idx_agent_memories_user ON agent_memories(user_id);
+ CREATE INDEX idx_agent_memories_type ON agent_memories(memory_type);
+ CREATE INDEX idx_agent_memories_expires ON agent_memories(expires_at);
+ 
+ -- 用户身份索引
+ CREATE INDEX idx_user_identities_user ON user_identities(user_id);
+ CREATE INDEX idx_user_identities_provider ON user_identities(provider);
+ ```
 
 ---
 
@@ -172,19 +232,24 @@ CREATE INDEX idx_labs_sort ON labs(sort_order);
 
 ## 关联关系图
 
-```
-users (1) ────< (N) blog_posts
+ ```
+ users (1) ────< (N) blog_posts
+                 │
+                 N ──── (N) blog_tags (通过 blog_posts_tags)
+ 
+ users (1) ────< (N) user_identities
+ users (1) ────< (N) agent_memories
+ agents (1) ───< (N) agent_memories
+ agents (1) ───< (N) agent_messages (sender/receiver)
+ 
+ agents (独立表，可能与其他表建立关联)
+ 
+ categories (1) ────< (N) tools
+                │      │
+                │      └── (N) tools (通过 tool_relations 自关联)
                 │
-                N ──── (N) blog_tags (通过 blog_posts_tags)
-
-agents (独立表，无复杂关联)
-
-categories (1) ────< (N) tools
-               │      │
-               │      └── (N) tools (通过 tool_relations 自关联)
-               │
-               └───< (N) labs
-```
+                └───< (N) labs
+ ```
 
 ---
 

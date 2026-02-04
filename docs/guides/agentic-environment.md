@@ -1,6 +1,6 @@
 # 开发环境全面分析报告
 
-**分析时间**: 2026-01-31
+**分析时间**: 2026-02-04
 **分析范围**: Skills、Agents、MCP、开发规范与约束
 
 ---
@@ -10,113 +10,81 @@
 ### 1.1 核心用户级 Skill
 
 **conversation-accuracy-skill** (必须掌握)
-- 位置: ~/.claude/skills/conversation-accuracy-skill/
 - 功能: 四层记忆架构优化长对话准确性
 - 触发条件: 对话超过10轮，或用户提及"之前说过"、"总结"等关键词
 
-四层记忆架构:
-1. 短期滑动窗口 - 当前对话上下文
-2. 中期摘要 - 对话要点总结
-3. 长期语义检索 - 历史信息语义索引
-4. 系统编排 - 协调各层记忆
+**ui-ux-pro-max-skill** (新增)
+- 功能: UI/UX设计智能。50种风格、21种配色方案、50种字体搭配、20种图表类型、9种技术栈。支持页面规划、构建、创建、设计、审查、修复、改进、优化、增强、重构等操作
+- 触发条件: 涉及UI/UX设计、构建、创建、实现、审查、修复、改进、优化、增强、重构等任务
+
+**react-best-practices** (新增)
+- 功能: React和Next.js性能优化指南，来自Vercel工程团队的最佳实践
+- 触发条件: 涉及React组件、Next.js页面、数据获取、捆绑包优化或性能改进的任务
+
+**prompt-optimization** (新增)
+- 功能: 提示词工程专家。提供清晰度、精确性、上下文提供、结构化、战术技巧、示例模式和高级提示词技术指南，旨在最大化 AI 理解和响应质量。
+- 触发条件: 需要编写复杂提示词、优化子代理任务描述、培训团队成员或迭代低质量 AI 响应时。
 
 ### 1.2 OpenCode 内置 Skills
 
 | Skill | 用途 | 触发场景 |
-|-------|------|---------|---------|
-| `playwright` | 浏览器自动化 | 任何浏览器相关任务 |
-| `frontend-ui-ux` | 前端UI/UX设计开发 | 界面开发、样式、动画 |
-| `git-master` | Git 操作 | commit、rebase、squash、blame、bisect |
+|-------|------|---------|
+| `playwright` | 浏览器自动化 | 必须用于任何浏览器相关任务、抓取、测试 |
+| `frontend-ui-ux` | 前端UI/UX设计开发 | 界面开发、样式、动画、甚至在没有设计稿时创建UI |
+| `git-master` | Git 操作 | 必须用于任何 Git 操作：commit、rebase、squash、blame |
 | `dev-browser` | 浏览器自动化（持久状态） | 导航网站、填写表单、截图、数据抓取 |
-| `conversation-accuracy-skill` | 长对话记忆优化 | 对话超过10轮或用户要求总结 |
 
-### 1.3 市场级 Skills (18个可用)
+### 1.3 集成工具与能力 (Tools)
 
-文档处理类:
-- `pdf` - PDF创建、编辑、表单填写
-- `docx` - Word文档创建、编辑
-- `pptx` - PowerPoint演示文稿
-- `xlsx` - Excel电子表格
-- `doc-coauthoring` - 协作文档编写
-
-设计与创意类:
-- `algorithmic-art` - p5.js生成艺术
-- `brand-guidelines` - 品牌标准应用
-- `theme-factory` - 主题创建
-- `canvas-design` - Canvas设计
-- `frontend-design` - 前端UI/UX设计
-
-开发与集成类:
-- `skill-creator` - 创建新技能
-- `mcp-builder` - 构建MCP服务器
-- `web-artifacts-builder` - Web应用创建
-- `webapp-testing` - Web应用测试
-
-沟通类:
-- `internal-comms` - 内部沟通文档
-- `slack-gif-creator` - Slack动画GIF
-
-### 1.4 Skill 调用示例
-
-```typescript
-delegate_task(
-  category="visual-engineering",
-  load_skills=["playwright", "frontend-ui-ux"],
-  prompt="Create a new React component with browser testing..."
-)
-
-delegate_task(
-  category="quick",
-  load_skills=["git-master"],
-  prompt="Create a commit with proper conventional format"
-)
-```
+除了明确加载的 Skills，AI 还可以直接调用以下能力：
+- **LSP**: `lsp_goto_definition`, `lsp_find_references`, `lsp_symbols`, `lsp_diagnostics`
+- **AST**: `ast_grep_search`, `ast_grep_replace` (结构化代码修改)
+- **Search**: `glob`, `grep`, `google_search`, `webfetch`
+- **Multi-modal**: `look_at` (分析 PDF、图片、流程图)
 
 ---
 
 ## 2. 可用的 Agents 和命令
 
-### 2.1 Agent 调用方式
+### 2.1 Agent 层级与分工
 
-使用 `delegate_task()` 函数委派任务：
+本项目采用 **Sisyphus** 编排模式，将 Agent 分为三个层级：
 
-```typescript
-delegate_task(
-  category="[category]",      // 任务类型（对应 Sisyphus-Junior）
-  subagent_type="[agent]",     // 专用 Agent
-  load_skills=["skill-1"],     // 技能列表
-  run_in_background=false,     // 是否后台运行
-  prompt="..."
-)
-```
+#### A. 核心编排代理 (Orchestration)
+负责理解全局意图、拆解任务并调度其他专家。
+- **`build` (Default)**: 通用执行者，拥有完整工具权限，负责日常编码。
+- **`plan`**: 规划专用，**禁止修改文件**，仅用于产出技术方案。
+- **`general`**: 并行研究专家，擅长处理需要同时启动多个子任务的复杂流程。
 
-**重要**: `category` 和 `subagent_type` 是互斥的，不能同时使用。
+#### B. 专项领域专家 (Subagents)
+在特定领域具备深层知识或特殊能力的专家模型。
+- **`oracle`**: **总工程师**。只读专家，负责架构决策、复杂 Debug、安全性与性能审计。
+- **`librarian`**: **知识百科**。负责外部文档、远程仓库分析、第三方库最佳实践。
+- **`prometheus`**: **战略规划**。负责需求访谈、长远路径规划、任务依赖拆解。
+- **`momus`**: **审计法官**。负责方案评审、质量验收、一致性检查。
+- **`metis`**: **前置分析**。负责识别需求歧义、挖掘隐藏意图、评估实施风险。
 
-### 2.2 可用的 Category（任务类型）
+#### C. 高性能工具代理 (Tooling)
+针对特定操作优化的轻量级/高性能代理。
+- **`explore`**: **代码雷达**。深度洞察代码库结构、发现跨层设计模式、上下文检索。
+- **`multimodal-looker`**: **视觉大脑**。解读 PDF、图片、流程图等非文本资产。
+- **`sisyphus-junior`**: **原子执行器**。专注于受控环境下的高精度单一任务实现。
 
-| Category | 用途 | 最佳场景 |
-|----------|------|---------|---------|
-| `visual-engineering` | 前端/UI/UX | 界面开发、动画、样式、设计 |
-| `ultrabrain` | 深度推理 | 复杂架构决策、逻辑分析（仅用于真正困难的任务） |
-| `deep` | 自主问题解决 | 目标导向的深度研究、彻底理解问题后行动 |
-| `artistry` | 创意任务 | 复杂问题解决、非常规创新方法 |
-| `quick` | 简单任务 | 简单修改、单文件更改、拼写修复 |
-| `unspecified-low` | 低复杂度 | 不适合其他类别的工作，低难度 |
-| `unspecified-high` | 高复杂度 | 不适合其他类别的工作，高难度 |
-| `writing` | 写作 | 文档、说明、注释、技术写作 |
+### 2.2 任务分类委派 (Category)
 
-### 2.3 可用的 Subagent（专用 Agent）
+通过 `category` 参数委派给经过领域优化的 Sisyphus-Junior 实例：
 
-| Agent | 用途 | 核心能力 |
-|-------|------|---------|-------|
-| `oracle` | 咨询代理 | 只读咨询、架构决策、技术咨询 |
-| `librarian` | 文档代理 | 多仓库分析、远程代码库搜索、官方文档检索、示例查找 |
-| `explore` | 探索代理 | 代码库搜索、上下文分析、grep 搜索 |
-| `multimodal-looker` | 媒体分析 | PDF/图片/图表解读、需要解释的视觉内容 |
-| `prometheus` | 规划代理 | 战略规划、需求分析、工作计划创建 |
-| `momus` | 审核代理 | 计划审核、质量验证、一致性检查 |
-| `metis` | 风险评估 | 识别漏洞、风险评估、问题发现 |
-| `sisyphus-junior` | 执行代理 | 专注任务执行（通过 category 调用） |
+| Category | 专注领域 | 适用场景 |
+|----------|----------|---------|
+| `visual-engineering` | 前端/UI/UX | 界面还原、动效、Tailwind 样式、组件封装 |
+| `ultrabrain` | 极端逻辑 | 算法优化、并发控制、复杂状态机（高难度专属） |
+| `deep` | 自主探索 | 目标导向的深度调研、在信息极少时寻找出路 |
+| `artistry` | 创意工程 | 非标准模式解决、打破常规的系统设计 |
+| `quick` | 琐碎任务 | 拼写修正、单文件微调、简单重命名 |
+| `writing` | 文档工程 | 技术写作、注释生成、README 维护 |
+
+### 2.3 Agent 调用方式
+
 
 ### 2.4 可用的 Slash 命令
 
@@ -128,6 +96,7 @@ delegate_task(
 | `/cancel-ralph` | 取消 Ralph 循环 | Cancel active Ralph Loop (builtin) |
 | `/refactor` | 智能重构 | Intelligent refactoring command with LSP, AST-grep, architecture analysis, codemap, and TDD verification (builtin) |
 | `/start-work` | 启动 Sisyphus 工作 | Start Sisyphus work session from Prometheus plan (builtin) |
+| `/stop-continuation` | 停止延续机制 | Stop all continuation mechanisms (ralph loop, todo continuation, boulder) for this session (builtin) |
 | `/openspec-proposal` | OpenSpec 提案 | Scaffold a new OpenSpec change and validate strictly (opencode-project) |
 | `/openspec-apply` | OpenSpec 实施 | Implement an approved OpenSpec change and keep tasks in sync (opencode-project) |
 | `/openspec-archive` | OpenSpec 归档 | Archive a deployed OpenSpec change and update specs (opencode-project) |
@@ -137,42 +106,17 @@ delegate_task(
 | `/dev-browser` | 浏览器自动化 | Browser automation with persistent page state. Use when users ask to navigate websites, fill forms, take screenshots, extract web data, test web apps, or automate browser workflows. Trigger phrases include 'go to [url]', 'click on', 'fill out the form', 'take a screenshot', 'scrape', 'automate', 'test the website', 'log into', or any browser interaction request (builtin) |
 | `/conversation-accuracy-skill` | 对话精度优化 | Optimize long-form conversation accuracy using a four-layer memory architecture and dynamic context pruning (user) |
 
-### 2.5 OpenSpec CLI 命令
+### 2.5 OpenSpec CLI 命令 (Verb-first Style)
 
-```bash
-# 初始化和更新
-openspec init [options] [path]    # 初始化 OpenSpec 项目
-openspec update [path]            # 更新 OpenSpec 指令文件
+对于完整的 OpenSpec CLI 命令参考，请参见 [OpenSpec 工作流指南](./openspec-workflow.md)。
 
-# 查看和列表
-openspec list [options]           # 列出项目 (默认为变更). 使用 --specs 列出规格
-openspec view                     # 显示交互式仪表板
-openspec show [options] [item-name] # 显示变更或规格
+OpenSpec 采用"动词优先"的命令行设计。主要命令包括：
 
-# 变更管理
-openspec change show [options] [change-name]      # 显示变更提案详情
-openspec change validate [options] [change-name]  # 验证变更提案
-openspec change list [options]                    # 列出变更（已弃用，改用 openspec list）
+- **项目管理**: `openspec init`, `openspec list`, `openspec validate`
+- **变更管理**: `openspec create`, `openspec show`, `openspec archive`
+- **工作流**: `openspec apply`, `openspec view`
 
-# 规格管理
-openspec spec show [options] [spec-id]       # 显示指定规格
-openspec spec list [options]                 # 列出所有可用规格
-openspec spec validate [options] [spec-id]   # 验证规格结构
-
-# 验证和归档
-openspec validate [options] [item-name]    # 验证变更和规格
-openspec archive [options] [change-name]   # 归档已完成的变更并更新主规格
-
-# 配置和其他功能
-openspec config [options]                    # 查看和修改全局 OpenSpec 配置
-openspec completion                        # 管理 OpenSpec CLI 的 Shell 补全
-openspec status [options]                  # [实验性] 显示变更的状态
-openspec instructions [options] [artifact] # [实验性] 输出创建工件的增强指令
-openspec templates [options]               # [实验性] 显示所有工件模板路径
-openspec schemas [options]                 # [实验性] 列出可用的工作流模式
-openspec new                             # [实验性] 创建新项目
-openspec artifact-experimental-setup       # [实验性] 为实验性工件工作流设置 Agent 技能
-```
+> **注意**: 之前的 `openspec change ...` 和 `openspec spec ...` 命令已被弃用。
 
 ### 2.6 delegate_task 调用示例
 
@@ -233,24 +177,22 @@ delegate_task(
 **当前项目: work-agents**
 
 技术栈:
-- 前端: Next.js 15.4, React 19, TypeScript 5+
-- 后端: FastAPI, Python 3.11+, SQLAlchemy
-- 数据库: SQLite
-- 无 MCP 集成
+- 前端: Next.js 15.5, React 19, TypeScript 5, Tailwind CSS 4
+- 后端: FastAPI >= 0.115, Python 3.11+, SQLAlchemy 2.0
+- 数据库: SQLite (aiosqlite)
+- 认证: JWT (python-jose, passlib)
 
 ### 3.2 可用的 MCP 工具
 
-| MCP Server | 工具/资源/提示 | 用途 |
-|-----------|---------------|------|
-| github | 多种工具 | GitHub 操作（PR、Issue、Branch 等） |
-| fetch_fetch | 工具 | 互联网内容获取 |
-| google_search | 工具 | Google 搜索和 URL 分析 |
-| websearch | 工具 | Exa AI 网络搜索 |
-| codesearch | 工具 | Exa Code API 代码搜索 |
-| chrome-devtools | 多种工具 | Chrome DevTools 浏览器自动化 |
-| skill_mcp | 工具 | MCP 服务器操作 |
-
-如果需要添加自定义 MCP 支持，可以使用 `mcp-builder` skill。
+| MCP Server | 核心功能 |
+|-----------|----------|
+| `github` | PR/Issue 管理、仓库操作、文件读写 |
+| `google_search` | Google 实时搜索、URL 深入分析 |
+| `websearch_exa` | Exa AI 结构化网络搜索 |
+| `context7` | 最新开源库文档、代码示例、API 参考 |
+| `jam` | Jam 故障报告分析（日志、网络、录屏） |
+| `grep_app` | GitHub 全球代码高性能搜索 |
+| `chrome-devtools` | 浏览器真机调试、性能分析、截屏 |
 
 ---
 
@@ -259,65 +201,48 @@ delegate_task(
 ### 4.1 核心原则
 
 代码质量:
-- 完整可运行 + 错误处理 + 输入验证
-- 语义化命名，简洁注释 (解释"为什么")
-- 处理边界情况 (null/零/负数/极值)
-- 禁止过度工程，保持简单
+- **完整可运行**: 包含必要的错误处理和输入验证
+- **简洁性**: 语义化命名，仅在必要时添加注释（解释"为什么"）
+- **健壮性**: 处理边界情况（null/极值/负数）
+- **YAGNI**: 禁止过度工程，保持代码简单
 
 安全第一:
-- 禁止提交密钥/密码到版本控制
-- 参数化查询防SQL注入
-- 输入验证防XSS
-- HTTPS + 环境变量 + 双端验证
-- OWASP Top 10 + 安全会话管理
+- **禁止 Hardcode**: 严禁提交密钥、密码或敏感凭证
+- **注入防护**: 使用参数化查询 (SQL) 和输入清洗 (XSS)
+- **环境隔离**: 敏感配置使用 `.env` 环境变量
 
 文件组织:
-- 特性驱动/领域驱动组织
-- kebab-case 文件名
-- PascalCase 组件/类
-- 关注点分离
+- **Kebab-case**: 文件名使用小写横杠连接 (e.g., `user-service.ts`)
+- **PascalCase**: React 组件和类名 (e.g., `UserProfile.tsx`)
+- **模块化**: 保持关注点分离，避免巨石文件
 
 ### 4.2 语言标准
 
-- 目标: ES2022+/TypeScript 5+
-- 模块系统: ES Modules
-- 严格模式: TypeScript strict: true
-- 推荐特性: 空值合并、可选链、顶层await
+- **Frontend**: ES2022+ / TypeScript 5 (Strict Mode)
+- **Backend**: Python 3.11+ (Type Hints mandatory)
 
-### 4.3 命名约定
+### 4.3 Git 规范
 
-- 变量/函数: camelCase (userName, isActive)
-- 类/接口: PascalCase (UserController)
-- 常量: UPPER_SNAKE_CASE (MAX_RETRY)
-- 文件名: kebab-case (user-service.ts)
-- 组件文件: PascalCase (UserProfile.tsx)
+- **Conventional Commits**: `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `chore`
+- **原子提交**: 每个 commit 只做一件事，保持提交历史整洁
 
-### 4.4 Git规范
+### 4.4 AI 执行协议 (Critical)
 
-- Conventional Commits: feat/fix/docs/refactor/perf/test/ci/build
-- 分支策略: main, feature/*, hotfix/*, release/*
-- 原子提交 + 清晰分支名
-
-### 4.5 测试策略
-
-- 测试金字塔: 更多单元测试，较少E2E
-- 独立测试 + Mock外部依赖
-
-### 4.6 AI Agent 执行协议
-
-AI agents **必须** 遵守执行确认规则：
-- 在开始任何计划执行前，等待明确的 "确认/开始" 指令
-- 不得在没有明确授权的情况下自行启动任何计划
-- 计划执行前必须收到人类操作员或上级系统的明确启动命令
-- **语言一致性**: 必须使用与用户提问相同的语言进行回复。
+- **TODO 优先**: 在执行多步骤任务前，必须先创建并更新 TODO 列表。
+- **确认机制**: 重大架构变更或破坏性操作需等待明确授权。
+- **语言对齐**: 必须使用与用户提问相同的语言（除非特殊要求）。
+- **验证闭环**: 任务完成前必须运行 Linter 和相关测试。
 
 ---
 
 ## 5. 详细规则文件索引
 
-Claude规范位置: ~/.claude/CLAUDE.md
-Gemini规范位置: ~/.gemini/GEMINI.md
+- **全局规范**: `AGENTS.md` (项目根目录)
+- **命令与工作流**: `docs/guides/opencode-workflows.md`
+- **Claude 规范**: `~/.claude/CLAUDE.md`
+- **Gemini 规范**: `~/.gemini/GEMINI.md`
 
 ---
 
-**更新日期**: 2026-02-02
+**更新日期**: 2026-02-04
+

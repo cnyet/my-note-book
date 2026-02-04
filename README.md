@@ -1,23 +1,24 @@
 # work-agents
 
-一个极具极客感、现代感的网站项目，包括前台展示和管理后台。
+现代 AI 多智能体编排平台 (Modern AI Multi-Agent Orchestration Platform)
 
 ## 🎯 项目概述
 
-**work-agents** 是一个全栈Web应用，集成了AI Agent展示、工具集合、实验室产品和博客功能。
+**work-agents** 是一个现代 AI 多智能体编排平台，专为极客社区设计，支持智能体间协作与通信、实时状态同步和统一身份认证。平台通过编排协议实现智能体间的无缝协作，提供实时通信能力、持久化内存管理和基于 JWT 的身份传播。
 
-### 核心功能
-- 🤖 **Agents**: 集成 LobeChat 和 5 个 AI 秘书展示
-- 🛠️ **Tools**: 工具集合展示（分类、搜索）
-- 🧪 **Labs**: 实验产品展示（小游戏、AI Agent 原型）
-- 📝 **Blog**: 博客系统（Markdown支持、标签分类）
-- 🔐 **Admin**: 完整的后台管理系统
+### 核心功能 (Core Features)
+- 🤖 **Agent Orchestration**: 多智能体协作核心引擎，支持跨智能体消息传递与上下文共享
+- 🔗 **Orchestration Protocol**: 标准化的跨智能体通信协议，确保不同智能体间的互操作性
+- ⚡ **Real-time Updates**: WebSocket 服务提供实时双向通信，支持在线状态更新和实时数据流
+- 🔐 **Identity Propagation**: 基于 JWT 的统一身份认证协议，实现跨智能体和服务的身份同步
+- 🔄 **Agent Message Bus**: 实现多智能体间的异步消息机制，支持事件流处理
+- 💾 **Persistent Memory**: 智能体状态与长期记忆持久化存储，支持上下文连续性
 
-### 技术栈
+### 技术栈 (Tech Stack)
 
 **前端**
-- Next.js 15.4 (App Router)
-- React 19
+- Next.js 15.5 (App Router)
+- React 19.1
 - TypeScript
 - Tailwind CSS 4
 - Shadcn/UI
@@ -25,9 +26,14 @@
 **后端**
 - Python 3.11+
 - FastAPI
-- SQLAlchemy
-- SQLite
-- Pydantic
+- SQLAlchemy 2.0
+- Pydantic v2
+- WebSocket
+
+**其他**
+- JWT 认证
+- OpenSpec (规范驱动开发)
+- Model Context Protocol (MCP)
 
 ## 🚀 快速开始
 
@@ -116,19 +122,40 @@ work-agents/
 ├── docs/                 # 项目文档
 │   ├── api/              # API 文档
 │   ├── architecture/     # 架构设计
-│   └── database/         # 数据库设计
+│   ├── database/         # 数据库设计
+│   ├── guides/           # 开发指南 (Master Path)
+│   └── requirement.md    # 需求文档
+├── openspec/             # OpenSpec 规范
+│   ├── project.md        # 项目上下文
+│   ├── specs/            # 核心规范 (Single Source of Truth)
+│   └── changes/          # 变更提案
+├── .sisyphus/            # Sisyphus 工作流配置
+│   └── notepads/         # AI 团队知识库
 ├── logs/                 # 运行日志
 └── discuss/              # 评审讨论
 ```
 
+## 🔄 Agentic 工作流
+
+本项目采用先进的 AI 多智能体协作开发模式：
+
+### Prometheus/Sisyphus/OpenSpec 协议
+- **Prometheus**: 智能体规划与任务分解
+- **Sisyphus**: 自主执行与状态管理
+- **OpenSpec**: 规范驱动开发协议
+
+该协议确保了 AI 智能体能够高效协作完成复杂开发任务。
+
 ## 📚 文档
 
-详细文档请查看 `docs/` 目录：
+详细文档请查看以下结构：
 
-- [API 文档](docs/api/)
-- [数据库设计](docs/database/)
-- [架构设计](docs/architecture/)
-- [开发规范](AGENTS.md)
+- **项目上下文**: [openspec/project.md](openspec/project.md)
+- **开发指南**: [docs/guides/README.md](docs/guides/README.md) (主路径 Master Path)
+- **AI 标准**: [openspec/AGENTS.md](openspec/AGENTS.md)
+- **API 文档**: [docs/api/](docs/api/)
+- **数据库设计**: [docs/database/](docs/database/)
+- **架构设计**: [docs/architecture/](docs/architecture/)
 
 ## 🔒 环境变量
 
@@ -146,6 +173,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000
 
+# WebSocket
+WEBSOCKET_HOST=0.0.0.0
+WEBSOCKET_PORT=8001
+
 # 应用配置
 APP_ENV=development
 ```
@@ -155,6 +186,9 @@ APP_ENV=development
 ```env
 # API 地址
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+
+# WebSocket 地址
+NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:8001/ws
 
 # 其他配置
 NEXT_PUBLIC_APP_NAME=work-agents
@@ -175,13 +209,14 @@ cd frontend && npm test
 
 ## 📝 开发规范
 
-请严格遵守 [GEMINI.md](AGENTS.md) 中定义的开发规范：
+请严格遵守 [AGENTS.md](openspec/AGENTS.md) 中定义的开发规范：
 
 - 文件规模限制
 - 代码复杂度控制
 - 命名规范
 - Git 提交规范
 - 架构设计原则
+- OpenSpec 规范驱动开发
 
 ## 🤝 贡献
 
@@ -189,7 +224,8 @@ cd frontend && npm test
 
 1. 代码通过 `./scripts/lint.sh` 检查
 2. 所有测试通过 `./scripts/test.sh`
-3. 遵循项目的代码规范
+3. 遵循项目的 OpenSpec 规范
+4. 遵循 AGENTS.md 中定义的开发规范
 
 ## 📄 许可证
 

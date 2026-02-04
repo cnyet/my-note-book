@@ -1,0 +1,21 @@
+{
+  "name": "ui-ux-pro-max-skill",
+  "version": "2.0.0",
+  "description": "UI/UX design intelligence with 50+ styles, 96 color palettes, 57 font pairings, and guidelines for 9 tech stacks",
+  "author": "nextlevelbuilder",
+  "license": "MIT",
+  "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "keywords": [
+    "ui",
+    "ux",
+    "design",
+    "frontend",
+    "styling",
+    "accessibility",
+    "responsive",
+    "animation"
+  ],
+  "dependencies": {
+    "python": ">=3.8"
+  }
+}
