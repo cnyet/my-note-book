@@ -10,8 +10,13 @@ echo "🧪 运行测试..."
 # 后端测试
 echo "🐍 运行 Python 测试..."
 cd backend
-source .venv/bin/activate
-pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+if [ -d "venv" ]; then
+  source venv/bin/activate
+elif [ -d ".venv" ]; then
+  source .venv/bin/activate
+fi
+export PYTHONPATH=${PYTHONPATH:-}:.
+pytest tests/ -v
 cd ..
 
 # 前端测试

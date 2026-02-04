@@ -1,14 +1,17 @@
-import os
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
+from src.api.v1 import auth as auth_v1
+from src.api.v1 import content as content_v1
+from src.api.v1 import media as media_v1
+from src.core.logging import StructuredLoggingMiddleware, setup_logging
+from src.core.websocket import manager
 
 load_dotenv()
-
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
-# Import API routers
-# Import API routers (to be added)
+setup_logging()
 
 
 @asynccontextmanager
@@ -34,9 +37,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(StructuredLoggingMiddleware)
 
 # Include API routers
-# Routers will be included here
+app.include_router(auth_v1.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(content_v1.router, prefix="/api/v1", tags=["content"])
+app.include_router(media_v1.router, prefix="/api/v1/media", tags=["media"])
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep connection alive
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.broadcast_online_count()
+
+
+# Mount static files
+app.mount("/uploads", StaticFiles(directory="public/uploads"), name="uploads")
 
 
 @app.get("/health")

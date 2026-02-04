@@ -9,6 +9,7 @@ from alembic import context
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.core.database import Base
+from src.models import *  # Import all models to register with Base.metadata
 
 # this is the Alembic Config object, and provides access to the values
 config = context.config
@@ -41,6 +42,7 @@ def run_migrations_offline() -> None:
 def run_migrations() -> None:
     """Run migrations synchronously."""
     from src.core.database import engine
+
     with engine.connect() as connection:
         context.configure(
             connection=connection,

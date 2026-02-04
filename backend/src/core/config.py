@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     # CORS
     allowed_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
 
+    # OAuth
+    github_client_id: str = os.getenv("GITHUB_CLIENT_ID", "")
+    github_client_secret: str = os.getenv("GITHUB_CLIENT_SECRET", "")
+    google_client_id: str = os.getenv("GOOGLE_CLIENT_ID", "")
+    google_client_secret: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
+
     # Application
     app_env: str = os.getenv("APP_ENV", "development")
 
