@@ -69,9 +69,10 @@ cp frontend/.env.example frontend/.env.local
 ./scripts/start-dev.sh
 
 # 访问
-- 前端: http://localhost:3000
-- 后端API: http://localhost:8000
-- API文档: http://localhost:8000/docs
+  - 前端: http://localhost:3001
+  - 后端API: http://localhost:8001
+  - API文档: http://localhost:8001/docs
+
 ```
 
 ### 其他命令
@@ -92,47 +93,54 @@ cp frontend/.env.example frontend/.env.local
 
 ## 📁 项目结构
 
+详细项目结构请参见 [docs/project_structure.md](docs/project_structure.md)
+
 ```
 work-agents/
-├── backend/              # FastAPI 后端
-│   ├── src/
-│   │   ├── api/          # API 路由
-│   │   ├── models/       # 数据库模型
-│   │   ├── schemas/      # Pydantic schemas
-│   │   ├── services/     # 业务逻辑
-│   │   └── main.py       # 应用入口
-│   ├── tests/            # 后端测试
-│   ├── .env.example      # 环境变量示例
-│   └── requirements.txt  # Python 依赖
-├── frontend/             # Next.js 前端
-│   ├── src/
-│   │   ├── app/          # App Router 页面
-│   │   ├── components/   # React 组件
-│   │   ├── lib/          # 工具函数
-│   │   └── styles/       # 样式文件
-│   ├── public/           # 静态资源
-│   └── package.json      # Node 依赖
-├── scripts/              # 项目脚本
-│   ├── setup.sh          # 环境初始化
-│   ├── start-dev.sh      # 启动开发服务器
-│   ├── build.sh          # 构建生产版本
-│   ├── test.sh           # 运行测试
-│   ├── lint.sh           # 代码检查
-│   └── clean.sh          # 清理项目
-├── docs/                 # 项目文档
-│   ├── api/              # API 文档
-│   ├── architecture/     # 架构设计
-│   ├── database/         # 数据库设计
-│   ├── guides/           # 开发指南 (Master Path)
-│   └── requirement.md    # 需求文档
-├── openspec/             # OpenSpec 规范
-│   ├── project.md        # 项目上下文
-│   ├── specs/            # 核心规范 (Single Source of Truth)
-│   └── changes/          # 变更提案
-├── .sisyphus/            # Sisyphus 工作流配置
-│   └── notepads/         # AI 团队知识库
-├── logs/                 # 运行日志
-└── discuss/              # 评审讨论
+├── .agent/                 # Agent 配置文件
+├── .claude/               # Claude AI 工具配置
+├── .opencode/             # OpenCode 配置文件
+├── .sisyphus/             # Sisyphus 工作流配置
+│   └── notepads/          # AI 团队知识库
+├── backend/               # FastAPI 后端服务
+│   ├── src/               # 后端源代码
+│   │   ├── api/           # API 路由定义 (v1 版本)
+│   │   ├── core/          # 核心功能模块
+│   │   ├── models/        # SQLAlchemy 数据库模型
+│   │   ├── schemas/       # Pydantic 数据验证模型
+│   │   ├── services/      # 业务逻辑服务
+│   │   └── main.py        # 应用入口文件
+│   ├── tests/             # 后端测试文件
+│   ├── alembic/           # 数据库迁移工具
+│   └── requirements.txt   # Python 依赖包列表
+├── frontend/              # Next.js 前端应用
+│   ├── src/               # 前端源代码
+│   │   ├── app/           # Next.js App Router 页面
+│   │   ├── components/    # React 组件库
+│   │   ├── hooks/         # 自定义 React Hooks
+│   │   └── ...
+│   ├── public/            # 静态资源
+│   └── package.json       # Node.js 依赖配置
+├── docs/                  # 项目文档
+│   ├── api/               # API 文档
+│   ├── architecture/      # 架构设计文档
+│   ├── database/          # 数据库设计文档
+│   ├── guides/            # 开发指南
+│   ├── adr/               # 架构决策记录
+│   ├── design/            # 设计文档
+│   ├── implement/         # 实现计划
+│   └── requirement.md     # 需求文档
+├── openspec/              # OpenSpec 规范文件
+│   ├── project.md         # 项目上下文
+│   ├── AGENTS.md          # AI 代理开发规范
+│   ├── specs/             # 核心规范 (单一致真源)
+│   └── changes/           # 变更提案存档
+├── scripts/               # 项目自动化脚本
+├── logs/                  # 运行日志
+├── discuss/               # 评审讨论文件
+├── docker-compose.yml     # Docker 编排配置
+├── nginx.conf             # Nginx 配置文件
+└── README.md              # 项目主说明文档
 ```
 
 ## 🔄 Agentic 工作流
@@ -153,6 +161,7 @@ work-agents/
 - **项目上下文**: [openspec/project.md](openspec/project.md)
 - **开发指南**: [docs/guides/README.md](docs/guides/README.md) (主路径 Master Path)
 - **AI 标准**: [openspec/AGENTS.md](openspec/AGENTS.md)
+- **项目结构详解**: [docs/project_structure.md](docs/project_structure.md)
 - **API 文档**: [docs/api/](docs/api/)
 - **数据库设计**: [docs/database/](docs/database/)
 - **架构设计**: [docs/architecture/](docs/architecture/)
@@ -171,7 +180,7 @@ ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # CORS
-ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3001
 
 # WebSocket
 WEBSOCKET_HOST=0.0.0.0
@@ -185,7 +194,7 @@ APP_ENV=development
 
 ```env
 # API 地址
-NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
 
 # WebSocket 地址
 NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:8001/ws
