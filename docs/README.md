@@ -1,14 +1,62 @@
-# Documentation System
+# Work-Agents 项目文档
 
-本项目遵循 **GEMINI.md** 规范，对文档进行分类管理：
+Work-Agents 是一个面向极客社区的现代化 AI 多智能体编排平台，支持智能体间协作与通信、实时状态同步和统一身份认证。平台通过编排协议实现智能体间的无缝协作，提供实时通信能力、持久化内存管理和基于 JWT 的身份传播。
 
 ## 📁 目录结构
 
-- **[implement/](./implement/)**: 实施计划。存放功能开发的阶段拆分与优先级 TODO。
-- **[design/](./design/)**: 设计规范。UI/UX 设计稿说明、交互逻辑及视觉规范。
-- **[guides/](./guides/)**: 开发指南。环境搭建补充说明、最佳实践及新人手册。
+```
+docs/
+├── adr/                    # 架构决策记录
+│   └── decision-01.md      # 系统实现规范
+├── api/                    # API 接口文档
+│   └── api-design.md       # API 设计规范
+├── architecture/          # 系统架构文档
+│   └── architecture.md    # 系统架构设计文档
+├── database/              # 数据库设计文档
+│   └── database-schema.md # 数据库模式设计
+├── design/                # UI/UX 设计文档
+│   └── ui-ux-spec.md      # UI/UX 规范
+├── guides/                # 开发指南
+│   ├── README.md          # 人机协作最佳实践
+│   ├── agentic-environment.md    # 智能体环境配置
+│   ├── opencode-practical-guide.md # OpenCode 实践指南
+│   ├── openspec-workflow.md      # OpenSpec 工作流
+│   └── sisyphus-guide.md         # Sisyphus 工作流指南
+└── requirements/          # 需求文档
+    ├── requirement.md     # 产品需求文档
+    ├── implement-plan.md  # 项目实施计划
+    └── ideas-draft.md     # 初始想法草案
+```
 
-## ✍️ 撰写原则
-1. **先规划后实现**: 重大功能开发前需在 `implement/` 提交计划。
-2. **契约先行**: API 变更前需在 `api/` 更新文档并验证。
-3. **记录决策**: 任何绕开默认选型的决策必须记录在 `adr/`。
+## 📘 文档概览
+
+### 核心文档
+- **[requirement.md](requirements/requirement.md)**: 产品需求文档，详细定义平台的核心功能包括主页、智能体、工具、实验室和博客页面，以及后台管理系统、认证系统、数据库设计和第三方集成要求
+- **[architecture.md](architecture/architecture.md)**: 系统架构设计文档，涵盖技术栈、目录结构、数据流设计、API 设计原则、安全设计、性能优化策略和部署架构
+- **[database-schema.md](database/database-schema.md)**: 数据库表结构设计，包含用户表、智能体表、博客文章表、工具表、实验室产品表等核心实体的字段定义、约束条件和索引策略
+- **[api-design.md](api/api-design.md)**: API 接口设计规范，定义统一的请求/响应格式、HTTP 状态码规范、RESTful 接口设计和认证授权机制
+- **[ui-ux-spec.md](design/ui-ux-spec.md)**: UI/UX 设计规范，详细描述设计系统、颜色方案、字体架构、页面蓝图和组件交互规范
+
+### 开发指南
+- **[guides/README.md](guides/README.md)**: 人机协作开发流程，采用 OpenSpec 驱动开发方法论，提供从概念到完成的四阶段旅程指导
+- **[implement-plan.md](requirements/implement-plan.md)**: 项目实施计划，详细记录开发阶段、任务清单、进度跟踪和实施时间表
+
+### 架构决策
+- **[decision-01.md](adr/decision-01.md)**: 系统实现规范，涵盖前端系统、后端系统、管理面板、基础设施、质量保证和安全措施的具体实施要求
+
+## 🚀 快速入门
+
+1. **需求了解**: 从 [requirement.md](requirements/requirement.md) 开始了解平台功能
+2. **开发流程**: 阅读 [guides/README.md](guides/README.md) 了解开发工作流
+3. **架构设计**: 查看 [architecture.md](architecture/architecture.md) 了解技术实现
+4. **API 接口**: 参考 [api-design.md](api/api-design.md) 进行集成开发
+5. **数据库**: 查阅 [database-schema.md](database/database-schema.md) 了解数据结构
+6. **实施计划**: 阅读 [implement-plan.md](requirements/implement-plan.md) 了解开发历程
+
+## 📋 开发规范
+
+本项目遵循 OpenSpec 驱动开发方法论，确保代码质量和系统可维护性。所有功能变更都经过规范驱动的流程，确保系统的稳定性和扩展性。
+
+---
+
+**最后更新**: 2026年2月5日

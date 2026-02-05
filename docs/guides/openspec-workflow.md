@@ -1,10 +1,10 @@
 # OpenSpec 工作流指南
 
-> OpenSpec 规范驱动开发系统的核心概念和使用指南
+> OpenSpec 规范驱动开发系统的核心概念和使用指南 - OhMyOpenCode v2.0
 
 ## 概述
 
-`openspec/` 是 **OpenSpec 规范驱动开发系统**的专用目录，用于管理项目规范、变更提案和实现追踪。它强调"规范即真相"（Specs are Truth），通过结构化的提案-实现-归档流程，确保项目变更可追溯、可验证。
+`openspec/` 是 **OpenSpec 规范驱动开发系统**的专用目录，用于管理项目规范、变更提案和实现追踪。它强调"规范即真相"（Specs are Truth），通过结构化的规范-提案-实现-归档流程，确保项目变更可追溯、可验证。
 
 ## 目录结构
 
@@ -54,20 +54,26 @@ openspec/
 - 配置变更
 - 现有行为的测试
 
-### 3. 三阶段工作流
+### 3. Sisyphus 5阶段工作流
 
 ```
-Stage 1: 创建变更 (openspec create)
+Handshake: 握手与意图澄清 (Sisyphus Squad)
     ↓
-Stage 2: 实现变更 (按照 tasks.md) 
+Plan: 规范创建 (Prometheus → OpenSpec artifacts)
     ↓
-Stage 3: 归档变更 (openspec archive)
+Execute: 实现 (Hephaestus → tasks.md execution)
+    ↓
+Verify: 验证 (Oracle → validation & testing)
+    ↓
+Archive: 归档 (Sisyphus → final archiving)
 ```
 
-**三个关键阶段**:
-- **Create Artifacts**: 生成 proposal.md, specs/, design.md, tasks.md
-- **Implement Tasks**: AI 开发团队按任务清单实现功能
-- **Archive Specs**: 将规范合并到主规格库并归档
+**五个关键阶段**:
+- **Handshake**: 与 Sisyphus Squad 达成意图澄清
+- **Plan**: 生成 proposal.md, specs/, design.md, tasks.md
+- **Execute**: AI 开发团队按任务清单实现功能
+- **Verify**: 验证实现符合规范要求
+- **Archive**: 将规范合并到主规格库并归档
 
 ## Bootstrap/Init - 项目初始化
 
@@ -184,9 +190,10 @@ openspec validate [change-id] --verbose
 - **语法准确性**: 验证要求和场景使用正确的 BDD 语法（GIVEN/WHEN/THEN）
 - **依赖关系**: 确保移除的需求不会导致其他规范中的悬空引用
 
-## CLI 命令参考
+## Modern CLI Commands & Slash Commands
 
-OpenSpec 采用"动词优先"的命令行设计，推荐直接使用顶层动词：
+### Traditional OpenSpec Commands
+推荐使用"动词优先"的命令行设计，直接使用顶层动词：
 
 ```bash
 # 项目管理
@@ -221,9 +228,61 @@ openspec view                         # 启动交互式仪表板
 > **重要提示**: 之前的 `openspec change ...` 和 `openspec spec ...` 命令已被弃用。
 > 使用"动词优先"风格的新命令格式。
 
+### OhMyOpenCode Slash Commands
+现代工作流使用统一的斜杠命令系统，集成 OpenSpec 与 Sisyphus Squad：
+
+```bash
+# OpenSpec 快速命令
+/openspec-proposal [change-name]      # 快速创建变更提案
+/openspec-apply [change-id]           # 应用变更（执行 tasks.md）
+/openspec-archive [change-id]         # 归档完成的变更
+/openspec-list                        # 列出所有活动变更
+
+# UltraWork 集成命令
+/ulw-loop                            # 启动超工作循环直到完成
+/ulw                              # 超工作模式（无停止）
+/ultrathink [prompt]                 # 深度思考和规划
+/analyze [target]                    # 分析目标元素
+/investigate [target]                # 调查目标元素
+
+# OpenSpec 扩展命令
+/opsx:new [change-id]                # 创建新变更（opsx:ff 的简写）
+/opsx:ff                             # 快速前进（创建所有工件）
+/opsx:apply [change-id]              # 应用变更
+/opsx:archive [change-id]            # 归档变更
+/opsx:validate [change-id]           # 严格验证
+
+# 综合命令
+/ralph-loop                          # 启动自引用开发循环
+/cancel-ralph                        # 取消活跃的 Ralph 循环
+/stop-continuation                   # 停止所有延续机制
+```
+
+## Sisyphus Squad Integration
+
+OpenSpec 与 Sisyphus Squad 完美集成，实现自主开发：
+
+| 代理 | 职责 | 在 OpenSpec 中的角色 |
+|------|------|-------------------|
+| **Sisyphus** | 任务协调与状态管理 | 执行握手、归档变更、管理状态 |
+| **Prometheus** | 规划与方案生成 | 创建 proposal.md, specs/, design.md, tasks.md |
+| **Hephaestus** | 逻辑执行 | 按 tasks.md 实现变更 |
+| **Oracle** | 架构咨询 | 验证规范与实现的正确性 |
+| **Atlas** | 知识整合 | 管理项目上下文和规范 |
+
+### 工作流整合示例
+
+```
+用户请求 → Sisyphus 握手 → Prometheus 规划 → Hephaestus 执行 → Oracle 验证 → Sisyphus 归档
+```
+
 ## 工作流程详解
 
-### Stage 1: 创建变更
+### Handshake: 意图澄清
+1. **理解需求**: 与用户确认意图和范围
+2. **启动 Sisyphus Squad**: 调用适当的代理执行后续步骤
+
+### Plan: 规范创建
 1. **理解上下文**
    ```bash
    openspec list --specs    # 查看现有规范
@@ -237,8 +296,9 @@ openspec view                         # 启动交互式仪表板
 
 3. **快速创建所有工件** (一次性创建)
    ```bash
-   openspec create [change-id]  # 创建变更目录
-   openspec fast-forward [change-id]  # 或者简称 opsx:ff
+   # 现代方式
+   /openspec-proposal [change-id]  # 使用 Sisyphus Squad 创建工件
+   /opsx:ff                       # 或者快速前进创建所有工件
    ```
 
 4. **编写 proposal.md**
@@ -284,17 +344,47 @@ openspec view                         # 启动交互式仪表板
    (Removing anonymous access to core features)
    ```
 
-### Stage 2: 实现变更
-按 `tasks.md` 逐步实现，完成后将 `- [ ]` 改为 `- [x]`。
+### Execute: 实现变更
+1. **启动 UltraWork**: 使用 `/ulw-loop` 进行持续执行直到完成
+2. **按任务执行**: 跟随 `tasks.md` 逐步实现，完成后将 `- [ ]` 改为 `- [x]`
+3. **自主验证**: 每个步骤后运行 `lsp_diagnostics` 或测试验证
 
-### Stage 3: 归档变更
+### Verify: 验证
+完成实现后，进行全面验证：
+```bash
+# 最终验证
+openspec validate [change-id] --strict
+lsp_diagnostics [changed-files]
+npm test  # 或相应的测试命令
+```
+
+### Archive: 归档变更
 ```bash
 # 最终验证
 openspec validate [change-id] --strict
 
 # 归档变更（部署后）
+/openspec-archive [change-id]  # 使用现代归档命令
+# 或
 openspec archive [change-id] --yes
 ```
+
+## UltraWork Methodology
+
+OpenSpec 工作流完全兼容 UltraWork 方法论，提供自主开发能力：
+
+### UltraWork with OpenSpec
+1. **启动**: 使用 `/ulw-loop` 在完成变更时
+2. **自主执行**: AI 团队自主处理所有 `tasks.md` 项目
+3. **持续验证**: 自动运行验证以确保符合 `specs/`
+4. **完成承诺**: 返回 `<promise>DONE</promise>` 当所有任务完成
+
+### Quality Assurance
+UltraWork 集成了质量保证机制：
+- **自动测试**: 每个变更都有相应测试
+- **静态分析**: 代码质量和安全检查
+- **规范验证**: 确保实现符合 OpenSpec 规范
+- **记忆累积**: 将经验添加到 `.sisyphus/notepads/`
 
 ## AI 交互 - Spec-driven 请求处理
 
@@ -307,15 +397,16 @@ openspec archive [change-id] --yes
 
 ### 正确响应
 1. **检查现有变更**: `openspec list` 查看是否有相关变更
-2. **创建变更提案**: 如果没有现有变更，启动新的变更流程
-3. **引导工件创建**: 帮助用户创建 proposal.md, specs/, design.md, tasks.md
-4. **持续更新**: 在实现过程中更新工件以反映新发现
+2. **启动 Sisyphus Squad**: 如果需要，调用合适的代理
+3. **创建变更提案**: 如果没有现有变更，启动新的变更流程
+4. **引导工件创建**: 帮助用户创建 proposal.md, specs/, design.md, tasks.md
+5. **持续更新**: 在实现过程中更新工件以反映新发现
 
 ### 与 AI 合作的最佳实践
-- **使用指令**: `/opsx:new [change-id]` 创建新变更
+- **使用指令**: `/openspec-proposal [change-id]` 创建新变更
 - **快速前进**: `/opsx:ff` 一次性创建所有工件
-- **实现变更**: `/opsx:apply` 开始实现过程
-- **归档变更**: `/opsx:archive` 完成并归档变更
+- **实现变更**: `/ulw-loop` 或 `/openspec-apply` 开始实现过程
+- **归档变更**: `/openspec-archive [change-id]` 完成并归档变更
 
 ## 规范文件格式
 
@@ -345,22 +436,23 @@ openspec archive [change-id] --yes
 新请求？
 ├─ Bug 修复？→ 直接修复
 ├─ 拼写/格式/注释？→ 直接修复
-├─ 新功能/变更？→ 创建变更提案
-├─ 架构调整？→ 创建变更提案
-└─ 不清晰？→ 创建变更提案（更安全）
+├─ 新功能/变更？→ 启动 OpenSpec + Sisyphus
+├─ 架构调整？→ 启动 OpenSpec + Sisyphus
+└─ 不清晰？→ 启动 OpenSpec + Sisyphus（更安全）
 ```
 
-## 与 Sisyphus 的关系
+## 与 Sisyphus 的深度集成
 
-| 系统 | 目的 | 触发条件 |
-|------|------|----------|
-| **Sisyphus** | 任务执行和知识累积 | 日常开发任务 |
-| **OpenSpec** | 规范管理和变更追踪 | 新功能、架构变更 |
+| 系统 | 目的 | 触发条件 | 代理 |
+|------|------|----------|------|
+| **Sisyphus** | 任务执行和知识累积 | 日常开发任务 | 全套 Sisyphus Squad |
+| **OpenSpec** | 规范管理和变更追踪 | 新功能、架构变更 | Prometheus/Prometheus |
 
-**集成方式**:
-1. OpenSpec 定义"做什么"（规范）
-2. Sisyphus 执行"怎么做"（实现）
-3. 完成后从 OpenSpec `changes/` 移动到 `specs/`
+**现代集成方式**:
+1. OpenSpec 定义"做什么"（规范）→ Prometheus 生成
+2. Sisyphus 执行"怎么做"（实现）→ Hephaestus 实现
+3. Oracle 验证实现质量 → 验证与测试
+4. 完成后从 OpenSpec `changes/` 移动到 `specs/` → Sisyphus 归档
 
 ## 最佳实践
 
@@ -370,6 +462,8 @@ openspec archive [change-id] --yes
 4. **迭代改进**: 随着学习不断更新工件
 5. **场景驱动**: 每个要求至少有一个明确的场景
 6. **渐进验证**: 在每个阶段都进行适当验证
+7. **自主执行**: 使用 `/ulw-loop` 实现持续开发直到完成
+8. **代理协作**: 充分利用 Sisyphus Squad 成员的专业能力
 
 ## 故障排除
 
@@ -379,6 +473,7 @@ openspec archive [change-id] --yes
 | "Requirement must have at least one scenario" | 使用 `#### Scenario:` 格式 |
 | "Invalid spec format" | 使用 `openspec validate [change-id] --strict` 检查 |
 | "Conflicting requirements" | 检查现有规范是否存在冲突 |
+| "Agent communication error" | 确认 Sisyphus Squad 正常运行 |
 
 ## 高级用法
 
@@ -400,7 +495,7 @@ openspec diff [change-1] [change-2]
 openspec view
 
 # 交互式创建变更
-openspec create --interactive
+/openspec-proposal [change-id] --interactive  # 使用现代命令
 ```
 
 ---
@@ -411,4 +506,4 @@ openspec create --interactive
 - [Sisyphus 工作流指南](./sisyphus-workflow.md)
 - [OpenSpec 官方文档](https://github.com/Fission-AI/OpenSpec)
 
-**最后更新**: 2026-02-04
+**最后更新**: 2026-02-05
