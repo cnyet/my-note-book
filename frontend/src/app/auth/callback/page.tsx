@@ -16,7 +16,7 @@ function AuthCallbackContent() {
 
     if (token) {
       // Fetch user info with the new token
-      fetch('http://localhost:8000/api/v1/auth/me', {
+      fetch('http://localhost:8001/api/v1/auth/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

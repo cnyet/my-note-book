@@ -32,7 +32,7 @@ export default function LoginPage() {
       formData.append('username', data.email)
       formData.append('password', data.password)
 
-      const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+      const response = await fetch('http://localhost:8001/api/v1/auth/login', {
         method: 'POST',
         body: formData,
       })
@@ -44,7 +44,7 @@ export default function LoginPage() {
       const { access_token } = await response.json()
 
       // Fetch user info
-      const userRes = await fetch('http://localhost:8000/api/v1/auth/me', {
+      const userRes = await fetch('http://localhost:8001/api/v1/auth/me', {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
@@ -57,8 +57,9 @@ export default function LoginPage() {
       const userData = await userRes.json()
       setAuth(userData, access_token)
       router.push('/')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -117,14 +118,14 @@ export default function LoginPage() {
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => window.location.href = 'http://localhost:8000/api/v1/auth/github/login'}
+              onClick={() => window.location.href = 'http://localhost:8001/api/v1/auth/github/login'}
               className="flex items-center justify-center gap-2 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold"
             >
               GITHUB
             </button>
             <button
               type="button"
-              onClick={() => window.location.href = 'http://localhost:8000/api/v1/auth/google/login'}
+              onClick={() => window.location.href = 'http://localhost:8001/api/v1/auth/google/login'}
               className="flex items-center justify-center gap-2 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold"
             >
               GOOGLE

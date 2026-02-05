@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Clock, Share2, Bookmark } from 'lucide-react'
+import { TableOfContents } from '@/components/blog/TableOfContents'
+import { PrismHighlighter } from '@/components/blog/PrismHighlighter'
 
 interface Article {
   id: number
@@ -13,7 +15,7 @@ interface Article {
 
 async function getPost(slug: string): Promise<Article | null> {
   try {
-    const res = await fetch(`http://localhost:8000/api/v1/posts/${slug}`, {
+    const res = await fetch(`http://localhost:8001/api/v1/posts/${slug}`, {
       next: { revalidate: 3600 },
     })
     if (!res.ok) return null
@@ -53,7 +55,10 @@ export default async function BlogPostPage({
           RETURN TO ARCHIVES
         </Link>
 
-        <article className="relative bg-[#11111a]/40 backdrop-blur-3xl border border-white/5 rounded-3xl overflow-hidden shadow-2xl">
+        <article className="relative bg-[#11111a]/40 backdrop-blur-3xl border border-white/5 rounded-3xl shadow-2xl">
+          <TableOfContents content={post.content} />
+          <PrismHighlighter />
+          
           {/* Header */}
           <header className="p-8 md:p-12 border-b border-white/5 space-y-6">
             <div className="flex items-center gap-4">

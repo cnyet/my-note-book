@@ -2,106 +2,142 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, Bot, Zap, Globe, Cpu } from 'lucide-react'
+import { ArrowRight, Bot, Zap, Sparkles, Terminal, Shield } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { Typewriter } from '@/components/ui/Typewriter'
+
+const AdvancedParticles = dynamic(() => import('@/components/home/AdvancedParticles').then(mod => mod.AdvancedParticles), {
+  ssr: false
+})
+
+const SLOGANS = ["Command AI Agents.", "Automate Complexity.", "Own the Future."]
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-      {/* Background Particle Flow (Simplified implementation with SVG/CSS for speed) */}
-      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,242,255,0.1),transparent_70%)]" />
+    <div className="relative min-h-screen bg-[#0a0a0f] text-white flex items-center overflow-hidden">
+      {/* Cinematic Background Dynamcis */}
+      <AdvancedParticles />
+      
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-[1000px] h-[1000px] bg-[#00f2ff]/5 blur-[180px] rounded-full animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[800px] h-[800px] bg-[#bc13fe]/5 blur-[160px] rounded-full" />
       </div>
 
-      <main className="relative z-10 container mx-auto px-4 pt-32 pb-20">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-tight font-[family-name:var(--font-outfit)]">
-              THE NEXT GEN OF{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f2ff] to-[#bc13fe]">
-                AGENTIC POWER
-              </span>
-            </h1>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-lg md:text-xl text-[#94a3b8] max-w-2xl mx-auto"
-          >
-            Orchestrate multiple AI agents seamlessly. Automate complexity.
-            Own the future with our high-fidelity multi-agent platform.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link
-              href="/agents"
-              className="group relative px-8 py-4 bg-[#00f2ff] text-[#0a0a0f] font-bold rounded-xl overflow-hidden shadow-[0_0_30px_rgba(0,242,255,0.4)] transition-all hover:scale-105 active:scale-95"
+      <main className="container mx-auto px-6 relative z-10 pt-20">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
+          
+          {/* Left Column: Hero Content */}
+          <div className="lg:col-span-8 space-y-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-4"
             >
-              <span className="relative z-10 flex items-center gap-2">
-                DEPLOY AGENTS <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              <div className="w-12 h-[1px] bg-[#00f2ff]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[#00f2ff] glow-cyan">
+                 Neural Node Active
               </span>
-            </Link>
-            <Link
-              href="/labs"
-              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-xl backdrop-blur-xl transition-all hover:bg-white/10 hover:border-white/20 active:scale-95"
+            </motion.div>
+
+            <div className="space-y-6">
+              <motion.h1 
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="text-7xl md:text-9xl font-bold tracking-[-0.05em] leading-[0.85] font-outfit"
+              >
+                GENESIS <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/30 italic">
+                  OS.V2.0
+                </span>
+              </motion.h1>
+
+              <div className="h-10">
+                <div className="text-xl md:text-3xl font-mono text-[#00f2ff]/80">
+                  <Typewriter texts={SLOGANS} />
+                </div>
+              </div>
+            </div>
+
+            <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               transition={{ delay: 0.6 }}
+               className="flex flex-wrap items-center gap-8"
             >
-              EXPLORE LABS
-            </Link>
-          </motion.div>
+              <Link 
+                href="/agents"
+                className="group relative px-12 py-5 bg-[#00f2ff] text-[#0a0a0f] font-black text-xs uppercase tracking-[0.3em] rounded-full overflow-hidden shadow-[0_0_30px_rgba(0,242,255,0.3)] transition-all hover:scale-105 active:scale-95"
+              >
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                <span className="relative z-10 flex items-center gap-3">
+                   Initialize Bridge <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+
+              <Link 
+                href="/labs"
+                className="px-10 py-5 glass-standard rounded-full text-xs font-black uppercase tracking-[0.3em] hover:bg-white/10 transition-all flex items-center gap-3"
+              >
+                Lab Prototypes <Sparkles className="w-4 h-4 text-[#bc13fe]" />
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Visual Component */}
+          <div className="hidden lg:block lg:col-span-4 relative">
+             <motion.div
+               animate={{ 
+                 rotate: 360,
+                 scale: [1, 1.05, 1]
+               }}
+               transition={{ 
+                 rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                 scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+               }}
+               className="w-80 h-80 rounded-full border border-[#00f2ff]/20 relative flex items-center justify-center p-8"
+             >
+                <div className="absolute inset-0 border border-white/5 rounded-full rotate-45" />
+                <div className="absolute inset-4 border border-[#bc13fe]/20 rounded-full -rotate-12" />
+                <Bot className="w-24 h-24 text-[#00f2ff] glow-cyan" />
+                
+                {/* Orbital dots */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-[#00f2ff] rounded-full shadow-[0_0_15px_#00f2ff]" />
+                <div className="absolute bottom-1/4 left-0 w-2 h-2 bg-[#bc13fe] rounded-full shadow-[0_0_10px_#bc13fe]" />
+             </motion.div>
+          </div>
         </div>
 
-        {/* Feature Grid */}
-        <div className="mt-40 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              title: 'NEURAL LINK',
-              desc: 'Seamless real-time synchronization between disparate AI agents.',
-              icon: Zap,
-              color: '#00f2ff',
-            },
-            {
-              title: 'DYNAMIC ORCHESTRATION',
-              desc: 'Advanced protocol-driven communication for complex task solving.',
-              icon: Cpu,
-              color: '#bc13fe',
-            },
-            {
-              title: 'SECURE PERSISTENCE',
-              desc: 'Long-term memory management with identity-aware isolation.',
-              icon: Bot,
-              color: '#00ffa3',
-            },
-          ].map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.2 }}
-              className="p-8 rounded-2xl bg-[#11111a] border border-white/5 backdrop-blur-lg hover:border-white/10 transition-all group"
-            >
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 transition-transform group-hover:scale-110 group-hover:rotate-3"
-                style={{ backgroundColor: `${feature.color}20`, color: feature.color }}
-              >
-                <feature.icon className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 font-[family-name:var(--font-outfit)]">{feature.title}</h3>
-              <p className="text-[#94a3b8] leading-relaxed">{feature.desc}</p>
-            </motion.div>
-          ))}
+        {/* Status Bar Overlays */}
+        <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/5 pt-12">
+           <StatusItem label="Active Nodes" value="2,841" icon={Terminal} />
+           <StatusItem label="Sync Frequency" value="8.4 GHz" icon={Zap} />
+           <StatusItem label="Identity Verified" value="Level 4" icon={Shield} />
         </div>
       </main>
+
+      <style jsx global>{`
+        @keyframes flow {
+          0% { transform: translateY(-100vh) rotate(-45deg); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(100vh) rotate(-45deg); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  )
+}
+
+function StatusItem({ label, value, icon: Icon }: { label: string, value: string, icon: React.ElementType }) {
+  return (
+    <div className="flex items-center gap-6 group">
+       <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center transition-all group-hover:bg-[#00f2ff]/10 group-hover:text-[#00f2ff]">
+          <Icon className="w-5 h-5 opacity-40 group-hover:opacity-100" />
+       </div>
+       <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/20">{label}</p>
+          <p className="text-xl font-mono font-bold tracking-tight">{value}</p>
+       </div>
     </div>
   )
 }

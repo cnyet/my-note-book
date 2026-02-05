@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                 { name: 'Auth Node', status: 'Active', color: '#00f2ff' },
                 { name: 'Memory Bus', status: 'Busy', color: '#bc13fe' },
                 { name: 'Vector Store', status: 'Synced', color: '#00ffa3' },
-              ].map((sub, i) => (
+              ].map((sub) => (
                 <div key={sub.name} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-crosshair">
                   <span className="text-xs font-bold tracking-widest">{sub.name}</span>
                   <span className="text-[9px] font-black uppercase px-2 py-1 rounded" style={{ backgroundColor: `${sub.color}20`, color: sub.color }}>{sub.status}</span>

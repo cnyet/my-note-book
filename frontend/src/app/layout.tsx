@@ -1,11 +1,23 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import Link from "next/link"
+import { Inter, JetBrains_Mono, Outfit } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/layout/theme-provider"
-import { ThemeToggle } from "@/components/layout/theme-toggle"
+import Providers from "@/components/layout/Providers"
+import GenesisLayout from "@/components/layout/GenesisLayout"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+})
 
 export const metadata: Metadata = {
   title: "work-agents - AI Agent Tools Aggregation",
@@ -18,31 +30,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <header className="border-b">
-            <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-              <span className="font-bold text-lg">work-agents</span>
-              <nav className="flex items-center gap-4">
-                <Link href="/" className="text-sm hover:underline">Home</Link>
-                <Link href="/agents" className="text-sm hover:underline">Agents</Link>
-                <Link href="/tools" className="text-sm hover:underline">Tools</Link>
-                <Link href="/labs" className="text-sm hover:underline">Labs</Link>
-                <Link href="/blog" className="text-sm hover:underline">Blog</Link>
-                <ThemeToggle />
-              </nav>
-            </div>
-          </header>
-          <main className="container mx-auto px-4 py-8">
+    <html lang="en" suppressHydrationWarning className={`bg-[#0a0a0f] ${inter.variable} ${jetbrainsMono.variable} ${outfit.variable}`}>
+      <body className="font-sans">
+        <Providers>
+          <GenesisLayout>
             {children}
-          </main>
-        </ThemeProvider>
+          </GenesisLayout>
+        </Providers>
       </body>
     </html>
   )

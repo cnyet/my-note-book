@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 interface MemoryEntry {
   key: string
-  value: any
+  value: string
   agent_id: string
 }
 

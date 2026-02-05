@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import BlogCard from '@/components/blog/BlogCard'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search, SlidersHorizontal, Terminal, Activity } from 'lucide-react'
 
 // Article Type Definition
 interface Article {
@@ -15,8 +15,8 @@ interface Article {
 
 async function getPosts(): Promise<Article[]> {
   try {
-    const res = await fetch('http://localhost:8000/api/v1/posts', {
-      next: { revalidate: 3600 }, // Cache for 1 hour
+    const res = await fetch('http://localhost:8001/api/v1/posts', {
+      next: { revalidate: 3600 }, 
     })
     if (!res.ok) return []
     return res.json()
@@ -32,14 +32,18 @@ async function BlogList() {
 
   if (publishedPosts.length === 0) {
     return (
-      <div className="py-20 text-center">
-        <p className="text-[#94a3b8] italic">No neural logs found in the archives.</p>
+      <div className="py-40 text-center space-y-6 animate-reveal">
+        <Terminal className="w-16 h-16 text-white/5 mx-auto" />
+        <p className="text-[#94a3b8] text-lg font-light italic tracking-[0.3em] uppercase">
+           Neural archives synchronized. <br /> 
+           <span className="text-white/20">No matching logs found in this sector.</span>
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
       {publishedPosts.map((post, i) => (
         <BlogCard
           key={post.id}
@@ -61,9 +65,9 @@ async function BlogList() {
 
 function BlogSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
       {[1, 2, 3].map((n) => (
-        <div key={n} className="h-64 bg-white/5 animate-pulse rounded-2xl border border-white/5" />
+        <div key={n} className="h-96 glass-standard animate-pulse rounded-[3rem]" />
       ))}
     </div>
   )
@@ -71,46 +75,54 @@ function BlogSkeleton() {
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-32 pb-20 px-4 overflow-hidden relative">
-      {/* Ambient background blur */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#00f2ff]/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+    <div className="min-h-screen bg-[#0a0a0f] text-white pt-40 pb-32 px-6 overflow-hidden relative selection:bg-[#bc13fe]/30">
+      {/* Cinematic Background Gradients */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#bc13fe]/5 blur-[180px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
       
       <div className="container mx-auto relative z-10">
-        <header className="max-w-4xl mb-16 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-[1px] bg-[#00f2ff]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#00f2ff]">
-              Chronicles
+        <header className="max-w-4xl mb-32 space-y-10 animate-reveal">
+          <div className="flex items-center gap-4">
+            <Activity className="w-4 h-4 text-[#bc13fe]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.6em] text-[#bc13fe] glow-purple font-mono">
+              Sector_9 // Neural Chronicles
             </span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight font-[family-name:var(--font-outfit)]">
-            NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00f2ff] to-[#bc13fe]">ARCHIVES</span>
+          <h1 className="text-7xl md:text-9xl font-bold tracking-tighter leading-[0.8] font-outfit uppercase">
+            Neural <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/20 italic">Archives</span>
           </h1>
-          <p className="text-[#94a3b8] text-lg max-w-2xl leading-relaxed italic">
-            Exploring the frontiers of multi-agent systems, orchestration protocols, and the evolution of digital intelligence.
+          <p className="text-[#94a3b8] text-2xl max-w-2xl leading-relaxed italic font-light">
+             Exploring the multi-agent evolution, architectural breakthroughs, and the slow decay of digital intelligence.
           </p>
         </header>
 
-        {/* Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 py-6 border-y border-white/5">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
+        {/* Command Search Bar */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 mb-24 py-12 border-y border-white/5 relative group animate-reveal [animation-delay:200ms]">
+          <div className="relative flex-1 max-w-2xl">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-[#bc13fe] transition-colors" />
             <input
-              placeholder="Query logs..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:ring-1 focus:ring-[#00f2ff] outline-none transition-all placeholder:text-[#94a3b8]/50"
+              placeholder="Query logs by neural signature..."
+              className="w-full bg-white/[0.02] border border-white/10 rounded-2xl pl-14 pr-6 py-6 text-sm text-white focus:bg-white/[0.06] focus:border-[#bc13fe]/40 outline-none transition-all placeholder:text-white/10 font-mono"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-bold text-[#94a3b8] hover:bg-white/10 transition-all">
-              <SlidersHorizontal className="w-4 h-4" />
-              FILTER DATA
+          
+          <div className="flex items-center gap-8">
+            <div className="hidden sm:flex items-center gap-3">
+               <div className="w-1 h-1 rounded-full bg-[#bc13fe] animate-pulse" />
+               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">Archive Sync Status: Stable</span>
+            </div>
+            <button className="flex items-center gap-4 px-10 py-5 rounded-full glass-standard text-[10px] font-black tracking-[0.3em] uppercase hover:bg-white/10 transition-all border-white/10">
+              <SlidersHorizontal className="w-4 h-4 text-[#bc13fe]" />
+              Filter Protocol
             </button>
           </div>
         </div>
 
-        <Suspense fallback={<BlogSkeleton />}>
-          <BlogList />
-        </Suspense>
+        <div className="animate-reveal [animation-delay:400ms]">
+          <Suspense fallback={<BlogSkeleton />}>
+            <BlogList />
+          </Suspense>
+        </div>
       </div>
     </div>
   )

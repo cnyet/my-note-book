@@ -1,17 +1,24 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
 import { Plus, Edit2, Trash2 } from 'lucide-react'
+
+interface EntityItem {
+  id: number
+  name?: string
+  title?: string
+  category?: string
+  status?: string
+}
 
 export default function AdminEntityPage({ params }: { params: Promise<{ entity: string }> }) {
   const { entity } = use(params)
   
-  const { data: items = [], isLoading } = useQuery({
+  const { data: items = [] } = useQuery({
     queryKey: ['admin', entity],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:8000/api/v1/${entity === 'agents' ? 'agents' : entity}`)
+      const res = await fetch(`http://localhost:8001/api/v1/${entity === 'agents' ? 'agents' : entity}`)
       return res.json()
     }
   })
@@ -38,7 +45,7 @@ export default function AdminEntityPage({ params }: { params: Promise<{ entity: 
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 text-sm">
-            {items.map((item: any) => (
+            {items.map((item: EntityItem) => (
               <tr key={item.id} className="hover:bg-white/5 transition-colors group">
                 <td className="px-8 py-6 font-bold text-white">{item.name || item.title}</td>
                 <td className="px-8 py-6 text-[#94a3b8]">{item.category || item.status || 'N/A'}</td>

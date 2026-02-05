@@ -7,7 +7,7 @@ import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { 
   Bold, Italic, List, ListOrdered, Heading1, Heading2, 
-  Code, Quote, Undo, Redo, Link as LinkIcon, Image as ImageIcon 
+  Code, Quote, Undo, Redo 
 } from 'lucide-react'
 
 interface TiptapEditorProps {

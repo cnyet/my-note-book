@@ -14,10 +14,16 @@ if [ -d "venv" ]; then
   source venv/bin/activate
 elif [ -d ".venv" ]; then
   source .venv/bin/activate
+else
+  echo "⚠️  Warning: Virtual environment not found. Skipping backend lint."
+  VENV_EXISTS=false
 fi
-ruff check src/ tests/ --fix || echo "⚠️ Ruff check failed"
-ruff format src/ tests/ || echo "⚠️ Ruff format failed"
-mypy src/ --strict || echo "⚠️ MyPy check failed"
+
+if [ "${VENV_EXISTS:-true}" = true ]; then
+  ruff check src/ tests/ --fix
+  ruff format src/ tests/
+  mypy src/ --strict
+fi
 cd ..
 
 # 前端 Lint

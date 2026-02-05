@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     )
 
     # CORS
-    allowed_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+    allowed_origins: str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3001")
 
     # OAuth
     github_client_id: str = os.getenv("GITHUB_CLIENT_ID", "")

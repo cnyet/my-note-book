@@ -1,16 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   :root {
+    /* Genesis v1.2 Color Engine */
     --bg-abyss: #0a0a0f;
     --bg-slate: #11111a;
     --bg-surface: #1a1a24;
-    --primary: 180 100% 50%;
-    --accent: 285 100% 54%;
-    --success: 158 100% 50%;
-    --error: 0 100% 65%;
+    --primary: 180 100% 50%; /* #00f2ff */
+    --accent: 285 100% 54%;  /* #bc13fe */
+    --success: 158 100% 50%; /* #00ffa3 */
+    --error: 0 100% 65%;   /* #ff4d4d */
     --text-p: #f8f8f8;
     --text-s: #94a3b8;
 
@@ -20,47 +19,94 @@
     --card-foreground: 0 0% 97%;
     --popover: var(--bg-surface);
     --popover-foreground: 0 0% 97%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 240 5.9% 15%;
     --ring: 180 100% 50%;
     --radius: 0.75rem;
+
+    cursor: crosshair;
   }
 
-  .dark {
-    --bg-abyss: #0a0a0f;
-    --bg-slate: #11111a;
-    --bg-surface: #1a1a24;
-    --primary: 180 100% 50%;
-    --accent: 285 100% 54%;
-    --success: 158 100% 50%;
-    --error: 0 100% 65%;
-    --text-p: #f8f8f8;
-    --text-s: #94a3b8;
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+    font-family: var(--font-inter), 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 
-    --background: var(--bg-abyss);
-    --foreground: 210 40% 98%;
-    --card: var(--bg-slate);
-    --card-foreground: 210 40% 98%;
-    --popover: var(--bg-surface);
-    --popover-foreground: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 180 100% 50%;
+  /* 自定义 Genesis 滚动条 */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 242, 255, 0.2);
+    border-radius: 10px;
+    transition: background 0.3s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 242, 255, 0.5);
+  }
+}
+
+@layer components {
+  /* 物理级玻璃态 */
+  .glass-standard {
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+
+  .glass-elevated {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 20px 50px rgba(0, 0, 0, 0.5),
+      inset 0 0 30px rgba(255, 255, 255, 0.03);
+  }
+
+  /* 霓虹光晕 */
+  .glow-cyan {
+    filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.4));
+  }
+
+  .glow-purple {
+    filter: drop-shadow(0 0 15px rgba(188, 19, 254, 0.3));
+  }
+
+  /* 微噪音纹理 */
+  .genesis-noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-overlay: overlay;
+  }
+}
+
+@layer utilities {
+  .font-outfit { font-family: var(--font-outfit), 'Outfit', sans-serif; }
+  .font-mono { font-family: var(--font-mono), 'JetBrains Mono', monospace; }
+  
+  .text-glow-primary {
+    text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+  }
+
+  .animate-reveal {
+    animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }

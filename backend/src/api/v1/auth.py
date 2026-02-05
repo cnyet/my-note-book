@@ -25,7 +25,7 @@ oauth.register(
     access_token_url="https://github.com/login/oauth/access_token",
     access_token_params=None,
     refresh_token_url=None,
-    redirect_uri="http://localhost:8000/api/v1/auth/github/callback",
+    redirect_uri="http://localhost:8001/api/v1/auth/github/callback",
     client_kwargs={"scope": "user:email"},
 )
 
@@ -143,14 +143,14 @@ async def github_callback(request: Request, db: Session = Depends(get_db)):
     from fastapi.responses import RedirectResponse
 
     return RedirectResponse(
-        url=f"http://localhost:3000/auth/callback?token={access_token}"
+        url=f"http://localhost:3001/auth/callback?token={access_token}"
     )
 
 
 @router.get("/google/login")
 async def google_login(request: Request):
     return await oauth.google.authorize_redirect(
-        request, "http://localhost:8000/api/v1/auth/google/callback"
+        request, "http://localhost:8001/api/v1/auth/google/callback"
     )
 
 
@@ -179,5 +179,5 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
     from fastapi.responses import RedirectResponse
 
     return RedirectResponse(
-        url=f"http://localhost:3000/auth/callback?token={access_token}"
+        url=f"http://localhost:3001/auth/callback?token={access_token}"
     )

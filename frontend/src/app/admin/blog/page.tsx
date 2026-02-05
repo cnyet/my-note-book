@@ -1,37 +1,38 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Edit2, Trash2, Search, ExternalLink } from 'lucide-react'
+import { Plus, Edit2, Trash2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import TiptapEditor from '@/components/admin/TiptapEditor'
 import { toast } from 'sonner'
 
 interface Post {
-  id: number
+  id?: number
   title: string
   slug: string
+  content: string
   status: string
   category: string
-  created_at: string
+  created_at?: string
 }
 
 export default function AdminBlogPage() {
   const [isEditing, setIsEditing] = useState(false)
-  const [currentPost, setCurrentPost] = useState<any>(null)
+  const [currentPost, setCurrentPost] = useState<Post | null>(null)
   const queryClient = useQueryClient()
 
-  const { data: posts = [], isLoading } = useQuery({
+  const { data: posts = [] } = useQuery({
     queryKey: ['admin-posts'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:8000/api/v1/posts')
+      const res = await fetch('http://localhost:8001/api/v1/posts')
       return res.json()
     }
   })
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`http://localhost:8000/api/v1/posts/${id}`, { method: 'DELETE' })
+      const res = await fetch(`http://localhost:8001/api/v1/posts/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('Delete failed')
     },
     onSuccess: () => {
@@ -61,23 +62,23 @@ export default function AdminBlogPage() {
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#94a3b8] uppercase tracking-widest">Entry Title</label>
               <input 
-                value={currentPost.title} 
-                onChange={(e) => setCurrentPost({...currentPost, title: e.target.value})}
+                value={currentPost?.title || ''} 
+                onChange={(e) => currentPost && setCurrentPost({...currentPost, title: e.target.value})}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#00f2ff]" 
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-[#94a3b8] uppercase tracking-widest">Neural Slug</label>
               <input 
-                value={currentPost.slug} 
-                onChange={(e) => setCurrentPost({...currentPost, slug: e.target.value})}
+                value={currentPost?.slug || ''} 
+                onChange={(e) => currentPost && setCurrentPost({...currentPost, slug: e.target.value})}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#00f2ff]" 
               />
             </div>
           </div>
           <div className="space-y-2">
             <label className="text-xs font-bold text-[#94a3b8] uppercase tracking-widest">Content Core</label>
-            <TiptapEditor content={currentPost.content} onChange={(html) => setCurrentPost({...currentPost, content: html})} />
+            <TiptapEditor content={currentPost?.content || ''} onChange={(html) => currentPost && setCurrentPost({...currentPost, content: html})} />
           </div>
           <div className="flex justify-end gap-4 mt-8">
             <button onClick={() => setIsEditing(false)} className="px-6 py-2 text-[#94a3b8] hover:text-white transition-colors">ABORT</button>
@@ -108,7 +109,7 @@ export default function AdminBlogPage() {
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2">
                       <button className="p-2 hover:bg-white/10 rounded-lg text-[#00f2ff]"><Edit2 className="w-4 h-4" /></button>
-                      <button onClick={() => deleteMutation.mutate(post.id)} className="p-2 hover:bg-white/10 rounded-lg text-red-400"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => post.id && deleteMutation.mutate(post.id)} className="p-2 hover:bg-white/10 rounded-lg text-red-400"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>

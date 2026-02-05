@@ -183,8 +183,8 @@ AI agents **必须** 在获得人类或 Sisyphus (Lead) 的明确指令（如 "u
  - ✅ API 响应标准化
 
 **验收标准**:
- - [x] 前端: http://localhost:3000 可访问
- - [x] 后端: http://localhost:8000/docs 可访问
+ - [x] 前端: http://localhost:3001 可访问
+ - [x] 后端: http://localhost:8001/docs 可访问
  - [x] 数据库连接成功
 
 ---

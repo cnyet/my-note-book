@@ -24,6 +24,11 @@ else
   source .venv/bin/activate
   pip install -r requirements.txt
 fi
+
+echo "🗄️  Syncing database schema and seeding data..."
+export PYTHONPATH=${PYTHONPATH:-}:.
+alembic upgrade head
+python3 src/scripts/seed.py
 cd ..
 
 # 2. 前端环境设置

@@ -31,7 +31,7 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('http://localhost:8000/api/v1/auth/register', {
+      const response = await fetch('http://localhost:8001/api/v1/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,8 +49,9 @@ export default function RegisterPage() {
       }
 
       router.push('/login')
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -126,14 +127,14 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => window.location.href = 'http://localhost:8000/api/v1/auth/github/login'}
+              onClick={() => window.location.href = 'http://localhost:8001/api/v1/auth/github/login'}
               className="flex items-center justify-center gap-2 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold"
             >
               GITHUB
             </button>
             <button
               type="button"
-              onClick={() => window.location.href = 'http://localhost:8000/api/v1/auth/google/login'}
+              onClick={() => window.location.href = 'http://localhost:8001/api/v1/auth/google/login'}
               className="flex items-center justify-center gap-2 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all text-xs font-bold"
             >
               GOOGLE
