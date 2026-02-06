@@ -2,7 +2,7 @@
 
 > **归属**: Work-Agents 项目  
 > **技术栈**: SQLite  
-> **关联文档**: [实施计划](../implement/implement-plan.md)
+> **关联文档**: [项目路线图](../planning/roadmap.md)
 
 ---
 
@@ -33,8 +33,10 @@
 | external_url | VARCHAR(500) | - | 外部跳转链接 (如 LobeChat 助手链接) |
 | api_endpoint | VARCHAR(500) | - | 内部 API 端点 (可选) |
 | config | JSON | - | 配置信息 (JSON格式) |
+| status | VARCHAR(20) | DEFAULT 'offline' | 生命周期状态 (offline/spawned/idle/terminated) |
 | sort_order | INTEGER | DEFAULT 0 | 排序权重 |
 | is_active | BOOLEAN | DEFAULT TRUE | 是否激活 |
+| version | INTEGER | DEFAULT 1 | 乐观锁版本号 |
 | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
 | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
 
@@ -153,9 +155,24 @@
  | memory_type | VARCHAR(50) | NOT NULL | 记忆类型 (fact/conversation/context) |
  | content | TEXT | NOT NULL | 记忆内容 |
  | importance_score | FLOAT | DEFAULT 0.5 | 重要性评分 (0.0-1.0) |
+ | version | INTEGER | DEFAULT 1 | 乐观锁版本号 |
  | expires_at | DATETIME | - | 过期时间 |
  | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
  | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 更新时间 |
+
+### 审计日志表 (audit_logs)
+ *用于系统级操作审计和Agent行为追踪*
+
+ | 字段 | 类型 | 约束 | 说明 |
+ |------|------|------|------|
+ | id | INTEGER | PRIMARY KEY | 自增主键 |
+ | entity_type | VARCHAR(50) | NOT NULL | 实体类型 (user/agent/system) |
+ | entity_id | VARCHAR(100) | - | 实体ID |
+ | action | VARCHAR(100) | NOT NULL | 执行操作 (login/spawn/terminate/update) |
+ | payload | JSON | - | 操作载荷 |
+ | ip_address | VARCHAR(45) | - | IP地址 |
+ | identity_type | VARCHAR(20) | - | 身份类型 (user/system) |
+ | created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 创建时间 |
 
 ### 用户身份表 (user_identities)
  *用于存储SSO和身份传播相关信息*
@@ -212,6 +229,11 @@
  -- 用户身份索引
  CREATE INDEX idx_user_identities_user ON user_identities(user_id);
  CREATE INDEX idx_user_identities_provider ON user_identities(provider);
+ 
+ -- 审计日志索引
+ CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+ CREATE INDEX idx_audit_logs_action ON audit_logs(action);
+ CREATE INDEX idx_audit_logs_timestamp ON audit_logs(created_at);
  ```
 
 ---
@@ -241,15 +263,9 @@
  users (1) ────< (N) agent_memories
  agents (1) ───< (N) agent_memories
  agents (1) ───< (N) agent_messages (sender/receiver)
- 
- agents (独立表，可能与其他表建立关联)
- 
- categories (1) ────< (N) tools
-                │      │
-                │      └── (N) tools (通过 tool_relations 自关联)
-                │
-                └───< (N) labs
+ users (1) ───< (N) audit_logs (当为 user 身份时)
  ```
+
 
 ---
 
@@ -257,4 +273,4 @@
 **日期**: 2026-02-02  
 **存储策略**: 所有媒体文件（图片、图标）均存储为相对于 `frontend/public` 的**相对路径**（例如 `/uploads/hero.png`）。
 **最后更新**: 2026-02-02  
-**关联计划**: [项目实施计划](../implement/implement-plan.md)
+**关联计划**: [项目路线图](../planning/roadmap.md)

@@ -16,12 +16,29 @@ Work Agents is a modern AI multi-agent orchestration platform designed for the g
 
 ## Domain Context
 - **Agent Orchestration Engine**: The core engine for multi-agent collaboration, supporting cross-agent message passing and context sharing.
+- **Agent Lifecycle**: Managed lifecycle transitions for agents:
+    - `OnSpawn`: Initialization, capability registration, and memory attachment.
+    - `OnIdle`: State checkpointing and resource suspension.
+    - `OnTerminate`: Final memory persistence, cleanup, and broadcast of termination.
 - **WebSocket Server**: Provides real-time bidirectional communication capabilities, supporting online status updates and real-time data streams.
-- **Identity Propagation**: Unified identity authentication protocol based on JWT, achieving identity synchronization across agents and services.
+- **Identity Propagation**: Unified identity authentication protocol based on JWT.
+    - **User Identity**: Represents the human user's context, permissions, and session.
+    - **System Identity**: Represents internal agent-to-agent or platform-level operations with elevated or restricted scopes.
 - **Agent Memory**: Persistent storage for agent states and long-term memories, supporting context continuity.
+- **Concurrency & State Management**:
+    - **Optimistic Locking**: State updates SHALL use versioning to detect concurrent modification conflicts.
+    - **Resource Locking**: Critical sections requiring exclusive access SHALL use distributed locks via Redis.
 - **Agent Message Bus**: Implements asynchronous messaging mechanisms between multiple agents, supporting event stream processing.
-- **Database**: Uses SQLite, file located at `backend/data/work_agents.db`.
-- **Storage**: All media files are stored under `frontend/public/uploads`.
+
+## Operational Context
+- **Resilience Policy**:
+    - **Timeouts**: Agent-to-Agent requests MUST have a mandatory 30s timeout.
+    - **Backpressure**: The Message Bus SHALL implement buffering limits; exceeding limits triggers caller-side throttling.
+    - **Error Propagation**: Failures SHALL be categorized as `Transient` (retry-able) or `Fatal` (triggers termination).
+- **Environment Parity**:
+    - Development: SQLite.
+    - Production: PostgreSQL/Vector Database (Agents MUST remain DB-agnostic through SQLAlchemy abstraction).
+- **Scalability**: WebSocket server SHALL support horizontal scaling via a shared Redis pub/sub backplane for message distribution.
 
 ## Project Conventions
 

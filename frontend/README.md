@@ -5,14 +5,21 @@
 ## 🛠️ 技术栈
 
 - **框架**: Next.js 15.5 (App Router)
-- **UI 组件**: React 19, Shadcn/UI
-- **样式**: Tailwind CSS 4
-- **状态管理**: Zustand
-- **数据获取**: TanStack Query
-- **语言**: TypeScript
-- **动画**: Framer Motion
-- **表单处理**: React Hook Form + Zod
+- **UI 组件**: React 19.1, Shadcn/UI
+- **样式**: Tailwind CSS 4.x
+- **状态管理**: Zustand 4.x
+- **数据获取**: TanStack Query 5.x
+- **语言**: TypeScript 5.x
+- **动画**: Framer Motion 6.x+
+- **表单处理**: React Hook Form 7.x + Zod 3.x
 - **编辑器**: Tiptap (用于博客编辑)
+
+## 📚 相关文档
+
+- [前端 UI/UX 设计规范](../docs/design/frontend-guide.md)
+- [系统架构设计](../docs/design/architecture.md)
+- [API 接口文档](../docs/design/api-design.md)
+- [OpenSpec 工作流](../docs/development/openspec-guide.md)
 
 ## 🚀 快速开始
 
@@ -38,33 +45,31 @@ pnpm dev
 
 ```
 frontend/
-├── src/
-│   ├── app/              # Next.js App Router (页面 & 布局)
-│   │   ├── (frontend)/   # 前台页面 (主页、智能体、工具、实验室、博客)
-│   │   ├── (dashboard)/  # 管理中心 (仪表板、管理CRUD、设置)
-│   │   ├── auth/         # 认证流程 (登录/注册)
-│   │   ├── layout.tsx    # 根布局 (Genesis 主题)
-│   │   └── globals.css   # 全局样式 (Tailwind 4 & Genesis 变量)
-│   ├── components/       # React 组件库
-│   │   ├── ui/           # Shadcn/UI 基础组件
-│   │   ├── layout/       # 布局组件 (导航栏、页脚、侧边栏)
-│   │   └── features/     # 功能组件 (粒子背景、在线脉冲等)
-│   ├── lib/              # 核心库 (API 客户端、工具函数)
-│   ├── hooks/            # 自定义 React Hooks
-│   ├── store/            # 状态管理 (Zustand)
-│   ├── types/            # TypeScript 类型定义
-│   ├── utils/            # 通用工具函数
-│   ├── services/         # API 服务封装
-│   └── constants/        # 常量配置
-├── public/               # 静态资源
-│   └── uploads/          # 用户上传的媒体文件
+├── src/                  # 源代码目录（项目源码）
+├── static/               # 静态资源
+│   └── logo.png          # Logo 等静态文件
 ├── design-assets/        # 设计资产 (UI/UX 设计稿)
+│   ├── logo.png
+│   └── pages/            # 页面设计稿
+│       ├── home-desktop.png
+│       ├── home-mobile.png
+│       ├── agents-desktop.png
+│       ├── agents-mobile.png
+│       ├── tools-desktop.png
+│       ├── tools-mobile.png
+│       ├── labs-desktop.png
+│       ├── labs-mobile.png
+│       ├── blog-desktop.png
+│       └── blog-mobile.png
 ├── package.json          # Node.js 依赖配置
-├── next.config.ts        # Next.js 配置文件
-├── tailwind.config.ts    # Genesis 设计令牌配置
 ├── tsconfig.json         # TypeScript 配置
-└── .env.local           # 环境变量文件
+├── eslint.config.mjs     # ESLint 配置
+├── .env.example          # 环境变量模板
+├── .env.local           # 本地环境变量
+└── .gitignore           # Git 忽略配置
 ```
+
+> **注意**: 当前为项目精简结构，完整源代码将逐步实现。
 
 ## 🌐 页面功能
 

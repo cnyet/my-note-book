@@ -14,9 +14,9 @@
 │  智能体         │    │  OpenCode      │    │  OpenSpec       │    │  西西弗斯       │
 │  环境           │───▶│  工作流         │───▶│  工作流          │───▶│  工作流          │
 │                 │    │                 │    │                 │    │                 │
-│  docs/guides/   │    │  docs/guides/   │    │  docs/guides/   │    │  docs/guides/   │
+│  docs/develop/  │    │  docs/develop/  │    │  docs/develop/  │    │  docs/develop/  │
 │  agentic-       │    │  opencode-      │    │  openspec-      │    │  sisyphus-      │
-│  environment.md │    │  workflows.md   │    │  workflow.md    │    │  workflow.md    │
+│  environment.md │    │  guide.md       │    │  guide.md       │    │  guide.md       │
 └─────────────────┘    └─────────────────┘    └─────────────────┘    └─────────────────┘
         │                        │                        │                        │
         └────────────────────────┼────────────────────────┼────────────────────────┘
@@ -190,11 +190,11 @@ delegate_task(
 
 | 阶段 | 必要文档 | 关键标准 |
 | :--- | :--- | :--- |
-| **环境设置** | `docs/guides/agentic-environment.md` | 技能、代理、MCP 功能 |
-| **工作流执行** | `docs/guides/opencode-workflows.md` | 斜杠命令、委托 |
-| **规范流程** | `docs/guides/openspec-workflow.md` | 规范驱动开发 |
-| **执行协议** | `docs/guides/sisyphus-workflow.md` | UltraWork、自主执行 |
-| **项目概览** | `openspec/project.md`, `docs/requirement.md` | OpenSpec 协议 |
+| **环境设置** | `docs/development/agentic-environment.md` | 技能、代理、MCP 功能 |
+| **工作流执行** | `docs/development/opencode-guide.md` | 斜杠命令、委托 |
+| **规范流程** | `docs/development/openspec-guide.md` | 规范驱动开发 |
+| **执行协议** | `docs/development/sisyphus-guide.md` | UltraWork、自主执行 |
+| **项目概览** | `openspec/project.md`, `docs/planning/requirements.md` | OpenSpec 协议 |
 | **设计实现** | `docs/design/`, `frontend/design-assets/` | **设计主导** 原则 |
 | **验证** | `GEMINI.md`, `AGENTS.md` | 代码质量、行数限制 |
 
@@ -218,8 +218,8 @@ delegate_task(
 | :--- | :--- | :--- |
 | **Sisyphus (Lead)** | 编排、状态维护、TODO 闭合 | `tasks.md`, `openspec/project.md` |
 | **Hephaestus** | 逻辑开发、模式匹配、性能 | `docs/design/`, `backend/src/` |
-| **Frontend Eng** | 样式、动画、UI 验证 | `frontend/design-assets/`, `ui-ux-spec.md` |
-| **Oracle** | 架构决定、复杂调试、战略 | `docs/adr/`, 全局上下文 |
+| **Frontend Eng** | 样式、动画、UI 验证 | `frontend/design-assets/`, `frontend-guide.md` |
+| **Oracle** | 架构决定、复杂调试、战略 | `docs/design/`, 全局上下文 |
 | **Librarian/Explorer** | 研究、代码映射、上下文简化 | 互联网、文档、完整代码库 |
 
 ## 7. 核心约束 (不可协商)
@@ -239,9 +239,9 @@ delegate_task(
 └─ 新功能/架构变更
   ├─ 启动 OpenSpec 工作流: /openspec-proposal
   ├─ 遵循 agentic-environment.md 了解能力
-  ├─ 应用 opencode-workflows.md 了解命令使用
-  ├─ 使用 sisyphus-workflow.md 协议执行
-  └─ 对照 openspec-workflow.md 中的当前规范进行验证
+  ├─ 应用 opencode-guide.md 了解命令使用
+  ├─ 使用 sisyphus-guide.md 协议执行
+  └─ 对照 openspec-guide.md 中的当前规范进行验证
 ```
 
 ## 9. 高级工程师高密度指南

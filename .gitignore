@@ -58,7 +58,12 @@ logs/
 *.log
 
 # IDE
-.vscode/
+# VS Code - 保留共享配置，忽略个人设置
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 .idea/
 *.swp
 *.swo

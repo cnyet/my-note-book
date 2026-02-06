@@ -1,164 +1,194 @@
-# OpenSpec Detailed Development Instructions
+# OpenSpec Detailed Development Specification
 
-> **CRITICAL: Language Policy**
-> AI agents MUST respond in the same language as the user's prompt (e.g., if asked in Chinese, reply in Chinese). Use technical English only for variable names and specific technical terms.
+> AI agents must respond in the same language as the user's prompt (e.g., respond in Chinese if asked in Chinese). Variable names and technical terms may remain in English.
 
-This document defines the mandatory standards for spec-driven development, engineering excellence, and AI communication within this project.
+> ‼️ Important Note: After all plans are confirmed and conditions are ready to begin implementation, first ask me: "Can I start execution according to the plan?" Then wait for my explicit instruction: "Start Execution" before proceeding. Automatic execution is not allowed without this confirmation. Except for regular conversations outside of tasks or other routine modifications. Remember this!!
 
-## 1. TL;DR Quick Checklist
+This document defines the mandatory standards for specification-driven development, engineering excellence, and AI communication in this project.
+
+## 1. Quick Summary Checklist
 
 - **Search**: `openspec spec list --long` & `openspec list`. Use `rg` for deep content search.
-- **Scope**: New capability = New Change ID. Existing capability = Modify existing Spec.
-- **ID Strategy**: `verb-kebab-case` (e.g., `add-user-auth`).
-- **Files**: `proposal.md`, `tasks.md`, `design.md` (if complex), and delta specs.
-- **Grammar**: `SHALL/MUST` for requirements. `#### Scenario:` for acceptance criteria.
-- **Validate**: `openspec validate [id] --strict`.
-- **Handshake Protocol**: Initiate formal handshake via orchestration protocol when receiving user intent. Follow the handshaking process: acknowledge, confirm scope, await explicit start command before proceeding.
-- **Language**: Respond in the same language as the user's prompt (Mirroring).
+- **Scope**: New features = New Change ID. Existing features = Modify existing specifications.
+- **ID Strategy**: `verb-hyphen-lowercase` (e.g. `add-user-auth`).
+- **Files**: `proposal.md`, `tasks.md`, `design.md` (if complex) and incremental specifications.
+- **Syntax**: `SHALL/MUST` indicates requirements. `#### Scenario:` indicates acceptance criteria.
+- **Validation**: `openspec validate [id] --strict`.
+- **Language**: Respond in the same language as the user's prompt (mirroring).
 
 ---
 
-## 2. The Three-Stage Workflow
+## 2. Three-Stage Workflow
 
 ### Stage 1: Change Creation (Planning)
-**When**: Feature additions, breaking changes, architecture shifts, or security updates.
-1. **Context Discovery**: Read `openspec/project.md` and relevant `specs/`. Assess impact on orchestration protocols and agent memory systems.
-2. **Scaffold**: Create `openspec/changes/<change-id>/`.
+
+**Timing**: Feature additions, breaking changes, architectural changes, or security updates.
+
+1. **Context Discovery**: Read `openspec/project.md` and related `specs/`. Assess impact on orchestration protocols and agent memory systems.
+2. **Scaffolding**: Create `openspec/changes/<change-id>/`.
 3. **Drafting**:
-   - `proposal.md`: Clear "Why", "What", and "Impact" (list affected files/specs).
-   - `tasks.md`: Atomic, sequential TODOs (`- [ ]`).
-   - `design.md`: **Mandatory** for cross-cutting changes, new dependencies, or database migrations.
+   - `proposal.md`: Clear "why", "what", and "impact" (list affected files/specifications).
+   - `tasks.md`: Atomic, sequential to-do items (`- [ ]`).
+   - `design.md`: **Required** for cross-domain changes, new dependencies, or database migrations.
 4. **Validation**: Run `openspec validate <id> --strict`.
-5. **Approval Gate**: Do not execute code until the plan is reviewed and approved. Document potential impacts on agent communication and state management.
+5. **Approval Threshold**: Do not execute code until plans are reviewed and approved. Document potential impacts on agent communication and state management.
 
 ### Stage 2: Implementation (Execution)
+
 **Goal**: Atomic, verifiable progress.
-1. **Read-First**: Consume `proposal.md` and `design.md` to understand context.
-2. **Step-by-Step**: Execute `tasks.md` sequentially. Do not jump ahead.
-3. **Real-time Status**: Mark `- [x]` only when a task is truly completed and tested.
-4. **Fast-Track**: Bug fixes (restoring spec behavior) and typos can bypass proposals but must be atomic.
+
+1. **First Read**: Absorb `proposal.md` and `design.md` to understand context.
+2. **Step-by-Step Execution**: Execute `tasks.md` in sequence. Do not skip.
+3. **Real-Time Status**: Mark `- [x]` only after tasks are truly completed and tested.
+4. **Fast Track**: Bug fixes (restoring specification behavior) and typos may bypass proposals, but must be atomic.
 
 ### Stage 3: Archiving (Closing)
-**Goal**: Maintain the "Single Source of Truth".
-1. **Verification**: Confirm build/lint/test pass.
+
+**Goal**: Maintain "single source of truth".
+
+1. **Validation**: Confirm build/formatting/tests pass.
 2. **Merge**: `openspec archive <change-id> --yes`.
-3. **Cleanup**: Run `openspec validate --strict` to ensure the new global state is valid.
+3. **Cleanup**: Run `openspec validate --strict` to ensure new global state is valid.
 
 ---
 
-## 3. Engineering excellence & Constraints
+## 3. Engineering Excellence and Constraints
 
 ### 3.1 Code Architecture (GEMINI Standards)
-- **Scale Limits**:
-    - Dynamic Languages (TS/Python): Max **300 lines** per file.
-    - Static/Layout (CSS/HTML): Max **400 lines** per file.
-    - Directory Complexity: Max **8 files** per folder. Refactor if exceeded.
+
+- **Size Limits**:
+  - Dynamic languages (TS/Python): maximum **300 lines** per file.
+  - Static/layout (CSS/HTML): maximum **400 lines** per file.
+  - Directory complexity: maximum **8 files** per folder. Refactor when exceeded.
+  - **Exemption Mechanism**: Core configuration files (such as `types.ts`, `constants.ts`) or files with `// @openspec-allow-long-file` comments may have relaxed limits, but reasons must be documented in `design.md`.
 - **Logic Complexity**:
-    - Functions: Max **50 lines**.
-    - Parameters: Max **5**.
-    - Nesting: Max **3 levels**.
-    - Booleans: Prefix with `is/has/can` (e.g., `isValid`).
+  - Functions: maximum **50 lines**.
+  - Parameters: maximum **5**.
+  - Nesting: maximum **3 levels**.
+  - Booleans: Use `is/has/can` prefixes (e.g. `isValid`).
 
 ### 3.2 Framework Standards
-- **Frontend (Next.js 15.4)**:
-    - Prefer **Server Components** by default.
-    - Use `lucide-react` for icons and `uv-ui` components (internal design system).
-    - **UI Verification**: Implementation **MUST** reference high-fidelity mockups and component designs located in `frontend/design-assets/` to ensure visual fidelity.
-    - Styling: Vanilla CSS or requested Tailwind (check version).
-- **Backend (FastAPI)**:
-    - Pydantic v2 for schemas.
-    - Dependency Injection for DB sessions and auth.
-    - RESTful patterns: Standardized JSON responses.
 
-### 3.3 Security & Environment
-- **Secrets**: **ZERO** hardcoding. Use `.env`.
-- **Validation**: Mandatory server-side input filtering and sanitization.
-- **Error Handling**: No silent failures. Always log context to `/logs`.
+- **Frontend (Next.js 15.4)**:
+  - Default preference for **server components**.
+  - Use `lucide-react` for icons, `uv-ui` components (internal design system).
+  - **UI Validation**: Implementation **must** reference high-fidelity prototypes and component designs located in `frontend/design-assets/` to ensure visual fidelity.
+  - Styling: Native CSS or Tailwind as requested (check version).
+- **Backend (FastAPI)**:
+  - Use Pydantic v2 for schemas.
+  - Use dependency injection for database sessions and authentication.
+  - RESTful patterns: Standardized JSON responses.
+
+### 3.3 Security and Environment
+
+- **Secrets**: **Zero** hardcoded values. Use `.env`.
+- **Validation**: Required server-side input filtering and sanitization.
+- **Error Handling**: Silent failures not allowed. Always log context to `/logs`.
 
 ---
 
-## 4. Documentation & Communication
+## 4. Documentation and Communication
 
-- **Core Guides**: [docs/guides/README.md](../docs/guides/README.md) (Standard Workflows & Best Practices)
+- **Core Guide**: [docs/guides/README.md](../docs/guides/README.md) (standard workflows and best practices)
 
 ### 4.1 Architecture Decision Records (ADR)
-For major technical choices (e.g., picking a DB client, auth provider):
-- Record decisions in `docs/adr/YYYY-MM-DD-title.md`.
-- Reference the ADR in the OpenSpec `proposal.md`.
+
+For major technical choices (e.g., selecting database client, authentication provider):
+
+- Record decision in `docs/adr/YYYY-MM-DD-title.md`.
+- Reference ADR in OpenSpec `proposal.md`.
 
 ### 4.2 Communication Protocol
-- **Language Mirroring**: AI agents MUST respond in the same language as the user's most recent prompt.
-- **Orchestration Communication**: When acting as background agents, ensure communication follows the orchestration protocol with proper message routing through the Agent Message Bus.
-- **Clarification**: If a request is ambiguous, ask **1-2** high-quality questions before scaffolding. Do not guess.
+
+- **Language Mirroring**: AI agents must respond in the same language as the user's most recent prompt.
+- **Orchestration Communication**: When operating as background agents, ensure communication follows orchestration protocol, routing messages appropriately through agent message bus.
+- **Clarification**: If requests are unclear, ask **1-2** high-quality questions before scaffolding. Do not guess.
 - **Tone**: Professional, collaborative, and proactive.
 
 ---
 
-## 5. Spec & Tooling Reference
+## 5. Specifications and Tool References
 
-### 5.1 Critical Formatting Rules
-- **Scenario Header**: **MUST** use `#### Scenario: Name`. (No bold, no bullets).
+### 5.1 Key Format Rules
+
+- **Scenario Headers**: **Must** use `#### Scenario: Name`. (No bold, no bullet points).
 - **Wording**: Use `SHALL` or `MUST`.
-- **MODIFIED Requirement**: Must contain the **entire** block (Header + Scenarios) to avoid data loss during archival.
+- **Modification Requirements**: Must include entire block (header + scenario) to prevent data loss during archiving.
 
-### 5.2 CLI Command Palette
-| Task | Command |
-| :--- | :--- |
-| **List Specs** | `openspec spec list --long` |
-| **List Changes** | `openspec list` |
-| **View Change** | `openspec show <id> --json` |
-| **Validate All** | `openspec validate --strict` |
+### 5.2 CLI Command Panel
+
+| Task                    | Command                                          |
+| :---------------------- | :----------------------------------------------- |
+| **List Specs**          | `openspec spec list --long`                      |
+| **List Changes**        | `openspec list`                                  |
+| **View Change**         | `openspec show <id> --json`                      |
+| **Validate All**        | `openspec validate --strict`                     |
 | **Search Requirements** | `rg -n "Requirement:\|Scenario:" openspec/specs` |
 
-## 6. Agentic Environment & Capabilities
+## 6. Agent Environment and Capabilities
 
-This project operates with a **Mandatory Priority Hierarchy** for capability usage. AI agents MUST evaluate and prioritize specialized tools over manual implementation:
+This project employs a **mandatory priority hierarchy** for using capabilities. AI agents must evaluate and prioritize dedicated tools over manual implementation:
 
-**PRIORITY HIERARCHY:**
-1. **Specialized Skills**: Use `playwright`, `git-master`, `frontend-ui-ux`, `prompt-optimization`, etc.
-2. **Specialized Agents**: Delegate to `oracle`, `librarian`, `metis`, `prometheus` via `delegate_task()`.
+**Priority Hierarchy:**
+
+1. **Dedicated Skills**: Use `playwright`, `git-master`, `frontend-ui-ux`, `prompt-optimization`, etc.
+2. **Dedicated Agents**: Delegate to `oracle`, `librarian`, `metis`, `prometheus` via `delegate_task()`.
 3. **Integrated Tools**: Use LSP, AST-grep, WebFetch, Google Search for research and refactoring.
-4. **Direct Implementation**: Only if no specialized capability exists for the task.
+4. **Direct Implementation**: Only when no dedicated capability exists for the task.
 
-- **Mandatory Reference**: Read `docs/guides/agentic-environment.md` and `docs/guides/opencode-workflows.md` to understand your full arsenal and command workflows.
+- **Cost Trade-off**: For estimated work under 5 minutes or extremely simple logic, agents should prioritize **3 (Integrated Tools)** or **4 (Direct Implementation)** to avoid resource waste from excessive delegation.
+- **Mandatory Reference**: Read `docs/guides/agentic-environment.md` and `docs/guides/opencode-workflows.md` to understand your complete arsenal and command workflows.
 - **Key Concepts**:
-    - **Skills First**: Before writing any code, check if a specialized skill can handle the logic or provide best practices.
-    - **Delegation**: Use `delegate_task()` to offload work. Use **Categories** (e.g., `visual-engineering`) for execution and **Sub-agents** (e.g., `oracle`, `librarian`) for specialized research. Ensure all delegated work is properly reported back through the orchestration protocol and logged to the message bus.
-    - **Loops**: Use `/ulw-loop` for autonomous progress until a task is 100% complete.
-- **Orchestration Integration**: When delegating tasks, ensure proper communication through the Agent Message Bus and store relevant context in Agent Memories for persistence.
+  - **Skill First**: Before writing any code, check if dedicated skills can handle logic or provide best practices.
+  - **Delegation**: Use `delegate_task()` to offload work. Use **categories** (e.g., `visual-engineering`) for execution, **sub-agents** (e.g., `oracle`, `librarian`) for specialized research. Ensure all delegated work reports properly through orchestration protocol and records via message bus.
+  - **Loops**: Use `/ulw-loop` for autonomous progress until 100% task completion.
+- **Orchestration Integration**: When delegating tasks, ensure proper communication through agent message bus and store relevant context to agent memory for persistence.
 - **LSP Integration**: Always use provided LSP and AST-grep tools for safe refactoring instead of manual regex.
 
-## 7. Troubleshooting & Self-Audit
+## 7. Troubleshooting and Self-Audit
 
-### 7.1 Automatic Persistence Protocol
+### 7.1 Auto Persistence Protocol
 
-Before executing a compaction skill (e.g., conversation-accuracy-skill) or switching tasks, the agent SHALL perform a semantic scan of the current history. Identified "Crystallized Knowledge" (decisions, logic shifts, major pitfalls) MUST be appended to `.sisyphus/notepads/` immediately. This is a mandatory safety step to prevent context loss during history truncation.
+Before executing compression skills (e.g., conversation-accuracy-skill) or switching tasks, agents should perform semantic scanning of current history. Identified "crystallized knowledge" (decisions, logic shifts, major pitfalls) must be immediately appended to `.sisyphus/notepads/`. This is a mandatory safety step to prevent context loss during history truncation.
 
-All AI agents operating within this framework must implement pre-compaction synchronization to preserve valuable insights. This protocol ensures that critical knowledge gained during long-form conversations is automatically persisted before any session compaction or task transition occurs. The process involves:
-- Scanning the conversation history for significant decision points
-- Identifying breakthrough moments or problem-solving insights
-- Extracting important architectural or technical considerations
-- Persisting this "crystallized knowledge" to the designated notepads directory
+All AI agents operating within this framework must implement pre-compression synchronization to preserve valuable insights. The process includes:
+
+- **Core Decision Points**: Trade-off analysis for non-obvious design choices.
+- **Pitfall Guides**: Non-intuitive bugs that were fixed and their root causes.
+- **Architectural Evolution**: Thoughts on scalability for future extensions or limitations of current implementation.
+- **Technical Debt**: Logic points compromised for quick delivery.
+
+All "crystallized knowledge" must be persisted to designated notepads directory.
+
+### 7.2 Circuit Breaker Protocol
+
+To prevent AI from getting stuck in error loops, the following circuit breaker mechanisms must be enforced:
+
+- **Consecutive Failures**: Same atomic task failing **3 times** consecutively (e.g., lint errors, test failures), AI must stop attempting.
+- **Timeout Limit**: Single task execution exceeding estimated duration by **2x**, must enter standby state.
+- **Intervention Flow**: After circuit breaker triggers, AI must generate a "failure diagnostic report" (containing attempted solutions, current blocking points, suggested alternatives) and explicitly request human intervention.
 
 ### Pre-Submission Checklist (AI Internal)
+
 - [ ] Does this file exceed 300/400 lines?
 - [ ] Are all secrets in `.env`?
-- [ ] Did I use `#### Scenario:` correctly?
-- [ ] Am I using the correct language for response?
+- [ ] Did I properly use `#### Scenario:`?
+- [ ] Did I respond in the correct language?
 - [ ] Did I run `openspec validate`?
-- [ ] Have I updated relevant Agent Memories with new context/state?
-- [ ] Were all agent communications logged to the Message Bus appropriately?
-- [ ] Does the implementation respect the orchestration protocol?
-- [ ] Have I performed the pre-compaction sync to save crystallized knowledge to `.sisyphus/notepads/`?
+- [ ] Did I update relevant agent memories with new context/state?
+- [ ] Are all agent communications properly recorded to message bus?
+- [ ] Does implementation follow orchestration protocol?
+- [ ] Did I execute pre-compression sync to save crystallized knowledge to `.sisyphus/notepads/`?
 
 ### Common Error Fixes
-- **"No deltas found"**: Check if `## ADDED Requirements` header exists.
-- **"Missing Scenario"**: Ensure 4 hashtags (`####`) are used.
-- **"Target path not found"**: Ensure `mkdir -p` was run for the change directory.
-- **Orchestration Failures**: 
-  - **Agent Deadlock**: Check for circular dependencies in agent delegation; ensure proper timeout mechanisms
-  - **Stale Memory**: Verify Agent Memory records haven't expired or become inconsistent; use freshness checks
-  - **Message Bus Issues**: Confirm messages are properly formatted and routed through the Agent Message Bus
-  - **WebSocket Disconnections**: Handle reconnection logic for real-time communication failures
 
-Remember: **Specs are the only truth. Code is an implementation detail. Keep them in sync.**
+- **"Diff not found"**: Check if `## ADDED Requirements` header exists.
+- **"Missing scenarios"**: Ensure 4 hash symbols (`####`) are used.
+- **"Target path not found"**: Ensure `mkdir -p` ran for change directory.
+- **Orchestration failures**:
+  - **Agent deadlock**: Check circular dependencies in agent delegation; ensure proper timeout mechanisms
+  - **Stale memory**: Verify agent memory records are expired or inconsistent; use freshness checks
+  - **Message bus issues**: Confirm message formats are correct and properly routed through agent message bus
+  - **WebSocket disconnection**: Add reconnection logic for real-time communication failures
+
+Remember: **Specifications are the sole truth. Code is implementation detail. Keep them synchronized.**

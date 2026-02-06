@@ -312,8 +312,8 @@ OpenCode 支持并行执行多个独立任务：
 
 ## 11. 参考资源
 
-- [Sisyphus 工作流指南](./sisyphus-workflow.md)
-- [OpenSpec 工作流指南](./openspec-workflow.md)
+- [Sisyphus 工作流指南](./sisyphus-guide.md)
+- [OpenSpec 工作流指南](./openspec-guide.md)
 - [OpenCode 官方文档](https://opencode.ai/docs)
 - 社区论坛和支持渠道
 - 示例项目和最佳实践案例

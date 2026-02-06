@@ -2,7 +2,7 @@
 
 > **归属**: Work-Agents 项目  
 > **技术栈**: FastAPI + SQLite  
-> **关联文档**: [实施计划](../implement/implement-plan.md)
+> **关联文档**: [项目路线图](../planning/roadmap.md)
 
 ---
 
@@ -91,6 +91,29 @@ POST   /api/v1/auth/logout       # 退出登录
 GET    /api/v1/auth/me           # 获取当前用户
 PUT    /api/v1/auth/me           # 更新个人信息
 PUT    /api/v1/auth/password     # 修改密码
+
+### 智能体编排端点 (需要认证)
+
+#### 智能体控制 (Agent Lifecycle)
+```
+POST   /api/v1/orchestration/spawn/{slug}     # 启动 Agent (OnSpawn)
+POST   /api/v1/orchestration/terminate/{slug} # 终止 Agent (OnTerminate)
+POST   /api/v1/orchestration/idle/{slug}      # 挂起 Agent (OnIdle)
+GET    /api/v1/orchestration/status           # 批量获取 Agent 生命周期状态
+```
+
+#### 消息总线 (Agent Message Bus)
+```
+POST   /api/v1/bus/send          # 发送异步消息 (支持 correlation_id)
+GET    /api/v1/bus/messages      # 获取消息历史 (支持 correlation_id 追踪)
+GET    /api/v1/bus/context/{id}  # 获取特定会话/消息的上下文数据
+```
+
+#### 记忆管理 (Agent Memory)
+```
+GET    /api/v1/memory/{agent_slug}   # 获取 Agent 的长期记忆
+POST   /api/v1/memory/{agent_slug}   # 为 Agent 注入新记忆
+DELETE /api/v1/memory/{id}           # 删除特定记忆
 ```
 
 ### 管理端点 (需要Admin角色)
@@ -111,22 +134,13 @@ PUT    /api/v1/admin/blog/{id}   # 更新文章
 DELETE /api/v1/admin/blog/{id}   # 删除文章
 PATCH  /api/v1/admin/blog/{id}/status  # 发布/下架状态
 
-# Tools管理
-GET    /api/v1/admin/tools       # Tools列表
-POST   /api/v1/admin/tools       # 创建Tool (含 seo 字段及相关工具列表)
-GET    /api/v1/admin/tools/{id}  # Tool详情
-PUT    /api/v1/admin/tools/{id}  # 更新Tool
-DELETE /api/v1/admin/tools/{id}  # 删除Tool
-
-# Labs管理
-GET    /api/v1/admin/labs        # Labs列表
-POST   /api/v1/admin/labs        # 创建Lab
-GET    /api/v1/admin/labs/{id}   # Lab详情
-PUT    /api/v1/admin/labs/{id}   # 更新Lab
-DELETE /api/v1/admin/labs/{id}   # 删除Lab
+# 系统审计管理
+GET    /api/v1/admin/audit/logs  # 审计日志列表 (支持 entity_type, action 过滤)
+GET    /api/v1/admin/audit/logs/{id} # 日志详情
 
 # 其他管理
 GET    /api/v1/admin/categories  # 分类列表
+
 GET    /api/v1/admin/tags        # 标签列表
 POST   /api/v1/admin/media/upload # 媒体上传 (返回相对路径)
 ```
@@ -165,6 +179,14 @@ POST   /api/v1/admin/media/upload # 媒体上传 (返回相对路径)
 | editor | 可编辑内容，不能删除或管理用户 |
 | viewer | 只读权限 |
 
+### 身份传播 (Identity Propagation)
+
+本项目支持两种身份类型在 API 中传播：
+1. **User Identity**: 由前端发起的请求，`sub` 为用户 ID。
+2. **System Identity**: 由智能体发起的内部请求。
+
+所有通过消息总线（Message Bus）路由的请求必须携带 `X-Agent-Identity` 响应头以标识发起方智能体。
+
 ### OpenAPI/Swagger文档
 
 FastAPI自动生成OpenAPI规范，访问：`/api/v1/docs`
@@ -172,4 +194,4 @@ FastAPI自动生成OpenAPI规范，访问：`/api/v1/docs`
 ---
 
 **最后更新**: 2026-02-02 (Aligned with PRD v1.2)  
-**关联计划**: [项目实施计划](../implement/implement-plan.md)
+**关联计划**: [项目路线图](../planning/roadmap.md)
