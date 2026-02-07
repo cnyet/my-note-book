@@ -23,6 +23,7 @@
 Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑主题设计系统，融合赛博朋克美学与现代极简主义。
 
 **设计哲学**:
+
 - **深渊黑底** - 深色背景减少视觉疲劳，突出内容
 - **电光霓虹** - 青色/紫色渐变营造科技感
 - **玻璃态** - 半透明元素增加层次深度
@@ -30,15 +31,15 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 ### 技术栈
 
-| 技术 | 用途 |
-|------|------|
-| Next.js 15.5 | 核心框架 (App Router) |
-| React 19.1 | UI 库 (Server Components) |
-| Tailwind CSS 4 | 原子化样式 |
-| Shadcn/UI | 基础组件库 |
-| uv-ui | 内部 UI 系统 (定制化 Genesis 组件) |
-| Framer Motion | 交互动效 |
-| Lucide React | 图标系统 |
+| 技术           | 用途                               |
+| -------------- | ---------------------------------- |
+| Next.js 15.5   | 核心框架 (App Router)              |
+| React 19.1     | UI 库 (Server Components)          |
+| Tailwind CSS 4 | 原子化样式                         |
+| Shadcn/UI      | 基础组件库                         |
+| v-ui           | 内部 UI 系统 (定制化 Genesis 组件) |
+| Framer Motion  | 交互动效                           |
+| Lucide React   | 图标系统                           |
 
 ---
 
@@ -48,15 +49,17 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 1. **设计资产参考**: 开发者必须首先查阅 `frontend/design-assets/` 目录下的高保真原型和组件设计稿。
 2. **规范检查**: 确保使用的颜色、间距和字体严格符合本文档定义的 **Genesis Design System** 令牌。
-3. **组件对齐**: 优先使用 `uv-ui` 中的预设组件。如果需要新建组件，必须在 `design.md` 中记录其设计逻辑。
+3. **组件对齐**: 优先使用 `v-ui` 中的预设组件。如果需要新建组件，必须在 `design.md` 中记录其设计逻辑。
 4. **Agent 协同校验**: 实施 AI (Sisyphus) 在进入设计阶段前，**必须优先启动** `ui-ux-pro-max-skill` 以获取专业视觉指导。在完成 UI 编写后，应调用 `frontend-ui-ux` 技能进行自查，对比代码与设计稿的视觉偏差。
 
 ---
 
-## 内部组件库 (uv-ui)
-`uv-ui` 是基于 Shadcn/UI 封装的、符合 Genesis 视觉规范的内部组件库：
+## 内部组件库 (v-ui)
+
+`v-ui` 是基于 Shadcn/UI 封装的、符合 Genesis 视觉规范的内部组件库：
+
 - **核心组件**: `AgentBridge` (跨 Agent 跳转动效), `OnlinePulse` (实时状态波纹), `ParticleBg` (科技感背景)。
-- **使用原则**: 严禁在页面中直接硬编码复杂的赛博朋克动效，必须通过 `uv-ui` 提供的抽象组件进行集成。
+- **使用原则**: 严禁在页面中直接硬编码复杂的赛博朋克动效，必须通过 `v-ui` 提供的抽象组件进行集成。
 
 ---
 
@@ -66,45 +69,47 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 ```css
 /* 背景色 */
---bg-abyss: #0a0a0f;        /* 深渊黑 - 主背景 */
---bg-void: #111118;         /* 虚空黑 - 次级背景 */
---bg-surface: #1a1a24;      /* 表面灰 - 卡片背景 */
+--bg-abyss: #0a0a0f; /* 深渊黑 - 主背景 */
+--bg-void: #111118; /* 虚空黑 - 次级背景 */
+--bg-surface: #1a1a24; /* 表面灰 - 卡片背景 */
 
 /* 主题色 */
---primary: #00f2ff;         /* 电光青 - 主强调色 */
---primary-glow: rgba(0, 242, 255, 0.3);  /* 青色辉光 */
+--primary: #00f2ff; /* 电光青 - 主强调色 */
+--primary-glow: rgba(0, 242, 255, 0.3); /* 青色辉光 */
 
 /* 辅助色 */
---accent: #bc13fe;          /* 霓虹紫 - 次强调色 */
---accent-glow: rgba(188, 19, 254, 0.3);  /* 紫色辉光 */
+--accent: #bc13fe; /* 霓虹紫 - 次强调色 */
+--accent-glow: rgba(188, 19, 254, 0.3); /* 紫色辉光 */
 
 /* 文字色 */
---text-primary: #f8f8f8;    /* 极白 - 主文字 */
---text-secondary: #a0a0b0;  /* 灰白 - 次级文字 */
---text-muted: #606070;      /* 暗灰 - 弱化文字 */
+--text-primary: #f8f8f8; /* 极白 - 主文字 */
+--text-secondary: #a0a0b0; /* 灰白 - 次级文字 */
+--text-muted: #606070; /* 暗灰 - 弱化文字 */
 
 /* 功能色 */
---success: #00ff88;         /* 成功绿 */
---warning: #ffaa00;         /* 警告橙 */
---error: #ff3366;           /* 错误红 */
---info: #00f2ff;            /* 信息蓝 */
+--success: #00ff88; /* 成功绿 */
+--warning: #ffaa00; /* 警告橙 */
+--error: #ff3366; /* 错误红 */
+--info: #00f2ff; /* 信息蓝 */
 ```
 
 ### 使用规范
 
 **背景层次**:
+
 ```jsx
 // 页面背景 - 深渊黑
 <div className="min-h-screen bg-[#0a0a0f]">
-  
+
   {/* 卡片背景 - 表面灰 + 玻璃态 */}
   <div className="bg-[#1a1a24]/80 backdrop-blur-xl">
-    
+
     {/* 次级容器 - 虚空黑 */}
     <div className="bg-[#111118]">
 ```
 
 **文字层次**:
+
 ```jsx
 <h1 className="text-[#f8f8f8]">主标题</h1>      {/* 极白 */}
 <p className="text-[#a0a0b0]">描述文字</p>      {/* 灰白 */}
@@ -112,6 +117,7 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ```
 
 **强调色使用**:
+
 ```jsx
 // 主按钮 - 电光青
 <button className="bg-[#00f2ff] text-[#0a0a0f]">
@@ -131,26 +137,26 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 ```css
 /* 标题字体 - 几何现代感 */
---font-heading: 'Outfit', system-ui, sans-serif;
+--font-heading: "Outfit", system-ui, sans-serif;
 
 /* 正文字体 - 高可读性 */
---font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+--font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
 /* 代码字体 */
---font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+--font-mono: "JetBrains Mono", "Fira Code", monospace;
 ```
 
 ### 字体规模
 
-| 级别 | 大小 | 字重 | 用途 |
-|------|------|------|------|
-| H1 | 48px / 3rem | 700 | 页面主标题 |
-| H2 | 36px / 2.25rem | 600 | 章节标题 |
-| H3 | 24px / 1.5rem | 600 | 小节标题 |
-| H4 | 20px / 1.25rem | 500 | 卡片标题 |
-| Body | 16px / 1rem | 400 | 正文内容 |
-| Small | 14px / 0.875rem | 400 | 辅助文字 |
-| Caption | 12px / 0.75rem | 400 | 标签/时间 |
+| 级别    | 大小            | 字重 | 用途       |
+| ------- | --------------- | ---- | ---------- |
+| H1      | 48px / 3rem     | 700  | 页面主标题 |
+| H2      | 36px / 2.25rem  | 600  | 章节标题   |
+| H3      | 24px / 1.5rem   | 600  | 小节标题   |
+| H4      | 20px / 1.25rem  | 500  | 卡片标题   |
+| Body    | 16px / 1rem     | 400  | 正文内容   |
+| Small   | 14px / 0.875rem | 400  | 辅助文字   |
+| Caption | 12px / 0.75rem  | 400  | 标签/时间  |
 
 ### 行高规范
 
@@ -227,9 +233,11 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 ```jsx
 // 标准卡片
-<div className="bg-[#1a1a24]/80 backdrop-blur-xl rounded-xl p-6 
+<div
+  className="bg-[#1a1a24]/80 backdrop-blur-xl rounded-xl p-6
                 border border-white/5 hover:border-[#00f2ff]/20
-                transition-all duration-300">
+                transition-all duration-300"
+>
   <h3 className="text-xl font-semibold text-[#f8f8f8]">标题</h3>
   <p className="mt-2 text-[#a0a0b0]">内容描述</p>
 </div>
@@ -242,30 +250,39 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ### 按钮
 
 **主按钮**:
+
 ```jsx
-<button className="px-6 py-3 bg-[#00f2ff] text-[#0a0a0f] font-medium rounded-lg
+<button
+  className="px-6 py-3 bg-[#00f2ff] text-[#0a0a0f] font-medium rounded-lg
                    hover:shadow-[0_0_20px_rgba(0,242,255,0.4)]
                    transition-all duration-300
-                   active:scale-95">
+                   active:scale-95"
+>
   主要操作
 </button>
 ```
 
 **次按钮**:
+
 ```jsx
-<button className="px-6 py-3 bg-[#1a1a24] text-[#f8f8f8] font-medium rounded-lg
+<button
+  className="px-6 py-3 bg-[#1a1a24] text-[#f8f8f8] font-medium rounded-lg
                    border border-white/10
                    hover:border-[#00f2ff]/50 hover:bg-[#1a1a24]/80
-                   transition-all duration-300">
+                   transition-all duration-300"
+>
   次要操作
 </button>
 ```
 
 **幽灵按钮**:
+
 ```jsx
-<button className="px-6 py-3 text-[#a0a0b0] font-medium
+<button
+  className="px-6 py-3 text-[#a0a0b0] font-medium
                    hover:text-[#00f2ff]
-                   transition-colors duration-300">
+                   transition-colors duration-300"
+>
   文字按钮
 </button>
 ```
@@ -273,27 +290,32 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ### 输入框
 
 ```jsx
-<input className="w-full px-4 py-3 bg-[#111118] border border-white/10 rounded-lg
+<input
+  className="w-full px-4 py-3 bg-[#111118] border border-white/10 rounded-lg
                   text-[#f8f8f8] placeholder-[#606070]
                   focus:outline-none focus:border-[#00f2ff]/50 focus:ring-1 focus:ring-[#00f2ff]/20
                   transition-all duration-200"
-       placeholder="请输入内容..." />
+  placeholder="请输入内容..."
+/>
 ```
 
 ### 卡片
 
 **标准卡片**:
+
 ```jsx
-<div className="group relative bg-[#1a1a24]/60 backdrop-blur-xl rounded-xl 
+<div
+  className="group relative bg-[#1a1a24]/60 backdrop-blur-xl rounded-xl
                 border border-white/5 overflow-hidden
-                hover:border-[#00f2ff]/20 transition-all duration-500">
+                hover:border-[#00f2ff]/20 transition-all duration-500"
+>
   {/* 辉光效果 */}
-  <div className="absolute inset-0 bg-gradient-to-br from-[#00f2ff]/5 to-transparent 
-                  opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-  
-  <div className="relative p-6">
-    {/* 卡片内容 */}
-  </div>
+  <div
+    className="absolute inset-0 bg-gradient-to-br from-[#00f2ff]/5 to-transparent
+                  opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+  />
+
+  <div className="relative p-6">{/* 卡片内容 */}</div>
 </div>
 ```
 
@@ -347,6 +369,7 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ### Framer Motion 标准
 
 **入场动画**:
+
 ```jsx
 <motion.div
   initial={{ opacity: 0, y: 20 }}
@@ -356,6 +379,7 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ```
 
 **悬停效果**:
+
 ```jsx
 <motion.div
   whileHover={{ scale: 1.02 }}
@@ -365,9 +389,10 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ```
 
 **辉光脉冲**:
+
 ```jsx
 <motion.div
-  animate={{ 
+  animate={{
     boxShadow: [
       "0 0 20px rgba(0, 242, 255, 0)",
       "0 0 40px rgba(0, 242, 255, 0.3)",
@@ -406,20 +431,23 @@ screens: {
 ### 响应式模式
 
 **移动优先**:
+
 ```jsx
 // 基础样式针对移动端
-<div className="grid grid-cols-1 gap-4 
-                sm:grid-cols-2 
-                lg:grid-cols-3 
+<div className="grid grid-cols-1 gap-4
+                sm:grid-cols-2
+                lg:grid-cols-3
                 xl:grid-cols-4">
 ```
 
 **字体响应式**:
+
 ```jsx
 <h1 className="text-3xl md:text-4xl lg:text-5xl">
 ```
 
 **间距响应式**:
+
 ```jsx
 <div className="px-4 py-6 md:px-6 md:py-8 lg:px-8 lg:py-12">
 ```
@@ -465,7 +493,9 @@ screens: {
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
@@ -494,6 +524,7 @@ components/
 ```
 
 ### 代码质量
+
 - **最佳实践**: 代码实现过程**必须深度借助** `react-best-practices` 技能能力，遵循 Vercel 工程标准进行性能优化。
 - **组件**: PascalCase (e.g., `AgentCard.tsx`)
 
@@ -504,19 +535,21 @@ components/
 ### 性能优化
 
 1. **图片优化**
+
    ```jsx
-   <Image 
-     src="/image.jpg" 
+   <Image
+     src="/image.jpg"
      alt="描述"
      width={800}
      height={600}
-     priority  // 首屏图片
+     priority // 首屏图片
    />
    ```
 
 2. **懒加载**
+
    ```jsx
-   const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
+   const HeavyComponent = dynamic(() => import("./HeavyComponent"), {
      loading: () => <Skeleton />,
    });
    ```
@@ -529,6 +562,7 @@ components/
 ### 代码示例
 
 **完整页面组件结构**:
+
 ```tsx
 // app/(frontend)/agents/page.tsx
 export default function AgentsPage() {
@@ -537,7 +571,7 @@ export default function AgentsPage() {
       {/* Hero Section */}
       <section className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
-          <motion.h1 
+          <motion.h1
             className="text-4xl md:text-6xl font-bold text-[#f8f8f8]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -546,7 +580,7 @@ export default function AgentsPage() {
           </motion.h1>
         </div>
       </section>
-      
+
       {/* Content Grid */}
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
@@ -569,17 +603,20 @@ export default function AgentsPage() {
 ### 全局功能要求
 
 **导航系统:**
+
 - Header 包含 LOGO、导航菜单（Home, Agents, Blog, Tools, Labs）
 - 右侧动态认证 UI：未登录显示 [Sign In] [Sign Up]；已登录显示头像下拉菜单（Dashboard, Profile, Log Out）
 - Footer 设计参考专业开发者社区风格
 
 **全局状态:**
+
 - 全局加载状态：进度条和骨架屏
 - 完全响应式设计（移动端、平板、桌面端）
 - 深色/浅色主题切换，支持 localStorage 持久化
 - WCAG 2.1 AA 无障碍合规
 
 **实时功能:**
+
 - WebSocket 双向通信连接
 - Labs 区域在线人数计数器显示
 - 优雅的连接状态处理（connecting, connected, disconnected, reconnecting）
@@ -587,13 +624,13 @@ export default function AgentsPage() {
 
 ### 页面规范
 
-| 页面 | 核心功能 | 设计参考 |
-|------|----------|----------|
-| **Home** | 品牌展示、价值主张、热门智能体预览 | 现代化着陆页设计 |
-| **Agents** | Tab 切换 LobeChat(默认)和5个内部智能体，显示图标、名称、描述和交互入口 | Tabbed interface |
-| **Tools** | 分类网格/列表，支持搜索和分类筛选 | 分类导航系统 |
-| **Labs** | 卡片布局，名称、状态标签(Experimental/Preview)、描述、体验链接，包含在线计数器 | 实验性产品展示 |
-| **Blog** | 文章列表，支持标签/日期筛选和全局搜索；详情页带"Edit"链接到管理系统 | 内容管理系统 |
+| 页面       | 核心功能                                                                       | 设计参考         |
+| ---------- | ------------------------------------------------------------------------------ | ---------------- |
+| **Home**   | 品牌展示、价值主张、热门智能体预览                                             | 现代化着陆页设计 |
+| **Agents** | Tab 切换 LobeChat(默认)和5个内部智能体，显示图标、名称、描述和交互入口         | Tabbed interface |
+| **Tools**  | 分类网格/列表，支持搜索和分类筛选                                              | 分类导航系统     |
+| **Labs**   | 卡片布局，名称、状态标签(Experimental/Preview)、描述、体验链接，包含在线计数器 | 实验性产品展示   |
+| **Blog**   | 文章列表，支持标签/日期筛选和全局搜索；详情页带"Edit"链接到管理系统            | 内容管理系统     |
 
 ### 管理面板规范
 

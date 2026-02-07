@@ -86,7 +86,7 @@ GET  /api/v1/auth/me
 
 **任务清单**:
 
-- [ ] 选择爬虫方案（Playwright / requests + BeautifulSoup）
+- [ ] 选择爬虫方案（Playwright）
 - [ ] 实现数据源解析器（机器之心、36氪、AI Base作为备用）
 - [ ] 实现新闻摘要生成（调用Ollama本地模型）
 - [ ] 创建定时任务调度（每天9:00自动执行）
@@ -135,10 +135,10 @@ class NewsAgent:
 
 **任务清单**:
 
-- [ ] 设计Task问卷表单（5-8个问题）
+- [ ] 设计Task问卷表单（5个问题，详见MVP-SCOPE.md）
 - [ ] 实现表单页面
 - [ ] 后端Task生成逻辑（调用Ollama分析表单）
-- [ ] 任务数据库存储
+- [ ] 任务数据库存储（简化版，使用JSON字段）
 - [ ] 任务展示组件（卡片/列表）
 
 **Day 9里程碑**:
@@ -162,6 +162,7 @@ const taskQuestions = [
     options: ["高", "中", "低"],
   },
   { id: "deadline", question: "今天有哪些截止日期？", type: "textarea" },
+  { id: "focus", question: "今天需要特别关注什么？", type: "textarea", optional: true },
 ];
 ```
 
@@ -172,10 +173,10 @@ const taskQuestions = [
 **任务清单**:
 
 - [ ] 读取当日Task数据
-- [ ] 实现复盘报告生成逻辑
+- [ ] 实现复盘报告生成逻辑（调用Ollama）
 - [ ] Review页面设计
 - [ ] 数据可视化（简单的统计图表）
-- [ ] 用户偏好提取和保存
+- [ ] 用户偏好提取和保存（永久存储）
 
 **Day 11里程碑**:
 
@@ -212,18 +213,18 @@ const taskQuestions = [
 ```jsx
 <DailyDashboard>
   <NewsCard data={todayNews} />
-  <OutfitPlaceholder /> {/* Week 3实现 */}
-  <TaskCard tasks={todayTasks} />
-  <LifePlaceholder /> {/* Week 3实现 */}
-  <QuickAction onStart={() => startWorkflow()} onReview={() => gotoReview()} />
+  <QuickActionCard onClick={() => navigateToTask()} label="填写今日任务" />
+  <TaskPreviewCard tasks={todayTasks} />
+  <ReviewPreviewCard onClick={() => navigateToReview()} />
+  <WorkflowStatusIndicator status={workflowStatus} />
 </DailyDashboard>
 ```
 
 ---
 
-## Phase 3: 工作流编排 + 优化 (Week 3)
+## Phase 3: 工作流编排 + 优化 + 部署 (Week 3)
 
-**目标**: 实现自动化编排，提升用户体验
+**目标**: 实现自动化编排，提升用户体验，完成MVP交付
 
 ### Day 15-17: 基础工作流编排
 
@@ -234,7 +235,7 @@ const taskQuestions = [
 - [ ] 工作流可视化（简单的状态指示器）
 - [ ] 自动执行News（早上9点）
 - [ ] Task → Review数据流打通
-- [ ] 通知/提醒机制
+- [ ] Dashboard管理后台基础功能
 
 **Day 17里程碑**:
 
@@ -242,9 +243,10 @@ const taskQuestions = [
 ✅ 工作流自动触发News
 ✅ 完成Task后数据自动流向Review
 ✅ 可以看到工作流执行状态
+✅ Dashboard可以查看基础数据
 ```
 
-**工作流定义**:
+**MVP工作流定义**:
 
 ```typescript
 interface Workflow {
@@ -254,16 +256,16 @@ interface Workflow {
   currentStep: number;
 }
 
-const dailyWorkflow: Workflow = {
+const mvpDailyWorkflow: Workflow = {
   steps: [
     { agent: "news", trigger: "schedule", time: "09:00" },
-    { agent: "outfit", trigger: "page_load" },
     { agent: "task", trigger: "user_input" },
-    { agent: "life", trigger: "user_input" },
     { agent: "review", trigger: "user_click" },
   ],
 };
 ```
+
+**注意**: MVP排除Outfit和Life Agent，仅实现News→Task→Review核心闭环。
 
 ---
 
@@ -287,24 +289,44 @@ const dailyWorkflow: Workflow = {
 
 ---
 
-### Day 20-21: 测试与部署准备
+### Day 20-21: 测试 + Docker部署 + 文档
 
 **任务清单**:
 
-- [ ] 端到端测试（关键流程）
-- [ ] 性能优化
-- [ ] 创建Docker配置
+- [ ] 端到端测试（关键流程：News→Task→Review）
+- [ ] 性能优化（LCP < 1.5s, API P95 < 200ms）
+- [ ] 创建Docker配置（前端+后端+数据库）
 - [ ] 编写部署文档
+- [ ] 编写README文档（项目介绍、快速开始）
 - [ ] Bug修复
 
-**Day 21里程碑（项目结束）**:
+**Day 21里程碑（MVP完成）**:
 
 ```
 ✅ 产品可以日常使用
-✅ 可以Docker部署
-✅ 有基本使用文档
-✅ MVP完成，可进入日常使用
+✅ 可以Docker一键部署
+✅ 有完整的部署和使用文档
+✅ MVP完成，进入日常使用阶段
 ```
+
+---
+
+## MVP范围总结
+
+### ✅ MVP包含（3周交付）
+
+- **核心功能**: 用户认证 + News Agent + Task Agent + Review Agent
+- **前端页面**: Home、Agents（静态）、Task、Review、Login/Register、Dashboard
+- **管理后台**: Dashboard基础展示、用户管理
+- **技术特性**: API驱动、JWT认证、数据持久化、Docker部署
+
+### ❌ MVP排除（移至Phase 4）
+
+- **智能体**: Outfit Agent、Life Agent
+- **功能**: LobeChat集成、Tools、Labs、Blog完整版
+- **技术**: WebSocket实时通信、Redis缓存、高级编排引擎
+
+> **详细定义**: 详见 [MVP-SCOPE.md](./MVP-SCOPE.md)
 
 ---
 
@@ -329,7 +351,8 @@ const dailyWorkflow: Workflow = {
 **预案**:
 
 - Week 2优先保证Task+Review闭环（核心功能）
-- Week 3工作流编排可以简化（只做顺序执行，不做复杂可视化）
+- Week 3工作流编排可以简化（只做顺序执行，状态指示器简化）
+- UI动效可以降级（基础过渡效果即可）
 
 ---
 
@@ -346,26 +369,28 @@ const dailyWorkflow: Workflow = {
 
 ## 后续规划（Phase 4+）
 
-### Phase 4: 体验增强
+### Phase 4: 体验增强（约2-3周）
 
-- Outfit Agent完整实现（天气API + 图片生成）
-- Life Agent完整实现（健康记录 + 建议）
-- 工作流可视化升级（节点图）
-- LobeChat集成
+- Outfit Agent完整实现（天气API + Nano Banana图片生成）
+- Life Agent完整实现（健康记录 + AI建议）
+- 工作流可视化升级（节点图，类似n8n）
+- LobeChat集成（WebSocket实时通信）
 
-### Phase 5: 功能完善
+### Phase 5: 功能完善（约3-4周）
 
-- Tools/Labs/Blog完整功能
-- 可观测性Dashboard
+- Tools完整功能（分类、搜索、CRUD）
+- Labs完整功能（在线计数器、WebSocket实时更新）
+- Blog完整功能（富文本编辑、标签、搜索）
+- 可观测性Dashboard（监控、日志、告警）
 - 移动端优化
-- 性能优化
 
-### Phase 6: 扩展功能
+### Phase 6: 扩展功能（长期规划）
 
-- 多用户支持
-- 社区功能
-- 高级编排（条件分支、循环）
-- 第三方集成
+- 多用户支持（RBAC、SSO）
+- 社区功能（评论、点赞、分享）
+- 高级编排（条件分支、循环、并行）
+- 第三方集成（GitHub、Notion、Google Calendar）
+- 性能优化（Redis缓存、CDN、负载均衡）
 
 ---
 

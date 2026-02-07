@@ -71,7 +71,7 @@ This document defines the mandatory standards for specification-driven developme
 
 - **Frontend (Next.js 15.4)**:
   - Default preference for **server components**.
-  - Use `lucide-react` for icons, `uv-ui` components (internal design system).
+  - Use `lucide-react` for icons, `v-ui` components (internal design system).
   - **UI Validation**: Implementation **must** reference high-fidelity prototypes and component designs located in `frontend/design-assets/` to ensure visual fidelity.
   - Styling: Native CSS or Tailwind as requested (check version).
 - **Backend (FastAPI)**:

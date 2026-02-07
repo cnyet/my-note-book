@@ -467,30 +467,45 @@
 
 ## 9. 开发计划
 
-### 9.1 MVP范围
+### 9.1 MVP范围（3周交付）
 
-**第一阶段（3周）核心闭环**:
+> **详细定义**: 详见 [MVP-SCOPE.md](./MVP-SCOPE.md)
 
-- ✅ 用户认证（登录/注册）
-- ✅ News Agent（自动爬取 + 展示）
-- ✅ Task Agent（表单 + 保存）
-- ✅ Review Agent（读取Task数据 + 展示）
-- ✅ 基础工作流编排（顺序执行）
+**核心价值**: 智能体工作流编排 = 自动化信息获取 + 任务管理 + 数据复盘 + 流程可视化
+
+**第一阶段（MVP，3周）核心闭环**:
+
+- ✅ 用户认证（登录/注册 + JWT）
+- ✅ News Agent（自动爬取 + AI摘要 + 每日9:00触发）
+- ✅ Task Agent（表单 + AI生成任务）
+- ✅ Review Agent（数据汇总 + AI复盘 + 用户偏好提取）
+- ✅ 基础工作流编排（状态指示器）
 - ✅ Home页仪表板
+- ✅ 管理后台基础功能
+- ✅ Docker部署
 
-**第二阶段（体验提升）**:
+**MVP排除功能**（移至Phase 4）:
 
-- Outfit Agent（天气API集成）
-- Life Agent（健康记录）
-- 工作流可视化（节点图）
-- LobeChat集成
+- ❌ Outfit Agent（依赖外部API）
+- ❌ Life Agent（非核心闭环）
+- ❌ LobeChat集成（需要WebSocket）
+- ❌ Tools/Labs/Blog完整功能
+- ❌ 高级工作流编排（条件分支、循环）
+- ❌ 审计日志完整版
 
-**第三阶段（完整产品）**:
+**第二阶段（体验提升，Phase 4）**:
+
+- Outfit Agent（天气API + 图片生成）
+- Life Agent（健康记录 + 建议）
+- 工作流可视化升级（节点图）
+- LobeChat集成（WebSocket实时通信）
+
+**第三阶段（完整产品，Phase 5+）**:
 
 - Tools/Labs/Blog完整功能
-- 可观测性Dashboard
+- 可观测性Dashboard（监控、日志）
 - 移动端优化
-- 性能优化
+- 性能优化（Redis缓存、CDN）
 
 ### 9.2 敏捷冲刺安排
 
