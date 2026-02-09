@@ -35,7 +35,7 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 | -------------- | ---------------------------------- |
 | Next.js 15.5   | 核心框架 (App Router)              |
 | React 19.1     | UI 库 (Server Components)          |
-| Tailwind CSS 4 | 原子化样式                         |
+| Tailwind CSS 3 | 原子化样式 (Config-driven)         |
 | Shadcn/UI      | 基础组件库                         |
 | v-ui           | 内部 UI 系统 (定制化 Genesis 组件) |
 | Framer Motion  | 交互动效                           |
@@ -418,14 +418,20 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 ### 断点定义
 
 ```javascript
-// tailwind.config.ts
-screens: {
-  'sm': '640px',   // 手机横屏
-  'md': '768px',   // 平板
-  'lg': '1024px',  // 小型桌面
-  'xl': '1280px',  // 标准桌面
-  '2xl': '1536px', // 大屏幕
-}
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      screens: {
+        sm: "640px", // 手机横屏
+        md: "768px", // 平板
+        lg: "1024px", // 小型桌面
+        xl: "1280px", // 标准桌面
+        "2xl": "1536px", // 大屏幕
+      },
+    },
+  },
+};
 ```
 
 ### 响应式模式

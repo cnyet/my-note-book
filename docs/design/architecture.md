@@ -2,7 +2,7 @@
 
 ## 1. 系统架构概览
 
- ```
+```
 ┌─────────────────────────────────────────────────────────────┐
 │                        用户界面层                             │
 │  ┌──────────────────┐         ┌──────────────────┐          │
@@ -14,13 +14,13 @@
 │  │  - Blog           │         │  - Settings       │          │
 │  └──────────────────┘         └──────────────────┘          │
 └─────────────────────────────────────────────────────────────┘
-                             ↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                        API 网关层                             │
 │                   Next.js API Routes                          │
 │                   (可选中间层/代理)                           │
 └─────────────────────────────────────────────────────────────┘
-                             ↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                    消息与编排层                               │
 │              WebSocket Server + Orchestration Engine          │
@@ -31,7 +31,7 @@
 │  │  └──────────────┘  └─────────────────┘  └──────────────┘    │
 └─────────────────────────────────────────────────────────────┘
 
-                             ↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                      业务逻辑层                               │
 │                     FastAPI Backend                           │
@@ -39,12 +39,12 @@
 │  │ Auth Service│  │ CRUD Service│  │ File Service│             │
 │  └────────────┘  └────────────┘  └────────────┘             │
 └─────────────────────────────────────────────────────────────┘
-                             ↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                      数据访问层                               │
 │                   SQLAlchemy ORM                              │
 └─────────────────────────────────────────────────────────────┘
-                             ↓
+                            ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                      数据存储层                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
@@ -52,51 +52,53 @@
 │  │(work_agents.db)│  │(/public/ups) │  │ (Polling)    │       │
 │  └──────────────┘  └──────────────┘  └──────────────┘       │
 └─────────────────────────────────────────────────────────────┘
- ```
+```
 
 ## 2. 技术栈详解
 
 > **相关文档**:
+>
 > - [OpenSpec 项目上下文](../../openspec/project.md) - 技术栈定义的单一致真源
 > - [OpenSpec AI 规范](../../openspec/AGENTS.md) - 开发规范与约束
 
 ### 2.1 前端技术栈
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Next.js | 15.5 | React 框架，SSR/SSG |
-| React | 19.1 | UI 库 |
-| TypeScript | 5.x | 类型安全 |
-| Tailwind CSS | 4.x | 样式框架 (Genesis Tokens) |
-| Shadcn/UI | latest | 基础组件库 |
-| Framer Motion | 6.x+ | 物理动效/磁力交互/Glitch |
-| TanStack Query | 5.x | 数据获取和轮询 (Polling) |
-| Zustand | 4.x | 状态管理 |
-| React Hook Form | 7.x | 表单管理 |
-| Zod | 3.x | Schema 验证 |
+| 技术            | 版本   | 用途                      |
+| --------------- | ------ | ------------------------- |
+| Next.js         | 15.5   | React 框架，SSR/SSG       |
+| React           | 19.1   | UI 库                     |
+| TypeScript      | 5.x    | 类型安全                  |
+| Tailwind CSS    | 3.x    | 样式框架 (Genesis Tokens) |
+| Shadcn/UI       | latest | 基础组件库                |
+| Framer Motion   | 6.x+   | 物理动效/磁力交互/Glitch  |
+| TanStack Query  | 5.x    | 数据获取和轮询 (Polling)  |
+| Zustand         | 4.x    | 状态管理                  |
+| React Hook Form | 7.x    | 表单管理                  |
+| Zod             | 3.x    | Schema 验证               |
 
 ### 2.3 AI 增强技术栈
-*本项目深度集成 AI 协作流程*
 
-| 技术 | 用途 |
-|------|------|
-| **OpenSpec** | 规范驱动开发 (Spec-driven Development) |
-| **MCP** | Model Context Protocol (Fetch/Search 集成) |
-| **Prometheus** | 规划代理 (Task Scaffolding) |
-| **Sisyphus** | 执行代理 (Code/Doc Implementation) |
+_本项目深度集成 AI 协作流程_
+
+| 技术           | 用途                                       |
+| -------------- | ------------------------------------------ |
+| **OpenSpec**   | 规范驱动开发 (Spec-driven Development)     |
+| **MCP**        | Model Context Protocol (Fetch/Search 集成) |
+| **Prometheus** | 规划代理 (Task Scaffolding)                |
+| **Sisyphus**   | 执行代理 (Code/Doc Implementation)         |
 
 ### 2.2 后端技术栈
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Python | 3.11+ | 编程语言 |
-| FastAPI | 0.109+ | Web 框架 |
-| SQLAlchemy | 2.0+ | ORM |
-| Alembic | 1.13+ | 数据库迁移 |
-| Pydantic | 2.5+ | 数据验证 |
-| python-jose | 3.3+ | JWT 处理 |
-| passlib | 1.7+ | 密码加密 |
-| pytest | 7.4+ | 测试框架 |
+| 技术        | 版本   | 用途       |
+| ----------- | ------ | ---------- |
+| Python      | 3.11+  | 编程语言   |
+| FastAPI     | 0.109+ | Web 框架   |
+| SQLAlchemy  | 2.0+   | ORM        |
+| Alembic     | 1.13+  | 数据库迁移 |
+| Pydantic    | 2.5+   | 数据验证   |
+| python-jose | 3.3+   | JWT 处理   |
+| passlib     | 1.7+   | 密码加密   |
+| pytest      | 7.4+   | 测试框架   |
 
 ## 3. 目录结构设计
 
@@ -274,15 +276,15 @@ frontend/
 
 ### 6.1 认证方案
 
- - **JWT Token**: 短期访问令牌 (30分钟)
- - **Refresh Token**: 长期刷新令牌 (7天)
- - **密码加密**: bcrypt 加密存储
+- **JWT Token**: 短期访问令牌 (30分钟)
+- **Refresh Token**: 长期刷新令牌 (7天)
+- **密码加密**: bcrypt 加密存储
 
 ### 6.2 身份传播 (Identity Propagation)
 
- - **跨 Agent 身份同步**: 基于 JWT 的统一身份协议，支持在多 Agent 间传递身份上下文
- - **统一认证凭证**: 用户身份通过 Orchestration Engine 在不同服务间传递
- - **会话一致性**: 维护用户在多个 Agent 间的会话连续性
+- **跨 Agent 身份同步**: 基于 JWT 的统一身份协议，支持在多 Agent 间传递身份上下文
+- **统一认证凭证**: 用户身份通过 Orchestration Engine 在不同服务间传递
+- **会话一致性**: 维护用户在多个 Agent 间的会话连续性
 
 #### 6.2.1 身份流转时序图
 
@@ -331,21 +333,24 @@ sequenceDiagram
 
 ### 7.2 后端优化
 
- - **并发处理**: 对于 SQLite 写操作，使用 FastAPI/SQLAlchemy 串行化队列。
- - **数据库索引**: 针对 `slug`, `category_id`, `published_at` 建立索引。
- - **实时通信优化**: Labs 在线人数组件使用 WebSocket 实现实时双向通信，替代传统轮询机制。
- - **WebSocket 服务**: 维护客户端连接池，处理实时消息广播与状态更新。
- - **缓存层**: 应用层内存缓存热点数据 (如 Tools/Agents 列表)。
+- **并发处理**: 对于 SQLite 写操作，使用 FastAPI/SQLAlchemy 串行化队列。
+- **数据库索引**: 针对 `slug`, `category_id`, `published_at` 建立索引。
+- **实时通信优化**: Labs 在线人数组件使用 WebSocket 实现实时双向通信，替代传统轮询机制。
+- **WebSocket 服务**: 维护客户端连接池，处理实时消息广播与状态更新。
+- **缓存层**: 应用层内存缓存热点数据 (如 Tools/Agents 列表)。
 
 ## 11. 伸缩性与高可用设计
 
 ### 11.1 WebSocket 横向扩展
+
 当系统需要处理数万名在线用户时，单个 WebSocket 节点将达到物理瓶颈。本项目采用 Redis Pub/Sub 作为消息背板：
+
 - **无状态节点**: 每一个 Backend 实例都是对等的。
 - **消息路由**: 当 Agent A 需要向用户 U 发送消息时，它会将消息发布到 Redis 通道中。
 - **本地分发**: 拥有用户 U 活跃连接的节点订阅该通道，并在本地完成推送。
 
 ### 11.2 数据库演进
+
 - **本地开发**: 使用 SQLite (文件锁限制并发)。
 - **生产环境**: 切换至 PostgreSQL 以支持高并发写操作和更复杂的 JSONB 查询。
 - **架构兼容**: 所有 Model 均基于 SQLAlchemy 2.0，确保零成本迁移。
@@ -375,7 +380,7 @@ sequenceDiagram
 ## 9. 设计系统集成 (Genesis Integration)
 
 - **核心配方**: Abyss (#0a0a0f) + Electric Cyan (#00f2ff) + Neon Purple (#bc13fe)。
-- **动效标准**: 
+- **动效标准**:
   - 统一使用 `Spring` 物理引擎（stiffness: 100, damping: 20）。
   - Agent 跳转集成 `AgentBridge` 扫描线动效。
 - **性能红线**: 首屏 LCP < 1.5s，API 响应 P95 < 200ms。
@@ -387,24 +392,28 @@ sequenceDiagram
 ### 后端系统要求
 
 **认证层:**
+
 - JWT 认证支持刷新令牌机制
 - `/admin/*` 路由保护，基于角色的访问控制
 - 速率限制：每 IP 每分钟 100 请求
 - 会话管理和登出功能
 
 **实时通信:**
+
 - WebSocket 服务器实现
 - 通过编排协议实现智能体间消息传递
 - 连接池和客户端状态管理
 - WebSocket 不可用时的降级机制
 
 **数据库结构:**
+
 - SQLite 数据库位置：`backend/data/work_agents.db`
 - 数据表：users, agents, blogs, tools, labs 及关联关系
 - 热点数据缓存层
 - 预置数据：5 agents, 3 blogs, 3 tools, 3 labs
 
 **API 端点:**
+
 - RESTful API 满足所有前端数据需求
 - 管理后台完整 CRUD 操作
 - 图片和媒体文件上传端点
@@ -412,6 +421,7 @@ sequenceDiagram
 - 结构化错误响应和 HTTP 状态码
 
 **智能体编排:**
+
 - 实现编排协议支持智能体间通信
 - 协作期间智能体间上下文共享
 - 健康监控和自动故障转移机制
@@ -453,6 +463,7 @@ sequenceDiagram
 ### 性能优化
 
 **后端:**
+
 - 数据库查询优化和适当索引
 - 热点数据缓存（Redis/内存缓存）
 - 大数据集分页处理
@@ -469,5 +480,5 @@ sequenceDiagram
 
 ---
 
-**文档版本**: v0.2.0 (Aligned with PRD v1.2)  
+**文档版本**: v0.2.0 (Aligned with PRD v1.2)
 **最后更新**: 2026-02-06

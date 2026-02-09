@@ -194,255 +194,67 @@ tail -f logs/frontend.log
 ```
 work-agents/
 ├── .agent/                # Agent 配置文件
-├── .claude/               # Claude AI 工具配置
-├── .opencode/             # OpenCode 配置文件
-├── .sisyphus/             # Sisyphus 工作流配置
-│   └── notepads/          # AI 团队知识库
 ├── ai-configs/            # AI 工具配置统一入口
-├── backend/               # FastAPI 后端服务
-│   ├── src/               # 后端源代码
-│   ├── tests/             # 后端测试文件
-│   ├── data/              # 数据库文件
+├── backend/               # FastAPI 后端服务 (基础架构)
+│   ├── src/               # 后端源代码 (当前为空，等待实现)
+│   ├── alembic/           # 数据库迁移配置
+│   ├── data/              # 数据库文件 (SQLite)
 │   └── requirements.txt   # Python 依赖
-├── frontend/              # Next.js 前端应用
-│   ├── src/               # 前端源代码
+├── frontend/              # Next.js 前端应用 (基础架构)
+│   ├── src/               # 前端源代码 (当前为空，等待实现)
+│   ├── design-assets/     # 高保真设计图与原型资产
+│   ├── static/            # 静态资源
 │   └── package.json       # Node.js 依赖
 ├── docs/                  # 项目文档
-│   ├── design/            # 设计文档 (架构、API、数据库、前端)
-│   ├── development/       # 开发指南 (环境、工作流)
-│   └── planning/          # 项目规划 (需求、路线图)
+│   ├── design/            # 设计文档 (架构、API、数据库、前端规范)
+│   ├── development/       # 开发指南
+│   └── planning/          # 项目规划 (PRD v1.1, Roadmap)
 ├── openspec/              # OpenSpec 规范文件
-├── scripts/               # 项目自动化脚本
-│   ├── build/             # 构建脚本
-│   ├── test/              # 测试脚本
-│   ├── deploy/            # 部署脚本
-│   └── maintenance/       # 维护脚本
-├── tests/                 # 集成测试和端到端测试
+├── scripts/               # 项目自动化脚本 (Setup, Dev, Test, Lint, Clean)
+├── tests/                 # 顶层测试目录
 └── logs/                  # 运行日志
 ```
+
+## 📝 开发进度
+
+该项目目前处于 **Framework Ready (架构就绪)** 阶段。为了确保 100% 还原设计稿并遵循最佳编码标准，现已清理历史实现。
+
+- [x] 基础架构与脚本配置完成
+- [x] PRD v1.1 (前端专题) 已制定
+- [x] 设计规范 (Genesis Design System) 已对齐
+- [ ] 核心组件库 (v-ui) 构建 (进行中)
+- [ ] 页面开发 (Home, Agents, Blog, Tools, Labs)
 
 ## 🛠️ 技术栈
 
 ### 前端
 
-- Next.js 15.5 (App Router) - 现代 React 框架
-- React 19.1 - UI 库
-- TypeScript 5.x - 静态类型检查
-- Tailwind CSS 4.x - 样式框架
-- Shadcn/UI - 基础组件库
-- Framer Motion 6.x+ - 交互动效
-- TanStack Query 5.x - 数据获取和缓存
-- Zustand 4.x - 状态管理
-- React Hook Form 7.x - 表单管理
-- Zod 3.x - Schema 验证
+- Next.js 15.5 (App Router)
+- React 19.1
+- TypeScript 5.x
+- Tailwind CSS 3.x
+- Shadcn/UI + v-ui
+- Framer Motion 6.x+
 
 ### 后端
 
-- Python 3.11+ - 编程语言
-- FastAPI - Web 框架
-- SQLAlchemy 2.0 - ORM
-- Alembic - 数据库迁移
-- Pydantic v2 - 数据验证
-- python-jose - JWT 处理
-- passlib - 密码加密
-- pytest - 测试框架
-- WebSocket - 实时通信
-
-### 数据库
-
-- SQLite - 主数据库 (轻量级，单文件)
-- SQLAlchemy Async - 异步数据库操作
-
-### 其他
-
-- JWT 认证 - 身份验证
-- OpenSpec - 规范驱动开发
-- Model Context Protocol (MCP) - 上下文协议
-- OAuth (GitHub/Google) - 第三方登录
-
-## 📚 文档
-
-- **项目上下文**: [openspec/project.md](openspec/project.md)
-- **开发指南**: [docs/development/README.md](docs/development/README.md)
-- **AI 标准**: [openspec/AGENTS.md](openspec/AGENTS.md)
-- **架构设计**: [docs/design/architecture.md](docs/design/architecture.md)
-- **API 设计**: [docs/design/api-design.md](docs/design/api-design.md)
-- **数据库设计**: [docs/design/database-schema.md](docs/design/database-schema.md)
-- **前端规范**: [docs/design/frontend-guide.md](docs/design/frontend-guide.md)
-- **产品需求**: [docs/planning/requirements.md](docs/planning/requirements.md)
-- **项目路线图**: [docs/planning/roadmap.md](docs/planning/roadmap.md)
-
-## 🔒 环境变量
-
-### Backend (.env)
-
-```env
-# 数据库
-DATABASE_URL=sqlite:///./work_agents.db
-
-# JWT 认证
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# CORS
-ALLOWED_ORIGINS=http://localhost:3001
-
-# WebSocket
-WEBSOCKET_HOST=0.0.0.0
-WEBSOCKET_PORT=8001
-
-# OAuth (可选)
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-# 应用配置
-APP_ENV=development
-```
-
-### Frontend (.env.local)
-
-```env
-# API 地址
-NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
-
-# WebSocket 地址
-NEXT_PUBLIC_WEBSOCKET_URL=ws://localhost:8001/ws
-
-# OAuth 配置
-NEXT_PUBLIC_GITHUB_CLIENT_ID=
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=
-
-# 其他配置
-NEXT_PUBLIC_APP_NAME=work-agents
-```
-
-## 🧪 测试
-
-```bash
-# 运行所有测试
-./scripts/test.sh
-
-# 仅后端测试
-cd backend && pytest tests/ -v
-
-# 仅前端测试
-cd frontend && npm test
-
-# 运行覆盖率测试
-./scripts/coverage.sh
-
-# 运行性能测试
-./scripts/performance-test.sh
-```
-
-## 🚀 部署
-
-### 本地部署
-
-```bash
-# 构建前端
-cd frontend && npm run build
-
-# 构建后端
-cd backend && pip install -r requirements.txt
-
-# 启动服务
-./scripts/start-prod.sh
-```
-
-### Docker 部署
-
-```bash
-# 构建镜像
-docker-compose build
-
-# 启动服务
-docker-compose up -d
-```
-
-### 环境配置
-
-- **开发环境**: 使用 SQLite，热重载启用
-- **测试环境**: 内存数据库，完整测试套件
-- **生产环境**: 优化配置，禁用调试模式
+- Python 3.11+
+- FastAPI
+- SQLAlchemy 2.0
+- Alembic
+- Pydantic v2
 
 ## 📝 开发规范
 
-请严格遵守 [AGENTS.md](openspec/AGENTS.md) 中定义的开发规范：
+请严格遵守 [AGENTS.md](openspec/AGENTS.md) 与 [PRD.md](docs/planning/PRD.md) 中定义的开发规范：
 
-- 文件规模限制
-- 代码复杂度控制
-- 命名规范
-- Git 提交规范
-- 架构设计原则
-- OpenSpec 规范驱动开发
-
-## 🔐 安全措施
-
-### 认证安全
-
-- JWT 身份认证，密码 bcrypt 加密存储
-- OAuth 集成 (GitHub/Google)
-- 角色权限控制 (Admin/Editor)
-
-### 速率限制
-
-- 登录接口：同一 IP 限制 10 次/分钟
-- API 全局：限制 100 次/分钟
-
-### 其他安全措施
-
-- HTTPS 强制、输入验证、SQL 注入防护
-- XSS 防护 (CSP + 前端转义)
-- CSRF 防护 (SameSite Cookie 策略)
-
-## 🤝 贡献
-
-欢迎提交 Pull Request！请确保：
-
-1. 代码通过 `./scripts/lint.sh` 检查
-2. 所有测试通过 `./scripts/test.sh`
-3. 遵循项目的 OpenSpec 规范
-4. 遵循 AGENTS.md 中定义的开发规范
-5. 提交前运行 `./scripts/test.sh` 确保没有引入回归
-
-### 贡献流程
-
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
-
-## 📄 许可证
-
-[MIT License](LICENSE)
-
-## 🏗️ 架构特点
-
-### 高性能设计
-
-- 首屏加载 < 1.5s
-- API 响应时间 P95 < 200ms
-- 支持 500+ 在线用户
-
-### 响应式设计
-
-- Chrome/Edge、Firefox、Safari 最新2个主版本
-- 响应式设计（Mobile/Tablet/Desktop/Wide）
-
-### 设计美学
-
-- 暗黑色系，渐变（紫色/蓝色基调）
-- 赛博朋克元素，极简主义，科技感
-- 微妙视差、按钮悬停光晕、页面滚动平滑过渡
+- **100% 像素级还原**: 必须使用 `ui-ux-pro-max-skill` 进行设计对齐。
+- **最佳实践**: 必须使用 `react-best-practices` 进行编码审计。
+- **UI 评分**: 每个页面需通过视觉对比验证，分值需 ≥ 95。
 
 ---
 
 **Build High-Quality Software!** 🚀
 
-**项目状态**: Production Ready Prototype (完全实现，可部署)
-**最后更新**: 2026年2月6日
+**项目状态**: Framework Ready / Refactoring (架构就绪，等待核心重构实现)
+**最后更新**: 2026年2月9日

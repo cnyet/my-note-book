@@ -6,7 +6,7 @@
 
 - **框架**: Next.js 15.5 (App Router)
 - **UI 组件**: React 19.1, Shadcn/UI
-- **样式**: Tailwind CSS 4.x
+- **样式**: Tailwind CSS 3.x (Config-driven)
 - **状态管理**: Zustand 4.x
 - **数据获取**: TanStack Query 5.x
 - **语言**: TypeScript 5.x
@@ -74,6 +74,7 @@ frontend/
 ## 🌐 页面功能
 
 ### 前台页面
+
 - **主页 (Home)**: 品牌展示与价值主张传递，包含英雄区、品牌理念展示、热门智能体预览
 - **智能体 (Agents)**: AI助手集成与展示，采用 LobeChat 集成与 Orchestration Protocol，支持跨 Agent 消息传递和上下文共享
 - **工具 (Tools)**: 工具集合分类展示，支持搜索与筛选、相关工具推荐
@@ -81,6 +82,7 @@ frontend/
 - **博客 (Blog)**: 技术博客与内容营销，支持 Markdown 渲染、SEO 管理
 
 ### 后台管理
+
 - **仪表板**: 统计数据展示与快捷操作入口
 - **智能体管理**: 智能体的 CRUD 操作与配置管理
 - **博客管理**: 博客文章的富文本编辑与发布管理
@@ -91,16 +93,19 @@ frontend/
 ## 🎨 设计系统 (Genesis Design System)
 
 ### 色彩方案
+
 - **背景**: `--bg-abyss` (#0a0a0f) - 深渊黑，网站基石背景色
 - **主色**: `--primary` (#00f2ff) - 电光青，用于高亮和信号
 - **辅助色**: `--accent` (#bc13fe) - 霓虹紫，用于能量脉冲和辅助动效
 - **文字**: `--text-p` (#f8f8f8) - 极白，主标题与长文正文
 
 ### 动效标准
+
 - **弹簧动效**: `stiffness: 100, damping: 20` (Framer Motion)
 - **玻璃态效果**: `background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(24px);`
 
 ### 字体架构
+
 - **标题**: `Outfit` (Bold) - 英文标题字体，具有几何现代感
 - **正文**: `Inter` - 中英文正文，提供顶级可读性
 - **代码**: `JetBrains Mono` - 等宽字体，用于代码和状态值
@@ -108,6 +113,7 @@ frontend/
 ## 🔌 API 集成
 
 前端与后端 API 完全集成，支持：
+
 - JWT 身份验证
 - 完整 CRUD 操作
 - 实时 WebSocket 通信
@@ -115,7 +121,9 @@ frontend/
 - 分页和搜索功能
 
 ### API 客户端
+
 使用 TanStack Query 进行数据获取和缓存管理，确保：
+
 - 自动数据同步
 - 请求去重
 - 错误重试机制
@@ -124,6 +132,7 @@ frontend/
 ## ⚙️ 环境配置
 
 ### 开发环境
+
 ```env
 # API 地址
 NEXT_PUBLIC_API_URL=http://localhost:8001/api/v1
@@ -207,12 +216,14 @@ npm run type-check
 ## 🤝 贡献
 
 ### 开发规范
+
 - 使用 TypeScript 进行类型安全开发
 - 组件遵循单一职责原则
 - CSS 类使用 Tailwind 原子类
 - API 调用使用统一的错误处理
 
 ### 提交规范
+
 - 遵循 Conventional Commits 规范
 - `feat`: 新功能
 - `fix`: 错误修复
@@ -223,6 +234,7 @@ npm run type-check
 - `chore`: 构建过程或辅助工具变动
 
 ### 代码审查
+
 - 所有 PR 都需要至少一人审查
 - 确保代码符合项目规范
 - 运行测试并验证功能完整
