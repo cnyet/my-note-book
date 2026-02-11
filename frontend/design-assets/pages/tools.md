@@ -1,253 +1,55 @@
-# Tools 页面设计文档
+# Tools 页面实现提示词 (Optimized)
 
-**对应设计稿**:
-- 桌面版: `tools-desktop.png`
-- 移动版: `tools-mobile.png`
+## 任务目标 (Objective)
 
-**页面路由**: `/tools`
+作为一名资深前端工程师，你的任务是实现 My-Note-Book 的“专业工具栈”页面。该页面展示供开发者和设计师使用的核心生产力工具，视觉上应体现精密感与专业度。
 
-**页面定位**: 小工具集合，提供实用计算/转换功能 (计算器、单位转换等)
+## 核心上下文 (Context)
 
-**MVP状态**: ⏳ MVP后迭代 (Week 5-6)
+- **页面定位**: 工具展示、命令行参考与组件实验室入口。
+- **设计风格**: Lumina Professional (侧重于功能性与精密感的玻璃态)。
+- **视觉主题**: “The Pro-Grade Utility Stack” (专业级工具堆栈)。
 
----
+## 页面架构与区块 (Structure)
 
-## 视觉设计规范 (Genesis Design System)
+### 1. 标题头 (Section Header)
 
-| 元素 | 桌面版 (≥1024px) | 移动版 (<768px) |
-|------|------------------|-----------------|
-| **整体布局** | 2×2网格卡片 | 垂直列表 |
-| **背景** | 深渊黑 + 电路板图案 | 赛博朋克城市夜景 |
-| **筛选栏** | 横向标签 (All/Development/Automation/Intelligence/Creative) | 两行标签滚动 |
-| **卡片** | 霓虹边框 + 图标 + 描述 + 按钮 | 简化卡片 |
-| **按钮** | 彩色霓虹 (蓝/粉/青/紫) | 彩色霓虹 |
+- **标签**: "Toolkit" (工具箱)。
+- **主标题**: "The Pro-Grade Utility Stack."。
+- **副标题**: 强调工具箱与设计环境的无缝集成。
 
----
+### 2. 旗舰工具区 (Featured Tools)
 
-## 核心功能
+- **布局**: 2列大卡片。
+- **项目 A: MyNoteBook CLI**:
+  - 视觉: 靛蓝色主题，带 `Terminal` 图标。
+  - 内容: 描述其作为“设计系统即代码”的地位。
+  - 核心展示: 一个代码预览窗口，展示命令 `mynotebook sync --all --force`。
+- **项目 B: Component Studio**:
+  - 视觉: 紫色主题，带 `Layers` 图标。
+  - 交互按钮: "Open Studio" (点击打开实验室)。
 
-### 1. 分类筛选
+### 3. 工具矩阵 (Tool Matrix)
 
-**分类标签**:
-- **All** (active) - 全部工具
-- **Development** - 开发工具
-- **Automation** - 自动化工具
-- **Intelligence** - 智能工具
-- **Creative** - 创意工具
+- **布局**: 4列紧凑卡片。
+- **项目**:
+  - **Visual Diff**: 发现布局回归。
+  - **Flow Audit**: 映射用户旅程。
+  - **Asset Baker**: 优化图像资产。
+  - **Type Genius**: AI 字效处理。
+- **样式**: 极简玻璃卡片，悬停时背景轻微变白。
 
-**视觉设计**:
-- 未选中: 透明背景 + 霓虹边框
-- 选中: 填充背景色 + 发光效果
-- 悬停: 轻微放大 + 亮度提升
+### 4. 工具页脚 (Tools Footer)
 
----
+- **内容**: 包含多列详细链接 (Development, Tokens, Status)。
+- **版本标识**: 显示类似 `Latest v2.4.12` 的版本号和 `Stable Build` 标签。
 
-### 2. 工具卡片网格 (桌面版 2×2)
+## 视觉细节规范 (Specs)
 
-**示例工具**:
+- **排版**: 使用单口字体 (`font-mono`) 来展示代码片段。
+- **动画**: 采用从底部向上弹出的 `slide-in-from-bottom` 动画。
+- **边框**: 旗舰工具卡片使用更明显的发光边框 (`border-indigo-500/30`) 以示区分。
 
-| 工具名称 | 描述 | 按钮 | 主题色 |
-|----------|------|------|--------|
-| **CodeWeaver** | AI-assisted coding agent | [ACTIVATE] | 青色 |
-| **AutoFlow** | Automate repetitive workflows | [DEPLOY] | 粉色 |
-| **NeuralMind** | Cognitive data analysis | [ENGAGE] | 蓝色 |
-| **Artifex** | Generative creative suite | [LAUNCH] | 紫色 |
+## 交付要求 (Deliverables)
 
-**卡片结构**:
-```
-┌─────────────────────────────┐
-│  ┌─────────┐                │
-│  │  [图标]  │  工具名称       │
-│  │ (发光)  │  描述文字       │
-│  └─────────┘                │
-│                             │
-│  [   ACTIVATE   ]           │
-│     (霓虹按钮)               │
-└─────────────────────────────┘
-```
-
----
-
-### 3. 工具卡片列表 (移动版)
-
-**示例工具**:
-
-| 工具名称 | 描述 | 按钮 | 主题色 |
-|----------|------|------|--------|
-| **SynthBrain** | Advanced text generation | [Activate] | 绿色 |
-| **CodeWeaver** | AI code assistant | [Use] | 蓝色 |
-| **DataDrill** | Data analysis & viz | [Connect] | 橙色 |
-| **TimeAnalyst** | Time tracking & analytics | [Open] | 紫色 |
-
----
-
-## 工具卡片设计规范
-
-### 视觉元素
-
-| 元素 | 规格 |
-|------|------|
-| **卡片背景** | GlassCard 玻璃态 |
-| **边框** | 2px 霓虹色，带发光效果 |
-| **图标** | Lucide icons，48px，发光 |
-| **工具名称** | 20px，白色，bold |
-| **描述** | 14px，灰色(#a0a0b0) |
-| **按钮** | NeonButton，全宽 |
-
-### 配色方案
-
-```css
-/* 工具主题色 */
---tool-cyan: #00f2ff;      /* CodeWeaver */
---tool-pink: #ff006e;      /* AutoFlow */
---tool-blue: #3b82f6;      /* NeuralMind */
---tool-purple: #bc13fe;    /* Artifex */
---tool-green: #10b981;     /* SynthBrain */
---tool-orange: #f59e0b;    /* DataDrill */
-```
-
----
-
-## 工具示例清单
-
-### 开发工具 (Development)
-- **CodeWeaver**: AI代码辅助
-- **RegexTester**: 正则表达式测试
-- **JSONFormatter**: JSON格式化
-
-### 自动化工具 (Automation)
-- **AutoFlow**: 工作流自动化
-- **TaskScheduler**: 任务调度器
-- **FileRenamer**: 批量文件重命名
-
-### 智能工具 (Intelligence)
-- **NeuralMind**: 数据分析
-- **TextSummarizer**: 文本摘要
-- **SentimentAnalyzer**: 情感分析
-
-### 创意工具 (Creative)
-- **Artifex**: 生成式创意套件
-- **ColorPalette**: 配色方案生成
-- **IconGenerator**: 图标生成器
-
----
-
-## 背景设计
-
-### 桌面版背景
-- 深渊黑底色
-- 电路板纹理图案
-- 细微的霓虹线条
-
-### 移动版背景
-- 赛博朋克城市夜景
-- 高楼剪影
-- 霓虹灯光效果
-
----
-
-## Genesis 组件使用清单
-
-| 组件 | 位置 | 定制 |
-|------|------|------|
-| `GlassCard` | 工具卡片 | 彩色霓虹边框 |
-| `NeonButton` | 操作按钮 | 多色主题 |
-| `CyberGrid` | 可选背景 | 电路板纹理 |
-
----
-
-## 响应式适配
-
-### 桌面版 (≥1024px)
-- 2×2网格布局
-- 卡片较大，信息完整
-- 背景电路板纹理
-
-### 平板版 (768px - 1023px)
-- 2列网格
-- 卡片适中
-- 简化背景
-
-### 移动版 (<768px)
-- 单列列表
-- 卡片紧凑
-- 城市夜景背景
-
----
-
-## 技术实现要点
-
-### 筛选功能
-
-```typescript
-// Redux状态管理
-const toolsSlice = createSlice({
-  name: 'tools',
-  initialState: {
-    category: 'all', // all | development | automation | intelligence | creative
-    tools: [],
-    loading: false
-  },
-  reducers: {
-    setCategory: (state, action) => {
-      state.category = action.payload;
-    }
-  }
-});
-```
-
-### 卡片网格布局
-
-```tsx
-// 桌面版
-<div className="grid grid-cols-2 gap-6">
-  {filteredTools.map(tool => (
-    <ToolCard key={tool.id} {...tool} />
-  ))}
-</div>
-
-// 移动版
-<div className="flex flex-col gap-4">
-  {filteredTools.map(tool => (
-    <ToolCardCompact key={tool.id} {...tool} />
-  ))}
-</div>
-```
-
-### 彩色霓虹边框
-
-```tsx
-const ToolCard = ({ tool }) => (
-  <GlassCard
-    className={cn(
-      "border-2 transition-all duration-300",
-      `border-[${tool.color}] hover:shadow-[0_0_20px_${tool.color}]`
-    )}
-  >
-    {/* 卡片内容 */}
-  </GlassCard>
-);
-```
-
----
-
-## 工具管理后台
-
-工具的增删改查在 **管理后台** 完成，前台仅展示和运行。
-
-### 工具配置字段
-- 名称
-- 描述
-- 图标
-- 分类
-- 主题色
-- 按钮文字
-- iframe入口地址 (如有)
-
----
-
-## 相关文档
-
-- [设计规范](../genesis-design-system.md)
-- [Labs页面](./labs.md)
-- [工具开发指南](../../../docs/development/tools-development.md)
+确保代码片段的可读性和拷贝按钮的潜在交互。响应式布局在手机端应变为单列。

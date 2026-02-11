@@ -1,6 +1,6 @@
 # API Design Specification
 
-> **归属**: Work-Agents 项目
+> **归属**: My-Note-Book 项目
 > **技术栈**: FastAPI + SQLite
 > **关联文档**: [项目路线图](../planning/roadmap-03.md)
 

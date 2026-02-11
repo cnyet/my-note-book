@@ -1,6 +1,6 @@
 # 前端 UI/UX 设计指导
 
-> Work-Agents 前端设计系统与开发规范
+> My-Note-Book 前端设计系统与开发规范
 
 ## 📋 目录
 
@@ -18,28 +18,29 @@
 
 ## 设计系统概述
 
-### Genesis Design System
+### Genesis Design System (极客赛博 / 未来主义简约)
 
-Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑主题设计系统，融合赛博朋克美学与现代极简主义。
+My-Note-Book 采用 **Genesis Design System** - 专为开发者和 AI 工程师设计的 UI 框架。它融合了**赛博朋克 (Cyberpunk)** 的视觉冲突力与**现代简约主义**的结构感，营造出一个“高科技实验室”般的沉浸式工作空间。
 
-**设计哲学**:
+**设计特征 (Design DNA)**:
 
-- **深渊黑底** - 深色背景减少视觉疲劳，突出内容
-- **电光霓虹** - 青色/紫色渐变营造科技感
-- **玻璃态** - 半透明元素增加层次深度
-- **动态交互** - 流畅动效提升用户体验
+- **深邃底色 (Deep Foundation)** - 使用 Abyss Black 和 Void 建立高对比度暗色基底。
+- **霓虹导视 (Neon Guidance)** - 电光青与霓虹紫的交织，引导视线并区分功能边界。
+- **高级玻璃态 (Glassmorphism Pro)** - 具有极其细微边框和内发光的磨砂面。
+- **物理动效 (Spring Mechanics)** - 模拟真实物理反馈的弹簧运动引擎。
+- **故障美学 (Glitch Tech)** - 适度的视觉抖动，强调 AI 系统的动态运行感。
 
 ### 技术栈
 
-| 技术           | 用途                               |
-| -------------- | ---------------------------------- |
-| Next.js 15.5   | 核心框架 (App Router)              |
-| React 19.1     | UI 库 (Server Components)          |
-| Tailwind CSS 3 | 原子化样式 (Config-driven)         |
-| Shadcn/UI      | 基础组件库                         |
-| v-ui           | 内部 UI 系统 (定制化 Genesis 组件) |
-| Framer Motion  | 交互动效                           |
-| Lucide React   | 图标系统                           |
+| 技术           | 用途                                              |
+| -------------- | ------------------------------------------------- |
+| Next.js 15.5   | 核心框架 (App Router)                             |
+| React 19.1     | UI 库 (Server Components)                         |
+| Tailwind CSS 3 | 原子化样式 (Config-driven)                        |
+| Shadcn/UI      | 基础组件库                                        |
+| v-ui           | 内部 UI 系统 (定制化 Genesis 组件)，基于Shadcn/UI |
+| Framer Motion  | 交互动效                                          |
+| Lucide React   | 图标系统                                          |
 
 ---
 
@@ -54,43 +55,56 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 
 ---
 
-## 内部组件库 (v-ui)
+## 内部组件库 (v-ui) 规范
 
-`v-ui` 是基于 Shadcn/UI 封装的、符合 Genesis 视觉规范的内部组件库：
+`v-ui` 是本项目的灵魂，所有页面必须优先调用以下高阶组件：
 
-- **核心组件**: `AgentBridge` (跨 Agent 跳转动效), `OnlinePulse` (实时状态波纹), `ParticleBg` (科技感背景)。
-- **使用原则**: 严禁在页面中直接硬编码复杂的赛博朋克动效，必须通过 `v-ui` 提供的抽象组件进行集成。
+1. **GlassCard**: 磨砂玻璃卡片。
+   - `bg-surface/70`, `backdrop-blur-xl`, `border-white/10`。
+   - 带有内发光效果 `shadow-glass-border`。
+
+2. **GlitchText**: 故障文字动效。
+   - 用于强调 AI 状态、关键标题或 Hover 反馈。
+   - 原理：多层文字重叠位移偏移。
+
+3. **NeonButton**: 霓虹发光按钮。
+   - 具有 `box-shadow: 0 0 20px var(--primary-glow)`。
+   - 悬停时辉光扩散，伴随轻微缩放。
+
+4. **ParticleBg**: 动力学背景。
+   - 基于 Canvas 的实时粒子互动背景，仅用于 Hero Section 或关键视觉区域。
+
+5. **OnlinePulse**: 实时状态脉冲。
+   - 呼吸灯效果，用于展示 Agent 或实验室内实时在线人数。
 
 ---
 
 ## 色彩系统
 
-### 主色调
+### 基础调色板 (Core Palette)
 
 ```css
-/* 背景色 */
---bg-abyss: #0a0a0f; /* 深渊黑 - 主背景 */
---bg-void: #111118; /* 虚空黑 - 次级背景 */
---bg-surface: #1a1a24; /* 表面灰 - 卡片背景 */
+/* 核心底色 (Foundational Dark) */
+--abyss-black: #0a0a0f; /* 主背景 */
+--void: #050508; /* 深度背景 / 容器背景 */
+--surface: rgba(26, 26, 36, 0.7); /* 玻璃态表面 */
 
-/* 主题色 */
---primary: #00f2ff; /* 电光青 - 主强调色 */
---primary-glow: rgba(0, 242, 255, 0.3); /* 青色辉光 */
+/* 核心强调 (Accent & Glow) */
+--primary: #00f2ff; /* 电光青 (Cyber-Cyan) - 智能、核心交互 */
+--primary-glow: rgba(0, 242, 255, 0.4);
 
-/* 辅助色 */
---accent: #bc13fe; /* 霓虹紫 - 次强调色 */
---accent-glow: rgba(188, 19, 254, 0.3); /* 紫色辉光 */
+--accent: #bc13fe; /* 霓虹紫 (Neon-Purple) - 增强、创新、Glitch */
+--accent-glow: rgba(188, 19, 254, 0.4);
 
-/* 文字色 */
---text-primary: #f8f8f8; /* 极白 - 主文字 */
---text-secondary: #a0a0b0; /* 灰白 - 次级文字 */
---text-muted: #606070; /* 暗灰 - 弱化文字 */
+/* 文字系统 (Typography Colors) */
+--text-primary: #f8f8f8; /* 极白 - 正文与标题 */
+--text-secondary: #a0a0b0; /* 灰白 - 描述文字 */
+--text-muted: #606070; /* 暗灰 - 辅助信息 */
 
-/* 功能色 */
---success: #00ff88; /* 成功绿 */
---warning: #ffaa00; /* 警告橙 */
---error: #ff3366; /* 错误红 */
---info: #00f2ff; /* 信息蓝 */
+/* 状态色 (Semantic Colors) */
+--success: #00ff88; /* 荧光绿 */
+--warning: #ffaa00; /* 琥珀橙 */
+--error: #ff3366; /* 警示红 */
 ```
 
 ### 使用规范
@@ -146,30 +160,20 @@ Work-Agents 采用 **Genesis Design System** - 专为极客社区设计的暗黑
 --font-mono: "JetBrains Mono", "Fira Code", monospace;
 ```
 
-### 字体规模
+### 字体规模 (Scale & Hierarchy)
 
-| 级别    | 大小            | 字重 | 用途       |
-| ------- | --------------- | ---- | ---------- |
-| H1      | 48px / 3rem     | 700  | 页面主标题 |
-| H2      | 36px / 2.25rem  | 600  | 章节标题   |
-| H3      | 24px / 1.5rem   | 600  | 小节标题   |
-| H4      | 20px / 1.25rem  | 500  | 卡片标题   |
-| Body    | 16px / 1rem     | 400  | 正文内容   |
-| Small   | 14px / 0.875rem | 400  | 辅助文字   |
-| Caption | 12px / 0.75rem  | 400  | 标签/时间  |
+| 级别             | 大小         | 字重            | 行间距 (Leading) | 用途                   |
+| ---------------- | ------------ | --------------- | ---------------- | ---------------------- |
+| **H1 (Hero)**    | 72px - 112px | **900 (Black)** | **0.85**         | 极具压迫力的页首标题   |
+| **H2 (Section)** | 48px - 64px  | **900 (Black)** | **0.9**          | 章节主标题             |
+| **Subtitle**     | 20px - 24px  | 500 (Medium)    | 1.5              | 配合大标题的描述性文字 |
+| **Body**         | 16px         | 400 (Regular)   | 1.6              | 标准正文               |
+| **Mono**         | 14px         | 500 (Medium)    | 1.2              | 代码、元数据、技术参数 |
 
-### 行高规范
+### 设计特征:
 
-```css
-/* 标题 */
---leading-heading: 1.2;
-
-/* 正文 */
---leading-body: 1.6;
-
-/* 紧凑 */
---leading-tight: 1.4;
-```
+- **负行距设计**: 大标题使用极其紧密的行间距 (0.85-0.9)，强化结构感。
+- **字间距优化**: 标题使用 `tracking-tighter`，元数据标签使用 `tracking-widest`。
 
 ### 使用示例
 
@@ -610,7 +614,7 @@ export default function AgentsPage() {
 
 **导航系统:**
 
-- Header 包含 LOGO、导航菜单（Home, Agents, Blog, Tools, Labs）
+- Header 包含 LOGO、导航菜单（Home, Agents, Tools, Labs, Blogs）
 - 右侧动态认证 UI：未登录显示 [Sign In] [Sign Up]；已登录显示头像下拉菜单（Dashboard, Profile, Log Out）
 - Footer 设计参考专业开发者社区风格
 

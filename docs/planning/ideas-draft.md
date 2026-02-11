@@ -61,7 +61,7 @@
 **数据库结构:**
 
 - 数据库设计文档： `docs/design/database-design.md`
-- SQLite 数据库位置：`backend/data/work_agents.db`
+- SQLite 数据库位置：`backend/data/my_note_book.db`
 - 数据表：users、agents、blogs、tools、labs，具有适当的关联关系
 - 热点数据缓存层
 - 预置数据（5 个智能体、3 篇博客、3 个工具、3 个实验室）

@@ -5,7 +5,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-echo "🚀 启动 work-agents 开发服务器..."
+echo "🚀 启动 my-note-book 开发服务器..."
 
 # 执行清理工作
 echo "🧹 Running cleanup..."
@@ -25,7 +25,7 @@ find_available_port() {
 BACKEND_PORT=$(find_available_port 8001)
 FRONTEND_PORT=$(find_available_port 3001)
 
-echo "🚀 Starting work-agents development cluster..."
+echo "🚀 Starting my-note-book development cluster..."
 echo "📍 Backend selected port: $BACKEND_PORT"
 echo "📍 Frontend selected port: $FRONTEND_PORT"
 

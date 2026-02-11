@@ -55,7 +55,7 @@ Work Agents is a modern AI multi-agent orchestration platform designed for the g
 
 ## Data & Persistence
 
-- **Database**: SQLite file located at `backend/data/work_agents.db`.
+- **Database**: SQLite file located at `backend/data/my_note_book.db`.
 - **Agent Memories**: Agent state and long-term memories persist in database tables.
 - **Agent Messages**: Cross-Agent communication logs are stored for observability.
 

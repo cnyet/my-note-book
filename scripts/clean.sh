@@ -46,13 +46,8 @@ rm -rf backend/.ruff_cache
 rm -rf frontend/.next
 rm -rf frontend/node_modules/.cache
 
-# 清理日志（可选）
-if [ "${1:-}" = "-y" ] || [ ! -t 0 ]; then
-  REPLY="y"
-else
-  read -p "是否清理日志文件？ (y/N) " -n 1 -r
-  echo
-fi
+# 默认自动清理日志
+REPLY="y"
 
 if [[ ${REPLY:-n} =~ ^[Yy]$ ]]; then
   rm -rf logs/*.log

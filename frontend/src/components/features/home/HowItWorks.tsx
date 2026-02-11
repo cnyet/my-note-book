@@ -33,7 +33,7 @@ export function HowItWorks() {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 px-4">
           <h2 className="text-4xl md:text-5xl font-heading font-bold mb-6">
-            How Work-Agents Works
+            How My-Note-Book Works
           </h2>
           <p className="text-text-secondary text-lg">
             A seamless three-step process to transform your manual efforts into

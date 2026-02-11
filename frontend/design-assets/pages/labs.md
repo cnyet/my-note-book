@@ -1,252 +1,47 @@
-# Labs 页面设计文档
+# Labs 页面实现提示词 (Optimized)
 
-**对应设计稿**:
-- 桌面版: `labs-desktop.png`
-- 移动版: `labs-mobile.png`
+## 任务目标 (Objective)
 
-**页面路由**: `/labs`
+作为一名资深前端工程师，你的任务是实现 My-Note-Book 的“未来实验室”页面。这是一个展示前沿探索、实验性交互和科幻概念的页面，视觉设计需要更加激进且充满未来感。
 
-**页面定位**: 实验性项目展示，展示个人开发的原型项目 (如贪吃蛇)
+## 核心上下文 (Context)
 
-**MVP状态**: ⏳ MVP后迭代 (Week 5-6)
+- **页面定位**: 实验项目展示、白皮书发布与概念预览。
+- **设计风格**: Lumina Labs (具有强烈色彩对比和超大视觉元素的科幻风格)。
+- **视觉主题**: “The Future Canvas” (未来画布)。
 
----
+## 页面架构与区块 (Structure)
 
-## 视觉设计规范 (Genesis + 故障艺术)
+### 1. 标题头 (Section Header)
 
-| 元素 | 桌面版 (≥1024px) | 移动版 (<768px) |
-|------|------------------|-----------------|
-| **整体布局** | 复杂网格 + 中央预览区 | 垂直列表 |
-| **背景** | 深渊黑 + 扫描线效果 + Glitch故障艺术 | 深渊黑 + 故障艺术 |
-| **标题** | "WORK-AGENTS // LABS" 大字号故障文字 | "WORK-AGENTS LABS" 霓虹发光 |
-| **边框** | 霓虹彩色边框 (粉/绿/蓝/橙) | 霓虹彩色边框 |
-| **特效** | 扫描线 + Glitch故障 + 数据流 | 简化故障效果 |
+- **标签**: "Experimental" (实验性)。
+- **主标题**: "The Future Canvas."。
+- **副标题**: 描述这是打破边界、研究新兴界面的学术与技术基地。
 
----
+### 2. 核心实验项目 (Core Projects)
 
-## 核心功能区块
+- **布局**: 2列超大垂直卡片 (高度约 600px)。
+- **项目 A: Synapse (Neural Design Sync)**:
+  - 视觉: 青色 (`Cyan`) 主色调。
+  - 特效: 背景嵌入一个巨大的 `BrainCircuit` 浅色图标 (Opacity 10%)，悬停时亮度提升。
+  - 功能: 脑机接口设计预览，带 "Join Waitlist" 按钮。
+- **项目 B: Echo (Ambient Layouts)**:
+  - 视觉: 粉色 (`Pink`) 主色调。
+  - 特效: 背景嵌入一个巨大的 `Radio` 雷达图标。
+  - 功能: 环境自适应布局研究，带 "Read Whitepaper" 按钮。
 
-### 1. 顶部标签栏
+### 3. 页脚 (Labs Footer)
 
-**标签项**:
-- EXPERIMENTS (默认选中)
-- DATA_LOGS
-- SYSTEM_STATUS
+- **内容**: 极简设计，中心化对齐。
+- **视觉**: 旋转或脉动状态的 `FlaskConical` (烧瓶) 图标。
+- **声明**: "Proprietary Research Unit" (专用研究单位)。
 
-**视觉设计**:
-- 选中状态: 霓虹下划线 + 发光
-- 悬停状态: 文字颜色变化
+## 视觉细节规范 (Specs)
 
----
+- **动效**: 强调深度感，卡片内的图标应有微弱的位移差 (Parallax effect) 效果。
+- **色彩**: 使用高对比度的霓虹青和霓虹粉，打破主站的蓝紫调性。
+- **动画**: 采用从顶部落下的 `slide-in-from-top` 效果。
 
-### 2. 中央展示区 (桌面版专属)
+## 交付要求 (Deliverables)
 
-**三栏布局**:
-```
-┌──────────────┬─────────────────────┬──────────────┐
-│ 项目列表      │   大图预览区         │   项目详情    │
-│              │                     │              │
-│ ▶ NEURAL-    │  [项目截图/演示]     │  名称:       │
-│   SYNTH      │                     │  NEURAL-SYNTH│
-│   [EXECUTE]  │                     │              │
-│              │                     │  版本: v0.9  │
-│ ▶ QUANTUM-   │                     │              │
-│   FLOW       │                     │  描述:...    │
-│   [EXECUTE]  │                     │              │
-│              │                     │  [ACCESS_BETA]│
-└──────────────┴─────────────────────┴──────────────┘
-```
-
-**左侧项目列表**:
-- 项目名称 (大写)
-- EXECUTE_TEST 按钮 (绿色霓虹)
-- 选中状态: 霓虹边框高亮
-
-**中央预览区**:
-- 项目截图或实时演示
-- 支持 iframe 嵌入实验项目
-
-**右侧详情区**:
-- 项目完整信息
-- ACCESS_BETA 按钮 (蓝色霓虹)
-
----
-
-### 3. LATEST_BUILDS 区域
-
-**布局**: 横向滚动卡片列表
-
-**内容**:
-- 最新构建版本展示
-- 小卡片形式: 缩略图 + 版本号 + 日期
-
----
-
-### 4. COMMUNITY_HACKS 区域
-
-**布局**: 网格或横向滚动
-
-**内容**:
-- 社区贡献项目展示
-- 每项包含: 图标 + 名称 + 描述 + EXECUTE_TEST按钮
-
----
-
-## 实验项目卡片设计
-
-### 示例项目
-
-| 项目 | 主题色 | 版本 | 描述 |
-|------|--------|------|------|
-| **Quantum Tasker** | 蓝色 | v0.9 | Optimize with uncertainty |
-| **Neural Net Sandbox** | 绿色 | - | Test autonomous flows. Data volatile. |
-| **Synthetik Voice** | 橙色 | - | Generative audio prototypes. Unstable. |
-
-### 卡片结构 (移动版)
-
-```
-┌─────────────────────────────────┐
-│  [图标]  PROJECT_NAME    [状态]  │
-│         版本号                   │
-│         描述文字                 │
-│                    [ACCESS/RUN]  │
-└─────────────────────────────────┘
-```
-
----
-
-## 故障艺术特效
-
-### Glitch 效果
-
-```css
-.glitch-text {
-  animation: glitch 1s linear infinite;
-}
-
-@keyframes glitch {
-  2%, 64% { transform: translate(2px,0) skew(0deg); }
-  4%, 60% { transform: translate(-2px,0) skew(0deg); }
-  62% { transform: translate(0,0) skew(5deg); }
-}
-```
-
-### 扫描线效果
-
-```css
-.scanlines::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0),
-    rgba(255,255,255,0) 50%,
-    rgba(0,0,0,0.2) 50%,
-    rgba(0,0,0,0.2)
-  );
-  background-size: 100% 4px;
-  pointer-events: none;
-}
-```
-
-### 数据流动画
-
-- 背景细微的数据流线条
-- 使用 CSS animation 或 Canvas
-
----
-
-## iframe 集成实验项目
-
-### 项目示例: 贪吃蛇游戏
-
-```tsx
-<div className="lab-preview-frame">
-  <iframe
-    src="/labs/snake-game/index.html"
-    width="100%"
-    height="600px"
-    sandbox="allow-scripts allow-same-origin"
-  />
-  <div className="scanlines" />
-</div>
-```
-
-### 安全考虑
-- 使用 sandbox 属性限制权限
-- 与主应用隔离
-- 不共享敏感数据
-
----
-
-## Genesis 组件使用清单
-
-| 组件 | 位置 | 定制 |
-|------|------|------|
-| `GlassCard` | 卡片容器 | 添加霓虹边框 + glitch类 |
-| `NeonButton` | 操作按钮 | 多色方案 (绿/蓝/橙) |
-| `CyberGrid` | 可选背景 | 电路板纹理增强 |
-| `GradientText` | 标题 | 配合glitch动画 |
-
----
-
-## 响应式适配
-
-### 桌面版 (≥1024px)
-- 完整三栏布局
-- 所有特效启用
-- 横向滚动区域
-
-### 平板版 (768px - 1023px)
-- 简化布局
-- 保留核心功能
-- 减少特效
-
-### 移动版 (<768px)
-- 垂直列表
-- 单卡片全宽
-- 基础故障效果
-
----
-
-## 技术实现要点
-
-### 故障效果实现
-
-```tsx
-// GlitchText组件
-const GlitchText = ({ children }) => (
-  <span className="relative inline-block">
-    <span className="glitch-base">{children}</span>
-    <span className="glitch-layer-1" aria-hidden>{children}</span>
-    <span className="glitch-layer-2" aria-hidden>{children}</span>
-  </span>
-);
-```
-
-### 扫描线叠加
-
-```tsx
-// 全局扫描线层
-const Scanlines = () => (
-  <div
-    className="pointer-events-none fixed inset-0 z-50 opacity-10"
-    style={{
-      background: 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 50%)',
-      backgroundSize: '100% 4px'
-    }}
-  />
-);
-```
-
----
-
-## 相关文档
-
-- [设计规范](../genesis-design-system.md)
-- [Tools页面](./tools.md)
-- [实验项目开发指南](../../../docs/development/labs-development.md)
+卡片在悬停时应有显著的缩放和色彩扩散效果。在移动端，两张大卡片需垂直排列。

@@ -5,7 +5,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-echo "🔨 构建 work-agents 生产版本..."
+echo "🔨 构建 my-note-book 生产版本..."
 
 # 构建前端
 echo "📦 构建 Next.js..."

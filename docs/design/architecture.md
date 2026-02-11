@@ -1,4 +1,4 @@
-# work-agents 架构设计文档
+# my-note-book 架构设计文档
 
 ## 1. 系统架构概览
 
@@ -49,7 +49,7 @@
 │                      数据存储层                               │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
 │  │   SQLite DB   │  │ 本地文件存储   │  │ 内存缓存 (PY) │       │
-│  │(work_agents.db)│  │(/public/ups) │  │ (Polling)    │       │
+│  │(my_note_book.db)│  │(/public/ups) │  │ (Polling)    │       │
 │  └──────────────┘  └──────────────┘  └──────────────┘       │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -133,7 +133,7 @@ backend/
 │   └── env.py              # 迁移环境配置
 ├── alembic.ini             # Alembic 配置文件
 ├── data/                   # 数据库与持久化层 (REQUIRED)
-│   └── work_agents.db      # SQLite 主数据库文件
+│   └── my_note_book.db      # SQLite 主数据库文件
 ├── src/                    # 核心源码目录
 │   ├── api/                # 接口路由层
 │   │   ├── v1/             # 基础业务 API (Auth, Home, Agents...)
@@ -372,7 +372,7 @@ sequenceDiagram
              ↓                      ↓
     ┌────────────────────────────────────────┐
     │              持久化存储层                │
-    │  - backend/data/work_agents.db (SQLite)│
+    │  - backend/data/my_note_book.db (SQLite)│
     │  - frontend/public/uploads (Media)     │
     └────────────────────────────────────────┘
 ```
@@ -407,7 +407,7 @@ sequenceDiagram
 
 **数据库结构:**
 
-- SQLite 数据库位置：`backend/data/work_agents.db`
+- SQLite 数据库位置：`backend/data/my_note_book.db`
 - 数据表：users, agents, blogs, tools, labs 及关联关系
 - 热点数据缓存层
 - 预置数据：5 agents, 3 blogs, 3 tools, 3 labs
@@ -472,7 +472,7 @@ sequenceDiagram
 
 ### 约束条件
 
-- 主数据库必须保持 SQLite，位置 `backend/data/work_agents.db`
+- 主数据库必须保持 SQLite，位置 `backend/data/my_note_book.db`
 - API 驱动架构：功能不允许静态内容
 - 所有前端内容必须从后端动态加载
 - 遵循现有项目结构和命名约定

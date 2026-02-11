@@ -1,8 +1,9 @@
-import { Footer } from "@/components/common/Footer";
 import { Header } from "@/components/common/Header";
+import { ParticleBg } from "@/components/v-ui/ParticleBg";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Work Agents | Modern AI Multi-Agent Orchestration",
+  title: "My Note Book | Modern AI Multi-Agent Orchestration",
   description:
     "A visually stunning, highly automated AI multi-agent orchestration platform for geeks.",
 };
@@ -38,11 +39,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} font-body bg-abyss text-text-primary min-h-screen flex flex-col`}
+        className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} font-body bg-transparent text-text-primary min-h-screen flex flex-col`}
       >
-        <Header />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+        <Providers>
+          <ParticleBg />
+          <Header />
+          <main className="flex-grow">{children}</main>
+        </Providers>
       </body>
     </html>
   );

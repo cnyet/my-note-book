@@ -1,4 +1,4 @@
-# work-agents 后端
+# my-note-book 后端
 
 基于 FastAPI 的后端服务，提供多智能体平台的核心功能，包括用户认证、数据管理、API 接口和实时通信服务。后端实现了完整的身份验证系统、数据库操作、WebSocket 实时通信和智能体编排功能。
 
@@ -41,7 +41,7 @@ uvicorn src.main:app --reload --host 0.0.0.0 --port 8001
 backend/
 ├── alembic/                # 数据库迁移脚本
 ├── data/                   # 数据库文件存储
-│   └── work_agents.db      # SQLite 数据库文件
+│   └── my_note_book.db      # SQLite 数据库文件
 ├── .venv/                  # Python 虚拟环境
 ├── src/                    # 源代码目录
 ├── requirements.txt        # Python 依赖包列表
@@ -55,7 +55,7 @@ backend/
 
 - **引擎**: SQLite (通过 `aiosqlite` 支持异步)
 - **ORM**: SQLAlchemy 2.0+
-- **位置**: `./data/work_agents.db` (默认)
+- **位置**: `./data/my_note_book.db` (默认)
 
 ### 数据库迁移 (Alembic)
 
@@ -98,7 +98,7 @@ backend/
 
 ```env
 # 数据库
-DATABASE_URL=sqlite:///./data/work_agents.db
+DATABASE_URL=sqlite:///./data/my_note_book.db
 
 # JWT 认证
 SECRET_KEY=your-secret-key-here

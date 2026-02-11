@@ -185,4 +185,4 @@ MIT License
 
 ## 作者
 
-work-agents-kimi 项目
+my-note-book-kimi 项目

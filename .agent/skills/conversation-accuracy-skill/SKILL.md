@@ -3,7 +3,7 @@ name: conversation-accuracy-skill
 description: Optimize long-form conversation accuracy using a four-layer memory architecture with automatic project-level decision document generation.
 license: MIT
 metadata:
-  author: work-agents-kimi
+  author: my-note-book-kimi
   version: "2.0.0"
 ---
 

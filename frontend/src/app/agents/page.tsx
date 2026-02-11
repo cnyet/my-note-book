@@ -1,73 +1,173 @@
 "use client";
 
-import { AgentGrid } from "@/components/features/agents/AgentGrid";
-import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
-import { GradientText } from "@/components/v-ui/GradientText";
-import { motion } from "framer-motion";
+import { StandardFooter } from "@/components/common/StandardFooter";
+import { Activity, Box, Code2, Globe, Palette, Search } from "lucide-react";
+
+const SectionHeader = ({
+  title,
+  subtitle,
+  tag,
+  centered = false,
+}: {
+  title: string;
+  subtitle: string;
+  tag?: string;
+  centered?: boolean;
+}) => (
+  <div
+    className={`max-w-4xl mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 ${centered ? "mx-auto text-center" : ""}`}
+  >
+    {tag && (
+      <div
+        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-6`}
+      >
+        {tag}
+      </div>
+    )}
+    <h2
+      className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.9] text-white"
+      dangerouslySetInnerHTML={{ __html: title }}
+    ></h2>
+    <p
+      className={`text-slate-400 text-xl md:text-2xl font-medium leading-relaxed ${centered ? "mx-auto" : ""} max-w-2xl`}
+    >
+      {subtitle}
+    </p>
+  </div>
+);
+
+const AgentsFooter = () => (
+  <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
+    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+      <div className="text-left">
+        <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
+          Expand Your Workforce
+        </h3>
+        <p className="text-slate-500 font-medium">
+          MyNoteBook Agents are updated weekly with new capabilities.
+        </p>
+      </div>
+      <div className="flex gap-4">
+        <button className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-all">
+          Join as Agent
+        </button>
+        <button className="px-8 py-4 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
+          Marketplace API
+        </button>
+      </div>
+    </div>
+  </footer>
+);
 
 export default function AgentsPage() {
+  const agents = [
+    {
+      name: "Archon",
+      role: "System Architect",
+      icon: <Box className="text-indigo-400" />,
+      status: "Available",
+      capabilities: ["Component Logic", "Documentation", "Token Strategy"],
+    },
+    {
+      name: "Lexa",
+      role: "UX Researcher",
+      icon: <Search className="text-purple-400" />,
+      status: "Online",
+      capabilities: ["User Journeys", "Competitor Analysis", "Accessibility"],
+    },
+    {
+      name: "Koda",
+      role: "Motion Engineer",
+      icon: <Activity className="text-pink-400" />,
+      status: "Occupied",
+      capabilities: ["Framing", "Easing Optimization", "Lottie Export"],
+    },
+    {
+      name: "Vira",
+      role: "Brand Alchemist",
+      icon: <Palette className="text-orange-400" />,
+      status: "Online",
+      capabilities: ["Moodboards", "Color Science", "Logo Evolution"],
+    },
+    {
+      name: "Nova",
+      role: "Data Visualization",
+      icon: <Globe className="text-cyan-400" />,
+      status: "Ready",
+      capabilities: [
+        "Interactive Charts",
+        "Complex Datasets",
+        "SVG Generation",
+      ],
+    },
+    {
+      name: "Sudo",
+      role: "Design Engineer",
+      icon: <Code2 className="text-emerald-400" />,
+      status: "Idle",
+      capabilities: ["React Prototype", "Storybook Sync", "CSS-in-JS"],
+    },
+  ];
+
   return (
-    <main className="min-h-screen pt-20 pb-16 bg-void relative overflow-hidden">
-      {/* Background Circuit Texture Placeholder */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none -z-10"
-        style={{
-          backgroundImage:
-            "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+    <div className="min-h-screen pt-32 px-6 pb-0">
+      <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-7xl mx-auto">
+        <SectionHeader
+          centered
+          tag="Personnel"
+          title="Autonomous <br/>Design Agents."
+          subtitle="The world's most capable design workforce. Hire AI specialists for every part of your creative stack."
+        />
 
-      <div className="container mx-auto px-4 h-full flex flex-col space-y-8">
-        {/* Header Section */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-end justify-between gap-6"
-        >
-          <div className="space-y-2">
-            <GradientText as="h1" className="text-4xl md:text-5xl font-bold">
-              Autonomous Intelligence
-            </GradientText>
-            <p className="text-text-secondary font-body">
-              Synchronize with your agent team and orchestrate complex tasks via
-              LobeChat.
-            </p>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs font-mono text-text-secondary uppercase">
-                API: Active
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Main Content: Split Screen */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[700px]">
-          {/* Left: LobeChat */}
-          <div className="h-full min-h-[500px] lg:min-h-0">
-            <LobeChatPanel />
-          </div>
-
-          {/* Right: Agent Grid */}
-          <div className="h-full">
-            <div className="bg-void/50 border border-white/5 rounded-2xl p-6 h-full glass-effect overflow-y-auto">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-heading font-bold">
-                  Agent Workstations
-                </h2>
-                <span className="text-xs font-mono text-text-muted uppercase tracking-widest">
-                  5 Specialized Co-processors
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {agents.map((agent) => (
+            <div
+              key={agent.name}
+              className="backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10"
+            >
+              <div className="flex items-center justify-between mb-8">
+                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all">
+                  {agent.icon}
+                </div>
+                <div
+                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                    agent.status === "Online" ||
+                    agent.status === "Available" ||
+                    agent.status === "Ready"
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                      : "bg-orange-500/10 text-orange-400 border-orange-500/20"
+                  }`}
+                >
+                  {agent.status}
+                </div>
               </div>
-              <AgentGrid />
+              <h3 className="text-3xl font-black text-white mb-1">
+                {agent.name}
+              </h3>
+              <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
+                {agent.role}
+              </p>
+              <div className="flex flex-wrap gap-2 mb-8">
+                {agent.capabilities.map((cap) => (
+                  <span
+                    key={cap}
+                    className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
+                  >
+                    {cap}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-auto">
+                <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white hover:text-slate-950 transition-all">
+                  Consult Agent
+                </button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+        <AgentsFooter />
       </div>
-    </main>
+      <StandardFooter />
+    </div>
   );
 }

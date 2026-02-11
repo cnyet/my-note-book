@@ -1,0 +1,7 @@
+{
+  "name": "Lumina Design Studio",
+  "description": "A high-end, modern landing page with a sleek Figma-inspired aesthetic, featuring a Bento-grid layout, glassmorphic UI elements, and an integrated Gemini-powered AI design assistant.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

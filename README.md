@@ -1,10 +1,10 @@
-# work-agents
+# my-note-book
 
 现代 AI 多智能体编排平台 (Modern AI Multi-Agent Orchestration Platform)
 
 ## 🎯 项目概述
 
-**work-agents** 是一个现代 AI 多智能体编排平台，专为极客社区设计，支持智能体间协作与通信、实时状态同步和统一身份认证。平台通过编排协议实现智能体间的无缝协作，提供实时通信能力、持久化内存管理和基于 JWT 的身份传播。
+**my-note-book** 是一个现代 AI 多智能体编排平台，专为极客社区设计，支持智能体间协作与通信、实时状态同步和统一身份认证。平台通过编排协议实现智能体间的无缝协作，提供实时通信能力、持久化内存管理和基于 JWT 的身份传播。
 
 ### 核心功能 (Core Features)
 
@@ -32,7 +32,7 @@
 
 ```bash
 git clone <repository-url>
-cd work-agents
+cd my-note-book
 ```
 
 #### 2. 安装依赖
@@ -192,7 +192,7 @@ tail -f logs/frontend.log
 ## 📁 项目结构
 
 ```
-work-agents/
+my-note-book/
 ├── .agent/                # Agent 配置文件
 ├── ai-configs/            # AI 工具配置统一入口
 ├── backend/               # FastAPI 后端服务 (基础架构)

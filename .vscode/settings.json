@@ -5,19 +5,21 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit"
   },
-  "editor.rulers": [80, 100, 120],
+  "editor.rulers": [
+    80,
+    100,
+    120
+  ],
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.eol": "\n",
-  
   "[python]": {
     "editor.tabSize": 4,
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -33,18 +35,14 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
-  
   "eslint.workingDirectories": [
     "./frontend"
   ],
-  
   "python.defaultInterpreterPath": "./backend/.venv/bin/python",
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.autoImportCompletions": true,
-  
   "search.exclude": {
     "**/node_modules": true,
     "**/.next": true,
@@ -55,7 +53,6 @@
     "**/*.min.js": true,
     "**/*.min.css": true
   },
-  
   "files.exclude": {
     "**/.DS_Store": true,
     "**/.git": true,
@@ -65,7 +62,6 @@
     "**/.venv": true,
     "**/__pycache__": true
   },
-  
   "workbench.tree.indent": 20,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
@@ -73,5 +69,6 @@
     "*.tsx": "${capture}.ts, ${capture}.test.tsx, ${capture}.spec.tsx, ${capture}.stories.tsx",
     "*.env": "*.env.local, *.env.development, *.env.production, *.env.test",
     "README.md": "CONTRIBUTING.md, LICENSE, CHANGELOG.md"
-  }
+  },
+  "prettier.tabWidth": 4
 }

@@ -1,119 +1,137 @@
 "use client";
 
-import { GlassCard } from "@/components/v-ui/GlassCard";
-import { GradientText } from "@/components/v-ui/GradientText";
-import { motion } from "framer-motion";
-import { Calendar, Clock } from "lucide-react";
-import Link from "next/link";
+import { StandardFooter } from "@/components/common/StandardFooter";
+import { Share2 } from "lucide-react";
 
-const posts = [
-  {
-    id: 1,
-    slug: "future-of-ai-automation",
-    title: "The Future of AI in Workflow Automation",
-    excerpt:
-      "Exploring how autonomous multi-agent systems are revolutionizing the modern development landscape.",
-    author: "Dr. A. Chen",
-    date: "Feb 09, 2026",
-    readTime: "8 min read",
-    category: "Architecture",
-    image:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: 2,
-    slug: "orchestrating-agent-teams",
-    title: "Orchestrating Complex Agent Teams with Genesis v2.0",
-    excerpt:
-      "A deep dive into the coordination patterns and protocols required for large-scale agent deployments.",
-    author: "Z. Matrix",
-    date: "Feb 07, 2026",
-    readTime: "12 min read",
-    category: "Technical",
-    image:
-      "https://images.unsplash.com/photo-1620712943543-bcc46386c635?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: 3,
-    slug: "building-holographic-uis",
-    title: "Building Holographic UIs for AI Workspaces",
-    excerpt:
-      "Design principles for creating immersive, data-dense interfaces that don't overwhelm the user.",
-    author: "V. Neon",
-    date: "Feb 05, 2026",
-    readTime: "6 min read",
-    category: "Design",
-    image:
-      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
-  },
-];
+const SectionHeader = ({
+  title,
+  subtitle,
+  tag,
+  centered = false,
+}: {
+  title: string;
+  subtitle: string;
+  tag?: string;
+  centered?: boolean;
+}) => (
+  <div
+    className={`max-w-4xl mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700 ${centered ? "mx-auto text-center" : ""}`}
+  >
+    {tag && (
+      <div
+        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-6`}
+      >
+        {tag}
+      </div>
+    )}
+    <h2
+      className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.9] text-white"
+      dangerouslySetInnerHTML={{ __html: title }}
+    ></h2>
+    <p
+      className={`text-slate-400 text-xl md:text-2xl font-medium leading-relaxed ${centered ? "mx-auto" : ""} max-w-2xl`}
+    >
+      {subtitle}
+    </p>
+  </div>
+);
+
+const BlogsFooter = () => (
+  <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px] mb-10">
+    <div className="max-w-4xl mx-auto text-center space-y-10">
+      <h2 className="text-4xl md:text-6xl font-black text-white leading-none">
+        The Morning Brief.
+      </h2>
+      <p className="text-slate-400 text-lg font-medium">
+        Join 25,000+ design engineers who receive our bi-weekly breakdown of the
+        AI landscape.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <input
+          type="email"
+          placeholder="email@address.com"
+          className="bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-white w-full sm:max-w-xs focus:outline-none focus:border-indigo-500/50"
+        />
+        <button className="px-10 py-5 rounded-2xl bg-white text-black font-black hover:bg-indigo-50 transition-all">
+          Subscribe Now
+        </button>
+      </div>
+    </div>
+  </footer>
+);
 
 export default function BlogPage() {
+  const posts = [
+    {
+      title: "The Architecture of Autonomous UX",
+      author: "Vira Brand",
+      date: "Mar 12, 2024",
+      category: "Engineering",
+      image:
+        "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&q=80&w=800",
+    },
+    {
+      title: "Designing for the Age of Agency",
+      author: "Lexa Research",
+      date: "Mar 08, 2024",
+      category: "Vision",
+      image:
+        "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800",
+    },
+    {
+      title: "Beyond the Screen: Ambient Interfaces",
+      author: "Koda Motion",
+      date: "Feb 28, 2024",
+      category: "Labs",
+      image:
+        "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800",
+    },
+  ];
+
   return (
-    <main className="min-h-screen pt-20 pb-16 bg-void relative">
-      <div className="container mx-auto px-4">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-          <GradientText as="h1" className="text-5xl md:text-7xl font-bold">
-            Project Log
-          </GradientText>
-          <p className="text-xl text-text-secondary font-body">
-            Technical insights, architectural decisions, and the occasional
-            transmission from the future.
-          </p>
-        </div>
-
-        {/* Featured / List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post, index) => (
-            <motion.div
-              key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link href={`/blog/${post.slug}`}>
-                <GlassCard className="h-full flex flex-col group border-white/5 hover:border-primary/20 transition-all overflow-hidden p-0">
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 rounded-full bg-void/80 backdrop-blur-md border border-white/10 text-[10px] font-mono font-bold uppercase tracking-widest text-primary">
-                        {post.category}
-                      </span>
-                    </div>
+    <div className="min-h-screen pt-32 px-6 pb-0 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="animate-in fade-in duration-700 py-10 min-h-[60vh]">
+          <SectionHeader
+            centered
+            tag="Editorial"
+            title="Insights & <br />Breakthroughs."
+            subtitle="The latest thoughts from our design leads on AI, creativity, and the future of engineering."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {posts.map((post, i) => (
+              <div key={i} className="group cursor-pointer">
+                <div className="overflow-hidden rounded-[40px] mb-8 glass border-white/5 aspect-video relative">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 group-hover:opacity-100"
+                  />
+                  <div className="absolute top-6 left-6 px-4 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-widest text-white">
+                    {post.category}
                   </div>
-
-                  <div className="p-6 flex-1 flex flex-col space-y-4">
-                    <h2 className="text-2xl font-heading font-bold text-white group-hover:text-primary transition-colors line-clamp-2">
-                      {post.title}
-                    </h2>
-                    <p className="text-text-secondary font-body text-sm line-clamp-3">
-                      {post.excerpt}
-                    </p>
-
-                    <div className="pt-4 mt-auto flex items-center justify-between border-t border-white/5">
-                      <div className="flex items-center gap-4 text-[10px] font-mono text-text-muted uppercase">
-                        <div className="flex items-center gap-1">
-                          <Calendar size={12} className="text-primary" />
-                          {post.date}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Clock size={12} className="text-accent" />
-                          {post.readTime}
-                        </div>
-                      </div>
-                    </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    <span>{post.author}</span>
+                    <span className="w-1 h-1 rounded-full bg-slate-800"></span>
+                    <span>{post.date}</span>
                   </div>
-                </GlassCard>
-              </Link>
-            </motion.div>
-          ))}
+                  <h3 className="text-3xl font-black text-white group-hover:text-indigo-400 transition-colors leading-tight">
+                    {post.title}
+                  </h3>
+                  <Share2
+                    size={16}
+                    className="text-slate-600 hover:text-white transition-colors"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <BlogsFooter />
         </div>
       </div>
-    </main>
+      <StandardFooter />
+    </div>
   );
 }

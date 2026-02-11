@@ -51,7 +51,7 @@ To achieve synchronization across heterogeneous agents, we implemented three pri
 
 ## Conclusion
 
-As we continue to iterate on the Work-Agents platform, our focus remains on reducing the latency between intent and execution. By empowering agents with autonomy, we liberate developers to focus on higher-level creative architectural problems.
+As we continue to iterate on the My-Note-Book platform, our focus remains on reducing the latency between intent and execution. By empowering agents with autonomy, we liberate developers to focus on higher-level creative architectural problems.
 `;
 
 export default function BlogDetailPage() {
@@ -59,7 +59,7 @@ export default function BlogDetailPage() {
   const slug = params.slug as string;
 
   return (
-    <main className="min-h-screen pt-20 pb-24 bg-void relative">
+    <main className="min-h-screen pt-20 pb-24 relative">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}

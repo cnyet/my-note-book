@@ -1,4 +1,4 @@
-# work-agents 前端
+# my-note-book 前端
 
 基于 Next.js 的前端应用，提供现代化的用户体验。前端实现了五个主要功能页面：主页、智能体、工具、实验室和博客，以及完整的后台管理界面。界面采用极客美学设计，具有深色模式、流畅交互动效和技术社区氛围。
 
@@ -145,7 +145,7 @@ NEXT_PUBLIC_GITHUB_CLIENT_ID=
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=
 
 # 应用配置
-NEXT_PUBLIC_APP_NAME=work-agents
+NEXT_PUBLIC_APP_NAME=my-note-book
 ```
 
 ## 🧪 测试

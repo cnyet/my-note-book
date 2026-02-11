@@ -231,7 +231,7 @@ delegate_task(
 
 ### 3.1 当前配置
 
-**当前项目: work-agents**
+**当前项目: my-note-book**
 
 技术栈:
 

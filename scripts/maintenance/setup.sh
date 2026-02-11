@@ -5,7 +5,7 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$PROJECT_ROOT"
 
-echo "🚀 开始初始化 work-agents 项目..."
+echo "🚀 开始初始化 my-note-book 项目..."
 
 # 检查必要工具
 command -v python3 >/dev/null 2>&1 || { echo "❌ 需要安装 Python 3"; exit 1; }
