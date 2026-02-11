@@ -81,3 +81,6 @@ temp/
 # Build
 dist/
 build/
+
+# Git Worktrees
+.worktrees/
