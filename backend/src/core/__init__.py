@@ -8,7 +8,7 @@ security utilities, and database setup.
 from .config import Settings, get_settings
 from .database import (
     Base,
-    async_session_factory,
+    SessionLocal,
     close_db,
     engine,
     get_db,
@@ -30,7 +30,7 @@ __all__ = [
     # Database
     "Base",
     "engine",
-    "async_session_factory",
+    "SessionLocal",
     "get_db",
     "get_db_context",
     "init_db",

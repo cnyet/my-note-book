@@ -35,11 +35,19 @@ class Settings(BaseSettings):
     )
     debug: bool = Field(default=False, description="Debug mode")
 
+    # API
+    api_v1_str: str = Field(default="/api/v1", description="API v1 prefix")
+
     # Database
     database_url: str = Field(
-        default="sqlite:///./data/work_agents.db",
+        default="sqlite:///./data/my_note_book.db",
         description="Database connection URL",
     )
+
+    # First Admin User (created on first startup)
+    first_admin_username: str = Field(default="admin", description="First admin username")
+    first_admin_password: str = Field(default="Admin123", description="First admin password")
+    first_admin_email: str = Field(default="admin@example.com", description="First admin email")
 
     # JWT Authentication
     secret_key: str = Field(

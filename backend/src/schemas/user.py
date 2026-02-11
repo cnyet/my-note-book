@@ -100,8 +100,20 @@ class UserResponse(UserBase):
     model_config = {"from_attributes": True}
 
 
+# Schema for JWT token payload
+class TokenPayload(BaseModel):
+    """Schema for JWT token payload."""
+
+    sub: int = Field(..., description="User ID")
+    username: str = Field(..., description="Username")
+    role: UserRole = Field(..., description="User role")
+    exp: int = Field(..., description="Expiration timestamp")
+    iat: int = Field(..., description="Issued at timestamp")
+    type: Literal["access", "refresh"] = Field(..., description="Token type")
+
+
 # Schema for token response
-class TokenResponse(BaseModel):
+class Token(BaseModel):
     """Schema for authentication token response."""
 
     access_token: str = Field(..., description="JWT access token")
@@ -124,7 +136,8 @@ __all__ = [
     "UserUpdate",
     "PasswordChange",
     "UserResponse",
-    "TokenResponse",
+    "TokenPayload",
+    "Token",
     "TokenRefresh",
     "UserRole",
 ]

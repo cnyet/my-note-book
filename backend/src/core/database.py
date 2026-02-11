@@ -1,111 +1,102 @@
 """
 Database configuration and session management.
 
-Provides SQLAlchemy engine and session factory for async database operations.
+Provides SQLAlchemy engine and session factory for database operations.
 """
 
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from contextlib import contextmanager
+from typing import Generator
 
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker, declarative_base
 
 from .config import get_settings
 
 settings = get_settings()
 
 
-class Base(DeclarativeBase):
-    """Base class for all ORM models."""
-
-    pass
+# Base class for all ORM models
+Base = declarative_base()
 
 
-# Create async engine
-engine = create_async_engine(
-    settings.database_url.replace("sqlite:///", "sqlite+aiosqlite:///"),
+# Create sync engine
+engine = create_engine(
+    settings.database_url,
     echo=settings.debug,
     connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {},
 )
 
-# Create async session factory
-async_session_factory = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+# Create sync session factory
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+def get_db() -> Generator[Session, None, None]:
     """
     Dependency function that yields database sessions.
 
     This is typically used with FastAPI's Depends:
-        db: AsyncSession = Depends(get_db)
+        db: Session = Depends(get_db)
 
     Yields:
-        AsyncSession: An async database session
+        Session: A database session
     """
-    async with async_session_factory() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
-@asynccontextmanager
-async def get_db_context() -> AsyncGenerator[AsyncSession, None]:
+@contextmanager
+def get_db_context() -> Generator[Session, None, None]:
     """
     Context manager for database sessions.
 
     Usage:
-        async with get_db_context() as db:
+        with get_db_context() as db:
             # Use db here
 
     Yields:
-        AsyncSession: An async database session
+        Session: A database session
     """
-    async with async_session_factory() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
+    db = SessionLocal()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
 
-async def init_db() -> None:
+def init_db() -> None:
     """
     Initialize the database by creating all tables.
 
     This should be called on application startup.
     For production, use Alembic migrations instead.
     """
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    Base.metadata.create_all(bind=engine)
 
 
-async def close_db() -> None:
+def close_db() -> None:
     """
     Close the database connection.
 
     This should be called on application shutdown.
     """
-    await engine.dispose()
+    engine.dispose()
 
 
 __all__ = [
     "Base",
     "engine",
-    "async_session_factory",
+    "SessionLocal",
     "get_db",
     "get_db_context",
     "init_db",
