@@ -7,6 +7,7 @@ from .core.config import settings
 from .api.v1.admin import auth
 from .api.v1.admin import dashboard
 from .api.v1.admin import agents
+from .api.v1.admin import tools
 
 
 class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
@@ -79,6 +80,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1/admin/auth", tags=["admin-auth"])
 from .api.v1.admin import agents
 app.include_router(agents.router, prefix="/api/v1/admin/agents", tags=["admin-agents"])
+app.include_router(tools.router, prefix="/api/v1/admin/tools", tags=["admin-tools"])
 app.include_router(dashboard.router, prefix="/api/v1/admin/dashboard", tags=["admin-dashboard"])
 
 @app.get("/")
