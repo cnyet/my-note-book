@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .core.config import settings
 from .api.v1.admin import auth
+from .api.v1.admin import dashboard
+from .api.v1.admin import agents
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -21,6 +23,9 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/admin/auth", tags=["admin-auth"])
+from .api.v1.admin import agents
+app.include_router(agents.router, prefix="/api/v1/admin/agents", tags=["admin-agents"])
+app.include_router(dashboard.router, prefix="/api/v1/admin/dashboard", tags=["admin-dashboard"])
 
 @app.get("/")
 def root():
