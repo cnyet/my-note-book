@@ -9,6 +9,7 @@ from .api.v1.admin import dashboard
 from .api.v1.admin import agents
 from .api.v1.admin import tools
 from .api.v1.admin import labs
+from .api.v1.admin import blog
 
 
 class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
@@ -83,6 +84,7 @@ from .api.v1.admin import agents
 app.include_router(agents.router, prefix="/api/v1/admin/agents", tags=["admin-agents"])
 app.include_router(tools.router, prefix="/api/v1/admin/tools", tags=["admin-tools"])
 app.include_router(labs.router, prefix="/api/v1/admin/labs", tags=["admin-labs"])
+app.include_router(blog.router, prefix="/api/v1/admin/blog", tags=["admin-blog"])
 app.include_router(dashboard.router, prefix="/api/v1/admin/dashboard", tags=["admin-dashboard"])
 
 @app.get("/")
