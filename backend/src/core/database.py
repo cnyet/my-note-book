@@ -1,104 +1,25 @@
-"""
-Database configuration and session management.
-
-Provides SQLAlchemy engine and session factory for database operations.
-"""
-
-from contextlib import contextmanager
-from typing import Generator
-
+# backend/src/core/database.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker, declarative_base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from .config import settings
 
-from .config import get_settings
-
-settings = get_settings()
-
-
-# Base class for all ORM models
-Base = declarative_base()
-
-
-# Create sync engine
 engine = create_engine(
-    settings.database_url,
-    echo=settings.debug,
-    connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {},
+    settings.DATABASE_URL,
+    connect_args={"check_same_thread": False}  # SQLite specific
 )
-
-# Create sync session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+Base = declarative_base()
 
-def get_db() -> Generator[Session, None, None]:
-    """
-    Dependency function that yields database sessions.
-
-    This is typically used with FastAPI's Depends:
-        db: Session = Depends(get_db)
-
-    Yields:
-        Session: A database session
-    """
+def get_db():
     db = SessionLocal()
     try:
         yield db
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
     finally:
         db.close()
 
-
-@contextmanager
-def get_db_context() -> Generator[Session, None, None]:
-    """
-    Context manager for database sessions.
-
-    Usage:
-        with get_db_context() as db:
-            # Use db here
-
-    Yields:
-        Session: A database session
-    """
-    db = SessionLocal()
-    try:
-        yield db
-        db.commit()
-    except Exception:
-        db.rollback()
-        raise
-    finally:
-        db.close()
-
-
-def init_db() -> None:
-    """
-    Initialize the database by creating all tables.
-
-    This should be called on application startup.
-    For production, use Alembic migrations instead.
-    """
+def init_db():
+    """Create database tables"""
+    import src.models.user  # noqa: import models to register them
     Base.metadata.create_all(bind=engine)
-
-
-def close_db() -> None:
-    """
-    Close the database connection.
-
-    This should be called on application shutdown.
-    """
-    engine.dispose()
-
-
-__all__ = [
-    "Base",
-    "engine",
-    "SessionLocal",
-    "get_db",
-    "get_db_context",
-    "init_db",
-    "close_db",
-]
