@@ -85,9 +85,6 @@ class BlogPostResponse(BlogPostBase):
 async def _update_post_tags(db: AsyncSession, post_id: int, tags: List[str]):
     """更新文章标签"""
     # 删除现有标签
-    await db.execute(
-        select(PostTag).where(PostTag.post_id == post_id)
-    )
     existing_tags = (await db.execute(
         select(PostTag).where(PostTag.post_id == post_id)
     )).scalars().all()
@@ -336,9 +333,6 @@ async def delete_post(
         )
 
     # 删除关联的标签
-    await db.execute(
-        select(PostTag).where(PostTag.post_id == post_id)
-    )
     existing_tags = (await db.execute(
         select(PostTag).where(PostTag.post_id == post_id)
     )).scalars().all()

@@ -1,11 +1,11 @@
 # backend/src/api/v1/admin/profile.py
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field, EmailStr, field_validator, validator
 from datetime import datetime
 from ....core.security import verify_password
 from ....api.deps import get_current_active_user
-from ....models.user import User
+from ....models import User
 from ....schemas.user import UserResponse
 import secrets
 import string

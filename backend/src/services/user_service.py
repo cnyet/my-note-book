@@ -1,7 +1,7 @@
 # backend/src/services/user_service.py
 from typing import Optional
 from sqlalchemy.orm import Session
-from ..models.user import User
+from ..models import User
 from ..core.security import verify_password, get_password_hash
 
 def get_user_by_username(db: Session, username: str) -> Optional[User]:
@@ -14,16 +14,17 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
     user = get_user_by_username(db, username)
     if not user:
         return None
-    if not verify_password(password, user.password_hash):
+    if not verify_password(password, user.hashed_password):
         return None
     return user
 
 def create_user(db: Session, username: str, email: str, password: str) -> User:
-    password_hash = get_password_hash(password)
+    from ..core.security import hash_password
+    password_hash = hash_password(password)
     db_user = User(
         username=username,
         email=email,
-        password_hash=password_hash
+        hashed_password=password_hash
     )
     db.add(db_user)
     db.commit()

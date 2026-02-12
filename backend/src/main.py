@@ -11,6 +11,7 @@ from .api.v1.admin import tools
 from .api.v1.admin import labs
 from .api.v1.admin import blog
 from .api.v1.admin import profile
+from .api.v1.admin import settings
 
 
 class HTTPSRedirectMiddleware(BaseHTTPMiddleware):
@@ -81,7 +82,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/admin/auth", tags=["admin-auth"])
-from .api.v1.admin import agents
 app.include_router(agents.router, prefix="/api/v1/admin/agents", tags=["admin-agents"])
 app.include_router(tools.router, prefix="/api/v1/admin/tools", tags=["admin-tools"])
 app.include_router(labs.router, prefix="/api/v1/admin/labs", tags=["admin-labs"])

@@ -1,7 +1,1 @@
-"""
-API routes package.
-
-This package contains all FastAPI route handlers.
-"""
-
-__all__ = []
+# backend/src/api/__init__.py
