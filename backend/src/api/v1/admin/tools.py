@@ -1,14 +1,21 @@
 # backend/src/api/v1/admin/tools.py
+"""Tools API - 使用数据库操作的完整 CRUD 功能"""
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, HTTPException, status, Depends
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ....models import Tool
+from ....services.crud import get_crud_service
+from ....core.database import get_db
 
 router = APIRouter()
+tool_service = get_crud_service(Tool)
 
 
 class ToolCategory(str):
-    """Tool categories"""
+    """工具分类"""
     DEV = "Dev"
     AUTO = "Auto"
     INTEL = "Intel"
@@ -16,32 +23,53 @@ class ToolCategory(str):
 
 
 class ToolBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
-    slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
-    category: str = Field(..., description="Category: Dev, Auto, Intel, Creative")
-    description: Optional[str] = Field(None, max_length=500)
-    icon_url: Optional[str] = None
-    link: Optional[str] = None
-    status: str = Field(default="active", pattern=r"^(active|inactive)$")
-    sort_order: int = Field(default=0)
+    """工具基础模型"""
+    name: str = Field(..., min_length=1, max_length=100, description="工具名称")
+    slug: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$", description="URL 友好的唯一标识符")
+    category: str = Field(..., description="分类: Dev, Auto, Intel, Creative")
+    description: Optional[str] = Field(None, max_length=500, description="工具描述")
+    icon_url: Optional[str] = Field(None, description="图标 URL")
+    link: Optional[str] = Field(None, description="工具链接")
+    status: str = Field(default="active", pattern=r"^(active|inactive)$", description="状态: active 或 inactive")
+    sort_order: int = Field(default=0, description="排序顺序，数字越小越靠前")
+
+    @field_validator('category')
+    @classmethod
+    def validate_category(cls, v):
+        valid_categories = ["Dev", "Auto", "Intel", "Creative"]
+        if v not in valid_categories:
+            raise ValueError(f"无效的分类。有效值为: {', '.join(valid_categories)}")
+        return v
 
 
 class ToolCreate(ToolBase):
+    """创建工具的请求模型"""
     pass
 
 
 class ToolUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
-    slug: Optional[str] = Field(None, min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$")
-    category: Optional[str] = None
-    description: Optional[str] = Field(None, max_length=500)
-    icon_url: Optional[str] = None
-    link: Optional[str] = None
-    status: Optional[str] = Field(None, pattern=r"^(active|inactive)$")
-    sort_order: Optional[int] = None
+    """更新工具的请求模型（所有字段可选）"""
+    name: Optional[str] = Field(None, min_length=1, max_length=100, description="工具名称")
+    slug: Optional[str] = Field(None, min_length=1, max_length=50, pattern=r"^[a-z0-9-]+$", description="URL 友好的唯一标识符")
+    category: Optional[str] = Field(None, description="分类: Dev, Auto, Intel, Creative")
+    description: Optional[str] = Field(None, max_length=500, description="工具描述")
+    icon_url: Optional[str] = Field(None, description="图标 URL")
+    link: Optional[str] = Field(None, description="工具链接")
+    status: Optional[str] = Field(None, pattern=r"^(active|inactive)$", description="状态: active 或 inactive")
+    sort_order: Optional[int] = Field(None, description="排序顺序")
+
+    @field_validator('category')
+    @classmethod
+    def validate_category(cls, v):
+        if v is not None:
+            valid_categories = ["Dev", "Auto", "Intel", "Creative"]
+            if v not in valid_categories:
+                raise ValueError(f"无效的分类。有效值为: {', '.join(valid_categories)}")
+        return v
 
 
 class ToolResponse(ToolBase):
+    """工具响应模型"""
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
@@ -50,164 +78,197 @@ class ToolResponse(ToolBase):
         from_attributes = True
 
 
-# Mock data
-mock_tools = [
-    {
-        "id": 1,
-        "name": "Code Snippet Manager",
-        "slug": "code-snippet-manager",
-        "category": "Dev",
-        "description": "Manage and organize code snippets with syntax highlighting",
-        "icon_url": "/icons/snippet.svg",
-        "link": "/tools/snippet",
-        "status": "active",
-        "sort_order": 1,
-        "created_at": datetime(2025, 1, 15, 10, 0, 0),
-        "updated_at": datetime(2025, 1, 20, 14, 30, 0),
-    },
-    {
-        "id": 2,
-        "name": "AI Writing Assistant",
-        "slug": "ai-writing-assistant",
-        "category": "Creative",
-        "description": "AI-powered writing assistant for content creation",
-        "icon_url": "/icons/writing.svg",
-        "link": "/tools/writing",
-        "status": "active",
-        "sort_order": 2,
-        "created_at": datetime(2025, 1, 16, 9, 0, 0),
-        "updated_at": None,
-    },
-    {
-        "id": 3,
-        "name": "Auto Task Scheduler",
-        "slug": "auto-task-scheduler",
-        "category": "Auto",
-        "description": "Automate recurring tasks and workflows",
-        "icon_url": "/icons/scheduler.svg",
-        "link": "/tools/scheduler",
-        "status": "inactive",
-        "sort_order": 3,
-        "created_at": datetime(2025, 1, 17, 11, 0, 0),
-        "updated_at": datetime(2025, 1, 25, 16, 0, 0),
-    },
-    {
-        "id": 4,
-        "name": "Intelligence Analyzer",
-        "slug": "intelligence-analyzer",
-        "category": "Intel",
-        "description": "Analyze and visualize complex data patterns",
-        "icon_url": "/icons/analyzer.svg",
-        "link": "/tools/analyzer",
-        "status": "active",
-        "sort_order": 4,
-        "created_at": datetime(2025, 1, 18, 13, 0, 0),
-        "updated_at": None,
-    },
-]
-
-
 @router.get("", response_model=List[ToolResponse])
 def list_tools(
     category: Optional[str] = None,
     status: Optional[str] = None,
-    skip: int = 0,
-    limit: int = 100
+    skip: int = Field(0, ge=0, description="跳过的记录数"),
+    limit: int = Field(100, ge=1, le=100, description="返回的记录数"),
+    db: AsyncSession = Depends(get_db)
 ):
-    """List all tools with optional filtering"""
-    tools = mock_tools.copy()
-    
+    """
+    获取所有工具列表，支持筛选和分页
+
+    - **category**: 按分类筛选 (Dev, Auto, Intel, Creative)
+    - **status**: 按状态筛选 (active, inactive)
+    - **skip**: 跳过前 N 条记录（分页用）
+    - **limit**: 返回最多 N 条记录
+    """
+    filters = {}
     if category:
-        tools = [t for t in tools if t["category"].lower() == category.lower()]
-    
+        filters["category"] = category
     if status:
-        tools = [t for t in tools if t["status"] == status]
-    
-    # Sort by sort_order
-    tools.sort(key=lambda x: x["sort_order"])
-    
-    return tools[skip : skip + limit]
+        filters["status"] = status
+
+    result = tool_service.get_all(
+        db,
+        filters=filters,
+        skip=skip,
+        limit=limit,
+        order_by="sort_order"
+    )
+    return result
 
 
-@router.get("/categories")
+@router.get("/categories", response_model=List[str])
 def get_categories():
-    """Get all tool categories"""
+    """获取所有工具分类"""
     return ["Dev", "Auto", "Intel", "Creative"]
 
 
+@router.get("/stats/summary")
+def get_tools_summary(db: AsyncSession = Depends(get_db)):
+    """
+    获取工具统计摘要
+
+    返回各类别工具的数量统计
+    """
+    from sqlalchemy import func
+
+    # 获取所有工具
+    all_tools = tool_service.get_all(db, limit=1000)
+
+    # 按类别统计
+    category_stats = {}
+    for category in ["Dev", "Auto", "Intel", "Creative"]:
+        category_stats[category] = len([t for t in all_tools if t.category == category])
+
+    # 按状态统计
+    active_count = len([t for t in all_tools if t.status == "active"])
+    inactive_count = len([t for t in all_tools if t.status == "inactive"])
+
+    return {
+        "total": len(all_tools),
+        "active": active_count,
+        "inactive": inactive_count,
+        "by_category": category_stats
+    }
+
+
 @router.get("/{tool_id}", response_model=ToolResponse)
-def get_tool(tool_id: int):
-    """Get a specific tool by ID"""
-    tool = next((t for t in mock_tools if t["id"] == tool_id), None)
+def get_tool(
+    tool_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    根据 ID 获取特定工具
+
+    - **tool_id**: 工具 ID
+    """
+    tool = tool_service.get_by_id(db, tool_id)
     if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tool not found"
+            detail=f"工具 (ID: {tool_id}) 不存在"
         )
     return tool
 
 
 @router.post("", response_model=ToolResponse, status_code=status.HTTP_201_CREATED)
-def create_tool(tool: ToolCreate):
-    """Create a new tool"""
-    # Check for duplicate slug
-    if any(t["slug"] == tool.slug for t in mock_tools):
+def create_tool(
+    tool: ToolCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    创建新工具
+
+    - **name**: 工具名称（必填）
+    - **slug**: URL 唯一标识符（必填，全小写字母、数字、连字符）
+    - **category**: 分类（必填）
+    - **description**: 工具描述
+    - **icon_url**: 图标 URL
+    - **link**: 工具链接
+    - **status**: 状态（默认: active）
+    - **sort_order**: 排序顺序（默认: 0）
+    """
+    # 检查 slug 是否已存在
+    existing = tool_service.get_all(db, filters={"slug": tool.slug}, limit=1)
+    if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Tool with slug '{tool.slug}' already exists"
+            detail=f"工具标识符 '{tool.slug}' 已存在"
         )
-    
-    new_id = max(t["id"] for t in mock_tools) + 1 if mock_tools else 1
-    
-    new_tool = {
-        "id": new_id,
-        **tool.model_dump(),
-        "created_at": datetime.now(),
-        "updated_at": None,
-    }
-    
-    mock_tools.append(new_tool)
+
+    # 创建工具
+    new_tool = tool_service.create(db, tool.model_dump())
     return new_tool
 
 
 @router.put("/{tool_id}", response_model=ToolResponse)
-def update_tool(tool_id: int, tool_update: ToolUpdate):
-    """Update a tool"""
-    tool_index = next((i for i, t in enumerate(mock_tools) if t["id"] == tool_id), None)
-    if tool_index is None:
+def update_tool(
+    tool_id: int,
+    tool_update: ToolUpdate,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    更新工具信息
+
+    只更新提供的字段，未提供的字段保持不变
+    """
+    # 检查工具是否存在
+    tool = tool_service.get_by_id(db, tool_id)
+    if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tool not found"
+            detail=f"工具 (ID: {tool_id}) 不存在"
         )
-    
-    # Check for duplicate slug if updating slug
+
+    # 如果更新 slug，检查新 slug 是否已被其他工具使用
     if tool_update.slug:
-        existing = next((t for t in mock_tools if t["slug"] == tool_update.slug and t["id"] != tool_id), None)
-        if existing:
+        existing = tool_service.get_all(db, filters={"slug": tool_update.slug}, limit=1)
+        if existing and existing[0].id != tool_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Tool with slug '{tool_update.slug}' already exists"
+                detail=f"工具标识符 '{tool_update.slug}' 已被其他工具使用"
             )
-    
-    # Update only provided fields
+
+    # 获取更新数据（排除未设置的字段）
     update_data = tool_update.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        mock_tools[tool_index][field] = value
-    
-    mock_tools[tool_index]["updated_at"] = datetime.now()
-    
-    return mock_tools[tool_index]
+
+    # 更新工具
+    updated_tool = tool_service.update(db, tool_id, update_data)
+    return updated_tool
 
 
 @router.delete("/{tool_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_tool(tool_id: int):
-    """Delete a tool"""
-    tool_index = next((i for i, t in enumerate(mock_tools) if t["id"] == tool_id), None)
-    if tool_index is None:
+def delete_tool(
+    tool_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    删除工具
+
+    - **tool_id**: 要删除的工具 ID
+    """
+    # 检查工具是否存在
+    tool = tool_service.get_by_id(db, tool_id)
+    if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tool not found"
+            detail=f"工具 (ID: {tool_id}) 不存在"
         )
-    
-    mock_tools.pop(tool_index)
+
+    tool_service.delete(db, tool_id)
     return None
+
+
+@router.patch("/{tool_id}/status", response_model=ToolResponse)
+def toggle_tool_status(
+    tool_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    切换工具状态（active <-> inactive）
+
+    - **tool_id**: 工具 ID
+    """
+    tool = tool_service.get_by_id(db, tool_id)
+    if not tool:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"工具 (ID: {tool_id}) 不存在"
+        )
+
+    new_status = "inactive" if tool.status == "active" else "active"
+    updated_tool = tool_service.update(db, tool_id, {"status": new_status})
+    return updated_tool
