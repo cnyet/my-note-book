@@ -1,17 +1,16 @@
 // frontend/app/admin/page.tsx
 'use client';
 
+import { useState, useEffect } from 'react';
 import { StatCard } from '@/components/admin/StatCard';
-import { use } from 'react';
-import { adminAuthApi } from '@/lib/admin-api';
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = use<{
+  const [stats, setStats] = useState<{
     usersCount: number;
     agentsCount: number;
     toolsCount: number;
     blogPostsCount: number;
-  });
+  } | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
