@@ -87,6 +87,7 @@ app.include_router(tools.router, prefix="/api/v1/admin/tools", tags=["admin-tool
 app.include_router(labs.router, prefix="/api/v1/admin/labs", tags=["admin-labs"])
 app.include_router(blog.router, prefix="/api/v1/admin/blog", tags=["admin-blog"])
 app.include_router(profile.router, prefix="/api/v1/admin/profile", tags=["admin-profile"])
+app.include_router(settings.router, prefix="/api/v1/admin/settings", tags=["admin-settings"])
 app.include_router(dashboard.router, prefix="/api/v1/admin/dashboard", tags=["admin-dashboard"])
 
 @app.get("/")
