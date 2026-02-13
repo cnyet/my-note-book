@@ -5,7 +5,7 @@ from typing import Dict, Any, List
 from pydantic import BaseModel
 
 from ....core.database import get_db
-from ....models.user import User
+from ....models import User
 
 router = APIRouter()
 

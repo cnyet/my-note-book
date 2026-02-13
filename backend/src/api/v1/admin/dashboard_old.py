@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import Dict, Any
 
 from ....core.database import get_db
-from ....models.user import User
+from ....models import User
 from ....schemas.user import UserResponse
 
 router = APIRouter()

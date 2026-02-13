@@ -1,7 +1,7 @@
 # backend/src/api/v1/admin/labs.py
 """Labs API - 使用数据库操作的完整 CRUD 功能"""
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -77,9 +77,9 @@ class LabResponse(LabBase):
 
 @router.get("", response_model=List[LabResponse])
 def list_labs(
-    status: Optional[str] = None,
-    skip: int = Field(0, ge=0, description="跳过的记录数"),
-    limit: int = Field(100, ge=1, le=100, description="返回的记录数"),
+    status: Optional[str] = Query(default=None),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
     db: AsyncSession = Depends(get_db)
 ):
     """

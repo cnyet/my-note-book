@@ -10,7 +10,7 @@ from ....core.audit import audit_logger
 from ....schemas.user import Token, UserLogin, UserResponse
 from ....services.user_service import authenticate_user, create_first_admin
 from ....api.deps import get_current_active_user
-from ....models.user import User
+from ....models import User
 from .rate_limit import rate_limit
 
 router = APIRouter()

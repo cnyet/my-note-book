@@ -32,6 +32,10 @@ echo "📍 Frontend selected port: $FRONTEND_PORT"
 # 创建日志目录
 mkdir -p logs
 
+# 记录端口
+echo "BACKEND_PORT=$BACKEND_PORT" > logs/ports.txt
+echo "FRONTEND_PORT=$FRONTEND_PORT" >> logs/ports.txt
+
 # 启动后端服务
 echo "📡 启动 FastAPI 后端..."
 cd backend

@@ -8,7 +8,7 @@ Agents API with real database operations using SQLAlchemy ORM
 
 from typing import List, Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import select
+from sqlalchemy import select, func
 from pydantic import BaseModel, Field
 
 from ....core.database import get_db
@@ -120,7 +120,7 @@ def list_agents(
 def get_categories(db: Session = Depends(get_db)):
     """获取所有智能体类别"""
     categories = db.query(Agent.category).distinct().all()
-    return [cat for cat, in categories for cat.category]
+    return [cat[0] for cat in categories]
 
 
 @router.get("/{agent_id}", response_model=AgentResponse)
@@ -336,5 +336,4 @@ def get_agents_summary(
         "active": active,
         "offline": offline,
         "by_category": {row[0]: row.category for row in category_stats},
-    }
     }
