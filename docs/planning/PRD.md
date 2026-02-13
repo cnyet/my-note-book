@@ -1,4 +1,4 @@
-# 产品需求文档 (PRD) - Work Agents
+# 产品需求文档 (PRD) - MyNoteBook
 
 > **版本**: v1.1
 > **状态**: 实施中 (Implementation)

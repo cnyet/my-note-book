@@ -33,8 +33,18 @@ kill_port() {
   fi
 }
 
-kill_port 8001
-kill_port 3001
+# 优先清理记录的动态端口
+if [ -f "logs/ports.txt" ]; then
+  echo "📄 检测到活跃端口记录，正在清理..."
+  source logs/ports.txt
+  if [ -n "${BACKEND_PORT:-}" ]; then kill_port "$BACKEND_PORT"; fi
+  if [ -n "${FRONTEND_PORT:-}" ]; then kill_port "$FRONTEND_PORT"; fi
+  rm logs/ports.txt
+else
+  # 兜底清理默认端口
+  kill_port 8001
+  kill_port 3001
+fi
 
 # 清理缓存和构建产物
 echo "🗑️  删除缓存和构建产物..."
