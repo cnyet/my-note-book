@@ -8,7 +8,7 @@ Agents API with real database operations using SQLAlchemy ORM
 
 from typing import List, Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session, select
+from sqlalchemy.orm import select
 from pydantic import BaseModel, Field
 
 from ....core.database import get_db
@@ -28,6 +28,7 @@ class AgentCreate(BaseModel):
     link: Optional[str] = Field(None, max_length=500, description="相关链接")
     category: str = Field(..., description="智能体类别", pattern="^(Dev|Auto|Intel|Creative)$")
     system_prompt: Optional[str] = Field(None, max_length=2000, description="系统提示词")
+    model: str = Field(default="gpt-4", description="使用的 AI 模型")
     is_active: bool = Field(default=True, description="是否启用")
 
 
@@ -40,6 +41,7 @@ class AgentUpdate(BaseModel):
     link: Optional[str] = Field(None, max_length=500)
     category: Optional[str] = None
     system_prompt: Optional[str] = Field(None, max_length=2000)
+    model: Optional[str] = None
     is_active: Optional[bool] = None
 
 
@@ -53,6 +55,7 @@ class AgentResponse(BaseModel):
     link: Optional[str]
     category: str
     system_prompt: Optional[str]
+    model: str
     is_active: bool
     created_at: str
     updated_at: Optional[str]
@@ -103,6 +106,7 @@ def list_agents(
             "link": agent.link or "",
             "category": agent.category,
             "system_prompt": agent.system_prompt or "",
+            "model": agent.model,
             "is_active": agent.is_active,
             "created_at": agent.created_at.isoformat(),
             "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
@@ -116,7 +120,7 @@ def list_agents(
 def get_categories(db: Session = Depends(get_db)):
     """获取所有智能体类别"""
     categories = db.query(Agent.category).distinct().all()
-    return [cat for cat, in categories]
+    return [cat for cat, in categories for cat.category]
 
 
 @router.get("/{agent_id}", response_model=AgentResponse)
@@ -141,6 +145,7 @@ def get_agent(
         "link": agent.link or "",
         "category": agent.category,
         "system_prompt": agent.system_prompt or "",
+        "model": agent.model,
         "is_active": agent.is_active,
         "created_at": agent.created_at.isoformat(),
         "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
@@ -163,10 +168,10 @@ def create_agent(
     # 检查 slug 唯一性
     existing = db.query(Agent).filter(Agent.slug == agent_data.slug).first()
     if existing:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"智能体 slug '{agent_data.slug}' 已存在"
-        )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"智能体 slug '{agent_data.slug}' 已存在"
+            )
     
     # 创建新智能体
     new_agent = agent_service.create(db, {
@@ -177,6 +182,7 @@ def create_agent(
         "link": agent_data.link,
         "category": agent_data.category,
         "system_prompt": agent_data.system_prompt,
+        "model": agent_data.model,
         "is_active": True,
         "sort_order": 0,  # 默认排序
     })
@@ -198,8 +204,6 @@ def update_agent(
         agent_data: 更新数据
         db: 数据库会话
     """
-    from datetime import datetime
-    
     # 获取现有智能体
     agent = agent_service.get_by_id(db, agent_id)
     if not agent:
@@ -295,7 +299,7 @@ def toggle_agent_status(
         agent.is_active = False
     else:
         new_status = "active"
-        agent.is_active = True
+        agent.is_active = (new_status == "active")
     
     try:
         db.commit()
@@ -315,8 +319,6 @@ def get_agents_summary(
     db: Session = Depends(get_db)
 ):
     """获取智能体统计摘要"""
-    from sqlalchemy import func
-    
     total = db.query(Agent).count()
     active = db.query(Agent).filter_by(is_active=True).count()
     offline = db.query(Agent).filter_by(is_active=False).count()
@@ -333,5 +335,6 @@ def get_agents_summary(
         "total": total,
         "active": active,
         "offline": offline,
-        "by_category": {row[0]: row[1] for row in category_stats},
+        "by_category": {row[0]: row.category for row in category_stats},
+    }
     }

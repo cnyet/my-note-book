@@ -14,17 +14,16 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
     user = get_user_by_username(db, username)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password_hash):
         return None
     return user
 
 def create_user(db: Session, username: str, email: str, password: str) -> User:
-    from ..core.security import hash_password
-    password_hash = hash_password(password)
+    password_hash = get_password_hash(password)
     db_user = User(
         username=username,
         email=email,
-        hashed_password=password_hash
+        password_hash=password_hash
     )
     db.add(db_user)
     db.commit()

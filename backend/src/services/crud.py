@@ -46,7 +46,7 @@ class CRUDService(Generic[ModelType]):
         if hasattr(self.model, "sort_order"):
             query = query.order_by(getattr(self.model, "sort_order"))
         elif hasattr(self.model, "created_at"):
-            query = query.order_by(getattr(self.model, "created_at").desc())
+            query = query.order_by(getattr(self.model, "created_at").desc()
         
         # 分页
         return query.offset(skip).limit(limit).all()

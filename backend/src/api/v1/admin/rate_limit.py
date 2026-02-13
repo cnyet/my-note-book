@@ -31,7 +31,7 @@ class RateLimiter:
             now = datetime.utcnow()
             window_start = now - timedelta(seconds=window_seconds)
 
-            # Clean old requests outside window
+            # Clean old requests outside the window
             self.requests[key] = [
                 ts for ts in self.requests[key]
                 if ts > window_start
