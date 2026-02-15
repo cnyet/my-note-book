@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["development", "production", "testing"] = "development"
 
     # Database
-    DATABASE_URL: str = "sqlite:///./data/my_note_book.db"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./data/my_note_book.db"
 
     # Security - SECRET_KEY must be set in production
     SECRET_KEY: str = Field(

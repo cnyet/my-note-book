@@ -62,13 +62,13 @@ mock_settings = {
 
 
 @router.get("", response_model=SettingsResponse)
-def get_settings():
+async def get_settings():
     """Get all system settings"""
     return mock_settings
 
 
 @router.put("", response_model=SettingsResponse)
-def update_settings(settings_update: SettingsUpdate):
+async def update_settings(settings_update: SettingsUpdate):
     """Update system settings (supports partial updates)"""
     update_data = settings_update.model_dump(exclude_unset=True)
     
@@ -86,18 +86,18 @@ def update_settings(settings_update: SettingsUpdate):
 
 
 @router.post("/backup")
-def create_backup():
+async def create_backup():
     """Trigger a manual database backup"""
     return {"message": "Backup triggered successfully", "timestamp": datetime.now().isoformat()}
 
 
 @router.post("/cleanup/cache")
-def clear_cache():
+async def clear_cache():
     """Clear application cache"""
     return {"message": "Cache cleared successfully", "timestamp": datetime.now().isoformat()}
 
 
 @router.post("/cleanup/logs")
-def clear_logs():
+async def clear_logs():
     """Clear old log files based on retention settings"""
     return {"message": "Logs cleaned up successfully", "timestamp": datetime.now().isoformat()}

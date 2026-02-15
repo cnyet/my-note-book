@@ -12,16 +12,14 @@ SQLAlchemy ORM models for MyNoteBook Admin
 
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
-Base = declarative_base()
+from ..core.database import Base
 
 
 class User(Base):
     """管理员用户表"""
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(255), nullable=False)
@@ -30,16 +28,16 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
-    
+
     # 关系
     posts = relationship("BlogPost", back_populates="author")
-    tokens = relationship("APIToken", back_populates="tokens")
+    tokens = relationship("APIToken", back_populates="user")
 
 
 class BlogPost(Base):
     """博客文章表"""
     __tablename__ = "blog_posts"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
     slug = Column(String(100), unique=True, nullable=False, index=True)
@@ -52,13 +50,14 @@ class BlogPost(Base):
     published_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
-    
+
     # 外键
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
+
     # 关系
-    tags = relationship("PostTag", secondary="post_tags", back_populates="post")
-    
+    author = relationship("User", back_populates="posts")
+    tags = relationship("PostTag", back_populates="post", cascade="all, delete-orphan")
+
     def __repr__(self):
         return f"<BlogPost(id={self.id}, title='{self.title}')>"
 
@@ -66,7 +65,7 @@ class BlogPost(Base):
 class Agent(Base):
     """AI 智能体配置表"""
     __tablename__ = "agents"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     slug = Column(String(50), unique=True, nullable=False, index=True)
@@ -79,7 +78,7 @@ class Agent(Base):
     sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
-    
+
     def __repr__(self):
         return f"<Agent(id={self.id}, name='{self.name}')>"
 
@@ -87,7 +86,7 @@ class Agent(Base):
 class Tool(Base):
     """工具库表"""
     __tablename__ = "tools"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     slug = Column(String(50), unique=True, nullable=False, index=True)
@@ -99,7 +98,7 @@ class Tool(Base):
     sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
-    
+
     def __repr__(self):
         return f"<Tool(id={self.id}, name='{self.name}')>"
 
@@ -107,7 +106,7 @@ class Tool(Base):
 class Lab(Base):
     """实验室功能表"""
     __tablename__ = "labs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     slug = Column(String(50), unique=True, nullable=False, index=True)
@@ -118,29 +117,30 @@ class Lab(Base):
     online_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
-    
+
     def __repr__(self):
         return f"<Lab(id={self.id}, name='{self.name}')>"
 
 
 class PostTag(Base):
-    """文章标签表（多对多关系）"""
+    """文章标签表"""
     __tablename__ = "post_tags"
-    
+
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True, nullable=False, index=True)
-    
-    # 多对多关系
-    posts = relationship("BlogPost", secondary="post_tags", back_populates="tags")
-    
+    post_id = Column(Integer, ForeignKey("blog_posts.id"), nullable=False)
+    tag_name = Column(String(50), nullable=False, index=True)
+
+    # 关系
+    post = relationship("BlogPost", back_populates="tags")
+
     def __repr__(self):
-        return f"<PostTag(name='{self.name}')>"
+        return f"<PostTag(tag_name='{self.tag_name}')>"
 
 
 class APIToken(Base):
     """API Token 表"""
     __tablename__ = "api_tokens"
-    
+
     id = Column(String(36), primary_key=True, default="api_token_", index=True)
     name = Column(String(100), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -149,7 +149,7 @@ class APIToken(Base):
     last_used_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     scopes = Column(Text, nullable=True)  # JSON array of permissions
-    
+
     # 关系
     user = relationship("User", back_populates="tokens")
 

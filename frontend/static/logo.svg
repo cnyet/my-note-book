@@ -1,0 +1,57 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient: Indigo to Pink via Purple (simulating bg-gradient-to-tr) -->
+    <linearGradient id="glow" x1="0" y1="256" x2="256" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" /> <!-- indigo-500 -->
+      <stop offset="50%" stop-color="#a855f7" /> <!-- purple-500 -->
+      <stop offset="100%" stop-color="#ec4899" /> <!-- pink-500 -->
+    </linearGradient>
+
+    <!-- Inner Square Gradient (simulating from-indigo-400 to-purple-400) -->
+    <linearGradient id="inner-glow" x1="76" y1="180" x2="180" y2="76" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818cf8" /> <!-- indigo-400 -->
+      <stop offset="100%" stop-color="#c084fc" /> <!-- purple-400 -->
+    </linearGradient>
+
+    <!-- Blur Effect for the background glow (simulating blur-[2px]) -->
+    <filter id="blur-effect" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="6" />
+    </filter>
+  </defs>
+
+  <!-- Container for the whole logo to center it properly -->
+  <g transform-origin="center">
+      <!-- Background Glow Layer:
+           class="absolute inset-0 bg-gradient-to-tr... rounded-xl rotate-12 opacity-80 blur-[2px]"
+           - Scaled up to 256x256
+           - Rotated 12 degrees
+           - Opacity 0.8
+           - Rounded corners (rx="64" fits nicely)
+      -->
+      <rect x="12" y="12" width="232" height="232" rx="64"
+            fill="url(#glow)"
+            fill-opacity="0.8"
+            transform="rotate(12 128 128)"
+            filter="url(#blur-effect)" />
+
+      <!-- Main Dark Container:
+           class="absolute inset-0 bg-slate-950 rounded-xl... border border-white/20"
+           - Slate-950 hex is #020617
+           - Stroke is white with 20% opacity
+      -->
+      <rect x="12" y="12" width="232" height="232" rx="64"
+            fill="#020617"
+            stroke="rgba(255,255,255,0.2)"
+            stroke-width="6" />
+
+      <!-- Inner Diamond Shape:
+           class="w-4 h-4 bg-gradient-to-tr... rounded-sm rotate-45"
+           - Scaled up proportional
+           - Centered at 128,128.
+           - Rotated 45 degrees.
+      -->
+      <rect x="83" y="83" width="90" height="90" rx="12"
+            transform="rotate(45 128 128)"
+            fill="url(#inner-glow)" />
+  </g>
+</svg>

@@ -46,27 +46,24 @@ pnpm dev
 ```
 frontend/
 ├── src/                  # 源代码目录（项目源码）
-├── static/               # 静态资源
-│   └── logo.png          # Logo 等静态文件
+│   ├── app/              # Next.js App Router 路由
+│   │   ├── (public)/     # 公共页面 (Home, Agents, Blog...)
+│   │   └── admin/        # 管理后台
+│   ├── components/       # 组件库
+│   │   ├── common/       # 通用组件
+│   │   ├── features/     # 业务功能组件
+│   │   ├── admin/        # 后台专用组件
+│   │   └── v-ui/         # 视觉动效组件
+│   ├── lib/              # 工具函数与 API 客户端
+│   └── context/          # 全局状态 (React Context)
+├── public/               # 静态资源 (Logo, Icons, Robots.txt)
 ├── design-assets/        # 设计资产 (UI/UX 设计稿)
-│   ├── logo.png
-│   └── pages/            # 页面设计稿
-│       ├── home-desktop.png
-│       ├── home-mobile.png
-│       ├── agents-desktop.png
-│       ├── agents-mobile.png
-│       ├── tools-desktop.png
-│       ├── tools-mobile.png
-│       ├── labs-desktop.png
-│       ├── labs-mobile.png
-│       ├── blog-desktop.png
-│       └── blog-mobile.png
 ├── package.json          # Node.js 依赖配置
 ├── tsconfig.json         # TypeScript 配置
 ├── eslint.config.mjs     # ESLint 配置
 ├── .env.example          # 环境变量模板
-├── .env.local           # 本地环境变量
-└── .gitignore           # Git 忽略配置
+├── .env.local            # 本地环境变量
+└── .gitignore            # Git 忽略配置
 ```
 
 > **注意**: 当前为项目精简结构，完整源代码将逐步实现。

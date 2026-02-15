@@ -12,7 +12,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     hash_bytes = hashed_password.encode('utf-8') if isinstance(hashed_password, str) else hashed_password
     return bcrypt.checkpw(password_bytes, hash_bytes)
 
-def get_password_hash(password: str) -> str:
+def hash_password(password: str) -> str:
     """Hash a password using bcrypt."""
     # Ensure password is bytes and truncate to 72 bytes (bcrypt limit)
     password_bytes = password.encode('utf-8')[:72]

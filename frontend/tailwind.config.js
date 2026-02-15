@@ -7,46 +7,86 @@ module.exports = {
     "./src/v-ui/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+          glow: "rgba(0, 242, 255, 0.4)", // Legacy support
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+          glow: "rgba(188, 19, 254, 0.4)", // Legacy support
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        // Genesis System Colors
         abyss: "#0a0a0f",
         void: "#050508",
         surface: "rgba(26, 26, 36, 0.7)",
-        primary: {
-          DEFAULT: "#00f2ff", // Cyber-Cyan
-          glow: "rgba(0, 242, 255, 0.4)",
-        },
-        accent: {
-          DEFAULT: "#bc13fe", // Neon-Purple
-          glow: "rgba(188, 19, 254, 0.4)",
-        },
-        success: "#00ff88",
-        warning: "#ffaa00",
-        error: "#ff3366",
-        info: "#00f2ff",
-        text: {
-          primary: "#f8f8f8",
-          secondary: "#a0a0b0",
-          muted: "#606070",
-        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
         heading: ["var(--font-heading)", "Outfit", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "Inter", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
       },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
       backgroundImage: {
         "gradient-neon": "linear-gradient(to right, #00f2ff, #bc13fe)",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       boxShadow: {
         "glow-primary": "0 0 20px rgba(0, 242, 255, 0.4)",
         "glow-accent": "0 0 20px rgba(188, 19, 254, 0.4)",
         "glass-border": "inset 0 0 0 1px rgba(255, 255, 255, 0.05)",
-      },
-      backdropBlur: {
-        xs: "2px",
       },
     },
   },

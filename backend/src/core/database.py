@@ -1,95 +1,85 @@
 # backend/src/core/database.py
 """
-Database initialization and management using SQLAlchemy ORM
+数据库初始化和管理 (异步版)
 
-提供功能：
-- 数据库连接管理
-- 表初始化
-- 基础 CRUD 操作
-- 数据库迁移支持
+使用 SQLAlchemy 2.0 异步模式和 aiosqlite。
 """
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, DateTime, Text
-from sqlalchemy.orm import Session, sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
-from contextlib import contextmanager
-from pathlib import Path
-import logging
 
+import logging
+from pathlib import Path
+from typing import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase
 from .config import settings
-from ..models import Base
 
 logger = logging.getLogger(__name__)
 
+# 配置异步引擎
+# 对于 SQLite，需要处理目录创建
+DATABASE_URL = settings.DATABASE_URL
+if DATABASE_URL.startswith("sqlite"):
+    db_path_str = DATABASE_URL.replace("sqlite+aiosqlite:///", "").replace("sqlite:///./", "")
+    db_path = Path(db_path_str)
+    db_path.parent.mkdir(parents=True, exist_ok=True)
 
-class DatabaseManager:
-    """数据库管理器"""
-    
-    def __init__(self, database_url: str = None):
-        self.database_url = database_url or settings.DATABASE_URL
-        self.engine = None
-        self.SessionLocal = None
-    
-    def get_engine(self):
-        """获取或创建数据库引擎"""
-        if not self.engine:
-            # 确保数据库目录存在
-            db_path = Path(self.database_url.replace("sqlite:///", "").replace("sqlite:///./", ""))
-            db_path.parent.mkdir(parents=True, exist_ok=True)
-            
-            self.engine = create_engine(
-                self.database_url,
-                connect_args={"check_same_thread": False} if "sqlite" in self.database_url else {},
-                echo=True,
-            )
-            logger.info(f"Database engine created: {self.database_url}")
-        return self.engine
-    
-    def get_session_local(self):
-        """获取 SessionLocal"""
-        if not self.SessionLocal:
-            self.SessionLocal = sessionmaker(
-                autocommit=False,
-                autoflush=False,
-                bind=self.get_engine()
-            )
-        return self.SessionLocal
-    
-    @contextmanager
-    def get_session(self):
-        """获取数据库会话上下文管理器"""
-        session = self.get_session_local()()
+engine = create_async_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
+    echo=settings.ENVIRONMENT == "development",
+)
+
+# 创建异步会话工厂
+AsyncSessionLocal = async_sessionmaker(
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autocommit=False,
+    autoflush=False,
+)
+
+
+class Base(DeclarativeBase):
+    """SQLAlchemy 模型基类"""
+    pass
+
+
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    FastAPI 依赖项：提供异步数据库会话
+    """
+    async with AsyncSessionLocal() as session:
         try:
             yield session
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            logger.error(f"Database session error: {e}")
+            await session.commit()
+        except Exception:
+            await session.rollback()
             raise
         finally:
-            session.close()
-    
-    def init_db(self):
-        """初始化数据库表"""
-        from ..models import User, BlogPost, Agent, Tool, Lab
-        from sqlalchemy import inspect
-        
-        engine = self.get_engine()
-        
-        # 创建所有表
-        Base.metadata.create_all(engine)
-        logger.info("Database tables created successfully")
-        
-        # 创建初始管理员（如果不存在）
-        session = self.get_session_local()
+            await session.close()
+
+
+async def init_db():
+    """初始化数据库表并创建初始数据"""
+    from ..models import User, BlogPost, Agent  # 延迟导入以避免循环依赖
+
+    logger.info("Initializing database...")
+    async with engine.begin() as conn:
+        # 在异步环境下创建所有表
+        await conn.run_sync(Base.metadata.create_all)
+
+    logger.info("Database tables created successfully")
+
+    # 创建初始管理员
+    async with AsyncSessionLocal() as session:
         try:
-            # 检查是否已有管理员
-            existing_admin = session.query(User).filter_by(username="admin").first()
-            
+            from sqlalchemy import select
+            result = await session.execute(select(User).filter_by(username=settings.FIRST_ADMIN_USERNAME))
+            existing_admin = result.scalars().first()
+
             if not existing_admin:
-                # 从配置创建管理员
-                from ....core.security import hash_password
+                from .security import hash_password
                 hashed_pw = hash_password(settings.FIRST_ADMIN_PASSWORD)
-                
                 admin = User(
                     username=settings.FIRST_ADMIN_USERNAME,
                     email=settings.FIRST_ADMIN_EMAIL,
@@ -98,36 +88,10 @@ class DatabaseManager:
                     is_active=True,
                 )
                 session.add(admin)
-                session.commit()
+                await session.commit()
                 logger.info(f"Initial admin user created: {admin.username}")
             else:
                 logger.info("Admin user already exists")
-                
         except Exception as e:
-            logger.error(f"Database initialization error: {e}")
-            raise
-        finally:
-            session.close()
-    
-    def drop_all(self):
-        """删除所有表（谨慎使用）"""
-        engine = self.get_engine()
-        Base.metadata.drop_all(engine)
-        logger.warning("All database tables dropped")
-
-
-# 全局数据库管理器实例
-db_manager = DatabaseManager()
-
-# 获取数据库会话的便捷函数
-def get_db():
-    """依赖注入的数据库会话"""
-    return db_manager.get_session()
-
-def init_database():
-    """初始化数据库"""
-    db_manager.init_db()
-
-def drop_database():
-    """清空数据库（开发用）"""
-    db_manager.drop_all()
+            logger.error(f"Error during initial data creation: {e}")
+            await session.rollback()

@@ -9,6 +9,8 @@ Agents API with real database operations using SQLAlchemy ORM
 from typing import List, Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session # Should probably remove if not used elsewhere, but keeping just in case.
 from pydantic import BaseModel, Field
 
 from ....core.database import get_db
@@ -67,16 +69,16 @@ agent_service = get_crud_service(Agent)
 
 
 @router.get("", response_model=List[AgentResponse])
-def list_agents(
+async def list_agents(
     category: Optional[str] = None,
     status: Optional[str] = None,
     skip: int = Query(0, ge=0, description="跳过记录数"),
     limit: int = Query(100, ge=1, le=100, description="每页记录数"),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     获取所有智能体列表（支持分页和过滤）
-    
+
     参数：
         category: 按类别过滤 (Dev/Auto/Intel/Creative)
         status: 按状态过滤 (offline/spawning/idle/active)
@@ -90,10 +92,10 @@ def list_agents(
         filters["category"] = category
     if status:
         filters["is_active"] = (status == "active")
-    
+
     # 获取数据
-    result = agent_service.get_all(db, filters=filters, skip=skip, limit=limit)
-    
+    result = await agent_service.get_all(db, filters=filters, skip=skip, limit=limit)
+
     # 转换为响应模型
     response_data = []
     for agent in result:
@@ -112,30 +114,31 @@ def list_agents(
             "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
             "sort_order": agent.sort_order,
         })
-    
+
     return response_data
 
 
 @router.get("/categories")
-def get_categories(db: Session = Depends(get_db)):
+async def get_categories(db: AsyncSession = Depends(get_db)):
     """获取所有智能体类别"""
-    categories = db.query(Agent.category).distinct().all()
+    result = await db.execute(select(Agent.category).distinct())
+    categories = result.all()
     return [cat[0] for cat in categories]
 
 
 @router.get("/{agent_id}", response_model=AgentResponse)
-def get_agent(
+async def get_agent(
     agent_id: int,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """根据 ID 获取智能体详情"""
-    agent = agent_service.get_by_id(db, agent_id)
+    agent = await agent_service.get_by_id(db, agent_id)
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="智能体不存在"
         )
-    
+
     return {
         "id": agent.id,
         "name": agent.name,
@@ -154,27 +157,28 @@ def get_agent(
 
 
 @router.post("", response_model=AgentResponse, status_code=status.HTTP_201_CREATED)
-def create_agent(
+async def create_agent(
     agent_data: AgentCreate,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     创建新智能体
-    
+
     参数:
         agent_data: 智能体数据
         db: 数据库会话
     """
     # 检查 slug 唯一性
-    existing = db.query(Agent).filter(Agent.slug == agent_data.slug).first()
+    result = await db.execute(select(Agent).filter(Agent.slug == agent_data.slug))
+    existing = result.scalars().first()
     if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"智能体 slug '{agent_data.slug}' 已存在"
             )
-    
+
     # 创建新智能体
-    new_agent = agent_service.create(db, {
+    new_agent = await agent_service.create(db, {
         "name": agent_data.name,
         "slug": agent_data.slug,
         "description": agent_data.description,
@@ -186,84 +190,84 @@ def create_agent(
         "is_active": True,
         "sort_order": 0,  # 默认排序
     })
-    
+
     return new_agent
 
 
 @router.put("/{agent_id}", response_model=AgentResponse)
-def update_agent(
+async def update_agent(
     agent_id: int,
     agent_data: AgentUpdate,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     更新智能体
-    
+
     参数:
         agent_id: 智能 体 ID
         agent_data: 更新数据
         db: 数据库会话
     """
     # 获取现有智能体
-    agent = agent_service.get_by_id(db, agent_id)
+    agent = await agent_service.get_by_id(db, agent_id)
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="智能体不存在"
         )
-    
+
     # 检查 slug 唯一性
     update_dict = agent_data.model_dump(exclude_unset=True)
     if agent_data.slug:
-        existing = db.query(Agent).filter(Agent.slug == agent_data.slug).first()
+        result = await db.execute(select(Agent).filter(Agent.slug == agent_data.slug))
+        existing = result.scalars().first()
         if existing and existing.id != agent_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"智能体 slug '{agent_data.slug}' 已被其他智能体使用"
             )
-    
+
     # 更新字段
     for field, value in update_dict.items():
         setattr(agent, field, value)
-    
+
     agent.updated_at = datetime.utcnow()
-    
+
     try:
-        db.commit()
-        db.refresh(agent)
+        await db.commit()
+        await db.refresh(agent)
     except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"更新智能体失败: {e}"
         )
-    
+
     return agent
 
 
 @router.delete("/{agent_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_agent(
+async def delete_agent(
     agent_id: int,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     删除智能体
-    
+
     参数:
         agent_id: 智能 体 ID
         db: 数据库会话
     """
     # 获取智能体
-    agent = agent_service.get_by_id(db, agent_id)
+    agent = await agent_service.get_by_id(db, agent_id)
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="智能体不存在"
         )
-    
+
     try:
-        agent_service.delete(db, agent)
-        db.commit()
+        await agent_service.delete(db, agent_id) # Using agent_id instead of agent object for service call
         return {"message": "智能体删除成功"}
     except Exception as e:
         db.rollback()
@@ -274,25 +278,25 @@ def delete_agent(
 
 
 @router.post("/{agent_id}/status", response_model=AgentResponse)
-def toggle_agent_status(
+async def toggle_agent_status(
     agent_id: int,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     切换智能体状态（offline/spawning/idle/active）
-    
+
     参数:
         agent_id: 智能 体 ID
         db: 数据库会话
     """
     # 获取现有智能体
-    agent = agent_service.get_by_id(db, agent_id)
+    agent = await agent_service.get_by_id(db, agent_id)
     if not agent:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="智能体不存在"
         )
-    
+
     # 切换状态
     if agent.is_active:
         new_status = "offline"
@@ -300,40 +304,40 @@ def toggle_agent_status(
     else:
         new_status = "active"
         agent.is_active = (new_status == "active")
-    
+
     try:
-        db.commit()
-        db.refresh(agent)
+        await db.commit()
+        await db.refresh(agent)
     except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"切换智能体状态失败: {e}"
         )
-    
+
     return agent
 
 
 @router.get("/stats/summary")
-def get_agents_summary(
-    db: Session = Depends(get_db)
+async def get_agents_summary(
+    db: AsyncSession = Depends(get_db)
 ):
     """获取智能体统计摘要"""
-    total = db.query(Agent).count()
-    active = db.query(Agent).filter_by(is_active=True).count()
-    offline = db.query(Agent).filter_by(is_active=False).count()
-    
+    total = await db.scalar(select(func.count(Agent.id)))
+    active = await db.scalar(select(func.count(Agent.id)).filter(Agent.is_active == True))
+    offline = await db.scalar(select(func.count(Agent.id)).filter(Agent.is_active == False))
+
     # 按类别统计
-    category_stats = db.session.execute(
+    category_stats_result = await db.execute(
         select(Agent.category, func.count(Agent.id))
         .where(Agent.is_active == True)
         .group_by(Agent.category)
-        .all()
     )
-    
+    category_stats = category_stats_result.all()
+
     return {
         "total": total,
         "active": active,
         "offline": offline,
-        "by_category": {row[0]: row.category for row in category_stats},
+        "by_category": {row[0]: row[1] for row in category_stats},
     }

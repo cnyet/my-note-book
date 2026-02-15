@@ -79,7 +79,7 @@ class ToolResponse(ToolBase):
 
 
 @router.get("", response_model=List[ToolResponse])
-def list_tools(
+async def list_tools(
     category: Optional[str] = Query(default=None),
     status: Optional[str] = Query(default=None),
     skip: int = Query(default=0, ge=0),
@@ -100,7 +100,7 @@ def list_tools(
     if status:
         filters["status"] = status
 
-    result = tool_service.get_all(
+    result = await tool_service.get_all(
         db,
         filters=filters,
         skip=skip,
@@ -111,13 +111,13 @@ def list_tools(
 
 
 @router.get("/categories", response_model=List[str])
-def get_categories():
+async def get_categories():
     """获取所有工具分类"""
     return ["Dev", "Auto", "Intel", "Creative"]
 
 
 @router.get("/stats/summary")
-def get_tools_summary(db: AsyncSession = Depends(get_db)):
+async def get_tools_summary(db: AsyncSession = Depends(get_db)):
     """
     获取工具统计摘要
 
@@ -126,7 +126,7 @@ def get_tools_summary(db: AsyncSession = Depends(get_db)):
     from sqlalchemy import func
 
     # 获取所有工具
-    all_tools = tool_service.get_all(db, limit=1000)
+    all_tools = await tool_service.get_all(db, limit=1000)
 
     # 按类别统计
     category_stats = {}
@@ -146,7 +146,7 @@ def get_tools_summary(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{tool_id}", response_model=ToolResponse)
-def get_tool(
+async def get_tool(
     tool_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -155,7 +155,7 @@ def get_tool(
 
     - **tool_id**: 工具 ID
     """
-    tool = tool_service.get_by_id(db, tool_id)
+    tool = await tool_service.get_by_id(db, tool_id)
     if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -165,7 +165,7 @@ def get_tool(
 
 
 @router.post("", response_model=ToolResponse, status_code=status.HTTP_201_CREATED)
-def create_tool(
+async def create_tool(
     tool: ToolCreate,
     db: AsyncSession = Depends(get_db)
 ):
@@ -182,7 +182,7 @@ def create_tool(
     - **sort_order**: 排序顺序（默认: 0）
     """
     # 检查 slug 是否已存在
-    existing = tool_service.get_all(db, filters={"slug": tool.slug}, limit=1)
+    existing = await tool_service.get_all(db, filters={"slug": tool.slug}, limit=1)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -190,12 +190,12 @@ def create_tool(
         )
 
     # 创建工具
-    new_tool = tool_service.create(db, tool.model_dump())
+    new_tool = await tool_service.create(db, tool.model_dump())
     return new_tool
 
 
 @router.put("/{tool_id}", response_model=ToolResponse)
-def update_tool(
+async def update_tool(
     tool_id: int,
     tool_update: ToolUpdate,
     db: AsyncSession = Depends(get_db)
@@ -206,7 +206,7 @@ def update_tool(
     只更新提供的字段，未提供的字段保持不变
     """
     # 检查工具是否存在
-    tool = tool_service.get_by_id(db, tool_id)
+    tool = await tool_service.get_by_id(db, tool_id)
     if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -215,7 +215,7 @@ def update_tool(
 
     # 如果更新 slug，检查新 slug 是否已被其他工具使用
     if tool_update.slug:
-        existing = tool_service.get_all(db, filters={"slug": tool_update.slug}, limit=1)
+        existing = await tool_service.get_all(db, filters={"slug": tool_update.slug}, limit=1)
         if existing and existing[0].id != tool_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -226,12 +226,12 @@ def update_tool(
     update_data = tool_update.model_dump(exclude_unset=True)
 
     # 更新工具
-    updated_tool = tool_service.update(db, tool_id, update_data)
+    updated_tool = await tool_service.update(db, tool_id, update_data)
     return updated_tool
 
 
 @router.delete("/{tool_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_tool(
+async def delete_tool(
     tool_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -241,19 +241,19 @@ def delete_tool(
     - **tool_id**: 要删除的工具 ID
     """
     # 检查工具是否存在
-    tool = tool_service.get_by_id(db, tool_id)
+    tool = await tool_service.get_by_id(db, tool_id)
     if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"工具 (ID: {tool_id}) 不存在"
         )
 
-    tool_service.delete(db, tool_id)
+    await tool_service.delete(db, tool_id)
     return None
 
 
 @router.patch("/{tool_id}/status", response_model=ToolResponse)
-def toggle_tool_status(
+async def toggle_tool_status(
     tool_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -262,7 +262,7 @@ def toggle_tool_status(
 
     - **tool_id**: 工具 ID
     """
-    tool = tool_service.get_by_id(db, tool_id)
+    tool = await tool_service.get_by_id(db, tool_id)
     if not tool:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -270,5 +270,5 @@ def toggle_tool_status(
         )
 
     new_status = "inactive" if tool.status == "active" else "active"
-    updated_tool = tool_service.update(db, tool_id, {"status": new_status})
+    updated_tool = await tool_service.update(db, tool_id, {"status": new_status})
     return updated_tool

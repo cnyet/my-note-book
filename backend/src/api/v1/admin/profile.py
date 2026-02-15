@@ -1,9 +1,10 @@
-# backend/src/api/v1/admin/profile.py
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Header
+from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field, EmailStr, field_validator, validator
-from datetime import datetime
-from ....core.security import verify_password
+from datetime import datetime, timedelta
+from sqlalchemy.ext.asyncio import AsyncSession
+from ....core.database import get_db
+from ....core.security import verify_password, hash_password
 from ....api.deps import get_current_active_user
 from ....models import User
 from ....schemas.user import UserResponse
@@ -38,32 +39,36 @@ class CreateTokenRequest(BaseModel):
 
 
 @router.get("", response_model=UserResponse)
-def get_profile(current_user: User = Depends(get_current_active_user)):
+async def get_profile(current_user: User = Depends(get_current_active_user)):
     """Get current user profile"""
     return current_user
 
 
 @router.put("", response_model=UserResponse)
-def update_profile(
+async def update_profile(
     profile_update: ProfileUpdate,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Update user profile (display name, email)"""
     update_data = profile_update.model_dump(exclude_unset=True)
-    
+
     # Email uniqueness check would go here
     # For now, just update
     for field, value in update_data.items():
         setattr(current_user, field, value)
-    
-    current_user.updated_at = datetime.now()
-    
+
+    current_user.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(current_user)
+
     return current_user
 
 
 @router.post("/change-password")
-def change_password(
+async def change_password(
     password_data: PasswordChange,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Change user password"""
@@ -73,16 +78,25 @@ def change_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect",
         )
-    
-    # Update password with new one (hashing happens in user model)
-    current_user.hashed_password = password_data.new_password
-    current_user.updated_at = datetime.now()
-    
+
+    if password_data.new_password != password_data.confirm_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Passwords do not match",
+        )
+
+    # Update password with new one
+    current_user.hashed_password = hash_password(password_data.new_password)
+    current_user.updated_at = datetime.utcnow()
+
+    await db.commit()
+    await db.refresh(current_user)
+
     return {"message": "Password changed successfully"}
 
 
 @router.get("/tokens", response_model=List[TokenInfo])
-def list_tokens(current_user: User = Depends(get_current_active_user)):
+async def list_tokens(current_user: User = Depends(get_current_active_user)):
     """List all API tokens for current user"""
     # Mock tokens - in production, these would be stored in database
     # For now, return mock data based on user ID
@@ -112,35 +126,35 @@ def list_tokens(current_user: User = Depends(get_current_active_user)):
             "last_used": datetime(2025, 1, 20, 15, 0, 0),
         },
     ]
-    
+
     # Filter tokens for this user (in production, filter by user_id)
     return mock_tokens
 
 
 @router.post("/tokens", response_model=TokenInfo)
-def create_token(
+async def create_token(
     token_request: CreateTokenRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a new API token"""
     # Generate secure random token
     token_id = secrets.token_urlsafe(16)
-    
+
     new_token = TokenInfo(
         id=token_id,
         name=token_request.name,
-        created_at=datetime.now(),
-        expires_at=datetime.now(),  # Default 30 day expiry
+        created_at=datetime.utcnow(),
+        expires_at=datetime.utcnow() + timedelta(days=30),  # Default 30 day expiry
         is_active=True,
         last_used=None,
     )
-    
+
     # In production, store in database
     return new_token
 
 
 @router.delete("/tokens/{token_id}")
-def revoke_token(
+async def revoke_token(
     token_id: str,
     current_user: User = Depends(get_current_active_user),
 ):
@@ -151,7 +165,7 @@ def revoke_token(
 
 
 @router.post("/verify-password")
-def verify_password_for_action(
+async def verify_password_for_action(
     current_password: str,
     current_user: User = Depends(get_current_active_user),
 ):
@@ -161,5 +175,5 @@ def verify_password_for_action(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Current password is incorrect",
         )
-    
+
     return {"valid": True}

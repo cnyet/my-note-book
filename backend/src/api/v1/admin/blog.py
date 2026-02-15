@@ -1,11 +1,12 @@
 # backend/src/api/v1/admin/blog.py
 """Blog API - 使用数据库操作的完整 CRUD 功能"""
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy.orm import selectinload
 
 from ....models import BlogPost, PostTag
 from ....services.crud import get_crud_service
@@ -41,6 +42,13 @@ class BlogPostBase(BaseModel):
         valid_statuses = ["draft", "published", "archived"]
         if v not in valid_statuses:
             raise ValueError(f"无效的状态。有效值为: {', '.join(valid_statuses)}")
+        return v
+
+    @field_validator('tags', mode='before')
+    @classmethod
+    def validate_tags(cls, v):
+        if isinstance(v, list):
+            return [t.tag_name if hasattr(t, 'tag_name') else t for t in v]
         return v
 
 
@@ -104,12 +112,12 @@ async def _update_post_tags(db: AsyncSession, post_id: int, tags: List[str]):
 
 
 @router.get("", response_model=List[BlogPostResponse])
-def list_posts(
-    status: Optional[str] = None,
-    tag: Optional[str] = None,
-    search: Optional[str] = None,
-    skip: int = Field(0, ge=0, description="跳过的记录数"),
-    limit: int = Field(100, ge=1, le=100, description="返回的记录数"),
+async def list_posts(
+    status: Optional[str] = Query(default=None),
+    tag: Optional[str] = Query(default=None),
+    search: Optional[str] = Query(default=None),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=100, ge=1, le=100),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -121,22 +129,19 @@ def list_posts(
     - **skip**: 跳过前 N 条记录（分页用）
     - **limit**: 返回最多 N 条记录
     """
-    filters = {}
-    if status:
-        filters["status"] = status
+    # 构建查询
+    stmt = select(BlogPost).options(selectinload(BlogPost.tags))
 
-    result = blog_service.get_all(
-        db,
-        filters=filters,
-        skip=skip,
-        limit=limit,
-        order_by="created_at",
-        order_desc=True
-    )
+    if status:
+        stmt = stmt.where(BlogPost.status == status)
+
+    # 执行查询
+    result_exec = await db.execute(stmt.offset(skip).limit(limit).order_by(BlogPost.created_at.desc()))
+    result = list(result_exec.scalars().all())
 
     # 标签筛选
     if tag:
-        result = [p for p in result if tag in p.tags]
+        result = [p for p in result if tag in [t.tag_name for t in p.tags]]
 
     # 搜索筛选
     if search:
@@ -166,14 +171,15 @@ async def get_all_tags(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/stats/summary")
-def get_blog_summary(db: AsyncSession = Depends(get_db)):
+async def get_blog_summary(db: AsyncSession = Depends(get_db)):
     """
     获取博客统计摘要
 
     返回各状态文章的数量统计
     """
-    # 获取所有文章
-    all_posts = blog_service.get_all(db, limit=1000)
+    # 获取所有文章并预加载标签
+    result_exec = await db.execute(select(BlogPost).options(selectinload(BlogPost.tags)))
+    all_posts = result_exec.scalars().all()
 
     # 按状态统计
     status_stats = {}
@@ -183,7 +189,8 @@ def get_blog_summary(db: AsyncSession = Depends(get_db)):
     # 获取所有标签
     all_tags = set()
     for post in all_posts:
-        all_tags.update(post.tags)
+        for tag in post.tags:
+            all_tags.add(tag.tag_name)
 
     return {
         "total": len(all_posts),
@@ -193,7 +200,7 @@ def get_blog_summary(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{post_id}", response_model=BlogPostResponse)
-def get_post(
+async def get_post(
     post_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -202,7 +209,13 @@ def get_post(
 
     - **post_id**: 文章 ID
     """
-    post = blog_service.get_by_id(db, post_id)
+    # 获取文章并预加载标签
+    result_exec = await db.execute(
+        select(BlogPost)
+        .options(selectinload(BlogPost.tags))
+        .where(BlogPost.id == post_id)
+    )
+    post = result_exec.scalars().first()
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -231,7 +244,7 @@ async def create_post(
     - **published_at**: 发布时间（发布时自动设置）
     """
     # 检查 slug 是否已存在
-    existing = blog_service.get_all(db, filters={"slug": post.slug}, limit=1)
+    existing = await blog_service.get_all(db, filters={"slug": post.slug}, limit=1)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -249,18 +262,20 @@ async def create_post(
 
     # 如果状态是 published 且未设置发布时间，自动设置
     if post.status == "published" and not post_data.get("published_at"):
-        post_data["published_at"] = datetime.now()
+        post_data["published_at"] = datetime.utcnow()
 
     # 创建文章
-    new_post = blog_service.create(db, post_data)
+    new_post = await blog_service.create(db, post_data)
 
     # 添加标签
     if post.tags:
         await _update_post_tags(db, new_post.id, post.tags)
 
-    # 刷新文章以获取标签
-    await db.refresh(new_post)
-
+    # 重新获取包含标签的文章对象
+    result_exec = await db.execute(
+        select(BlogPost).options(selectinload(BlogPost.tags)).where(BlogPost.id == new_post.id)
+    )
+    new_post = result_exec.scalars().first()
     return new_post
 
 
@@ -276,7 +291,11 @@ async def update_post(
     只更新提供的字段，未提供的字段保持不变
     """
     # 检查文章是否存在
-    post = blog_service.get_by_id(db, post_id)
+    # 检查文章是否存在并预加载标签
+    result_exec = await db.execute(
+        select(BlogPost).options(selectinload(BlogPost.tags)).where(BlogPost.id == post_id)
+    )
+    post = result_exec.scalars().first()
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -285,7 +304,7 @@ async def update_post(
 
     # 如果更新 slug，检查新 slug 是否已被其他文章使用
     if post_update.slug:
-        existing = blog_service.get_all(db, filters={"slug": post_update.slug}, limit=1)
+        existing = await blog_service.get_all(db, filters={"slug": post_update.slug}, limit=1)
         if existing and existing[0].id != post_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -297,7 +316,7 @@ async def update_post(
 
     # 处理状态变更为 published 的情况
     if post_update.status == "published" and not post.published_at:
-        update_data["published_at"] = datetime.now()
+        update_data["published_at"] = datetime.utcnow()
 
     # 如果提供了 excerpt，使用它；否则如果更新了 content，自动生成 excerpt
     if "excerpt" not in update_data and "content" in update_data and update_data["content"]:
@@ -305,14 +324,17 @@ async def update_post(
         update_data["excerpt"] = content[:200] + "..." if len(content) > 200 else content
 
     # 更新文章
-    updated_post = blog_service.update(db, post_id, update_data)
+    updated_post = await blog_service.update(db, post_id, update_data)
 
     # 更新标签（如果提供）
     if post_update.tags is not None:
         await _update_post_tags(db, post_id, post_update.tags)
 
-    # 刷新文章以获取标签
-    await db.refresh(updated_post)
+    # 重新获取包含标签的文章对象
+    result_exec = await db.execute(
+        select(BlogPost).options(selectinload(BlogPost.tags)).where(BlogPost.id == post_id)
+    )
+    updated_post = result_exec.scalars().first()
 
     return updated_post
 
@@ -328,7 +350,7 @@ async def delete_post(
     - **post_id**: 要删除的文章 ID
     """
     # 检查文章是否存在
-    post = blog_service.get_by_id(db, post_id)
+    post = await blog_service.get_by_id(db, post_id)
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -347,14 +369,14 @@ async def delete_post(
         await db.delete(tag)
 
     # 删除文章
-    blog_service.delete(db, post_id)
+    await blog_service.delete(db, post_id)
 
     await db.commit()
     return None
 
 
 @router.patch("/{post_id}/status", response_model=BlogPostResponse)
-def update_post_status(
+async def update_post_status(
     post_id: int,
     new_status: str,
     db: AsyncSession = Depends(get_db)
@@ -373,7 +395,7 @@ def update_post_status(
         )
 
     # 检查文章是否存在
-    post = blog_service.get_by_id(db, post_id)
+    post = await blog_service.get_by_id(db, post_id)
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -385,15 +407,15 @@ def update_post_status(
 
     # 首次发布时设置发布时间
     if new_status == "published" and not post.published_at:
-        update_data["published_at"] = datetime.now()
+        update_data["published_at"] = datetime.utcnow()
 
     # 更新状态
-    updated_post = blog_service.update(db, post_id, update_data)
+    updated_post = await blog_service.update(db, post_id, update_data)
     return updated_post
 
 
 @router.post("/{post_id}/generate-markdown")
-def generate_markdown(
+async def generate_markdown(
     post_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -403,7 +425,7 @@ def generate_markdown(
     返回带有 frontmatter 的完整 Markdown 内容
     """
     # 检查文章是否存在
-    post = blog_service.get_by_id(db, post_id)
+    post = await blog_service.get_by_id(db, post_id)
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

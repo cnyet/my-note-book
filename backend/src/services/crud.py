@@ -1,144 +1,164 @@
 # backend/src/services/crud.py
 """
-通用 CRUD 操作服务
+通用 CRUD 操作服务 (完全异步版)
 
-提供统一的数据库操作接口，用于替换各 API 中的 mock 数据操作。
+提供统一的数据库操作接口，适配 FastAPI 的异步 Session。
 """
 
 from typing import TypeVar, Generic, Type, List, Optional, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import select, and_, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func, delete, update
 from fastapi import HTTPException, status
 import logging
 
 logger = logging.getLogger(__name__)
 
-# 泛型类型
+# 类型变量
 ModelType = TypeVar("ModelType", bound=object)
 
 
 class CRUDService(Generic[ModelType]):
-    """通用 CRUD 服务类"""
-    
+    """通用异步 CRUD 服务类"""
+
     def __init__(self, model: Type[ModelType]):
         self.model = model
-    
-    def get_all(
+
+    async def get_all(
         self,
-        session: Session,
+        session: AsyncSession,
         skip: int = 0,
         limit: int = 100,
-        filters: Dict[str, Any] = None
+        filters: Dict[str, Any] = None,
+        order_by: str = None,
+        order_desc: bool = False
     ) -> List[ModelType]:
         """获取所有记录（支持分页和过滤）"""
-        query = session.query(self.model)
-        
+        stmt = select(self.model)
+
         # 应用过滤条件
         if filters:
             for key, value in filters.items():
                 if hasattr(self.model, key):
+                    attr = getattr(self.model, key)
                     if isinstance(value, list):
-                        query = query.filter(getattr(self.model, key).in_(value))
+                        stmt = stmt.where(attr.in_(value))
                     else:
-                        query = query.filter(getattr(self.model, key) == value)
-        
+                        stmt = stmt.where(attr == value)
+
         # 排序
-        if hasattr(self.model, "sort_order"):
-            query = query.order_by(getattr(self.model, "sort_order"))
+        if order_by and hasattr(self.model, order_by):
+            attr = getattr(self.model, order_by)
+            if order_desc:
+                stmt = stmt.order_by(attr.desc())
+            else:
+                stmt = stmt.order_by(attr.asc())
+        elif hasattr(self.model, "sort_order"):
+            stmt = stmt.order_by(self.model.sort_order.asc())
         elif hasattr(self.model, "created_at"):
-            query = query.order_by(getattr(self.model, "created_at").desc())
-        
-        # 分页
-        return query.offset(skip).limit(limit).all()
-    
-    def get_by_id(
+            stmt = stmt.order_by(self.model.created_at.desc())
+
+        # 添加分页
+        stmt = stmt.offset(skip).limit(limit)
+
+        # 执行查询
+        result = await session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_by_id(
         self,
-        session: Session,
-        id: int,
-        raise_not_found: bool = True
+        session: AsyncSession,
+        id: int
     ) -> Optional[ModelType]:
         """根据 ID 获取记录"""
-        query = session.query(self.model).filter_by(id=id)
-        return query.first()
-    
-    def create(
+        stmt = select(self.model).where(getattr(self.model, "id") == id)
+        result = await session.execute(stmt)
+        return result.scalars().first()
+
+    async def create(
         self,
-        session: Session,
-        **kwargs
+        session: AsyncSession,
+        obj_in_data: Dict[str, Any]
     ) -> ModelType:
         """创建新记录"""
         try:
-            obj = self.model(**kwargs)
+            obj = self.model(**obj_in_data)
             session.add(obj)
-            session.commit()
-            session.refresh(obj)
-            logger.info(f"Created {self.model.__name__}: {obj}")
+            await session.commit()
+            await session.refresh(obj)
+            logger.info(f"Created {self.model.__name__} id={getattr(obj, 'id', 'unknown')}")
             return obj
         except Exception as e:
-            session.rollback()
+            await session.rollback()
             logger.error(f"Error creating {self.model.__name__}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to create {self.model.__name__}"
+                detail=f"Failed to create {self.model.__name__}: {str(e)}"
             )
-    
-    def update(
+
+    async def update(
         self,
-        session: Session,
+        session: AsyncSession,
         id: int,
-        **kwargs
+        obj_in_data: Dict[str, Any]
     ) -> Optional[ModelType]:
         """更新记录"""
-        obj = self.get_by_id(session, id, raise_not_found=False)
+        obj = await self.get_by_id(session, id)
         if not obj:
             return None
-        
+
         try:
-            for key, value in kwargs.items():
+            for key, value in obj_in_data.items():
                 if hasattr(obj, key):
                     setattr(obj, key, value)
-            
-            session.commit()
-            session.refresh(obj)
-            logger.info(f"Updated {self.model.__name__} id={id}: {obj}")
+
+            await session.commit()
+            await session.refresh(obj)
+            logger.info(f"Updated {self.model.__name__} id={id}")
             return obj
         except Exception as e:
-            session.rollback()
+            await session.rollback()
             logger.error(f"Error updating {self.model.__name__} id={id}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to update {self.model.__name__}"
+                detail=f"Failed to update {self.model.__name__}: {str(e)}"
             )
-    
-    def delete(
+
+    async def delete(
         self,
-        session: Session,
+        session: AsyncSession,
         id: int
     ) -> bool:
         """删除记录"""
-        obj = self.get_by_id(session, id, raise_not_found=False)
+        obj = await self.get_by_id(session, id)
         if not obj:
             return False
-        
+
         try:
-            session.delete(obj)
-            session.commit()
+            await session.delete(obj)
+            await session.commit()
             logger.info(f"Deleted {self.model.__name__} id={id}")
             return True
         except Exception as e:
-            session.rollback()
+            await session.rollback()
             logger.error(f"Error deleting {self.model.__name__} id={id}: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to delete {self.model.__name__}"
+                detail=f"Failed to delete {self.model.__name__}: {str(e)}"
             )
-    
-    def count(self, session: Session) -> int:
+
+    async def count(self, session: AsyncSession, filters: Dict[str, Any] = None) -> int:
         """统计记录数量"""
-        return session.query(self.model).count()
+        stmt = select(func.count()).select_from(self.model)
+        if filters:
+             for key, value in filters.items():
+                if hasattr(self.model, key):
+                    stmt = stmt.where(getattr(self.model, key) == value)
+
+        result = await session.execute(stmt)
+        return result.scalar() or 0
 
 
-# 创建 CRUD 服务实例
+# 创建 CRUD 服务实例工厂
 def get_crud_service(model: Type[ModelType]) -> CRUDService:
     """获取模型的 CRUD 服务"""
     return CRUDService(model)

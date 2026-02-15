@@ -1,38 +1,42 @@
 # backend/src/services/user_service.py
 from typing import Optional
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from ..models import User
-from ..core.security import verify_password, get_password_hash
+from ..core.security import verify_password, hash_password # Adjusted import names to match what I saw or standard.
 
-def get_user_by_username(db: Session, username: str) -> Optional[User]:
-    return db.query(User).filter(User.username == username).first()
+async def get_user_by_username(db: AsyncSession, username: str) -> Optional[User]:
+    result = await db.execute(select(User).filter(User.username == username))
+    return result.scalars().first()
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    return db.query(User).filter(User.email == email).first()
+async def get_user_by_email(db: AsyncSession, email: str) -> Optional[User]:
+    result = await db.execute(select(User).filter(User.email == email))
+    return result.scalars().first()
 
-def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
-    user = get_user_by_username(db, username)
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> Optional[User]:
+    user = await get_user_by_username(db, username)
     if not user:
         return None
-    if not verify_password(password, user.password_hash):
+    # User model uses hashed_password, verify_password is in security.py
+    if not verify_password(password, user.hashed_password):
         return None
     return user
 
-def create_user(db: Session, username: str, email: str, password: str) -> User:
-    password_hash = get_password_hash(password)
+async def create_user(db: AsyncSession, username: str, email: str, password: str) -> User:
+    hashed_pw = hash_password(password)
     db_user = User(
         username=username,
         email=email,
-        password_hash=password_hash
+        hashed_password=hashed_pw
     )
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user
 
-def create_first_admin(db: Session, username: str, email: str, password: str) -> User:
+async def create_first_admin(db: AsyncSession, username: str, email: str, password: str) -> User:
     """Create first admin user if not exists"""
-    existing = get_user_by_username(db, username)
+    existing = await get_user_by_username(db, username)
     if existing:
         return existing
-    return create_user(db, username, email, password)
+    return await create_user(db, username, email, password)

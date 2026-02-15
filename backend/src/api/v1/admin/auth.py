@@ -2,7 +2,7 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from ....core.config import settings
 from ....core.database import get_db
 from ....core.security import create_access_token, create_refresh_token
@@ -21,7 +21,7 @@ router = APIRouter()
 async def login(
     user_credentials: UserLogin,
     request: Request,
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Admin login endpoint with rate limiting.
@@ -35,7 +35,7 @@ async def login(
     user_agent = request.headers.get("User-Agent")
 
     # Authenticate user
-    user = authenticate_user(db, user_credentials.username, user_credentials.password)
+    user = await authenticate_user(db, user_credentials.username, user_credentials.password)
 
     if not user:
         # Log failed attempt
@@ -75,17 +75,17 @@ async def login(
     }
 
 @router.get("/verify", response_model=UserResponse)
-def verify_token(current_user: User = Depends(get_current_active_user)):
+async def verify_token(current_user: User = Depends(get_current_active_user)):
     """Verify current token and return user info"""
     return current_user
 
 @router.post("/init")
-def init_admin_db(db: Session = Depends(get_db)):
+async def init_admin_db(db: AsyncSession = Depends(get_db)):
     """Initialize first admin user (development only)"""
     from ....core.database import init_db
-    init_db()
+    await init_db()
 
-    admin = create_first_admin(
+    admin = await create_first_admin(
         db,
         settings.FIRST_ADMIN_USERNAME,
         settings.FIRST_ADMIN_EMAIL,

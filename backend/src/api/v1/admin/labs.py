@@ -76,7 +76,7 @@ class LabResponse(LabBase):
 
 
 @router.get("", response_model=List[LabResponse])
-def list_labs(
+async def list_labs(
     status: Optional[str] = Query(default=None),
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=100),
@@ -93,7 +93,7 @@ def list_labs(
     if status:
         filters["status"] = status
 
-    result = lab_service.get_all(
+    result = await lab_service.get_all(
         db,
         filters=filters,
         skip=skip,
@@ -105,20 +105,20 @@ def list_labs(
 
 
 @router.get("/statuses", response_model=List[str])
-def get_statuses():
+async def get_statuses():
     """获取所有实验室状态类型"""
     return ["Experimental", "Preview", "Archived"]
 
 
 @router.get("/stats/summary")
-def get_labs_summary(db: AsyncSession = Depends(get_db)):
+async def get_labs_summary(db: AsyncSession = Depends(get_db)):
     """
     获取实验室统计摘要
 
     返回各状态实验室的数量统计
     """
     # 获取所有实验室
-    all_labs = lab_service.get_all(db, limit=1000)
+    all_labs = await lab_service.get_all(db, limit=1000)
 
     # 按状态统计
     status_stats = {}
@@ -136,7 +136,7 @@ def get_labs_summary(db: AsyncSession = Depends(get_db)):
 
 
 @router.get("/{lab_id}", response_model=LabResponse)
-def get_lab(
+async def get_lab(
     lab_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -145,7 +145,7 @@ def get_lab(
 
     - **lab_id**: 实验室 ID
     """
-    lab = lab_service.get_by_id(db, lab_id)
+    lab = await lab_service.get_by_id(db, lab_id)
     if not lab:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -155,7 +155,7 @@ def get_lab(
 
 
 @router.post("", response_model=LabResponse, status_code=status.HTTP_201_CREATED)
-def create_lab(
+async def create_lab(
     lab: LabCreate,
     db: AsyncSession = Depends(get_db)
 ):
@@ -171,7 +171,7 @@ def create_lab(
     - **online_count**: 在线用户数（默认: 0）
     """
     # 检查 slug 是否已存在
-    existing = lab_service.get_all(db, filters={"slug": lab.slug}, limit=1)
+    existing = await lab_service.get_all(db, filters={"slug": lab.slug}, limit=1)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -179,12 +179,12 @@ def create_lab(
         )
 
     # 创建实验室
-    new_lab = lab_service.create(db, lab.model_dump())
+    new_lab = await lab_service.create(db, lab.model_dump())
     return new_lab
 
 
 @router.put("/{lab_id}", response_model=LabResponse)
-def update_lab(
+async def update_lab(
     lab_id: int,
     lab_update: LabUpdate,
     db: AsyncSession = Depends(get_db)
@@ -195,7 +195,7 @@ def update_lab(
     只更新提供的字段，未提供的字段保持不变
     """
     # 检查实验室是否存在
-    lab = lab_service.get_by_id(db, lab_id)
+    lab = await lab_service.get_by_id(db, lab_id)
     if not lab:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -204,7 +204,7 @@ def update_lab(
 
     # 如果更新 slug，检查新 slug 是否已被其他实验室使用
     if lab_update.slug:
-        existing = lab_service.get_all(db, filters={"slug": lab_update.slug}, limit=1)
+        existing = await lab_service.get_all(db, filters={"slug": lab_update.slug}, limit=1)
         if existing and existing[0].id != lab_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -215,12 +215,12 @@ def update_lab(
     update_data = lab_update.model_dump(exclude_unset=True)
 
     # 更新实验室
-    updated_lab = lab_service.update(db, lab_id, update_data)
+    updated_lab = await lab_service.update(db, lab_id, update_data)
     return updated_lab
 
 
 @router.delete("/{lab_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_lab(
+async def delete_lab(
     lab_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -230,19 +230,19 @@ def delete_lab(
     - **lab_id**: 要删除的实验室 ID
     """
     # 检查实验室是否存在
-    lab = lab_service.get_by_id(db, lab_id)
+    lab = await lab_service.get_by_id(db, lab_id)
     if not lab:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"实验室 (ID: {lab_id}) 不存在"
         )
 
-    lab_service.delete(db, lab_id)
+    await lab_service.delete(db, lab_id)
     return None
 
 
 @router.post("/{lab_id}/status", response_model=LabResponse)
-def update_lab_status(
+async def update_lab_status(
     lab_id: int,
     new_status: str,
     db: AsyncSession = Depends(get_db)
@@ -261,7 +261,7 @@ def update_lab_status(
         )
 
     # 检查实验室是否存在
-    lab = lab_service.get_by_id(db, lab_id)
+    lab = await lab_service.get_by_id(db, lab_id)
     if not lab:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -269,12 +269,12 @@ def update_lab_status(
         )
 
     # 更新状态
-    updated_lab = lab_service.update(db, lab_id, {"status": new_status})
+    updated_lab = await lab_service.update(db, lab_id, {"status": new_status})
     return updated_lab
 
 
 @router.patch("/{lab_id}/online", response_model=LabResponse)
-def increment_online_count(
+async def increment_online_count(
     lab_id: int,
     db: AsyncSession = Depends(get_db)
 ):
@@ -283,7 +283,7 @@ def increment_online_count(
 
     - **lab_id**: 实验室 ID
     """
-    lab = lab_service.get_by_id(db, lab_id)
+    lab = await lab_service.get_by_id(db, lab_id)
     if not lab:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -291,5 +291,5 @@ def increment_online_count(
         )
 
     # 增加在线计数
-    updated_lab = lab_service.update(db, lab_id, {"online_count": lab.online_count + 1})
+    updated_lab = await lab_service.update(db, lab_id, {"online_count": lab.online_count + 1})
     return updated_lab

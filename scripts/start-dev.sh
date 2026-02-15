@@ -56,7 +56,7 @@ cd ..
 echo "🌐 启动 Next.js 前端..."
 cd frontend
 # 注入后端地址环境变量，适配动态端口
-NEXT_PUBLIC_API_URL="http://localhost:$BACKEND_PORT/api/v1" npm run dev -- -p "$FRONTEND_PORT" > ../logs/frontend.log 2>&1 &
+NEXT_PUBLIC_API_URL="http://localhost:$BACKEND_PORT" npm run dev -- -p "$FRONTEND_PORT" > ../logs/frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend PID: $FRONTEND_PID" >> ../logs/pids.txt
 cd ..
