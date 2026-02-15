@@ -25,7 +25,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-[#f5f5f9] dark:bg-[#232333]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-slate-500 font-medium">
@@ -39,7 +39,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
   if (!isAuthenticated) return null; // Prevent flash of content
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950/50">
+    <div className="min-h-screen bg-[#f5f5f9] dark:bg-[#232333]">
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -50,7 +50,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
       <div
         className={cn(
           "flex flex-col min-h-screen transition-all duration-300",
-          isCollapsed ? "lg:pl-[80px]" : "lg:pl-[260px]",
+          isCollapsed ? "lg:pl-[78px]" : "lg:pl-[260px]",
         )}
       >
         <div className="sticky top-0 z-20">
@@ -61,7 +61,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
           {children}
         </main>
 
-        <footer className="py-6 text-center text-sm text-slate-500">
+        <footer className="py-6 text-center text-sm text-[#a1acb8]">
           <p>© {new Date().getFullYear()} MyNoteBook - Admin Dashboard</p>
         </footer>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { NeonButton } from "@/components/v-ui/NeonButton";
 import { Card } from "antd";
 import Image from "next/image";
 
@@ -13,21 +12,28 @@ export function WelcomeCard() {
     >
       <div className="flex justify-between h-full relative z-10">
         <div className="flex flex-col justify-between max-w-[65%]">
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold m-0 text-[#696cff]">
+          <div className="space-y-3">
+            <h5 className="text-xl font-semibold m-0 text-[#696cff]">
               Congratulations John! 🎉
-            </h2>
-            <p className="text-[#8592a3] text-sm leading-relaxed m-0">
+            </h5>
+            <p className="text-[#697a8d] text-[0.9375rem] leading-relaxed m-0">
               You have done{" "}
-              <span className="font-semibold text-[#71dd37]">72%</span> more
-              sales today. Check your new badge in your profile.
+              <span className="font-semibold text-[#696cff]">72%</span> more
+              sales today.
+              <br />
+              Check your new badge in your profile.
             </p>
           </div>
 
           <div className="mt-6">
-            <NeonButton variant="outline" size="sm">
-              VIEW BADGES
-            </NeonButton>
+            <button
+              className="px-5 py-2 text-sm font-medium rounded-md
+                bg-[#696cff]/10 text-[#696cff] border-none cursor-pointer
+                hover:bg-[#696cff] hover:text-white
+                transition-all duration-200"
+            >
+              View Badges
+            </button>
           </div>
         </div>
 

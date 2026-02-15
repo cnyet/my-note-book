@@ -7,19 +7,10 @@ import {
   MoreOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Dropdown, MenuProps, Space, Typography } from "antd";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export function TotalRevenueCard() {
-  const { theme: currentTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const items: MenuProps["items"] = [
     { key: "1", label: "View Report" },
     { key: "2", label: "Export" },
@@ -71,20 +62,28 @@ export function TotalRevenueCard() {
               <div className="border-b border-solid border-current w-full h-0"></div>
             </div>
 
-            {/* Bars */}
-            {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"].map((month) => (
+            {/* Bars - 固定数据以避免 SSR hydration 不匹配 */}
+            {[
+              { month: "Jan", primary: 45, secondary: 25 },
+              { month: "Feb", primary: 68, secondary: 35 },
+              { month: "Mar", primary: 50, secondary: 42 },
+              { month: "Apr", primary: 72, secondary: 30 },
+              { month: "May", primary: 40, secondary: 55 },
+              { month: "Jun", primary: 78, secondary: 38 },
+              { month: "Jul", primary: 55, secondary: 48 },
+            ].map(({ month, primary, secondary }) => (
               <div
                 key={month}
                 className="flex-1 flex flex-col items-center justify-end h-full gap-1 z-10 group relative min-w-[30px]"
               >
                 <div
-                  className="w-3 bg-[#696cff] rounded-t-sm transition-all duration-300 hover:opacity-80"
-                  style={{ height: `${30 + Math.random() * 50}%` }}
-                ></div>
+                  className="w-[9px] bg-[#696cff] rounded-t-[3px] transition-all duration-300 hover:opacity-80"
+                  style={{ height: `${primary}%` }}
+                />
                 <div
-                  className="w-3 bg-[#03c3ec] rounded-t-sm transition-all duration-300 hover:opacity-80"
-                  style={{ height: `${20 + Math.random() * 40}%` }}
-                ></div>
+                  className="w-[9px] bg-[#03c3ec] rounded-t-[3px] transition-all duration-300 hover:opacity-80"
+                  style={{ height: `${secondary}%` }}
+                />
                 <span className="text-[11px] text-[#a1acb8] mt-2 font-medium">
                   {month}
                 </span>
@@ -179,79 +178,73 @@ export function TotalRevenueCard() {
 export function ProfileReportCard() {
   return (
     <Card
-      title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
-          Profile Report
-        </span>
-      }
-      extra={
-        <span className="px-2 py-1 bg-[#ffab00]/10 text-[#ffab00] rounded text-[11px] font-bold">
-          YEAR 2022
-        </span>
-      }
       bordered={false}
-      className="h-full sneat-card-shadow flex flex-col"
+      className="h-full sneat-card-shadow"
       styles={{
         body: {
           padding: "1.5rem",
-          flex: 1,
+          height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
         },
       }}
     >
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-[#71dd37] font-semibold text-xs bg-[#71dd37]/10 px-2 py-0.5 rounded flex items-center gap-1">
-            <ArrowUpOutlined /> 68.2%
-          </span>
+      <div className="flex justify-between items-center flex-wrap gap-4 flex-1">
+        {/* 左侧: 标题 + 指标 */}
+        <div className="flex flex-col justify-between">
+          <div className="mb-4">
+            <h5 className="text-[0.9375rem] font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-1">
+              Profile Report
+            </h5>
+            <span className="px-2 py-1 bg-[#ffab00]/10 text-[#ffab00] rounded text-[11px] font-bold">
+              YEAR 2022
+            </span>
+          </div>
+          <div>
+            <span className="text-[#71dd37] font-medium text-sm flex items-center gap-1">
+              <ArrowUpOutlined /> 68.2%
+            </span>
+            <h4 className="text-xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+              $84,686k
+            </h4>
+          </div>
         </div>
-        <div className="text-3xl font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
-          $84,686k
+
+        {/* 右侧: 曲线折线图 (Warning色) */}
+        <div className="w-[200px] h-[75px]">
+          <svg
+            viewBox="0 0 240 75"
+            className="w-full h-full"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <filter
+                id="profileShadow"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="160%"
+              >
+                <feDropShadow
+                  dx="0"
+                  dy="4"
+                  stdDeviation="4"
+                  floodColor="#ffab00"
+                  floodOpacity="0.2"
+                />
+              </filter>
+            </defs>
+            <path
+              d="M0,66 C16,66 30,10 46,10 C63,10 77,54 93,54 C109,54 123,19 139,19 C155,19 169,33 186,33 C202,33 216,5 232,5"
+              fill="none"
+              stroke="#ffab00"
+              strokeWidth="5"
+              strokeLinecap="round"
+              filter="url(#profileShadow)"
+            />
+          </svg>
         </div>
       </div>
-
-      <div className="relative h-24 w-full my-6 bg-gradient-to-r from-[#ffab00]/10 to-transparent rounded-md flex items-end overflow-hidden">
-        <svg
-          viewBox="0 0 100 30"
-          className="w-full h-full absolute bottom-0"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient
-              id="amberGradientProfile"
-              x1="0"
-              x2="0"
-              y1="0"
-              y2="1"
-            >
-              <stop offset="0%" stopColor="#ffab00" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#ffab00" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M0,25 C20,25 20,5 40,15 S60,25 80,10 S100,5 100,5 V30 H0 Z"
-            fill="url(#amberGradientProfile)"
-          />
-          <path
-            d="M0,25 C20,25 20,5 40,15 S60,25 80,10 S100,5 100,5"
-            fill="none"
-            stroke="#ffab00"
-            strokeWidth="2"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
-      </div>
-
-      <Button
-        className="mt-auto border-[#ffab00] text-[#ffab00] hover:text-[#ffab00] hover:border-[#ff9f00] hover:bg-[#ffab00]/10 font-semibold"
-        block
-        ghost
-      >
-        View Profile
-      </Button>
     </Card>
   );
 }
