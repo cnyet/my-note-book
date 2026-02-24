@@ -1,6 +1,5 @@
 "use client";
 
-import { AuthProvider } from "@/context/AuthContext";
 import { ConfigProvider, theme } from "antd";
 import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -35,7 +34,6 @@ function AntdConfigLayer({ children }: { children: React.ReactNode }) {
 /**
  * 顶层 Providers:
  * - ThemeProvider (next-themes): 管理 dark/light 切换，写入 className 到 <html>
- * - AuthProvider: 管理用户认证状态
  * - AntdConfigLayer: 根据当前主题配置 AntD
  */
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -46,9 +44,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem={false}
       disableTransitionOnChange
     >
-      <AuthProvider>
-        <AntdConfigLayer>{children}</AntdConfigLayer>
-      </AuthProvider>
+      <AntdConfigLayer>{children}</AntdConfigLayer>
     </ThemeProvider>
   );
 }

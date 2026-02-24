@@ -1,8 +1,9 @@
 # backend/src/main.py
 import logging
-from fastapi import FastAPI, Request, status
+import os
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from .core.config import settings
@@ -27,10 +28,24 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """应用生命周期管理：启动时初始化数据库，关闭时清理资源。"""
+    try:
+        await init_db()
+        logger.info("数据库初始化完成。")
+    except Exception as e:
+        logger.error(f"数据库初始化失败: {e}")
+    yield
+    # 关闭时的清理逻辑（如关闭数据库连接池等）
+    logger.info("应用关闭，资源已清理。")
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
 )
 
 # 中间件配置
@@ -39,7 +54,6 @@ app.add_middleware(SecurityHeadersMiddleware)
 # CORS 配置
 allowed_origins = ["http://localhost:3000", "http://localhost:3001"]
 if settings.ENVIRONMENT == "production":
-    import os
     production_origins = os.getenv("ALLOWED_ORIGINS", "")
     if production_origins:
         allowed_origins = [origin.strip() for origin in production_origins.split(",")]
@@ -51,16 +65,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup_event():
-    """服务器启动时初始化数据库。"""
-    try:
-        await init_db()
-        logger.info("Database initialized successfully on startup.")
-    except Exception as e:
-        logger.error(f"Failed to initialize database on startup: {e}")
 
 
 # 包含路由
@@ -83,3 +87,4 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+

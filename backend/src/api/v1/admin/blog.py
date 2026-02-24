@@ -3,7 +3,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Depends, Query
 from pydantic import BaseModel, Field, field_validator
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
@@ -262,7 +262,7 @@ async def create_post(
 
     # 如果状态是 published 且未设置发布时间，自动设置
     if post.status == "published" and not post_data.get("published_at"):
-        post_data["published_at"] = datetime.utcnow()
+        post_data["published_at"] = datetime.now(timezone.utc)
 
     # 创建文章
     new_post = await blog_service.create(db, post_data)
@@ -316,7 +316,7 @@ async def update_post(
 
     # 处理状态变更为 published 的情况
     if post_update.status == "published" and not post.published_at:
-        update_data["published_at"] = datetime.utcnow()
+        update_data["published_at"] = datetime.now(timezone.utc)
 
     # 如果提供了 excerpt，使用它；否则如果更新了 content，自动生成 excerpt
     if "excerpt" not in update_data and "content" in update_data and update_data["content"]:
@@ -407,7 +407,7 @@ async def update_post_status(
 
     # 首次发布时设置发布时间
     if new_status == "published" and not post.published_at:
-        update_data["published_at"] = datetime.utcnow()
+        update_data["published_at"] = datetime.now(timezone.utc)
 
     # 更新状态
     updated_post = await blog_service.update(db, post_id, update_data)

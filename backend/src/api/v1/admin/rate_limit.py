@@ -2,7 +2,7 @@
 from functools import wraps
 from typing import Callable
 from fastapi import Request, HTTPException, status
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import asyncio
 from collections import defaultdict
 from ....core.audit import audit_logger
@@ -28,7 +28,7 @@ class RateLimiter:
     ) -> bool:
         """Check if request is allowed under rate limit."""
         async with self._lock:
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             window_start = now - timedelta(seconds=window_seconds)
 
             # Clean old requests outside the window

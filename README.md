@@ -67,8 +67,8 @@ sudo apt-get install python3.11 python3.11-venv python3.11-pip
 
 ```bash
 # 执行初始化脚本
-chmod +x scripts/maintenance/*.sh
-./scripts/maintenance/setup.sh
+chmod +x scripts/*.sh
+./scripts/setup.sh
 ```
 
 脚本会自动完成：
@@ -93,7 +93,7 @@ cp frontend/.env.example frontend/.env.local
 
 ```bash
 # 一键启动前后端
-./scripts/maintenance/start-dev.sh
+./scripts/start-dev.sh
 
 # 或手动启动
 # 终端1 - 后端
@@ -125,10 +125,10 @@ curl http://localhost:8001/health
 
 ```bash
 # 清理端口和缓存
-./scripts/maintenance/clean.sh
+./scripts/clean.sh
 
 # 然后重新启动
-./scripts/maintenance/start-dev.sh
+./scripts/start-dev.sh
 ```
 
 **端口被占用？**
@@ -174,19 +174,19 @@ tail -f logs/frontend.log
 
 ```bash
 # 代码检查
-./scripts/maintenance/lint.sh
+./scripts/lint.sh
 
 # 运行测试
-./scripts/test/test.sh
+./scripts/test.sh
 
 # 构建生产版本
-./scripts/build/build.sh
+./scripts/build.sh
 
 # 清理项目
-./scripts/maintenance/clean.sh
+./scripts/clean.sh
 
 # 部署到生产环境
-./scripts/deploy/deploy.sh
+./scripts/deploy.sh
 ```
 
 ## 📁 项目结构
@@ -195,35 +195,38 @@ tail -f logs/frontend.log
 my-note-book/
 ├── .agent/                # Agent 配置文件
 ├── ai-configs/            # AI 工具配置统一入口
-├── backend/               # FastAPI 后端服务 (基础架构)
-│   ├── src/               # 后端源代码 (当前为空，等待实现)
+├── backend/               # FastAPI 后端服务
+│   ├── src/               # 后端源代码 (API 路由、模型、服务层)
 │   ├── alembic/           # 数据库迁移配置
 │   ├── data/              # 数据库文件 (SQLite)
 │   └── requirements.txt   # Python 依赖
-├── frontend/              # Next.js 前端应用 (基础架构)
-│   ├── src/               # 前端源代码 (当前为空，等待实现)
+├── frontend/              # Next.js 前端应用
+│   ├── src/               # 前端源代码 (页面、组件、v-ui)
 │   ├── design-assets/     # 高保真设计图与原型资产
-│   ├── static/            # 静态资源
+│   ├── public/            # 静态资源 (logo, favicon)
 │   └── package.json       # Node.js 依赖
 ├── docs/                  # 项目文档
 │   ├── design/            # 设计文档 (架构、API、数据库、前端规范)
 │   ├── development/       # 开发指南
 │   └── planning/          # 项目规划 (PRD v1.1, Roadmap)
 ├── openspec/              # OpenSpec 规范文件
-├── scripts/               # 项目自动化脚本 (Setup, Dev, Test, Lint, Clean)
+├── scripts/               # 项目自动化脚本 (setup, start-dev, test, lint, clean, build, deploy)
 ├── tests/                 # 顶层测试目录
 └── logs/                  # 运行日志
 ```
 
 ## 📝 开发进度
 
-该项目目前处于 **Framework Ready (架构就绪)** 阶段。为了确保 100% 还原设计稿并遵循最佳编码标准，现已清理历史实现。
+该项目目前处于 **Active Development (积极开发)** 阶段。
 
 - [x] 基础架构与脚本配置完成
 - [x] PRD v1.1 (前端专题) 已制定
 - [x] 设计规范 (Genesis Design System) 已对齐
-- [ ] 核心组件库 (v-ui) 构建 (进行中)
-- [ ] 页面开发 (Home, Agents, Blog, Tools, Labs)
+- [x] 核心组件库 (v-ui) 构建 (GlassCard, GlitchText, NeonButton 等)
+- [x] 公共页面开发 (Home, Agents, Blog, Tools, Labs)
+- [x] Admin 后台 (Dashboard, Sidebar, 用户认证)
+- [ ] Admin CRUD 功能完善 (进行中)
+- [ ] 实时通信 (WebSocket) 集成
 
 ## 🛠️ 技术栈
 
@@ -256,5 +259,5 @@ my-note-book/
 
 **Build High-Quality Software!** 🚀
 
-**项目状态**: Framework Ready / Refactoring (架构就绪，等待核心重构实现)
-**最后更新**: 2026年2月9日
+**项目状态**: Active Development (积极开发中)
+**最后更新**: 2026年2月16日

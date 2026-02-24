@@ -1,8 +1,9 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
+import { clearAuth, getAdminUser, isAuthenticated } from "@/lib/admin-auth";
 import LinkNext from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <LinkNext
@@ -24,7 +25,24 @@ const Logo = ({ onClick }: { onClick?: () => void }) => (
 
 export function Header() {
   const pathname = usePathname();
-  const { user, login, logout } = useAuth();
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    setAuthed(isAuthenticated());
+    const user = getAdminUser();
+    if (user) {
+      setUserName(user.username);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    clearAuth();
+    setAuthed(false);
+    setUserName("");
+  };
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Agents", href: "/agents" },
@@ -51,29 +69,26 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-6">
-          {user ? (
+          {authed ? (
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="relative group transition-transform active:scale-95"
-              title={`Signed in as ${user.name}`}
+              title={`Signed in as ${userName}`}
             >
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-white transition-colors shadow-lg">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-white transition-colors shadow-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">
+                  {userName.charAt(0).toUpperCase()}
+                </span>
               </div>
               <div className="absolute inset-0 rounded-full ring-2 ring-white/0 group-hover:ring-white/20 transition-all duration-300"></div>
             </button>
           ) : (
-            <button
-              onClick={login}
+            <LinkNext
+              href="/login"
               className="text-slate-400 hover:text-white font-bold text-sm transition-colors tracking-wider"
             >
               Sign in
-            </button>
+            </LinkNext>
           )}
         </div>
       </div>

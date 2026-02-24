@@ -10,7 +10,7 @@ SQLAlchemy ORM models for MyNoteBook Admin
 - labs: 实验室功能
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from ..core.database import Base
@@ -26,8 +26,8 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(20), nullable=False, default="admin")
     is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
     # 关系
     posts = relationship("BlogPost", back_populates="author")
@@ -48,8 +48,8 @@ class BlogPost(Base):
     seo_description = Column(String(160), nullable=True)
     status = Column(String(20), nullable=False, default="draft")  # draft, published, archived
     published_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
     # 外键
     author_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -76,8 +76,8 @@ class Agent(Base):
     config = Column(Text, nullable=True)  # JSON 配置
     status = Column(String(20), nullable=False, default="offline")  # offline, spawning, idle, active
     sort_order = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
     def __repr__(self):
         return f"<Agent(id={self.id}, name='{self.name}')>"
@@ -96,8 +96,8 @@ class Tool(Base):
     link = Column(String(500), nullable=True)
     status = Column(String(20), nullable=False, default="active")  # active, inactive
     sort_order = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
     def __repr__(self):
         return f"<Tool(id={self.id}, name='{self.name}')>"
@@ -115,8 +115,8 @@ class Lab(Base):
     media_urls = Column(Text, nullable=True)  # JSON array stored as text
     status = Column(String(20), nullable=False, default="experimental")  # experimental, preview, archived
     online_count = Column(Integer, default=0, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate="current_timestamp")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
     def __repr__(self):
         return f"<Lab(id={self.id}, name='{self.name}')>"
@@ -145,7 +145,7 @@ class APIToken(Base):
     name = Column(String(100), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     expires_at = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     last_used_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     scopes = Column(Text, nullable=True)  # JSON array of permissions

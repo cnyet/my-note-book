@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field, EmailStr, field_validator, validator
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from ....core.database import get_db
 from ....core.security import verify_password, hash_password
@@ -58,7 +58,7 @@ async def update_profile(
     for field, value in update_data.items():
         setattr(current_user, field, value)
 
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
     await db.commit()
     await db.refresh(current_user)
 
@@ -87,7 +87,7 @@ async def change_password(
 
     # Update password with new one
     current_user.hashed_password = hash_password(password_data.new_password)
-    current_user.updated_at = datetime.utcnow()
+    current_user.updated_at = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(current_user)
@@ -143,8 +143,8 @@ async def create_token(
     new_token = TokenInfo(
         id=token_id,
         name=token_request.name,
-        created_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(days=30),  # Default 30 day expiry
+        created_at=datetime.now(timezone.utc),
+        expires_at=datetime.now(timezone.utc) + timedelta(days=30),  # Default 30 day expiry
         is_active=True,
         last_used=None,
     )

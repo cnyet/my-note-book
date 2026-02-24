@@ -1,12 +1,10 @@
 # backend/src/api/v1/admin/agents.py
 """
 Agents API with real database operations using SQLAlchemy ORM
-
-重构自 agents_old.py，使用统一的 CRUD 服务和数据库模型。
-保持 API 接口不变，向后兼容。
 """
 
 from typing import List, Optional, Dict
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -231,7 +229,7 @@ async def update_agent(
     for field, value in update_dict.items():
         setattr(agent, field, value)
 
-    agent.updated_at = datetime.utcnow()
+    agent.updated_at = datetime.now(timezone.utc)
 
     try:
         await db.commit()

@@ -4,7 +4,7 @@ Audit logging for security events.
 Tracks: logins, failed attempts, password changes, admin actions.
 """
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from enum import Enum
 import json
@@ -51,7 +51,7 @@ class AuditLogger:
     ):
         """Log an audit event."""
         event = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "event_type": event_type.value,
             "username": username,
             "ip_address": ip_address,
