@@ -8,6 +8,7 @@ import { CheckCircle2, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -85,9 +86,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </label>
         <div className="relative group">
           <User
-            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors ${
+            className={cn(
+              "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors",
               focusedField === "username" ? "text-primary" : "text-slate-400"
-            }`}
+            )}
           />
           <input
             id="username"
@@ -99,11 +101,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             onBlur={() => setFocusedField(null)}
             required
             autoComplete="username"
-            className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none ${
+            className={cn(
+              "w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none",
               focusedField === "username"
                 ? "border-primary shadow-lg shadow-primary/20"
                 : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
-            }`}
+            )}
             placeholder="admin"
             disabled={isLoading}
           />
@@ -137,9 +140,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </label>
         <div className="relative group">
           <Lock
-            className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors ${
+            className={cn(
+              "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors",
               focusedField === "password" ? "text-primary" : "text-slate-400"
-            }`}
+            )}
           />
           <input
             id="password"
@@ -151,11 +155,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             onBlur={() => setFocusedField(null)}
             required
             autoComplete="current-password"
-            className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none ${
+            className={cn(
+              "w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none",
               focusedField === "password"
                 ? "border-primary shadow-lg shadow-primary/20"
                 : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
-            }`}
+            )}
             placeholder="••••••••"
             disabled={isLoading}
           />
@@ -190,11 +195,12 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             disabled={isLoading}
           />
           <div
-            className={`relative w-5 h-5 border-2 rounded-md transition-all duration-200 ${
+            className={cn(
+              "relative w-5 h-5 border-2 rounded-md transition-all duration-200",
               rememberMe
                 ? "bg-primary border-primary"
                 : "border-slate-300 dark:border-slate-600 group-hover:border-primary/70"
-            }`}
+            )}
           >
             {rememberMe && (
               <CheckCircle2 className="absolute inset-0 h-5 w-5 text-white m-auto" />
