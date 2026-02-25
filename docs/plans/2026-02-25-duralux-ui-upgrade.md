@@ -93,8 +93,13 @@
   - 列可见性切换
   - 导出为 CSV/Excel
   - Duralux 风格图标按钮
+- [x] 集成到 Blog 管理页面
+  - CSV 导出功能
+  - 列显示/隐藏
+  - 密度切换
+  - 表格样式根据密度动态调整
 
-**提交：** `251bc95`
+**提交：** `251bc95`, `40aa41e`
 
 ---
 
@@ -168,6 +173,7 @@ ACTIVE: '0 2px 4px rgba(105, 108, 255, 0.4)'
 |------|------|
 | Header | 集成 Breadcrumb + DateRangePicker |
 | Admin Dashboard Page | 添加 4 个新 Dashboard 组件 |
+| Blog Page | 集成 TableToolbar + CSV 导出 + 密度控制 |
 | tailwind.config.js | 添加 Duralux 颜色和阴影 |
 | globals.css | 添加 Duralux 工具类 |
 
@@ -213,9 +219,14 @@ ACTIVE: '0 2px 4px rgba(105, 108, 255, 0.4)'
 ## 分支信息
 
 - **分支名称**: `feature/duralux-ui-upgrade`
-- **当前提交**: `251bc95`
-- **提交数量**: 3 (Phase 1-2, Phase 3, Phase 4)
-- **状态**: 已完成 Phase 1-4，等待合并
+- **最新提交**: `40aa41e`
+- **提交数量**: 5
+  - `c1b3ad2` - Phase 1-2: Design tokens and shared components
+  - `6b60761` - Phase 3: Dashboard components with Recharts
+  - `251bc95` - Phase 4: Table utilities and enhancements
+  - `7c4aa55` - Documentation: Upgrade plan
+  - `40aa41e` - Phase 4 Integration: Blog page TableToolbar
+- **状态**: 已完成 Phase 1-4 及集成，等待测试和合并
 
 ---
 
