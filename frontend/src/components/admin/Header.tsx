@@ -12,8 +12,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
-import { Bell, Menu, Moon, Search, Sun } from "lucide-react";
+import { Bell, Keyboard, Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { Breadcrumb, generateBreadcrumbItems } from "./shared/Breadcrumb";
+import { DateRangePicker } from "./shared/DateRangePicker";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -22,9 +26,29 @@ interface AdminHeaderProps {
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
+  const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date } | undefined>();
+
+  const breadcrumbItems = generateBreadcrumbItems(pathname);
+
+  // Keyboard shortcut for search (Ctrl+K)
+  if (typeof window !== "undefined") {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        // Focus search input - would need a ref to implement
+      }
+    });
+  }
 
   return (
     <header className="z-10 w-full px-6 pt-4 pb-2">
+      {/* Breadcrumb Row */}
+      <div className="mb-4">
+        <Breadcrumb items={breadcrumbItems} />
+      </div>
+
+      {/* Header Controls Row */}
       <div className="flex items-center justify-between px-6 py-2 bg-white/80 dark:bg-[#2b2c40]/80 backdrop-blur-md rounded-md sneat-card-shadow border-none">
         <div className="flex items-center gap-4">
           <Button
@@ -37,17 +61,28 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             <Menu className="w-5 h-5" />
           </Button>
 
-          <div className="hidden md:flex items-center w-64 lg:w-96">
-            <Search className="w-[1.125rem] h-[1.125rem] mr-3 text-[#b4bdc6]" />
+          {/* Search Bar */}
+          <div className="hidden md:flex items-center w-64 lg:w-96 relative">
+            <Keyboard className="w-[1.125rem] h-[1.125rem] mr-3 text-[#b4bdc6]" />
             <Input
               type="text"
               placeholder="Search (Ctrl+K)"
               className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 placeholder:text-[#b4bdc6] text-sm"
             />
+            <kbd className="absolute right-3 px-2 py-1 text-xs bg-[#f5f5f9] dark:bg-[#323249] text-[#a1acb8] rounded">
+              ⌘K
+            </kbd>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Date Range Picker */}
+          <DateRangePicker
+            value={dateRange}
+            onChange={setDateRange}
+            className="hidden lg:flex"
+          />
+
           {/* Theme Toggle */}
           <Button
             variant="ghost"
