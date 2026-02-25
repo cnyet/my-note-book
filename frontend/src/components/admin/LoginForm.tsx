@@ -69,6 +69,19 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const isValidUsername = username.length > 0;
 
+  // 提取基础 class 名，避免重复渲染时重新计算
+  const usernameInputClasses = cn(
+    "w-full pl-12 pr-12 py-3 border-2 rounded-xl transition-all duration-200 outline-none",
+    "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+  );
+
+  const passwordInputClasses = cn(
+    "w-full pl-12 pr-12 py-3 border-2 rounded-xl transition-all duration-200 outline-none",
+    "bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100",
+  );
+
+  const iconBaseClasses = "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Username Field */}
@@ -87,7 +100,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <div className="relative group">
           <User
             className={cn(
-              "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors",
+              iconBaseClasses,
               focusedField === "username" ? "text-primary" : "text-slate-400"
             )}
           />
@@ -102,7 +115,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             required
             autoComplete="username"
             className={cn(
-              "w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none",
+              usernameInputClasses,
               focusedField === "username"
                 ? "border-primary shadow-lg shadow-primary/20"
                 : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
@@ -141,7 +154,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <div className="relative group">
           <Lock
             className={cn(
-              "absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors",
+              iconBaseClasses,
               focusedField === "password" ? "text-primary" : "text-slate-400"
             )}
           />
@@ -156,7 +169,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             required
             autoComplete="current-password"
             className={cn(
-              "w-full pl-12 pr-12 py-3 border-2 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 transition-all duration-200 outline-none",
+              passwordInputClasses,
               focusedField === "password"
                 ? "border-primary shadow-lg shadow-primary/20"
                 : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
@@ -197,9 +210,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <div
             className={cn(
               "relative w-5 h-5 border-2 rounded-md transition-all duration-200",
-              rememberMe
-                ? "bg-primary border-primary"
-                : "border-slate-300 dark:border-slate-600 group-hover:border-primary/70"
+              rememberMe ? "bg-primary border-primary" : "border-slate-300 dark:border-slate-600 group-hover:border-primary/70"
             )}
           >
             {rememberMe && (
