@@ -1,0 +1,14 @@
+export const BLOG_CONSTANTS = {
+  PAGINATION: {
+    DEFAULT_PAGE_SIZE: 10,
+    PAGE_SIZE_OPTIONS: [10, 20, 50, 100],
+  },
+  COLUMN_WIDTHS: {
+    AUTHOR: 120,
+    PUBLISH_DATE: 140,
+    VIEWS: 100,
+    STATUS: 120,
+    ACTIONS: 150,
+  },
+  TABLE_SCROLL_X: 800,
+} as const;
