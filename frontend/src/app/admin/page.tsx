@@ -6,6 +6,12 @@ import {
 } from "@/components/admin/DashboardCards";
 import { StatCard } from "@/components/admin/StatCard";
 import { WelcomeCard } from "@/components/admin/WelcomeCard";
+import {
+  EmailReportsCard,
+  BrowserStatesCard,
+  GoalProgressCard,
+  ProjectRemindersCard,
+} from "@/components/admin/dashboard";
 import { adminAuthApi } from "@/lib/admin-api";
 import { Col, Row } from "antd";
 import { BarChart3, CreditCard, ShoppingCart, Wallet } from "lucide-react";
@@ -107,6 +113,26 @@ export default function AdminDashboardPage() {
               <ProfileReportCard />
             </div>
           </div>
+        </Col>
+      </Row>
+
+      {/* Row 3: Email Reports + Browser States */}
+      <Row gutter={[24, 24]} className="mt-6">
+        <Col xs={24} lg={12}>
+          <EmailReportsCard />
+        </Col>
+        <Col xs={24} lg={12}>
+          <BrowserStatesCard />
+        </Col>
+      </Row>
+
+      {/* Row 4: Goal Progress + Project Reminders */}
+      <Row gutter={[24, 24]} className="mt-6">
+        <Col xs={24} lg={12}>
+          <GoalProgressCard />
+        </Col>
+        <Col xs={24} lg={12}>
+          <ProjectRemindersCard />
         </Col>
       </Row>
     </div>
