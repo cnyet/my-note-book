@@ -12,7 +12,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
-import { Bell, Keyboard, Menu, Moon, Sun } from "lucide-react";
+import {
+  AlertCircle,
+  Bell,
+  CheckCircle,
+  Clock,
+  Keyboard,
+  Menu,
+  Moon,
+  Sun,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { Breadcrumb, generateBreadcrumbItems } from "./shared/Breadcrumb";
 import { DateRangePicker } from "./shared/DateRangePicker";
@@ -23,13 +32,59 @@ interface AdminHeaderProps {
   onMenuClick: () => void;
 }
 
+/** 模拟通知数据 */
+const NOTIFICATIONS = [
+  {
+    id: 1,
+    title: "New order received",
+    time: "5 mins ago",
+    type: "info",
+    read: false,
+  },
+  {
+    id: 2,
+    title: "Server reboot completed",
+    time: "1 hour ago",
+    type: "success",
+    read: false,
+  },
+  {
+    id: 3,
+    title: "Payment failed for #1234",
+    time: "3 hours ago",
+    type: "error",
+    read: true,
+  },
+  {
+    id: 4,
+    title: "New user registered",
+    time: "5 hours ago",
+    type: "info",
+    read: true,
+  },
+];
+
+const TYPE_CONFIG = {
+  info: { icon: AlertCircle, color: "#03c3ec", bg: "bg-[#03c3ec]/10" },
+  success: { icon: CheckCircle, color: "#71dd37", bg: "bg-[#71dd37]/10" },
+  error: { icon: AlertCircle, color: "#ff3e1d", bg: "bg-[#ff3e1d]/10" },
+  warning: { icon: Clock, color: "#ffab00", bg: "bg-[#ffab00]/10" },
+};
+
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date } | undefined>();
+  const [notifications, setNotifications] = useState(NOTIFICATIONS);
 
   const breadcrumbItems = generateBreadcrumbItems(pathname);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleMarkAllRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, read: true })));
+  };
 
   // Keyboard shortcut for search (Ctrl+K)
   if (typeof window !== "undefined") {
@@ -96,15 +151,71 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           </Button>
 
           {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-[#697a8d] hover:text-[#696cff] relative transition-colors"
-            aria-label="Notifications"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-[#ff3e1d] rounded-full border-2 border-white dark:border-[#2b2c40]"></span>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-[#697a8d] hover:text-[#696cff] relative transition-colors"
+                aria-label="Notifications"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-[#ff3e1d] rounded-full border-2 border-white dark:border-[#2b2c40]" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+                    Notifications
+                  </span>
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllRead}
+                      className="text-xs text-[#696cff] hover:underline"
+                    >
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <div className="max-h-[400px] overflow-y-auto">
+                {notifications.map((notification) => {
+                  const config = TYPE_CONFIG[notification.type as keyof typeof TYPE_CONFIG];
+                  const Icon = config.icon;
+                  return (
+                    <DropdownMenuItem
+                      key={notification.id}
+                      className={cn(
+                        "py-3 px-4 cursor-pointer flex gap-3",
+                        !notification.read && "bg-[#f5f5f9]/50 dark:bg-[#323249]/50"
+                      )}
+                    >
+                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0", config.bg)}>
+                        <Icon className="w-4 h-4" style={{ color: config.color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "text-sm truncate",
+                          !notification.read ? "font-semibold text-[#566a7f] dark:text-[#a3b1c2]" : "text-[#697a8d]"
+                        )}>
+                          {notification.title}
+                        </p>
+                        <p className="text-xs text-[#a1acb8]">{notification.time}</p>
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="py-2 px-4 text-center cursor-pointer text-[#696cff] hover:text-[#5f61e6]">
+                View all notifications
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* User Profile */}
           <DropdownMenu>
@@ -140,7 +251,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     <p className="text-sm font-semibold leading-none text-[#566a7f] dark:text-[#a3b1c2]">
                       {user?.username || "John Doe"}
                     </p>
-                    <p className="text-xs leading-none text-[#8592a3]">Admin</p>
+                    <p className="text-xs leading-none text-[#8592a3]">Administrator</p>
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -167,4 +278,8 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       </div>
     </header>
   );
+}
+
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
 }
