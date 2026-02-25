@@ -11,6 +11,8 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Input, message, Modal, Select, Space, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+import { exportToCSV } from "@/lib/table-utils";
+import { TableToolbar } from "@/components/admin/shared/TableToolbar";
 
 type SorterType<T> = {
   column?: ColumnsType<T>[number];
@@ -44,6 +46,15 @@ export default function BlogListPage() {
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: BLOG_CONSTANTS.PAGINATION.DEFAULT_PAGE_SIZE,
+  });
+  const [density, setDensity] = useState<"compact" | "normal" | "spacious">("normal");
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
+    title: true,
+    author: true,
+    publishDate: true,
+    views: true,
+    status: true,
+    actions: true,
   });
 
   // Memoized filtered and sorted posts
@@ -188,6 +199,19 @@ export default function BlogListPage() {
       e.preventDefault();
       handleStatusToggle(id);
     }
+  };
+
+  const handleExport = () => {
+    const columns = ["title", "author", "publishDate", "status"];
+    exportToCSV(paginatedPosts, columns, "blog_posts");
+    toast.success("Blog posts exported successfully");
+  };
+
+  const handleColumnToggle = (columnKey: string, visible: boolean) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [columnKey]: visible,
+    }));
   };
 
   // Table columns
@@ -414,70 +438,100 @@ export default function BlogListPage() {
 
       {/* Filters and Actions */}
       <Card className="sneat-card-shadow mb-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Search */}
-          <Input
-            placeholder="Search posts..."
-            prefix={<SearchOutlined className="text-[#a1acb8]" />}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-xs"
-            allowClear
-          />
-
-          {/* Status Filter */}
-          <Select
-            value={statusFilter}
-            onChange={setStatusFilter}
-            className="w-40"
-            options={[
-              { label: "All Posts", value: "all" },
-              { label: "Published", value: "published" },
-              { label: "Drafts", value: "draft" },
+        <div className="flex flex-col gap-4">
+          {/* Table Toolbar with density, columns, export */}
+          <TableToolbar
+            showDensity
+            showColumnToggle
+            showExport
+            density={density}
+            onDensityChange={setDensity}
+            columns={[
+              { key: "title", title: "Title", visible: visibleColumns.title },
+              { key: "author", title: "Author", visible: visibleColumns.author },
+              { key: "publishDate", title: "Publish Date", visible: visibleColumns.publishDate },
+              { key: "views", title: "Views", visible: visibleColumns.views },
+              { key: "status", title: "Status", visible: visibleColumns.status },
+              { key: "actions", title: "Actions", visible: visibleColumns.actions },
             ]}
+            onColumnToggle={handleColumnToggle}
+            exportFilename="blog_posts"
+            exportData={paginatedPosts.map(post => ({
+              title: post.title,
+              author: post.author,
+              publishDate: post.publishDate,
+              status: post.status,
+              views: post.views || 0,
+            }))}
+            exportColumns={["title", "author", "publishDate", "status", "views"]}
           />
 
-          {/* Sort */}
-          <Select
-            value={`${sortField}-${sortOrder}`}
-            onChange={(value) => {
-              const [field, order] = value.split("-");
-              setSortField(field as SortField);
-              setSortOrder(order as SortOrder);
-            }}
-            className="w-40"
-            options={[
-              { label: "Newest First", value: "date-desc" },
-              { label: "Oldest First", value: "date-asc" },
-              { label: "Title A-Z", value: "title-asc" },
-              { label: "Title Z-A", value: "title-desc" },
-            ]}
-          />
+          {/* Search and Filters */}
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Search */}
+            <Input
+              placeholder="Search posts..."
+              prefix={<SearchOutlined className="text-[#a1acb8]" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-xs"
+              allowClear
+            />
 
-          <div className="flex-1" />
+            {/* Status Filter */}
+            <Select
+              value={statusFilter}
+              onChange={setStatusFilter}
+              className="w-40"
+              options={[
+                { label: "All Posts", value: "all" },
+                { label: "Published", value: "published" },
+                { label: "Drafts", value: "draft" },
+              ]}
+            />
 
-          {/* Batch Actions */}
-          {selectedRowKeys.length > 0 && (
-            <Space>
-              <span className="text-sm text-[#697a8d]">
-                {selectedRowKeys.length} selected
-              </span>
-              <Button
-                icon={<ThunderboltOutlined />}
-                className="text-[#71dd37] border-[#71dd37] hover:bg-[#71dd37] hover:text-white"
-                onClick={handleBatchPublish}
-              >
-                Publish
-              </Button>
-              <Button
-                icon={<DeleteOutlined />}
-                className="text-[#ff3e1d] border-[#ff3e1d] hover:bg-[#ff3e1d] hover:text-white"
-                onClick={handleBatchDelete}
-              >
-                Delete
-              </Button>
-            </Space>
-          )}
+            {/* Sort */}
+            <Select
+              value={`${sortField}-${sortOrder}`}
+              onChange={(value) => {
+                const [field, order] = value.split("-");
+                setSortField(field as SortField);
+                setSortOrder(order as SortOrder);
+              }}
+              className="w-40"
+              options={[
+                { label: "Newest First", value: "date-desc" },
+                { label: "Oldest First", value: "date-asc" },
+                { label: "Title A-Z", value: "title-asc" },
+                { label: "Title Z-A", value: "title-desc" },
+              ]}
+            />
+
+            <div className="flex-1" />
+
+            {/* Batch Actions */}
+            {selectedRowKeys.length > 0 && (
+              <Space>
+                <span className="text-sm text-[#697a8d]">
+                  {selectedRowKeys.length} selected
+                </span>
+                <Button
+                  icon={<ThunderboltOutlined />}
+                  className="text-[#71dd37] border-[#71dd37] hover:bg-[#71dd37] hover:text-white"
+                  onClick={handleBatchPublish}
+                >
+                  Publish
+                </Button>
+                <Button
+                  icon={<DeleteOutlined />}
+                  className="text-[#ff3e1d] border-[#ff3e1d] hover:bg-[#ff3e1d] hover:text-white"
+                  onClick={handleBatchDelete}
+                >
+                  Delete
+                </Button>
+              </Space>
+            )}
+          </div>
         </div>
       </Card>
 
@@ -485,7 +539,10 @@ export default function BlogListPage() {
       <Card className="sneat-card-shadow">
         <Table
           rowSelection={rowSelection}
-          columns={columns}
+          columns={columns.filter(col => {
+            const key = col.key as string;
+            return visibleColumns[key] !== false;
+          })}
           dataSource={paginatedPosts}
           rowKey="id"
           pagination={{
@@ -499,6 +556,7 @@ export default function BlogListPage() {
           onChange={onTableChange as unknown as (pagination: TablePaginationConfig, filters: unknown, sorter: unknown) => void}
           className="blog-table"
           scroll={{ x: BLOG_CONSTANTS.TABLE_SCROLL_X }}
+          size={density === "compact" ? "small" : density === "spacious" ? "large" : "middle"}
         />
       </Card>
 
@@ -512,12 +570,12 @@ export default function BlogListPage() {
           border-bottom: 1px solid ${isDark ? "#444564" : "#eceef1"} !important;
           color: ${isDark ? "#a3b1c2" : "#566a7f"} !important;
           font-weight: 600;
-          padding: 1rem 1rem !important;
+          padding: ${density === "compact" ? "0.5rem 0.75rem" : density === "spacious" ? "1.5rem 1.25rem" : "1rem 1rem"} !important;
         }
         .blog-table .ant-table-tbody > tr > td {
           border-bottom: 1px solid ${isDark ? "#444564" : "#eceef1"} !important;
           color: ${isDark ? "#a3b1c2" : "#697a8d"} !important;
-          padding: 1rem 1rem !important;
+          padding: ${density === "compact" ? "0.5rem 0.75rem" : density === "spacious" ? "1.5rem 1.25rem" : "1rem 1rem"} !important;
         }
         .blog-table .ant-table-tbody > tr:hover > td {
           background: ${isDark ? "#323249" : "#f8f7fa"} !important;
