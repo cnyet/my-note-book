@@ -10,8 +10,15 @@ import {
   ThunderboltOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Input, message, Modal, Select, Space, Table, Tag, Tooltip } from "antd";
-import type { ColumnsType, TablePaginationConfig, TableProps } from "antd/es/table";
+import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
+
+type SorterType<T> = {
+  column?: ColumnsType<T>[number];
+  field?: keyof T | string;
+  order?: "ascend" | "descend" | null;
+};
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -25,6 +32,7 @@ type SortOrder = "asc" | "desc";
 export default function BlogListPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const router = useRouter();
 
   // State
   const [posts, setPosts] = useState<BlogPost[]>(mockBlogPosts);
@@ -277,7 +285,7 @@ export default function BlogListPage() {
               type="text"
               icon={<EditOutlined />}
               className="text-[#697a8d] hover:text-[#696cff]"
-              onClick={() => toast.info(`Edit post: ${record.title}`)}
+              onClick={() => router.push(`/admin/blog/${record.id}`)}
             />
           </Tooltip>
           <Tooltip title="Delete">
@@ -303,15 +311,15 @@ export default function BlogListPage() {
 
   const onTableChange = (
     pagination: TablePaginationConfig,
-    filters: unknown,
-    sorter: unknown
+    _filters: unknown,
+    sorter: SorterType<BlogPost> | SorterType<BlogPost>[]
   ) => {
     setPagination({
       current: pagination.current || 1,
-      pageSize: pagination.pageSize || BLOG_CONSTANTS.PAGINATION.DEFAULT_PAGE_SIZE,
+      pageSize: pagination.pageSize || 10,
     });
 
-    if (sorter && typeof sorter === "object" && "field" in sorter) {
+    if (sorter && !Array.isArray(sorter) && typeof sorter === "object" && "field" in sorter) {
       const field = sorter.field as SortField;
       const order =
         sorter.order === "ascend"
@@ -342,7 +350,7 @@ export default function BlogListPage() {
           type="primary"
           icon={<PlusOutlined />}
           className="bg-[#696cff] hover:bg-[#5f61e6] text-white border-none h-10 px-6"
-          onClick={() => toast.info("Create new blog post")}
+          onClick={() => router.push("/admin/blog/new")}
         >
           New Post
         </Button>
@@ -484,11 +492,11 @@ export default function BlogListPage() {
             ...pagination,
             total: filteredPosts.length,
             showSizeChanger: true,
-            pageSizeOptions: BLOG_CONSTANTS.PAGINATION.PAGE_SIZE_OPTIONS,
-            showTotal: (total) => `Total ${total} posts`,
+            pageSizeOptions: [...BLOG_CONSTANTS.PAGINATION.PAGE_SIZE_OPTIONS],
+            showTotal: (total: number) => `Total ${total} posts`,
             className: "text-[#697a8d]",
-          }}
-          onChange={onTableChange}
+          } as Record<string, unknown>}
+          onChange={onTableChange as unknown as (pagination: TablePaginationConfig, filters: unknown, sorter: unknown) => void}
           className="blog-table"
           scroll={{ x: BLOG_CONSTANTS.TABLE_SCROLL_X }}
         />
