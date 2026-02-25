@@ -3,6 +3,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
+  Bot,
   ChevronLeft,
   FlaskConical,
   LayoutDashboard,
@@ -11,7 +12,6 @@ import {
   PenTool,
   Settings,
   UserCircle,
-  Users,
   Wrench,
 } from "lucide-react";
 import Image from "next/image";
@@ -32,7 +32,7 @@ const menuGroups = [
     label: "Dashboards",
     items: [
       { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-      { href: "/admin/agents", icon: Users, label: "Agents" },
+      { href: "/admin/agents", icon: Bot, label: "Agents" },
       { href: "/admin/tools", icon: Wrench, label: "Tools" },
       { href: "/admin/labs", icon: FlaskConical, label: "Labs" },
       { href: "/admin/blog", icon: PenTool, label: "Blog" },
