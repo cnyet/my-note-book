@@ -69,7 +69,7 @@ export function GoalProgressCard() {
         </Dropdown>
       }
       bordered={false}
-      className={cn("h-full sneat-card-shadow")}
+      className={cn("h-full sneat-card-shadow transition-all hover:translate-y-[-2px]")}
       styles={{
         body: { padding: "1.5rem", height: "100%" },
       }}

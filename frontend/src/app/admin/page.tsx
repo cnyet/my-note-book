@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="animate-in fade-in-50 duration-500 p-6">
+    <div className="animate-in fade-in-50 duration-500">
       {/* Row 1: Welcome Card + 2 stat cards (Sneat: col-xxl-8 + col-xxl-4) */}
       <Row gutter={[24, 24]}>
         <Col xs={24} xxl={16}>

@@ -160,7 +160,7 @@ export function ProjectRemindersCard() {
         </Dropdown>
       }
       bordered={false}
-      className={cn("sneat-card-shadow")}
+      className={cn("sneat-card-shadow transition-all hover:translate-y-[-2px]")}
       styles={{
         body: { padding: "1.5rem" },
       }}
