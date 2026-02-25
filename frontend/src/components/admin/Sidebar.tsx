@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import {
   Bot,
   ChevronLeft,
+  ChevronRight,
   FlaskConical,
   LayoutDashboard,
   LogOut,
@@ -108,25 +109,24 @@ export function Sidebar({
             </span>
           </Link>
 
-          {/* 折叠切换按钮 - Sneat: 实心 primary 圆形 + 白色 chevron */}
+          {/* 折叠切换按钮 - 放在右侧 */}
           <button
             onClick={onToggleCollapse}
             className={cn(
               "hidden lg:flex items-center justify-center w-[22px] h-[22px] rounded-full bg-[#696cff] text-white transition-all duration-300 hover:bg-[#5f61e6] flex-shrink-0",
               !isExpanded && "opacity-0 pointer-events-none",
             )}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <ChevronLeft
-              className={cn(
-                "w-[14px] h-[14px] transition-transform duration-300",
-                isCollapsed && "rotate-180",
-              )}
-              strokeWidth={2.5}
-            />
+            {isCollapsed ? (
+              <ChevronRight className="w-[14px] h-[14px]" strokeWidth={2.5} />
+            ) : (
+              <ChevronLeft className="w-[14px] h-[14px]" strokeWidth={2.5} />
+            )}
           </button>
         </div>
 
-        {/* ═══ 滚动区域: 菜单列表 ═══ */}
+        {/* ═══ 滚动区域：菜单列表 ═══ */}
         <ScrollArea className="h-[calc(100vh-4.5rem)]">
           <ul className="py-1 px-[0.875rem] list-none m-0">
             {menuGroups.map((group) => (
@@ -156,29 +156,30 @@ export function Sidebar({
                         : pathname.startsWith(item.href);
 
                     return (
-                      <li key={item.href} className="relative mb-[2px]">
-                        {/* ──── 折叠态 Active: 左侧垂直条 (Sneat 折叠态特征) ──── */}
+                      <li key={item.href} className="relative mb-[2px] group">
+                        {/* 展开态 Active: 圆角矩形背景包裹整个菜单项 */}
+                        {isActive && isExpanded && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#696cff] to-[#696cff]/80 rounded-md shadow-[0_2px_6px_rgba(105,108,255,0.4)]" />
+                        )}
+
+                        {/* 折叠态 Active: 左侧垂直条 */}
                         {isActive && !isExpanded && (
-                          <div className="absolute left-[-0.875rem] top-[0.375rem] bottom-[0.375rem] w-[4px] bg-[#696cff] rounded-r-full" />
+                          <div className="absolute left-[0.5rem] top-[0.375rem] bottom-[0.375rem] w-[4px] bg-[#696cff] rounded-r-full" />
                         )}
 
                         <Link
                           href={item.href}
                           className={cn(
-                            "flex items-center rounded-md text-[0.9375rem] transition-all duration-200 relative no-underline",
+                            "flex items-center rounded-md text-[0.9375rem] transition-all duration-200 relative no-underline group",
                             isExpanded
                               ? "px-[0.9375rem] py-[0.5375rem] gap-[0.625rem]"
                               : "px-0 py-[0.5375rem] justify-center",
-                            /* 展开态 Active: 渐变 primary 背景 */
-                            isActive && isExpanded
-                              ? "bg-gradient-to-r from-[#696cff] to-[#696cff]/80 text-white font-medium shadow-[0_2px_6px_rgba(105,108,255,0.4)]"
-                              : "",
-                            /* 折叠态 Active: 图标变 primary 色 (配合左侧竖条) */
-                            isActive && !isExpanded ? "text-[#696cff]" : "",
-                            /* 非 Active */
+                            /* Active 状态已在上面用绝对定位背景处理 */
                             !isActive
                               ? "text-[#697a8d] dark:text-[#a3b1c2] hover:bg-[#f5f5f9] dark:hover:bg-[#323249] hover:text-[#566a7f] dark:hover:text-white"
-                              : "",
+                              : isExpanded
+                              ? "text-white font-medium"
+                              : "text-[#696cff]",
                           )}
                           onClick={() => window.innerWidth < 1024 && onClose()}
                         >
@@ -193,7 +194,7 @@ export function Sidebar({
                           />
                           <span
                             className={cn(
-                              "whitespace-nowrap transition-all duration-300 leading-none",
+                              "whitespace-nowrap transition-all duration-300 leading-none flex-1",
                               isExpanded
                                 ? "opacity-100 w-auto"
                                 : "opacity-0 w-0 overflow-hidden pointer-events-none",
@@ -201,6 +202,14 @@ export function Sidebar({
                           >
                             {item.label}
                           </span>
+
+                          {/* 展开态 hover 时显示右侧箭头 */}
+                          {isExpanded && !isActive && (
+                            <ChevronRight className="w-4 h-4 text-[#697a8d] dark:text-[#a3b1c2] opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
+                          {isExpanded && isActive && (
+                            <ChevronRight className="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
                         </Link>
                       </li>
                     );
@@ -209,7 +218,7 @@ export function Sidebar({
               </li>
             ))}
 
-            {/* 底部: 返回网站 */}
+            {/* 底部：返回网站 */}
             <li className="mt-4">
               <div
                 className={cn(
@@ -250,6 +259,30 @@ export function Sidebar({
                 </span>
               </Link>
             </li>
+
+            {/* 底部用户信息卡片 (仅展开态显示) */}
+            {isExpanded && (
+              <li className="mt-6">
+                <div className="bg-[#f5f5f9] dark:bg-[#323249] rounded-lg p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full bg-[#696cff]/10 flex items-center justify-center">
+                        <UserCircle className="w-6 h-6 text-[#696cff]" />
+                      </div>
+                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#71dd37] border-2 border-white dark:border-[#323249] rounded-full" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2] truncate">
+                        John Doe
+                      </p>
+                      <p className="text-xs text-[#8592a3] truncate">
+                        Administrator
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            )}
           </ul>
         </ScrollArea>
       </aside>
