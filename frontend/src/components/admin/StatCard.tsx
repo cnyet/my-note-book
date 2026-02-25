@@ -8,6 +8,16 @@ import {
 } from "@ant-design/icons";
 import { Button, Card, Dropdown, MenuProps } from "antd";
 import { LucideIcon } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface StatCardProps {
   title: string;
@@ -25,57 +35,97 @@ interface StatCardProps {
   className?: string;
 }
 
-/** Sneat 风格的迷你面积图 */
+/** 模拟数据生成器 */
+const generateAreaData = () => [
+  { name: "Mon", value: 40 },
+  { name: "Tue", value: 65 },
+  { name: "Wed", value: 45 },
+  { name: "Thu", value: 90 },
+  { name: "Fri", value: 55 },
+  { name: "Sat", value: 75 },
+  { name: "Sun", value: 60 },
+];
+
+const generateBarData = () => [
+  { name: "M", value: 40 },
+  { name: "T", value: 95 },
+  { name: "W", value: 60 },
+  { name: "T", value: 45 },
+  { name: "F", value: 90 },
+  { name: "S", value: 50 },
+  { name: "S", value: 75 },
+];
+
+/** 自定义 Tooltip 组件 */
+function CustomTooltip({ active, payload, label }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-md bg-[#2b2c40] px-3 py-2 text-xs shadow-lg">
+        <p className="text-[#a3b1c2]">{label}</p>
+        <p className="font-semibold text-white">
+          {payload[0].value?.toLocaleString()}
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
+/** Sneat 风格的迷你面积图 - 使用 Recharts */
 function MiniAreaChart() {
+  const data = generateAreaData();
+
   return (
     <div className="w-full h-[80px] mt-2 -mb-2 -mx-2">
-      <svg
-        viewBox="0 0 200 60"
-        className="w-full h-full"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#71dd37" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#71dd37" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path
-          d="M0,36 C28,36 51,38 78,38 C105,38 129,8 156,8 C183,8 200,2 200,2 V60 H0 Z"
-          fill="url(#areaGradient)"
-        />
-        <path
-          d="M0,36 C28,36 51,38 78,38 C105,38 129,8 156,8 C183,8 200,2 200,2"
-          fill="none"
-          stroke="#71dd37"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data}>
+          <defs>
+            <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#71dd37" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#71dd37" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="#71dd37"
+            strokeWidth={2}
+            fill="url(#areaGradient)"
+            strokeLinecap="round"
+          />
+          <Tooltip content={<CustomTooltip />} />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-/** Sneat 风格的迷你柱状图 */
+/** Sneat 风格的迷你柱状图 - 使用 Recharts */
 function MiniBarChart() {
-  const bars = [40, 95, 60, 45, 90, 50, 75];
-  const maxH = 60;
+  const data = generateBarData();
+
   return (
-    <div className="w-full h-[95px] mt-2 -mb-2 flex items-end justify-between gap-1 px-1">
-      {bars.map((pct, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
-          <div
-            className={cn(
-              "w-full rounded-t-sm transition-all duration-300",
-              i === 4 ? "bg-[#696cff]" : "bg-[#696cff]/15",
-            )}
-            style={{ height: `${(pct / 100) * maxH}px` }}
+    <div className="w-full h-[95px] mt-2 -mb-2 -mx-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} barSize={12}>
+          <XAxis
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: "#a1acb8", fontSize: 10 }}
+            dy={10}
           />
-          <span className="text-[10px] text-[#a1acb8] font-medium">
-            {["M", "T", "W", "T", "F", "S", "S"][i]}
-          </span>
-        </div>
-      ))}
+          <Tooltip content={<CustomTooltip />} />
+          {data.map((entry, index) => (
+            <Bar
+              key={entry.name}
+              dataKey="value"
+              fill={index === 4 ? "#696cff" : "#696cff/15"}
+              radius={[4, 4, 0, 0]}
+            />
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
@@ -95,7 +145,7 @@ export function StatCard({
     { key: "2", label: "Delete" },
   ];
 
-  // 带图表的卡片（Order / Revenue 风格）- 没有icon，直接展示 title + value + chart
+  // 带图表的卡片（Order / Revenue 风格）- 没有 icon，直接展示 title + value + chart
   if (chartType) {
     return (
       <Card

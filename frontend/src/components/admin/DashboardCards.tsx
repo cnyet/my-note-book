@@ -1,14 +1,54 @@
 "use client";
 
-import {
-  ArrowUpOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  MoreOutlined,
-} from "@ant-design/icons";
+import { ArrowUpOutlined, MoreOutlined } from "@ant-design/icons";
 import { Button, Card, Dropdown, MenuProps, Space, Typography } from "antd";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  Cell,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const { Text } = Typography;
+
+const DATA = [
+  { month: "Jan", primary: 45, secondary: 25 },
+  { month: "Feb", primary: 68, secondary: 35 },
+  { month: "Mar", primary: 50, secondary: 42 },
+  { month: "Apr", primary: 72, secondary: 30 },
+  { month: "May", primary: 40, secondary: 55 },
+  { month: "Jun", primary: 78, secondary: 38 },
+  { month: "Jul", primary: 55, secondary: 48 },
+];
+
+/** 自定义 Tooltip */
+function CustomTooltip({ active, payload, label }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-md bg-[#2b2c40] px-3 py-2 text-xs shadow-lg">
+        <p className="text-[#a3b1c2] mb-1">{label}</p>
+        {payload.map((p: any, i: number) => (
+          <div key={i} className="flex items-center gap-2">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: p.color }}
+            />
+            <span className="text-white font-semibold">
+              {p.value}%
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+}
 
 export function TotalRevenueCard() {
   const items: MenuProps["items"] = [
@@ -37,58 +77,61 @@ export function TotalRevenueCard() {
       styles={{ body: { padding: "1.5rem", height: "100%" } }}
     >
       <div className="flex flex-col lg:flex-row gap-8 h-full">
-        {/* Left: Bar Chart Visualization */}
-        <div className="flex-1 flex flex-col justify-end gap-2 min-h-[250px] border-r border-[#eceef1] dark:border-[#444564] pr-0 lg:pr-8">
+        {/* Left: Bar Chart with Recharts */}
+        <div className="flex-1 min-h-[250px] border-r border-[#eceef1] dark:border-[#444564] pr-0 lg:pr-8">
           <div className="flex items-center gap-4 mb-4">
             <Space>
               <span className="flex items-center gap-1 text-xs text-[#8592a3]">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#696cff]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#696cff]" />
                 2024
               </span>
               <span className="flex items-center gap-1 text-xs text-[#8592a3]">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#03c3ec]"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-[#03c3ec]" />
                 2023
               </span>
             </Space>
           </div>
 
-          <div className="relative w-full flex-1 flex items-end justify-between px-2 gap-2">
-            {/* Grid lines */}
-            <div className="absolute inset-0 flex flex-col justify-between text-[#eceef1] dark:text-[#444564] pointer-events-none z-0">
-              <div className="border-b border-dashed border-current w-full h-0"></div>
-              <div className="border-b border-dashed border-current w-full h-0"></div>
-              <div className="border-b border-dashed border-current w-full h-0"></div>
-              <div className="border-b border-dashed border-current w-full h-0"></div>
-              <div className="border-b border-solid border-current w-full h-0"></div>
-            </div>
-
-            {/* Bars - 固定数据以避免 SSR hydration 不匹配 */}
-            {[
-              { month: "Jan", primary: 45, secondary: 25 },
-              { month: "Feb", primary: 68, secondary: 35 },
-              { month: "Mar", primary: 50, secondary: 42 },
-              { month: "Apr", primary: 72, secondary: 30 },
-              { month: "May", primary: 40, secondary: 55 },
-              { month: "Jun", primary: 78, secondary: 38 },
-              { month: "Jul", primary: 55, secondary: 48 },
-            ].map(({ month, primary, secondary }) => (
-              <div
-                key={month}
-                className="flex-1 flex flex-col items-center justify-end h-full gap-1 z-10 group relative min-w-[30px]"
-              >
-                <div
-                  className="w-[9px] bg-[#696cff] rounded-t-[3px] transition-all duration-300 hover:opacity-80"
-                  style={{ height: `${primary}%` }}
+          <div className="h-[200px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={DATA} barGap={4}>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#a1acb8", fontSize: 11 }}
                 />
-                <div
-                  className="w-[9px] bg-[#03c3ec] rounded-t-[3px] transition-all duration-300 hover:opacity-80"
-                  style={{ height: `${secondary}%` }}
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#a1acb8", fontSize: 11 }}
+                  tickFormatter={(value) => `${value}%`}
                 />
-                <span className="text-[11px] text-[#a1acb8] mt-2 font-medium">
-                  {month}
-                </span>
-              </div>
-            ))}
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
+                <Bar
+                  dataKey="primary"
+                  name="2024"
+                  fill="#696cff"
+                  radius={[4, 4, 0, 0]}
+                  barSize={14}
+                >
+                  {DATA.map((entry, index) => (
+                    <Cell
+                      key={`cell-primary-${index}`}
+                      fill={index === DATA.length - 1 ? "#5f61e6" : "#696cff"}
+                    />
+                  ))}
+                </Bar>
+                <Bar
+                  dataKey="secondary"
+                  name="2023"
+                  fill="#03c3ec"
+                  radius={[4, 4, 0, 0]}
+                  barSize={14}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
@@ -124,6 +167,7 @@ export function TotalRevenueCard() {
                 strokeDasharray="351.86"
                 strokeDashoffset="80"
                 strokeLinecap="round"
+                className="transition-all duration-500"
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -142,8 +186,10 @@ export function TotalRevenueCard() {
             </Text>
             <div className="flex items-center justify-center gap-4 mt-6 w-full">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md bg-[#696cff]/10 flex items-center justify-center text-[#696cff]">
-                  <DollarOutlined />
+                <div className="w-8 h-8 rounded-md bg-[#696cff]/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#696cff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
                 <div className="text-left">
                   <div className="text-[10px] text-[#a1acb8] font-medium">
@@ -155,8 +201,10 @@ export function TotalRevenueCard() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md bg-[#03c3ec]/10 flex items-center justify-center text-[#03c3ec]">
-                  <LineChartOutlined />
+                <div className="w-8 h-8 rounded-md bg-[#03c3ec]/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#03c3ec]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
                 </div>
                 <div className="text-left">
                   <div className="text-[10px] text-[#a1acb8] font-medium">
@@ -190,7 +238,7 @@ export function ProfileReportCard() {
       }}
     >
       <div className="flex justify-between items-center flex-wrap gap-4 flex-1">
-        {/* 左侧: 标题 + 指标 */}
+        {/* 左侧：标题 + 指标 */}
         <div className="flex flex-col justify-between">
           <div className="mb-4">
             <h5 className="text-[0.9375rem] font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-1">
@@ -210,39 +258,45 @@ export function ProfileReportCard() {
           </div>
         </div>
 
-        {/* 右侧: 曲线折线图 (Warning色) */}
+        {/* 右侧：曲线折线图 (Warning 色) - 使用 Recharts AreaChart */}
         <div className="w-[200px] h-[75px]">
-          <svg
-            viewBox="0 0 240 75"
-            className="w-full h-full"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <filter
-                id="profileShadow"
-                x="-20%"
-                y="-20%"
-                width="140%"
-                height="160%"
-              >
-                <feDropShadow
-                  dx="0"
-                  dy="4"
-                  stdDeviation="4"
-                  floodColor="#ffab00"
-                  floodOpacity="0.2"
-                />
-              </filter>
-            </defs>
-            <path
-              d="M0,66 C16,66 30,10 46,10 C63,10 77,54 93,54 C109,54 123,19 139,19 C155,19 169,33 186,33 C202,33 216,5 232,5"
-              fill="none"
-              stroke="#ffab00"
-              strokeWidth="5"
-              strokeLinecap="round"
-              filter="url(#profileShadow)"
-            />
-          </svg>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={[
+                { x: 0, y: 66 },
+                { x: 16, y: 66 },
+                { x: 30, y: 10 },
+                { x: 46, y: 10 },
+                { x: 63, y: 54 },
+                { x: 77, y: 54 },
+                { x: 93, y: 54 },
+                { x: 109, y: 19 },
+                { x: 123, y: 19 },
+                { x: 139, y: 33 },
+                { x: 155, y: 33 },
+                { x: 169, y: 33 },
+                { x: 186, y: 33 },
+                { x: 202, y: 5 },
+                { x: 216, y: 5 },
+                { x: 232, y: 5 },
+              ]}
+            >
+              <defs>
+                <linearGradient id="profileGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#ffab00" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#ffab00" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <Area
+                type="monotone"
+                dataKey="y"
+                stroke="#ffab00"
+                strokeWidth={5}
+                fill="url(#profileGradient)"
+                strokeLinecap="round"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </Card>

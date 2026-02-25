@@ -2,8 +2,16 @@
 
 import { MoreOutlined } from "@ant-design/icons";
 import { Button, Card, Dropdown, MenuProps } from "antd";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
 import { cn } from "@/lib/utils";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const DATA = [
   { day: "01", sent: 1250, opened: 890 },
@@ -24,6 +32,29 @@ const COLORS = {
   sent: "#696cff",
   opened: "#03c3ec",
 };
+
+/** 自定义 Tooltip */
+function CustomTooltip({ active, payload, label }: any) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-md bg-[#2b2c40] px-3 py-2 text-xs shadow-lg">
+        <p className="text-[#a3b1c2] mb-1">Day {label}</p>
+        {payload.map((p: any, i: number) => (
+          <div key={i} className="flex items-center gap-2">
+            <div
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: p.color }}
+            />
+            <span className="text-white font-semibold">
+              {p.name}: {p.value?.toLocaleString()}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+}
 
 export function EmailReportsCard() {
   const items: MenuProps["items"] = [
@@ -93,8 +124,10 @@ export function EmailReportsCard() {
                 tick={{ fill: "#a1acb8", fontSize: 11 }}
                 tickFormatter={(value) => `${value / 1000}k`}
               />
+              <Tooltip content={<CustomTooltip />} />
               <Bar
                 dataKey="sent"
+                name="Sent"
                 fill={COLORS.sent}
                 radius={[4, 4, 0, 0]}
                 barSize={12}
@@ -108,6 +141,7 @@ export function EmailReportsCard() {
               </Bar>
               <Bar
                 dataKey="opened"
+                name="Opened"
                 fill={COLORS.opened}
                 radius={[4, 4, 0, 0]}
                 barSize={12}
