@@ -12,7 +12,7 @@ import {
   GoalProgressCard,
   ProjectRemindersCard,
 } from "@/components/admin/dashboard";
-import { adminAuthApi } from "@/lib/admin-api";
+import { adminAuthApi, apiClient } from "@/lib/admin-api";
 import { Col, Row } from "antd";
 import { BarChart3, CreditCard, ShoppingCart, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -28,14 +28,14 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const response = await adminAuthApi.request<{
+        const response = await apiClient.get<{
           usersCount: number;
           agentsCount: number;
           toolsCount: number;
           blogPostsCount: number;
         }>("/admin/dashboard/stats");
 
-        if (response.success && response.data) {
+        if (response.data) {
           setStats(response.data);
         }
       } catch (err) {

@@ -36,7 +36,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       const response = await adminAuthApi.login(username, password);
 
       if (!response.success) {
-        throw new Error(response.error || "Login failed");
+        throw new Error("Login failed");
       }
 
       const { access_token } = response.data!;

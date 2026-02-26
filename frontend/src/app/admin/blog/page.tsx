@@ -21,11 +21,14 @@ type SorterType<T> = {
 };
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { BLOG_CONSTANTS } from "./constants";
-import { BlogPost, mockBlogPosts } from "./mock-data";
+import { blogApi, type BlogPost as ApiBlogPost } from "@/lib/admin-api";
+
+// 前端 BlogPost 类型（与 API 类型兼容）
+type BlogPost = ApiBlogPost;
 
 type StatusFilter = "all" | "draft" | "published";
 type SortField = "date" | "title";
@@ -37,7 +40,8 @@ export default function BlogListPage() {
   const router = useRouter();
 
   // State
-  const [posts, setPosts] = useState<BlogPost[]>(mockBlogPosts);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,7 +49,7 @@ export default function BlogListPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: BLOG_CONSTANTS.PAGINATION.DEFAULT_PAGE_SIZE,
+    pageSize: BLOG_CONSTANTS.PAGINATION.DEFAULT_PAGE_SIZE as number,
   });
   const [density, setDensity] = useState<"compact" | "normal" | "spacious">("normal");
   const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
@@ -56,6 +60,26 @@ export default function BlogListPage() {
     status: true,
     actions: true,
   });
+
+  // Load posts from API
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await blogApi.list();
+      if (response.success && response.data) {
+        setPosts(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to load blog posts:", error);
+      message.error("Failed to load blog posts");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Memoized filtered and sorted posts
   const filteredPosts = useMemo(() => {
@@ -72,7 +96,7 @@ export default function BlogListPage() {
       filtered = filtered.filter(
         (post) =>
           post.title.toLowerCase().includes(query) ||
-          post.summary.toLowerCase().includes(query)
+          (post.summary || "").toLowerCase().includes(query)
       );
     }
 
@@ -82,7 +106,7 @@ export default function BlogListPage() {
 
       if (sortField === "date") {
         comparison =
-          new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime();
+          new Date(a.publish_date || 0).getTime() - new Date(b.publish_date || 0).getTime();
       } else if (sortField === "title") {
         comparison = a.title.localeCompare(b.title);
       }
@@ -119,12 +143,15 @@ export default function BlogListPage() {
       okText: "Delete",
       okType: "danger",
       cancelText: "Cancel",
-      onOk() {
-        return new Promise<void>((resolve) => {
-          setPosts(posts.filter((post) => post.id !== id));
+      onOk: async () => {
+        try {
+          await blogApi.delete(id);
+          await loadPosts();
           toast.success("Blog post deleted successfully");
-          resolve();
-        });
+        } catch (error) {
+          console.error("Failed to delete blog post:", error);
+          toast.error("Failed to delete blog post");
+        }
       },
     });
   };
@@ -136,13 +163,16 @@ export default function BlogListPage() {
       okText: "Delete",
       okType: "danger",
       cancelText: "Cancel",
-      onOk() {
-        return new Promise<void>((resolve) => {
-          setPosts(posts.filter((post) => !selectedRowKeys.includes(post.id)));
+      onOk: async () => {
+        try {
+          await Promise.all(selectedRowKeys.map(id => blogApi.delete(id as number)));
+          await loadPosts();
           setSelectedRowKeys([]);
           toast.success(`${selectedRowKeys.length} blog post(s) deleted successfully`);
-          resolve();
-        });
+        } catch (error) {
+          console.error("Failed to delete blog posts:", error);
+          toast.error("Failed to delete blog posts");
+        }
       },
     });
   };
@@ -163,35 +193,33 @@ export default function BlogListPage() {
       okText: "Publish",
       okType: "primary",
       cancelText: "Cancel",
-      onOk() {
-        return new Promise<void>((resolve) => {
-          setPosts(
-            posts.map((post) =>
-              selectedRowKeys.includes(post.id) && post.status === "draft"
-                ? { ...post, status: "published" as const }
-                : post
-            )
+      onOk: async () => {
+        try {
+          await Promise.all(
+            selectedRowKeys
+              .filter((key) => posts.find((p) => p.id === key)?.status === "draft")
+              .map(id => blogApi.togglePublish(id as number))
           );
+          await loadPosts();
           setSelectedRowKeys([]);
           toast.success(`${draftCount} post(s) published successfully`);
-          resolve();
-        });
+        } catch (error) {
+          console.error("Failed to publish posts:", error);
+          toast.error("Failed to publish posts");
+        }
       },
     });
   };
 
-  const handleStatusToggle = (id: number) => {
-    setPosts(
-      posts.map((post) =>
-        post.id === id
-          ? {
-              ...post,
-              status: post.status === "draft" ? "published" : "draft",
-            }
-          : post
-      )
-    );
-    toast.success("Post status updated successfully");
+  const handleStatusToggle = async (id: number) => {
+    try {
+      await blogApi.togglePublish(id);
+      await loadPosts();
+      toast.success("Post status updated successfully");
+    } catch (error) {
+      console.error("Failed to toggle post status:", error);
+      toast.error("Failed to update post status");
+    }
   };
 
   const handleStatusKeyPress = (e: React.KeyboardEvent, id: number) => {
@@ -203,7 +231,7 @@ export default function BlogListPage() {
 
   const handleExport = () => {
     const columns = ["title", "author", "publishDate", "status"];
-    exportToCSV(paginatedPosts, columns, "blog_posts");
+    exportToCSV(paginatedPosts as unknown as Record<string, unknown>[], columns, "blog_posts");
     toast.success("Blog posts exported successfully");
   };
 
@@ -340,7 +368,7 @@ export default function BlogListPage() {
   ) => {
     setPagination({
       current: pagination.current || 1,
-      pageSize: pagination.pageSize || 10,
+      pageSize: (pagination.pageSize as number) || 10,
     });
 
     if (sorter && !Array.isArray(sorter) && typeof sorter === "object" && "field" in sorter) {
@@ -459,7 +487,7 @@ export default function BlogListPage() {
             exportData={paginatedPosts.map(post => ({
               title: post.title,
               author: post.author,
-              publishDate: post.publishDate,
+              publishDate: post.publish_date,
               status: post.status,
               views: post.views || 0,
             }))}

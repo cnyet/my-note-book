@@ -1,9 +1,8 @@
 "use client";
 
-import { ChevronRight, Home } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Home } from "lucide-react";
+import Link from "next/link";
 
 export interface BreadcrumbItem {
   label: string;
@@ -31,16 +30,16 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
     <nav
       className={cn(
         "flex items-center gap-[0.375rem] text-[0.9375rem]",
-        className
+        className,
       )}
       aria-label="Breadcrumb"
     >
       {/* Home Link */}
       <Link
         href="/admin"
-        className="flex items-center gap-[0.375rem] text-[#697a8d] dark:text-[#a3b1c2] hover:text-[#696cff] dark:hover:text-[#696cff] transition-colors"
+        className="flex items-center text-[#8898aa] hover:text-[#5e72e4] transition-colors"
       >
-        <Home className="w-[1.125rem] h-[1.125rem]" strokeWidth={1.5} />
+        <Home className="w-3.5 h-3.5" strokeWidth={2} />
       </Link>
 
       {/* Breadcrumb Items */}
@@ -51,15 +50,14 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
           <li
             key={item.label}
             className={cn(
-              "flex items-center gap-[0.375rem] list-none",
-              isLast ? "text-[#566a7f] dark:text-[#a3b1c2] font-medium" : "text-[#697a8d] dark:text-[#a3b1c2]"
+              "flex items-center gap-[0.25rem] list-none",
+              isLast
+                ? "text-[#5e72e4] dark:text-[#5e72e4] font-bold"
+                : "text-[#8898aa]",
             )}
           >
             {/* Separator */}
-            <ChevronRight
-              className="w-[1rem] h-[1rem] text-[#a1acb8]"
-              strokeWidth={1.5}
-            />
+            <span className="text-[#a1acb8] opacity-50 px-0.5">/</span>
 
             {/* Item Link or Text */}
             {isLast ? (

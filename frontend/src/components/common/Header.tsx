@@ -56,7 +56,7 @@ export function Header() {
       <div className="w-full max-w-6xl backdrop-blur-md bg-white/5 rounded-full px-8 py-3 flex items-center justify-between border border-white/10 shadow-2xl">
         <Logo />
 
-        <div className="hidden lg:flex items-center gap-8 font-semibold text-[13px] uppercase tracking-widest">
+        <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide">
           {navLinks.map((link) => (
             <LinkNext
               key={link.href}
@@ -68,28 +68,13 @@ export function Header() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-6">
-          {authed ? (
-            <button
-              onClick={handleLogout}
-              className="relative group transition-transform active:scale-95"
-              title={`Signed in as ${userName}`}
-            >
-              <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 group-hover:border-white transition-colors shadow-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">
-                  {userName.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="absolute inset-0 rounded-full ring-2 ring-white/0 group-hover:ring-white/20 transition-all duration-300"></div>
-            </button>
-          ) : (
-            <LinkNext
-              href="/login"
-              className="text-slate-400 hover:text-white font-bold text-sm transition-colors tracking-wider"
-            >
-              Sign in
-            </LinkNext>
-          )}
+        <div className="hidden md:flex items-center">
+          <LinkNext
+            href="/admin"
+            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-2 border-white/20 hover:border-white/40 rounded-full text-[11px] font-black uppercase tracking-[0.15em] text-white transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
+          >
+            Dashboard
+          </LinkNext>
         </div>
       </div>
     </nav>

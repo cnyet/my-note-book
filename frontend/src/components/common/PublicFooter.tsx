@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export const PublicFooter = () => {
   return (
-    <footer className="border-t border-white/10 py-24 px-6 bg-slate-950/50">
+    <footer className="border-t border-white/10 pt-20 px-6 bg-slate-950/50">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-16">
         <div className="col-span-1 md:col-span-2">
           <Logo />

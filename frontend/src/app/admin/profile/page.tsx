@@ -140,7 +140,7 @@ export default function ProfilePage() {
       if (response.success) {
         message.success("Profile updated successfully");
       } else {
-        message.error(response.error || "Failed to update profile");
+        message.error("Failed to update profile");
       }
     } catch (error) {
       message.error("Failed to update profile");
@@ -172,7 +172,7 @@ export default function ProfilePage() {
           percent: 0,
         });
       } else {
-        message.error(response.error || "Failed to change password");
+        message.error("Failed to change password");
       }
     } catch (error) {
       message.error("Failed to change password");
@@ -201,7 +201,7 @@ export default function ProfilePage() {
         setNewTokenName("");
         loadTokens();
       } else {
-        message.error(response.error || "Failed to create token");
+        message.error("Failed to create token");
       }
     } catch (error) {
       message.error("Failed to create token");
@@ -220,7 +220,7 @@ export default function ProfilePage() {
         message.success("Token revoked successfully");
         loadTokens();
       } else {
-        message.error(response.error || "Failed to revoke token");
+        message.error("Failed to revoke token");
       }
     } catch (error) {
       message.error("Failed to revoke token");

@@ -18,7 +18,7 @@
 - **元素**:
   - 左侧: 动态 Logo (带旋转渐变背景)。
   - 中间: 导航链接 (Home, Agents, Tools, Labs, Blogs)，带 Hover 增强效果。
-  - 右侧: "Sign in" 链接与 "Dashboard" 按钮 (极简边框或玻璃态)。
+  - 右侧: "Dashboard" 按钮 (极简边框或玻璃态)。
 
 ### 2. 英雄区 (Hero Section)
 

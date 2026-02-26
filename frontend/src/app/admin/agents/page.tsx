@@ -37,6 +37,7 @@ import {
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -44,7 +45,7 @@ const { TextArea } = Input;
 /** Agent Status Types */
 export type AgentStatus = "offline" | "spawned" | "idle";
 
-/** Agent Interface */
+/** Agent Interface - 前端数据结构 */
 interface Agent {
   id: number;
   name: string;
@@ -65,123 +66,50 @@ interface Agent {
   };
 }
 
-/** Mock Data */
-const mockAgents: Agent[] = [
-  {
-    id: 1,
-    name: "News Agent",
-    slug: "news-agent",
-    description: "Curates AI news from multiple sources and provides summaries",
-    iconUrl: "/icons/news.png",
-    status: "spawned",
-    sortOrder: 1,
+/** 将后端 API Agent 转换为前端 Agent */
+function mapApiAgentToFrontend(apiAgent: ApiAgent): Agent {
+  // 将后端 is_active 转换为前端 status
+  let status: AgentStatus = "offline";
+  if (apiAgent.is_active) {
+    status = "spawned"; // active = spawned/online
+  }
+
+  return {
+    id: apiAgent.id,
+    name: apiAgent.name,
+    slug: apiAgent.slug,
+    description: apiAgent.description,
+    iconUrl: apiAgent.icon_url || "/icons/default.png",
+    status,
+    sortOrder: apiAgent.sort_order,
     config: {
-      model: "Gemini",
-      promptTemplate: "Find latest AI news and provide concise summaries",
+      model: apiAgent.model || "Gemini",
+      promptTemplate: apiAgent.system_prompt || "",
       quota: 1000,
       websocketPriority: 1,
     },
     connections: {
-      lobeChatUrl: "https://lobe.chat/agent/news",
-      apiEndpoint: "/api/v1/agents/news",
+      lobeChatUrl: apiAgent.link || "",
+      apiEndpoint: `/api/v1/agents/${apiAgent.slug}`,
     },
-  },
-  {
-    id: 2,
-    name: "Code Assistant",
-    slug: "code-assistant",
-    description: "Helps with code review, debugging, and best practices",
-    iconUrl: "/icons/code.png",
-    status: "idle",
-    sortOrder: 2,
-    config: {
-      model: "GPT-4",
-      promptTemplate: "You are a coding assistant. Help with code review and debugging.",
-      quota: 500,
-      websocketPriority: 2,
-    },
-    connections: {
-      lobeChatUrl: "https://lobe.chat/agent/code",
-      apiEndpoint: "/api/v1/agents/code",
-    },
-  },
-  {
-    id: 3,
-    name: "Data Analyst",
-    slug: "data-analyst",
-    description: "Analyzes data and generates insights with visualizations",
-    iconUrl: "/icons/data.png",
-    status: "spawned",
-    sortOrder: 3,
-    config: {
-      model: "Claude",
-      promptTemplate: "Analyze the provided data and generate actionable insights",
-      quota: 800,
-      websocketPriority: 1,
-    },
-    connections: {
-      lobeChatUrl: "https://lobe.chat/agent/data",
-      apiEndpoint: "/api/v1/agents/data",
-    },
-  },
-  {
-    id: 4,
-    name: "Translation Bot",
-    slug: "translation-bot",
-    description: "Translates text between multiple languages",
-    iconUrl: "/icons/translate.png",
-    status: "offline",
-    sortOrder: 4,
-    config: {
-      model: "Gemini",
-      promptTemplate: "Translate the following text accurately maintaining context",
-      quota: 2000,
-      websocketPriority: 3,
-    },
-    connections: {
-      lobeChatUrl: "https://lobe.chat/agent/translate",
-      apiEndpoint: "/api/v1/agents/translate",
-    },
-  },
-  {
-    id: 5,
-    name: "Image Generator",
-    slug: "image-generator",
-    description: "Creates images based on text descriptions",
-    iconUrl: "/icons/image.png",
-    status: "spawned",
-    sortOrder: 5,
-    config: {
-      model: "DALL-E",
-      promptTemplate: "Generate an image based on the description",
-      quota: 100,
-      websocketPriority: 1,
-    },
-    connections: {
-      lobeChatUrl: "https://lobe.chat/agent/image",
-      apiEndpoint: "/api/v1/agents/image",
-    },
-  },
-  {
-    id: 6,
-    name: "Summarizer",
-    slug: "summarizer",
-    description: "Summarizes long documents into key points",
-    iconUrl: "/icons/summary.png",
-    status: "idle",
-    sortOrder: 6,
-    config: {
-      model: "Claude",
-      promptTemplate: "Summarize the document into key points and main takeaways",
-      quota: 1500,
-      websocketPriority: 2,
-    },
-    connections: {
-      lobeChatUrl: "https://lobe.chat/agent/summary",
-      apiEndpoint: "/api/v1/agents/summary",
-    },
-  },
-];
+  };
+}
+
+/** 将前端 Agent 转换为后端 API 格式 */
+function mapFrontendAgentToApi(agent: Agent): Partial<ApiAgent> {
+  return {
+    name: agent.name,
+    slug: agent.slug,
+    description: agent.description,
+    icon_url: agent.iconUrl,
+    link: agent.connections?.lobeChatUrl,
+    category: "Dev" as const,
+    system_prompt: agent.config?.promptTemplate,
+    model: agent.config?.model || "Gemini",
+    is_active: agent.status !== "offline",
+    sort_order: agent.sortOrder,
+  };
+}
 
 /** Status Badge Colors */
 const statusConfig: Record<
@@ -721,15 +649,37 @@ function EditAgentModal({
 }
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>(mockAgents);
-  const [filteredAgents, setFilteredAgents] = useState<Agent[]>(mockAgents);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [dragEnabled, setDragEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Filter agents
+  // Load agents from API
+  useEffect(() => {
+    loadAgents();
+  }, []);
+
+  const loadAgents = async () => {
+    try {
+      setLoading(true);
+      const response = await agentsApi.list();
+      if (response.success && response.data) {
+        const mappedAgents = response.data.map(mapApiAgentToFrontend);
+        setAgents(mappedAgents);
+      }
+    } catch (error) {
+      console.error("Failed to load agents:", error);
+      message.error("Failed to load agents from API");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter agents - 添加过滤逻辑
   const filterAgents = useMemo(() => {
     let result = [...agents];
 
@@ -792,15 +742,39 @@ export default function AgentsPage() {
     setEditModalOpen(true);
   };
 
-  const handleSaveAgent = (agent: Agent) => {
-    if (editingAgent) {
-      // Update existing
-      setAgents(agents.map((a) => (a.id === agent.id ? agent : a)));
-      message.success("Agent updated successfully");
-    } else {
-      // Add new
-      setAgents([...agents, agent]);
-      message.success("Agent created successfully");
+  const handleSaveAgent = async (agent: Agent) => {
+    try {
+      if (editingAgent) {
+        // Update existing agent via API
+        const apiData = mapFrontendAgentToApi(agent);
+        const response = await agentsApi.update(agent.id, apiData);
+        if (response.success) {
+          await loadAgents();
+          message.success("Agent updated successfully");
+        }
+      } else {
+        // Create new agent via API
+        const apiData: Parameters<typeof agentsApi.create>[0] = {
+          name: agent.name,
+          slug: agent.slug,
+          description: agent.description,
+          icon_url: agent.iconUrl,
+          link: agent.connections?.lobeChatUrl,
+          category: "Dev" as const,
+          system_prompt: agent.config?.promptTemplate,
+          model: agent.config?.model || "Gemini",
+        };
+        const response = await agentsApi.create(apiData);
+        if (response.success) {
+          await loadAgents();
+          message.success("Agent created successfully");
+        }
+      }
+      setEditModalOpen(false);
+      setEditingAgent(null);
+    } catch (error) {
+      console.error("Failed to save agent:", error);
+      message.error("Failed to save agent");
     }
   };
 
@@ -810,9 +784,15 @@ export default function AgentsPage() {
       content: `Are you sure you want to delete "${agent.name}"? This action cannot be undone.`,
       okText: "Delete",
       okButtonProps: { danger: true },
-      onOk: () => {
-        setAgents(agents.filter((a) => a.id !== agent.id));
-        message.success("Agent deleted successfully");
+      onOk: async () => {
+        try {
+          await agentsApi.delete(agent.id);
+          await loadAgents();
+          message.success("Agent deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete agent:", error);
+          message.error("Failed to delete agent");
+        }
       },
     });
   };

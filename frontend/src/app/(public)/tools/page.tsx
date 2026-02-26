@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 const ToolsFooter = () => (
-  <footer className="mt-20 py-12 bg-slate-900/50 border-t border-white/5">
+  <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
     <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-sm">
       <div className="space-y-4">
         <h4 className="font-bold text-indigo-400 uppercase tracking-widest text-[10px]">

@@ -9,7 +9,7 @@ import {
   FlaskConical,
   LayoutDashboard,
   LogOut,
-  Minus,
+  MoreHorizontal,
   PenTool,
   Settings,
   UserCircle,
@@ -73,13 +73,13 @@ export function Sidebar({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out lg:translate-x-0 overflow-hidden",
+          "fixed top-0 left-0 z-40 h-screen transition-[width,transform] duration-300 cubic-bezier-[0.4,0,0.2,1] lg:translate-x-0 overflow-hidden will-change-[width]",
           "bg-white dark:bg-[#ffffff]",
           "border-r border-[#e0e0e0] dark:border-[#2a2a2a]",
           isExpanded ? "w-[280px]" : "w-[72px]",
           /* hover 浮动展开时更大阴影 */
           isCollapsed && isHovered
-            ? "shadow-[0_0_15px_rgba(0,0,0,0.08)]"
+            ? "shadow-[0_0_20px_rgba(0,0,0,0.12)]"
             : "shadow-none",
           /* 移动端 */
           isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full",
@@ -100,10 +100,10 @@ export function Sidebar({
             </div>
             <span
               className={cn(
-                "text-xl font-semibold text-[#32325d] dark:text-[#32325d] whitespace-nowrap transition-all duration-300",
+                "text-xl font-semibold text-[#32325d] dark:text-[#32325d] whitespace-nowrap transition-all duration-300 ease-in-out",
                 isExpanded
-                  ? "opacity-100 w-auto"
-                  : "opacity-0 w-0 overflow-hidden pointer-events-none",
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-4 pointer-events-none",
               )}
             >
               MyNoteBook
@@ -144,7 +144,10 @@ export function Sidebar({
                       {group.label}
                     </span>
                   ) : (
-                    <Minus className="w-4 h-4 text-[#8898aa]" />
+                    <MoreHorizontal
+                      className="w-4 h-4 text-[#a1acb8]"
+                      strokeWidth={2}
+                    />
                   )}
                 </div>
 
@@ -160,18 +163,13 @@ export function Sidebar({
                       <li key={item.href} className="relative mb-1 group">
                         {/* 展开态 Active: 圆角矩形背景包裹整个菜单项 */}
                         {isActive && isExpanded && (
-                          <div className="absolute inset-0 bg-[#f0f2f7] rounded-md" />
-                        )}
-
-                        {/* 折叠态 Active: 左侧垂直条 */}
-                        {isActive && !isExpanded && (
-                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#525f7f] rounded-r-full" />
+                          <div className="absolute inset-x-0 inset-y-0 bg-[#f0f2f7] rounded-lg" />
                         )}
 
                         <Link
                           href={item.href}
                           className={cn(
-                            "flex items-center rounded-md text-[15px] transition-all duration-200 relative no-underline cursor-pointer group",
+                            "flex items-center rounded-lg text-[15px] transition-[padding,background-color,color,gap] duration-300 cubic-bezier-[0.4,0,0.2,1] relative no-underline cursor-pointer group",
                             isExpanded
                               ? "px-4 py-2.5 gap-3"
                               : "w-12 h-12 mx-auto my-0.5 flex items-center justify-center p-0",
@@ -179,8 +177,8 @@ export function Sidebar({
                             !isActive
                               ? "text-[#525f7f] dark:text-[#525f7f] hover:bg-[#f8f9fa] dark:hover:bg-[#f8f9fa]"
                               : isExpanded
-                              ? "text-[#32325d] dark:text-[#32325d] font-medium"
-                              : "text-[#32325d] bg-[#f0f2f7]",
+                                ? "text-[#32325d] dark:text-[#32325d] font-medium"
+                                : "text-[#32325d] bg-[#f0f2f7]",
                           )}
                           onClick={() => window.innerWidth < 1024 && onClose()}
                         >
@@ -195,10 +193,10 @@ export function Sidebar({
                           />
                           <span
                             className={cn(
-                              "whitespace-nowrap transition-all duration-300 leading-none flex-1",
+                              "whitespace-nowrap transition-all duration-300 cubic-bezier-[0.4,0,0.2,1] leading-none",
                               isExpanded
-                                ? "opacity-100 w-auto"
-                                : "opacity-0 w-0 overflow-hidden pointer-events-none",
+                                ? "opacity-100 translate-x-0 flex-1"
+                                : "opacity-0 -translate-x-4 pointer-events-none absolute",
                             )}
                           >
                             {item.label}
@@ -232,13 +230,16 @@ export function Sidebar({
                     Misc
                   </span>
                 ) : (
-                  <Minus className="w-4 h-4 text-[#8898aa]" />
+                  <MoreHorizontal
+                    className="w-4 h-4 text-[#a1acb8]"
+                    strokeWidth={2}
+                  />
                 )}
               </div>
               <Link
                 href="/"
                 className={cn(
-                  "flex items-center rounded-md text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline cursor-pointer",
+                  "flex items-center rounded-lg text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline cursor-pointer",
                   isExpanded
                     ? "px-4 py-2.5 gap-3"
                     : "w-12 h-12 mx-auto flex items-center justify-center p-0",
@@ -250,10 +251,10 @@ export function Sidebar({
                 />
                 <span
                   className={cn(
-                    "whitespace-nowrap transition-all duration-300 leading-none",
+                    "whitespace-nowrap transition-all duration-300 cubic-bezier-[0.4,0,0.2,1] leading-none",
                     isExpanded
-                      ? "opacity-100 w-auto"
-                      : "opacity-0 w-0 overflow-hidden pointer-events-none",
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 -translate-x-4 pointer-events-none absolute",
                   )}
                 >
                   Back to Site

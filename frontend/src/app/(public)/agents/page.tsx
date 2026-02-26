@@ -2,6 +2,7 @@
 
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { Activity, Box, Code2, Globe, Palette, Search } from "lucide-react";
+import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
 
 const AgentsFooter = () => (
   <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
@@ -78,7 +79,7 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen pt-32 px-6 pb-0">
-      <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-7xl mx-auto">
+      <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-[1600px] mx-auto">
         <SectionHeader
           centered
           tag="Personnel"
@@ -86,52 +87,66 @@ export default function AgentsPage() {
           subtitle="The world's most capable design workforce. Hire AI specialists for every part of your creative stack."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {agents.map((agent) => (
-            <div
-              key={agent.name}
-              className="backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10"
-            >
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all">
-                  {agent.icon}
-                </div>
+        {/* Split-screen layout: Agent Grid (left) + LobeChat Panel (right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
+          {/* Left: Agent Grid - 2 columns on large screens */}
+          <div className="lg:col-span-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {agents.map((agent) => (
                 <div
-                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                    agent.status === "Online" ||
-                    agent.status === "Available" ||
-                    agent.status === "Ready"
-                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                      : "bg-orange-500/10 text-orange-400 border-orange-500/20"
-                  }`}
+                  key={agent.name}
+                  className="backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10"
                 >
-                  {agent.status}
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all">
+                      {agent.icon}
+                    </div>
+                    <div
+                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                        agent.status === "Online" ||
+                        agent.status === "Available" ||
+                        agent.status === "Ready"
+                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                          : "bg-orange-500/10 text-orange-400 border-orange-500/20"
+                      }`}
+                    >
+                      {agent.status}
+                    </div>
+                  </div>
+                  <h3 className="text-3xl font-black text-white mb-1">
+                    {agent.name}
+                  </h3>
+                  <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
+                    {agent.role}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {agent.capabilities.map((cap) => (
+                      <span
+                        key={cap}
+                        className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
+                      >
+                        {cap}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="mt-auto">
+                    <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white hover:text-slate-950 transition-all">
+                      Consult Agent
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <h3 className="text-3xl font-black text-white mb-1">
-                {agent.name}
-              </h3>
-              <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
-                {agent.role}
-              </p>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {agent.capabilities.map((cap) => (
-                  <span
-                    key={cap}
-                    className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
-                  >
-                    {cap}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-auto">
-                <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white hover:text-slate-950 transition-all">
-                  Consult Agent
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Right: LobeChat Panel - Sticky sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="sticky top-32 h-[calc(100vh-8rem)]">
+              <LobeChatPanel />
+            </div>
+          </div>
         </div>
+
         <AgentsFooter />
       </div>
     </div>

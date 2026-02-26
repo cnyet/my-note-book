@@ -49,7 +49,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
 
       <div
         className={cn(
-          "flex flex-col min-h-screen transition-all duration-300",
+          "flex flex-col min-h-screen transition-[padding] duration-300 cubic-bezier-[0.4,0,0.2,1] will-change-[padding-left]",
           isCollapsed ? "lg:pl-[72px]" : "lg:pl-[280px]",
         )}
       >
@@ -57,13 +57,7 @@ export default function AdminLayoutContent({ children }: AdminLayoutProps) {
           <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
         </div>
 
-        <main className="flex-1 px-6 py-6">
-          {children}
-        </main>
-
-        <footer className="py-6 text-center text-sm text-[#8898aa]">
-          <p>© {new Date().getFullYear()} MyNoteBook - Admin Dashboard</p>
-        </footer>
+        <main className="flex-1 px-6 pt-6 pb-14">{children}</main>
       </div>
     </div>
   );

@@ -74,11 +74,13 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
-  const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date } | undefined>();
+  const [dateRange, setDateRange] = useState<
+    { startDate: Date; endDate: Date } | undefined
+  >();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
 
-  const breadcrumbItems = generateBreadcrumbItems(pathname);
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const breadcrumbItems = generateBreadcrumbItems(pathname);
 
   const handleMarkAllRead = () => {
     setNotifications(notifications.map((n) => ({ ...n, read: true })));
@@ -109,6 +111,11 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           >
             <Menu className="w-5 h-5" />
           </Button>
+
+          {/* Breadcrumb - Moved from StatusBar */}
+          <div className="hidden sm:flex items-center">
+            <Breadcrumb items={breadcrumbItems} className="text-[#8898aa]" />
+          </div>
 
           {/* 搜索框 */}
           <div className="hidden md:flex items-center relative">
@@ -181,27 +188,42 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
               <DropdownMenuSeparator />
               <div className="max-h-[400px] overflow-y-auto">
                 {notifications.map((notification) => {
-                  const config = TYPE_CONFIG[notification.type as keyof typeof TYPE_CONFIG];
+                  const config =
+                    TYPE_CONFIG[notification.type as keyof typeof TYPE_CONFIG];
                   const Icon = config.icon;
                   return (
                     <DropdownMenuItem
                       key={notification.id}
                       className={cn(
                         "py-3 px-4 cursor-pointer flex gap-3",
-                        !notification.read && "bg-[#f8f9fa]"
+                        !notification.read && "bg-[#f8f9fa]",
                       )}
                     >
-                      <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0", config.bg)}>
-                        <Icon className="w-4 h-4" style={{ color: config.color }} />
+                      <div
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                          config.bg,
+                        )}
+                      >
+                        <Icon
+                          className="w-4 h-4"
+                          style={{ color: config.color }}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={cn(
-                          "text-sm truncate",
-                          !notification.read ? "font-semibold text-[#525f7f]" : "text-[#8898aa]"
-                        )}>
+                        <p
+                          className={cn(
+                            "text-sm truncate",
+                            !notification.read
+                              ? "font-semibold text-[#525f7f]"
+                              : "text-[#8898aa]",
+                          )}
+                        >
                           {notification.title}
                         </p>
-                        <p className="text-xs text-[#8898aa]">{notification.time}</p>
+                        <p className="text-xs text-[#8898aa]">
+                          {notification.time}
+                        </p>
                       </div>
                     </DropdownMenuItem>
                   );
@@ -248,7 +270,9 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     <p className="text-sm font-semibold leading-none text-[#525f7f]">
                       {user?.username || "John Doe"}
                     </p>
-                    <p className="text-xs leading-none text-[#8898aa]">Administrator</p>
+                    <p className="text-xs leading-none text-[#8898aa]">
+                      Administrator
+                    </p>
                   </div>
                 </div>
               </DropdownMenuLabel>
@@ -272,11 +296,6 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-
-      {/* 面包屑区域 */}
-      <div className="px-6 py-3 bg-[#f8f9fa] border-b border-[#e0e0e0]">
-        <Breadcrumb items={breadcrumbItems} />
       </div>
     </header>
   );

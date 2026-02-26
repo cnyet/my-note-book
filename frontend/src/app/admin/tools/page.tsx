@@ -39,9 +39,11 @@ import {
   Switch,
   Tag,
   Typography,
+  message,
 } from "antd";
 import { useEffect, useState } from "react";
 import { GripVertical, MoreVertical } from "lucide-react";
+import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -71,111 +73,35 @@ const categoryColors: Record<ToolCategory, string> = {
   Creative: "#ffab00",
 };
 
-// Mock data
-const mockTools: Tool[] = [
-  {
-    id: 1,
-    name: "Code Runner",
-    category: "Dev",
-    description: "Execute code snippets in multiple languages with real-time output",
-    icon: "code",
-    link: "/tools/code-runner",
-    status: "active",
-    sortOrder: 1,
-    seoTitle: "Online Code Runner - Execute Code Instantly",
-    seoDescription: "Run code snippets in JavaScript, Python, and more with our online code runner.",
-  },
-  {
-    id: 2,
-    name: "JSON Formatter",
-    category: "Dev",
-    description: "Beautify, validate, and minify JSON data with syntax highlighting",
-    icon: "braces",
-    link: "/tools/json-formatter",
-    status: "active",
-    sortOrder: 2,
-  },
-  {
-    id: 3,
-    name: "Regex Tester",
-    category: "Dev",
-    description: "Test and debug regular expressions with instant visual feedback",
-    icon: "search",
-    link: "/tools/regex-tester",
-    status: "active",
-    sortOrder: 3,
-  },
-  {
-    id: 4,
-    name: "API Generator",
-    category: "Auto",
-    description: "Automatically generate REST API endpoints from database schemas",
-    icon: "zap",
-    link: "/tools/api-generator",
-    status: "active",
-    sortOrder: 4,
-  },
-  {
-    id: 5,
-    name: "Code Refactor",
-    category: "Auto",
-    description: "AI-powered code refactoring and optimization suggestions",
-    icon: "wand-2",
-    link: "/tools/code-refactor",
-    status: "inactive",
-    sortOrder: 5,
-  },
-  {
-    id: 6,
-    name: "Smart Converter",
-    category: "Intel",
-    description: "Convert between file formats with intelligent detection",
-    icon: "refresh-cw",
-    link: "/tools/smart-converter",
-    status: "active",
-    sortOrder: 6,
-  },
-  {
-    id: 7,
-    name: "Data Analyzer",
-    category: "Intel",
-    description: "Analyze and visualize data patterns with AI insights",
-    icon: "bar-chart-3",
-    link: "/tools/data-analyzer",
-    status: "active",
-    sortOrder: 7,
-  },
-  {
-    id: 8,
-    name: "Icon Generator",
-    category: "Creative",
-    description: "Generate custom icons using AI prompts",
-    icon: "image",
-    link: "/tools/icon-generator",
-    status: "active",
-    sortOrder: 8,
-  },
-  {
-    id: 9,
-    name: "Color Palette",
-    category: "Creative",
-    description: "Create beautiful color palettes with AI assistance",
-    icon: "palette",
-    link: "/tools/color-palette",
-    status: "inactive",
-    sortOrder: 9,
-  },
-  {
-    id: 10,
-    name: "Markdown Editor",
-    category: "Dev",
-    description: "Real-time markdown editor with live preview and export options",
-    icon: "file-text",
-    link: "/tools/markdown-editor",
-    status: "active",
-    sortOrder: 10,
-  },
-];
+// 将后端 API Tool 转换为前端 Tool
+function mapApiToolToFrontend(apiTool: ApiTool): Tool {
+  return {
+    id: apiTool.id,
+    name: apiTool.name,
+    category: apiTool.category,
+    description: apiTool.description || "",
+    icon: apiTool.icon_url || "default",
+    link: apiTool.link || "",
+    status: apiTool.status,
+    sortOrder: apiTool.sort_order,
+    seoTitle: "",
+    seoDescription: "",
+  };
+}
+
+// 将前端 Tool 转换为后端 API 格式
+function mapFrontendToolToApi(tool: Tool): Partial<ApiTool> {
+  return {
+    name: tool.name,
+    slug: tool.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    category: tool.category,
+    description: tool.description,
+    icon_url: tool.icon,
+    link: tool.link,
+    status: tool.status,
+    sort_order: tool.sortOrder,
+  };
+}
 
 // Sortable Tool Card Component
 interface SortableToolCardProps {
@@ -534,8 +460,8 @@ function ToolFormModal({ open, tool, onSave, onCancel }: ToolFormModalProps) {
 
 // Main Page Component
 export default function ToolsManagementPage() {
-  const [tools, setTools] = useState<Tool[]>(mockTools);
-  const [filteredTools, setFilteredTools] = useState<Tool[]>(mockTools);
+  const [tools, setTools] = useState<Tool[]>([]);
+  const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "All">(
     "All"
   );
@@ -543,6 +469,7 @@ export default function ToolsManagementPage() {
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -551,30 +478,81 @@ export default function ToolsManagementPage() {
     })
   );
 
-  // Filter tools by category and search query
+  // Load tools from API
   useEffect(() => {
-    let result = [...tools];
+    loadTools();
+  }, []);
 
-    // Category filter
-    if (activeCategory !== "All") {
-      result = result.filter((tool) => tool.category === activeCategory);
+  const loadTools = async () => {
+    try {
+      setLoading(true);
+      const response = await toolsApi.list();
+      if (response.success && response.data) {
+        const mappedTools = response.data.map(mapApiToolToFrontend);
+        setTools(mappedTools);
+      }
+    } catch (error) {
+      console.error("Failed to load tools:", error);
+      message.error("Failed to load tools from API");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (tool) =>
-          tool.name.toLowerCase().includes(query) ||
-          tool.description.toLowerCase().includes(query)
-      );
+  const handleSave = async (values: Partial<Tool>) => {
+    try {
+      if (editingTool) {
+        // Update existing tool via API
+        const apiData = mapFrontendToolToApi({ ...editingTool, ...values } as Tool);
+        const response = await toolsApi.update(editingTool.id, apiData);
+        if (response.success) {
+          await loadTools();
+          message.success("Tool updated successfully");
+        }
+      } else {
+        // Create new tool via API
+        const apiData = mapFrontendToolToApi({
+          id: 0,
+          name: values.name!,
+          category: values.category!,
+          description: values.description!,
+          icon: values.icon || "default",
+          link: values.link || "",
+          status: values.status || "active",
+          sortOrder: tools.length + 1,
+        } as Tool);
+        const response = await toolsApi.create(apiData as Parameters<typeof toolsApi.create>[0]);
+        if (response.success) {
+          await loadTools();
+          message.success("Tool created successfully");
+        }
+      }
+      setIsModalOpen(false);
+      setEditingTool(null);
+    } catch (error) {
+      console.error("Failed to save tool:", error);
+      message.error("Failed to save tool");
     }
+  };
 
-    // Sort by sortOrder
-    result.sort((a, b) => a.sortOrder - b.sortOrder);
-
-    setFilteredTools(result);
-  }, [tools, activeCategory, searchQuery]);
+  const handleDelete = async (tool: Tool) => {
+    Modal.confirm({
+      title: "Delete Tool",
+      content: `Are you sure you want to delete "${tool.name}"? This action cannot be undone.`,
+      okText: "Delete",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          await toolsApi.delete(tool.id);
+          await loadTools();
+          message.success("Tool deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete tool:", error);
+          message.error("Failed to delete tool");
+        }
+      },
+    });
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as number);
@@ -611,38 +589,35 @@ export default function ToolsManagementPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = (values: Partial<Tool>) => {
-    if (editingTool) {
-      // Update existing tool
-      setTools((prev) =>
-        prev.map((tool) =>
-          tool.id === editingTool.id ? { ...tool, ...values } : tool
-        )
-      );
-    } else {
-      // Create new tool
-      const newTool: Tool = {
-        id: Date.now(),
-        name: values.name!,
-        category: values.category!,
-        description: values.description!,
-        icon: values.icon!,
-        link: values.link!,
-        status: values.status || "active",
-        sortOrder: tools.length + 1,
-        seoTitle: values.seoTitle,
-        seoDescription: values.seoDescription,
-      };
-      setTools((prev) => [...prev, newTool]);
-    }
-    setIsModalOpen(false);
-    setEditingTool(null);
-  };
-
   const handleModalCancel = () => {
     setIsModalOpen(false);
     setEditingTool(null);
   };
+
+  // Filter tools by category and search query
+  useEffect(() => {
+    let result = [...tools];
+
+    // Category filter
+    if (activeCategory !== "All") {
+      result = result.filter((tool) => tool.category === activeCategory);
+    }
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (tool) =>
+          tool.name.toLowerCase().includes(query) ||
+          tool.description.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort by sortOrder
+    result.sort((a, b) => a.sortOrder - b.sortOrder);
+
+    setFilteredTools(result);
+  }, [tools, activeCategory, searchQuery]);
 
   return (
     <div className="animate-in fade-in-50 duration-500">

@@ -70,8 +70,8 @@ export default function LabsPage() {
                   Ambient Layouts
                 </h3>
                 <p className="text-slate-400 text-lg md:text-xl leading-relaxed mb-10 max-w-sm">
-                  Interfaces that adapt in real-time to the user's surrounding
-                  environment and emotional state.
+                  Interfaces that adapt in real-time to the user&apos;s
+                  surrounding environment and emotional state.
                 </p>
                 <button className="flex items-center gap-4 text-pink-400 font-bold hover:gap-6 transition-all">
                   Read Whitepaper <ArrowRight />

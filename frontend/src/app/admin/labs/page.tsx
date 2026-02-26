@@ -19,14 +19,16 @@ import {
   Space,
   Tag,
   Typography,
+  message,
 } from "antd";
-import { useCallback, useMemo, memo, useState } from "react";
+import { useCallback, useMemo, memo, useState, useEffect } from "react";
 import {
   FlaskConical,
   Globe,
   MoreVertical,
   Users,
 } from "lucide-react";
+import { labsApi, type Lab as ApiLab } from "@/lib/admin-api";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -34,10 +36,11 @@ const { TextArea } = Input;
 /** Lab Status Types */
 export type LabStatus = "Experimental" | "Preview" | "Live" | "Archived";
 
-/** Lab Interface */
+/** Lab Interface - 前端数据结构 */
 interface Lab {
   id: number;
   name: string;
+  slug: string;
   description: string;
   status: LabStatus;
   demoLink?: string;
@@ -45,72 +48,37 @@ interface Lab {
   onlineCount: number;
 }
 
-/** Mock Data */
-const mockLabs: Lab[] = [
-  {
-    id: 1,
-    name: "Agent Collaborator",
-    description: "Test agent-to-agent communication patterns and protocols",
-    status: "Experimental",
-    demoLink: "/labs/collaborator",
-    onlineCount: 5,
-  },
-  {
-    id: 2,
-    name: "Code Playground",
-    description: "Interactive code editor with real-time execution",
-    status: "Preview",
-    demoLink: "/labs/playground",
-    onlineCount: 23,
-  },
-  {
-    id: 3,
-    name: "Data Visualizer",
-    description: "Transform data into beautiful interactive charts",
-    status: "Live",
-    demoLink: "/labs/visualizer",
-    onlineCount: 47,
-  },
-  {
-    id: 4,
-    name: "Memory Sandbox",
-    description: "Experiment with AI memory and context management",
-    status: "Experimental",
-    demoLink: "/labs/memory",
-    onlineCount: 12,
-  },
-  {
-    id: 5,
-    name: "Voice Interface",
-    description: "Speech-to-text and text-to-speech experiments",
-    status: "Preview",
-    demoLink: "/labs/voice",
-    onlineCount: 8,
-  },
-  {
-    id: 6,
-    name: "Knowledge Graph",
-    description: "Explore entity relationships and semantic networks",
-    status: "Experimental",
-    demoLink: "/labs/graph",
-    onlineCount: 3,
-  },
-  {
-    id: 7,
-    name: "Multi-Agent Arena",
-    description: "Simulate multiple AI agents working together",
-    status: "Live",
-    demoLink: "/labs/arena",
-    onlineCount: 67,
-  },
-  {
-    id: 8,
-    name: "Legacy Chatbot",
-    description: "Original chatbot interface - archived for reference",
-    status: "Archived",
-    onlineCount: 0,
-  },
-];
+/** 将后端 API Lab 转换为前端 Lab */
+function mapApiLabToFrontend(apiLab: ApiLab): Lab {
+  // 映射后端状态到前端（后端无 "Live"，用 "Preview" 代替）
+  let status: LabStatus = "Experimental";
+  if (apiLab.status === "Archived") status = "Archived";
+  else if (apiLab.status === "Preview") status = "Preview";
+
+  return {
+    id: apiLab.id,
+    name: apiLab.name,
+    slug: apiLab.slug,
+    description: apiLab.description || "",
+    status,
+    demoLink: apiLab.demo_url,
+    mediaAssets: apiLab.media_urls,
+    onlineCount: apiLab.online_count,
+  };
+}
+
+/** 将前端 Lab 转换为后端 API 格式 */
+function mapFrontendLabToApi(lab: Lab): Partial<ApiLab> {
+  return {
+    name: lab.name,
+    slug: lab.slug || lab.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    status: lab.status === "Live" ? "Preview" : lab.status,
+    description: lab.description,
+    demo_url: lab.demoLink,
+    media_urls: lab.mediaAssets || [],
+    online_count: lab.onlineCount,
+  };
+}
 
 /** Status Badge Colors */
 const statusConfig: Record<
@@ -242,6 +210,7 @@ function EditLabModal({
       onSave({
         id: lab?.id || Date.now(),
         name: form.name,
+        slug: form.slug || (form.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
         description: form.description || "",
         status: form.status,
         demoLink: form.demoLink,
@@ -352,11 +321,79 @@ function EditLabModal({
 }
 
 export default function LabsPage() {
-  const [labs, setLabs] = useState<Lab[]>(mockLabs);
+  const [labs, setLabs] = useState<Lab[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingLab, setEditingLab] = useState<Lab | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load labs from API
+  useEffect(() => {
+    loadLabs();
+  }, []);
+
+  const loadLabs = async () => {
+    try {
+      setLoading(true);
+      const response = await labsApi.list();
+      if (response.success && response.data) {
+        const mappedLabs = response.data.map(mapApiLabToFrontend);
+        setLabs(mappedLabs);
+      }
+    } catch (error) {
+      console.error("Failed to load labs:", error);
+      message.error("Failed to load labs from API");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveLab = async (lab: Lab) => {
+    try {
+      if (editingLab) {
+        // Update existing lab via API
+        const apiData = mapFrontendLabToApi(lab);
+        const response = await labsApi.update(lab.id, apiData as Parameters<typeof labsApi.update>[1]);
+        if (response.success) {
+          await loadLabs();
+          message.success("Lab updated successfully");
+        }
+      } else {
+        // Create new lab via API
+        const apiData = mapFrontendLabToApi(lab);
+        const response = await labsApi.create(apiData as Parameters<typeof labsApi.create>[0]);
+        if (response.success) {
+          await loadLabs();
+          message.success("Lab created successfully");
+        }
+      }
+      setEditModalOpen(false);
+      setEditingLab(null);
+    } catch (error) {
+      console.error("Failed to save lab:", error);
+      message.error("Failed to save lab");
+    }
+  };
+
+  const handleDeleteLab = async (lab: Lab) => {
+    Modal.confirm({
+      title: "Delete Lab",
+      content: `Are you sure you want to delete "${lab.name}"? This action cannot be undone.`,
+      okText: "Delete",
+      okType: "danger",
+      onOk: async () => {
+        try {
+          await labsApi.delete(lab.id);
+          await loadLabs();
+          message.success("Lab deleted successfully");
+        } catch (error) {
+          console.error("Failed to delete lab:", error);
+          message.error("Failed to delete lab");
+        }
+      },
+    });
+  };
 
   // Filter labs using useMemo
   const filteredLabs = useMemo(() => {
@@ -398,14 +435,9 @@ export default function LabsPage() {
     setEditModalOpen(true);
   }, []);
 
-  const handleSaveLab = (lab: Lab) => {
-    if (editingLab) {
-      // Update existing
-      setLabs(labs.map((l) => (l.id === lab.id ? lab : l)));
-    } else {
-      // Add new
-      setLabs([...labs, lab]);
-    }
+  const handleEditModalCancel = () => {
+    setEditModalOpen(false);
+    setEditingLab(null);
   };
 
   return (

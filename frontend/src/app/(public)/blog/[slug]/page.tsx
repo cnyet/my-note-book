@@ -59,9 +59,9 @@ export default function BlogDetailPage() {
   const slug = params.slug as string;
 
   return (
-    <main className="min-h-screen pt-20 pb-24 relative">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen pt-32 px-6 pb-0 relative">
+      <div className="max-w-4xl mx-auto">
+        <div className="animate-in fade-in duration-700">
           {/* Back Button */}
           <Link href="/blog">
             <motion.div
@@ -135,18 +135,18 @@ export default function BlogDetailPage() {
           </div>
 
           {/* Bottom Navigation */}
-          <div className="mt-20 pt-12 border-t border-white/5 text-center">
+          <footer className="mt-20 pt-12 border-t border-white/5 text-center pb-20">
             <h4 className="text-xl font-heading font-bold mb-8">
               Continue your journey
             </h4>
             <Link href="/blog">
-              <span className="text-primary font-bold hover:underline">
+              <span className="text-primary font-bold hover:underline cursor-pointer">
                 Browse more transmission logs →
               </span>
             </Link>
-          </div>
+          </footer>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
