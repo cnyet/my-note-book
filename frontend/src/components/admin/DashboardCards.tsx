@@ -31,8 +31,8 @@ const DATA = [
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-md bg-[#2b2c40] px-3 py-2 text-xs shadow-lg">
-        <p className="text-[#a3b1c2] mb-1">{label}</p>
+      <div className="rounded-md bg-[#32325d] px-3 py-2 text-xs shadow-lg">
+        <p className="text-[#8898aa] mb-1">{label}</p>
         {payload.map((p: any, i: number) => (
           <div key={i} className="flex items-center gap-2">
             <div
@@ -59,7 +59,7 @@ export function TotalRevenueCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+        <span className="text-lg font-semibold text-[#32325d] dark:text-[#32325d]">
           Total Revenue
         </span>
       }
@@ -68,24 +68,25 @@ export function TotalRevenueCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3]" />}
+            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className="h-full sneat-card-shadow"
+      className="h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer"
       styles={{ body: { padding: "1.5rem", height: "100%" } }}
     >
       <div className="flex flex-col lg:flex-row gap-8 h-full">
         {/* Left: Bar Chart with Recharts */}
-        <div className="flex-1 min-h-[250px] border-r border-[#eceef1] dark:border-[#444564] pr-0 lg:pr-8">
+        <div className="flex-1 min-h-[250px] border-r border-[#e0e0e0] dark:border-[#2a2a2a] pr-0 lg:pr-8">
           <div className="flex items-center gap-4 mb-4">
             <Space>
-              <span className="flex items-center gap-1 text-xs text-[#8592a3]">
-                <div className="w-2.5 h-2.5 rounded-full bg-[#696cff]" />
+              <span className="flex items-center gap-1 text-xs text-[#8898aa]">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#32325d]" />
                 2024
               </span>
-              <span className="flex items-center gap-1 text-xs text-[#8592a3]">
+              <span className="flex items-center gap-1 text-xs text-[#8898aa]">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#03c3ec]" />
                 2023
               </span>
@@ -99,12 +100,12 @@ export function TotalRevenueCard() {
                   dataKey="month"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#a1acb8", fontSize: 11 }}
+                  tick={{ fill: "#8898aa", fontSize: 11 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#a1acb8", fontSize: 11 }}
+                  tick={{ fill: "#8898aa", fontSize: 11 }}
                   tickFormatter={(value) => `${value}%`}
                 />
                 <Tooltip content={<CustomTooltip />} />
@@ -112,14 +113,14 @@ export function TotalRevenueCard() {
                 <Bar
                   dataKey="primary"
                   name="2024"
-                  fill="#696cff"
+                  fill="#32325d"
                   radius={[4, 4, 0, 0]}
                   barSize={14}
                 >
                   {DATA.map((entry, index) => (
                     <Cell
                       key={`cell-primary-${index}`}
-                      fill={index === DATA.length - 1 ? "#5f61e6" : "#696cff"}
+                      fill={index === DATA.length - 1 ? "#1e293b" : "#32325d"}
                     />
                   ))}
                 </Bar>
@@ -155,13 +156,13 @@ export function TotalRevenueCard() {
                 stroke="currentColor"
                 strokeWidth="8"
                 fill="transparent"
-                className="text-[#f5f5f9] dark:text-[#323249]"
+                className="text-[#f0f2f7]"
               />
               <circle
                 cx="64"
                 cy="64"
                 r="56"
-                stroke="#696cff"
+                stroke="#32325d"
                 strokeWidth="8"
                 fill="transparent"
                 strokeDasharray="351.86"
@@ -171,31 +172,31 @@ export function TotalRevenueCard() {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
+              <span className="text-2xl font-bold text-[#32325d]">
                 78%
               </span>
-              <span className="text-[11px] text-[#8592a3] uppercase font-semibold">
+              <span className="text-[11px] text-[#8898aa] uppercase font-semibold">
                 Growth
               </span>
             </div>
           </div>
 
           <div className="text-center w-full">
-            <Text className="text-[#8592a3] text-xs font-medium">
+            <Text className="text-[#8898aa] text-xs font-medium">
               62% Company Growth
             </Text>
             <div className="flex items-center justify-center gap-4 mt-6 w-full">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md bg-[#696cff]/10 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-[#696cff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-8 h-8 rounded-md bg-[#32325d]/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-[#32325d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div className="text-left">
-                  <div className="text-[10px] text-[#a1acb8] font-medium">
+                  <div className="text-[10px] text-[#8898aa] font-medium">
                     2024
                   </div>
-                  <div className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+                  <div className="text-sm font-semibold text-[#32325d]">
                     $32.5k
                   </div>
                 </div>
@@ -207,10 +208,10 @@ export function TotalRevenueCard() {
                   </svg>
                 </div>
                 <div className="text-left">
-                  <div className="text-[10px] text-[#a1acb8] font-medium">
+                  <div className="text-[10px] text-[#8898aa] font-medium">
                     2023
                   </div>
-                  <div className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+                  <div className="text-sm font-semibold text-[#32325d]">
                     $41.2k
                   </div>
                 </div>
@@ -227,7 +228,7 @@ export function ProfileReportCard() {
   return (
     <Card
       bordered={false}
-      className="h-full sneat-card-shadow"
+      className="h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer"
       styles={{
         body: {
           padding: "1.5rem",
@@ -241,7 +242,7 @@ export function ProfileReportCard() {
         {/* 左侧：标题 + 指标 */}
         <div className="flex flex-col justify-between">
           <div className="mb-4">
-            <h5 className="text-[0.9375rem] font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-1">
+            <h5 className="text-[0.9375rem] font-semibold text-[#32325d] m-0 mb-1">
               Profile Report
             </h5>
             <span className="px-2 py-1 bg-[#ffab00]/10 text-[#ffab00] rounded text-[11px] font-bold">
@@ -252,7 +253,7 @@ export function ProfileReportCard() {
             <span className="text-[#71dd37] font-medium text-sm flex items-center gap-1">
               <ArrowUpOutlined /> 68.2%
             </span>
-            <h4 className="text-xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+            <h4 className="text-xl font-bold text-[#32325d] m-0">
               $84,686k
             </h4>
           </div>

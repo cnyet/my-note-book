@@ -112,7 +112,7 @@ function MiniBarChart() {
             dataKey="name"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: "#a1acb8", fontSize: 10 }}
+            tick={{ fill: "#8898aa", fontSize: 10 }}
             dy={10}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -120,7 +120,7 @@ function MiniBarChart() {
             <Bar
               key={entry.name}
               dataKey="value"
-              fill={index === 4 ? "#696cff" : "#696cff/15"}
+              fill={index === 4 ? "#32325d" : "#32325d/15"}
               radius={[4, 4, 0, 0]}
             />
           ))}
@@ -151,7 +151,7 @@ export function StatCard({
       <Card
         bordered={false}
         className={cn(
-          "h-full sneat-card-shadow transition-all hover:translate-y-[-2px]",
+          "h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer",
           className,
         )}
         styles={{
@@ -161,8 +161,8 @@ export function StatCard({
           },
         }}
       >
-        <span className="text-[#697a8d] font-medium text-sm">{title}</span>
-        <h4 className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0 mt-0.5">
+        <span className="text-[#525f7f] font-medium text-sm">{title}</span>
+        <h4 className="text-2xl font-bold text-[#32325d] dark:text-[#32325d] m-0 mt-0.5">
           {value}
         </h4>
 
@@ -177,7 +177,7 @@ export function StatCard({
     <Card
       bordered={false}
       className={cn(
-        "h-full sneat-card-shadow transition-all hover:translate-y-[-2px]",
+        "h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer",
         className,
       )}
       styles={{ body: { padding: "1.5rem" } }}
@@ -185,7 +185,7 @@ export function StatCard({
       <div className="flex justify-between items-start mb-4">
         <div
           className={cn(
-            "w-[42px] h-[42px] rounded-lg flex items-center justify-center transition-transform hover:scale-110",
+            "w-[42px] h-[42px] rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 cursor-pointer",
             iconColor,
           )}
         >
@@ -195,17 +195,18 @@ export function StatCard({
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3]" />}
+            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#525f7f] transition-colors" />}
             size="small"
+            className="cursor-pointer"
           />
         </Dropdown>
       </div>
 
       <div className="flex flex-col">
-        <span className="text-[#697a8d] font-normal text-[0.9375rem] tracking-tight mb-1">
+        <span className="text-[#525f7f] font-medium text-[0.9375rem] tracking-tight mb-1">
           {title}
         </span>
-        <h4 className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+        <h4 className="text-2xl font-bold text-[#32325d] dark:text-[#32325d] m-0">
           {value}
         </h4>
       </div>

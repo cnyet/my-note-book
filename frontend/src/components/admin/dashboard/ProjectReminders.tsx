@@ -69,9 +69,9 @@ export function ProjectRemindersCard() {
       title: "PROJECT",
       dataIndex: "project",
       key: "project",
-      className: "text-[#8592a3] text-xs font-medium",
+      className: "text-[#8898aa] text-xs font-medium",
       render: (text: string) => (
-        <span className="text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2]">
+        <span className="text-sm font-medium text-[#32325d]">
           {text}
         </span>
       ),
@@ -80,16 +80,16 @@ export function ProjectRemindersCard() {
       title: "LEADER",
       dataIndex: "leader",
       key: "leader",
-      className: "text-[#8592a3] text-xs font-medium",
+      className: "text-[#8898aa] text-xs font-medium",
       render: (leader: { name: string; avatar?: string }) => (
         <div className="flex items-center gap-2">
           <Avatar className="h-6 w-6">
             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${leader.name}`} />
-            <AvatarFallback className="bg-[#696cff]/10 text-[#696cff] text-xs">
+            <AvatarFallback className="bg-[#32325d]/10 text-[#32325d] text-xs">
               {leader.avatar}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-[#697a8d]">{leader.name}</span>
+          <span className="text-sm text-[#525f7f]">{leader.name}</span>
         </div>
       ),
     },
@@ -97,14 +97,14 @@ export function ProjectRemindersCard() {
       title: "TEAM",
       dataIndex: "team",
       key: "team",
-      className: "text-[#8592a3] text-xs font-medium",
+      className: "text-[#8898aa] text-xs font-medium",
       render: (team: string[]) => (
         <div className="flex items-center gap-1">
           {team.map((role) => (
             <Tag
               key={role}
               color=""
-              className="!bg-[#f5f5f9] dark:!bg-[#323249] !text-[#697a8d] !border-none !rounded text-xs px-2 py-0.5"
+              className="!bg-[#f8f9fa] !text-[#525f7f] !border-none !rounded text-xs px-2 py-0.5"
             >
               {role}
             </Tag>
@@ -116,16 +116,16 @@ export function ProjectRemindersCard() {
       title: "DEADLINE",
       dataIndex: "deadline",
       key: "deadline",
-      className: "text-[#8592a3] text-xs font-medium",
+      className: "text-[#8898aa] text-xs font-medium",
       render: (text: string) => (
-        <span className="text-sm text-[#697a8d]">{text}</span>
+        <span className="text-sm text-[#525f7f]">{text}</span>
       ),
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      className: "text-[#8592a3] text-xs font-medium",
+      className: "text-[#8898aa] text-xs font-medium",
       render: (status: keyof typeof STATUS_CONFIG) => {
         const config = STATUS_CONFIG[status];
         return (
@@ -146,7 +146,7 @@ export function ProjectRemindersCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+        <span className="text-lg font-semibold text-[#32325d]">
           Project Reminders
         </span>
       }
@@ -155,12 +155,13 @@ export function ProjectRemindersCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3]" />}
+            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className={cn("sneat-card-shadow transition-all hover:translate-y-[-2px]")}
+      className={cn("rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer")}
       styles={{
         body: { padding: "1.5rem" },
       }}

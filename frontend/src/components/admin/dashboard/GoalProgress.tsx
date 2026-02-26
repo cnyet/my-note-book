@@ -55,7 +55,7 @@ export function GoalProgressCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+        <span className="text-lg font-semibold text-[#32325d]">
           Goal Progress
         </span>
       }
@@ -64,12 +64,13 @@ export function GoalProgressCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3]" />}
+            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className={cn("h-full sneat-card-shadow transition-all hover:translate-y-[-2px]")}
+      className={cn("h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer")}
       styles={{
         body: { padding: "1.5rem", height: "100%" },
       }}
@@ -81,7 +82,7 @@ export function GoalProgressCard() {
           return (
             <div
               key={goal.name}
-              className="flex flex-col items-center p-4 rounded-xl bg-[#f5f5f9] dark:bg-[#323249]"
+              className="flex flex-col items-center p-4 rounded-xl bg-[#f8f9fa]"
             >
               {/* Circular Progress */}
               <div className="relative w-20 h-20 mb-3">
@@ -93,7 +94,7 @@ export function GoalProgressCard() {
                     stroke="currentColor"
                     strokeWidth="6"
                     fill="transparent"
-                    className="text-[#eceef1] dark:text-[#444564]"
+                    className="text-[#e0e0e0]"
                   />
                   <circle
                     cx="40"
@@ -109,7 +110,7 @@ export function GoalProgressCard() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-sm font-bold text-[#566a7f] dark:text-[#a3b1c2]">
+                  <span className="text-sm font-bold text-[#32325d]">
                     {percentage}%
                   </span>
                 </div>
@@ -122,13 +123,13 @@ export function GoalProgressCard() {
                     size={14}
                     className={cn("w-3.5 h-3.5", goal.color.replace("#", "text-"))}
                   />
-                  <p className="text-xs font-medium text-[#697a8d] truncate">
+                  <p className="text-xs font-medium text-[#525f7f] truncate">
                     {goal.name}
                   </p>
                 </div>
-                <p className="text-sm font-bold text-[#566a7f] dark:text-[#a3b1c2]">
+                <p className="text-sm font-bold text-[#32325d]">
                   {formatValue(goal.current, goal.name)}{" "}
-                  <span className="text-xs font-normal text-[#8592a3]">
+                  <span className="text-xs font-normal text-[#8898aa]">
                     / {formatValue(goal.target, goal.name)}
                   </span>
                 </p>

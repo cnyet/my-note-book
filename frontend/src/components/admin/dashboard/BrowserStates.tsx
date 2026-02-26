@@ -58,7 +58,7 @@ export function BrowserStatesCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+        <span className="text-lg font-semibold text-[#32325d]">
           Browser States
         </span>
       }
@@ -67,12 +67,13 @@ export function BrowserStatesCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3]" />}
+            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className={cn("h-full sneat-card-shadow transition-all hover:translate-y-[-2px]")}
+      className={cn("h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer")}
       styles={{
         body: { padding: "1.5rem", height: "100%" },
       }}
@@ -92,15 +93,15 @@ export function BrowserStatesCard() {
                   <browser.icon size={16} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2]">
+                  <p className="text-sm font-medium text-[#32325d]">
                     {browser.name}
                   </p>
-                  <p className="text-xs text-[#8592a3]">
+                  <p className="text-xs text-[#8898aa]">
                     {browser.users} users
                   </p>
                 </div>
               </div>
-              <span className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+              <span className="text-sm font-semibold text-[#32325d]">
                 {browser.value}%
               </span>
             </div>
@@ -108,7 +109,7 @@ export function BrowserStatesCard() {
               percent={browser.value}
               showInfo={false}
               strokeColor={browser.color}
-              trailColor="#f0f0f0"
+              trailColor="#f0f2f7"
               className="m-0"
               size="small"
             />
