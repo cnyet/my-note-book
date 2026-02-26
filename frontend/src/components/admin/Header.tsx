@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
 import {
   AlertCircle,
@@ -23,9 +22,7 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Breadcrumb, generateBreadcrumbItems } from "./shared/Breadcrumb";
 import { DateRangePicker } from "./shared/DateRangePicker";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 interface AdminHeaderProps {
@@ -74,11 +71,8 @@ const TYPE_CONFIG = {
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const { theme, setTheme } = useTheme();
-  const pathname = usePathname();
   const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date } | undefined>();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
-
-  const breadcrumbItems = generateBreadcrumbItems(pathname);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -97,84 +91,83 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   }
 
   return (
-    <header className="z-10 w-full px-6 pt-4 pb-2">
-      {/* Breadcrumb Row */}
-      <div className="mb-4">
-        <Breadcrumb items={breadcrumbItems} />
-      </div>
-
-      {/* Header Controls Row */}
-      <div className="flex items-center justify-between px-6 py-2 bg-white/80 dark:bg-[#2b2c40]/80 backdrop-blur-md rounded-md sneat-card-shadow border-none">
+    <header className="z-10 w-full bg-white border-b border-[#e0e0e0]">
+      {/* Header 内容行 - 单行布局 */}
+      <div className="flex items-center justify-between h-[72px] px-6">
+        {/* 左侧：菜单按钮 + 搜索框 */}
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden text-[#697a8d]"
+            className="lg:hidden text-[#525f7f]"
             onClick={onMenuClick}
             aria-label="Toggle menu"
           >
             <Menu className="w-5 h-5" />
           </Button>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center w-64 lg:w-96 relative">
-            <Keyboard className="w-[1.125rem] h-[1.125rem] mr-3 text-[#b4bdc6]" />
-            <Input
-              type="text"
-              placeholder="Search (Ctrl+K)"
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 placeholder:text-[#b4bdc6] text-sm"
-            />
-            <kbd className="absolute right-3 px-2 py-1 text-xs bg-[#f5f5f9] dark:bg-[#323249] text-[#a1acb8] rounded">
-              ⌘K
-            </kbd>
+          {/* 搜索框 */}
+          <div className="hidden md:flex items-center relative">
+            <div className="flex items-center w-64 lg:w-80 px-4 py-2.5 bg-[#f8f9fa] rounded-md transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5e72e4]/20">
+              <Keyboard className="w-4 h-4 mr-3 text-[#8898aa]" />
+              <input
+                type="text"
+                placeholder="Search (Ctrl+K)"
+                className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-[#525f7f] placeholder:text-[#8898aa]"
+              />
+              <kbd className="hidden lg:inline-flex px-2 py-0.5 text-xs bg-white rounded text-[#8898aa]">
+                ⌘K
+              </kbd>
+            </div>
           </div>
         </div>
 
+        {/* 右侧：功能按钮 */}
         <div className="flex items-center gap-2">
-          {/* Date Range Picker */}
+          {/* 日期选择器 */}
           <DateRangePicker
             value={dateRange}
             onChange={setDateRange}
             className="hidden lg:flex"
           />
 
-          {/* Theme Toggle */}
+          {/* 主题切换 */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="text-[#697a8d] hover:text-[#696cff] transition-colors"
+            className="text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa] transition-colors"
             aria-label="Toggle theme"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
 
-          {/* Notifications */}
+          {/* 通知 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-[#697a8d] hover:text-[#696cff] relative transition-colors"
+                className="text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa] relative transition-colors"
                 aria-label="Notifications"
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-[10px] right-[10px] w-2 h-2 bg-[#ff3e1d] rounded-full border-2 border-white dark:border-[#2b2c40]" />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-[#f5365c] rounded-full border border-white" />
                 )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80" align="end" forceMount>
               <DropdownMenuLabel className="font-normal p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+                  <span className="text-sm font-semibold text-[#525f7f]">
                     Notifications
                   </span>
                   {unreadCount > 0 && (
                     <button
                       onClick={handleMarkAllRead}
-                      className="text-xs text-[#696cff] hover:underline"
+                      className="text-xs text-[#5e72e4] hover:underline"
                     >
                       Mark all as read
                     </button>
@@ -191,7 +184,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       key={notification.id}
                       className={cn(
                         "py-3 px-4 cursor-pointer flex gap-3",
-                        !notification.read && "bg-[#f5f5f9]/50 dark:bg-[#323249]/50"
+                        !notification.read && "bg-[#f8f9fa]"
                       )}
                     >
                       <div className={cn("w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0", config.bg)}>
@@ -200,41 +193,41 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                       <div className="flex-1 min-w-0">
                         <p className={cn(
                           "text-sm truncate",
-                          !notification.read ? "font-semibold text-[#566a7f] dark:text-[#a3b1c2]" : "text-[#697a8d]"
+                          !notification.read ? "font-semibold text-[#525f7f]" : "text-[#8898aa]"
                         )}>
                           {notification.title}
                         </p>
-                        <p className="text-xs text-[#a1acb8]">{notification.time}</p>
+                        <p className="text-xs text-[#8898aa]">{notification.time}</p>
                       </div>
                     </DropdownMenuItem>
                   );
                 })}
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="py-2 px-4 text-center cursor-pointer text-[#696cff] hover:text-[#5f61e6]">
+              <DropdownMenuItem className="py-2 px-4 text-center cursor-pointer text-[#5e72e4] hover:text-[#5665e3]">
                 View all notifications
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* User Profile */}
+          {/* 用户头像 */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="relative h-10 w-10 rounded-full p-0"
+                className="relative h-10 w-10 rounded-full p-0 hover:bg-[#f8f9fa] transition-colors"
               >
                 <div className="relative">
-                  <Avatar className="h-10 w-10 border-0 shadow-sm">
+                  <Avatar className="h-10 w-10 border border-[#e0e0e0]">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || "admin"}`}
                       alt={user?.username}
                     />
-                    <AvatarFallback className="bg-[#696cff]/10 text-[#696cff]">
+                    <AvatarFallback className="bg-[#f0f2f7] text-[#525f7f]">
                       {user?.username?.[0]?.toUpperCase() || "A"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#71dd37] border-2 border-white dark:border-[#2b2c40] rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#71dd37] border-2 border-white rounded-full"></span>
                 </div>
               </Button>
             </DropdownMenuTrigger>
@@ -248,26 +241,26 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-semibold leading-none text-[#566a7f] dark:text-[#a3b1c2]">
+                    <p className="text-sm font-semibold leading-none text-[#525f7f]">
                       {user?.username || "John Doe"}
                     </p>
-                    <p className="text-xs leading-none text-[#8592a3]">Administrator</p>
+                    <p className="text-xs leading-none text-[#8898aa]">Administrator</p>
                   </div>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#697a8d] focus:text-[#696cff]">
+              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
                 My Profile
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#697a8d] focus:text-[#696cff]">
+              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#697a8d] focus:text-[#696cff]">
+              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
                 Billing
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="py-2 px-4 text-[#ff3e1d] focus:text-[#ff3e1d] focus:bg-[#ff3e1d]/10 cursor-pointer"
+                className="py-2 px-4 text-[#f5365c] hover:text-[#f5365c] hover:bg-[#f5365c]/10 cursor-pointer"
                 onClick={logout}
               >
                 Log out
