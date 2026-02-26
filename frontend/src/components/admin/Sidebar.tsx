@@ -89,7 +89,7 @@ export function Sidebar({
       >
         {/* ═══ Logo 区域 ═══ */}
         <div className="flex items-center justify-between h-[72px] px-3">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 cursor-pointer">
             <div className="relative w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center">
               <Image
                 src="/logo.svg"
@@ -114,7 +114,7 @@ export function Sidebar({
           <button
             onClick={onToggleCollapse}
             className={cn(
-              "hidden lg:flex items-center justify-center w-8 h-8 rounded-md transition-all flex-shrink-0",
+              "hidden lg:flex items-center justify-center w-8 h-8 rounded-md transition-all flex-shrink-0 cursor-pointer hover:bg-[#f8f9fa]",
               !isExpanded && "opacity-0 pointer-events-none",
             )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -171,7 +171,7 @@ export function Sidebar({
                         <Link
                           href={item.href}
                           className={cn(
-                            "flex items-center rounded-md text-[15px] transition-all duration-200 relative no-underline group",
+                            "flex items-center rounded-md text-[15px] transition-all duration-200 relative no-underline cursor-pointer group",
                             isExpanded
                               ? "px-4 py-2.5 gap-3"
                               : "w-12 h-12 mx-auto my-0.5 flex items-center justify-center p-0",
@@ -238,7 +238,7 @@ export function Sidebar({
               <Link
                 href="/"
                 className={cn(
-                  "flex items-center rounded-md text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline",
+                  "flex items-center rounded-md text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline cursor-pointer",
                   isExpanded
                     ? "px-4 py-2.5 gap-3"
                     : "w-12 h-12 mx-auto flex items-center justify-center p-0",
