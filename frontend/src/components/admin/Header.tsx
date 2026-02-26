@@ -22,8 +22,10 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { DateRangePicker } from "./shared/DateRangePicker";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Breadcrumb, generateBreadcrumbItems } from "./shared/Breadcrumb";
+import { DateRangePicker } from "./shared/DateRangePicker";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -71,9 +73,11 @@ const TYPE_CONFIG = {
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
   const { user, logout } = useAdminAuth();
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
   const [dateRange, setDateRange] = useState<{ startDate: Date; endDate: Date } | undefined>();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
 
+  const breadcrumbItems = generateBreadcrumbItems(pathname);
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const handleMarkAllRead = () => {
@@ -268,6 +272,11 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+
+      {/* 面包屑区域 */}
+      <div className="px-6 py-3 bg-[#f8f9fa] border-b border-[#e0e0e0]">
+        <Breadcrumb items={breadcrumbItems} />
       </div>
     </header>
   );
