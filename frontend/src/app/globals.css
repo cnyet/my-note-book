@@ -4,43 +4,48 @@
 
 @layer base {
   :root {
-    /* Sneat Light Theme (Default) */
+    /* Duralux Admin Theme Colors */
     --background: 220 33% 98%; /* #f5f5f9 */
-    --foreground: 232 10% 25%; /* #383842 */
+    --foreground: 232 31% 20%; /* #32325d - Primary text */
 
     --card: 0 0% 100%;
-    --card-foreground: 232 10% 25%;
+    --card-foreground: 232 31% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 232 10% 25%;
+    --popover-foreground: 232 31% 20%;
 
-    /* Sneat Primary Purple: #696cff -> HSL 239 100% 71% (approx matches visual) */
-    --primary: 239 84% 67%;
+    /* Duralux Primary: #32325d -> HSL 239 31% 29% */
+    --primary: 239 31% 29%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 214.3 31.8% 91.4%; /* #e0e0e0 */
+    --muted-foreground: 215 22% 56%; /* #8898aa */
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 100% 55%; /* #ff3e1d */
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 239 84% 67%;
+    --border: 220 13% 91%; /* #e0e0e0 */
+    --input: 220 13% 91%;
+    --ring: 239 31% 29%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* rounded-xl */
 
-    /* Legacy Genesis Variables (Mapped for compatibility) */
-    --abyss-black: 10 10 15;
-    --cyber-cyan: 0 242 255;
-    --neon-purple: 188 19 254;
-    --surface: 26 26 36;
+    /* Duralux Data Visualization Colors */
+    --chart-primary: 239 31% 29%; /* #32325d */
+    --chart-secondary: 188 100% 44%; /* #03c3ec */
+    --chart-success: 114 87% 54%; /* #71dd37 */
+    --chart-warning: 42 100% 50%; /* #ffab00 */
+    --chart-danger: 11 100% 55%; /* #ff3e1d */
+
+    /* Font Families */
+    --font-body: "Fira Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: "Fira Code", monospace;
   }
 
   .dark {
@@ -80,11 +85,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family:
-      "Public Sans",
-      system-ui,
-      -apple-system,
-      sans-serif;
+    font-family: var(--font-body);
     font-feature-settings: "cv11", "ss01";
     scroll-behavior: smooth;
   }
@@ -95,7 +96,7 @@
   h4,
   h5,
   h6 {
-    @apply font-heading tracking-tight;
+    @apply font-body tracking-tight;
   }
 }
 
@@ -129,8 +130,18 @@
     text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
   }
 
+  /* Updated Sneat Card Shadow - Duralux style */
   .sneat-card-shadow {
     box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+  }
+
+  /* Enhanced hover effect for dashboard cards */
+  .card-hover-enhanced {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  .card-hover-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 89, 113, 0.2);
   }
 
   .sneat-hover-shadow {
@@ -155,7 +166,16 @@
 
   /* Duralux Card Hover Effect */
   .duralux-card-hover {
-    @apply transition-all duration-200 ease-in-out hover:translate-y-[-2px] hover:sneat-hover-shadow dark:hover:sneat-hover-shadow;
+    @apply transition-all duration-200 ease-in-out hover:translate-y-[-2px] hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)];
+  }
+
+  /* Bento Grid Card Style */
+  .bento-card {
+    @apply rounded-xl bg-white shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px];
+  }
+
+  .dark .bento-card {
+    @apply bg-[#2b2c40];
   }
 
   /* Sneat Ant Design Card 全局覆盖 */
