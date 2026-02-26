@@ -88,9 +88,9 @@ export function Sidebar({
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* ═══ Logo 区域 ═══ */}
-        <div className="flex items-center justify-between h-[72px] px-4">
+        <div className="flex items-center justify-between h-[72px] px-3">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative w-[42px] h-[42px] flex-shrink-0">
+            <div className="relative w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center">
               <Image
                 src="/logo.svg"
                 alt="Logo"
@@ -129,7 +129,7 @@ export function Sidebar({
 
         {/* ═══ 滚动区域：菜单列表 ═══ */}
         <ScrollArea className="h-[calc(100vh-4.5rem)]">
-          <ul className="py-1 px-[0.875rem] list-none m-0">
+          <ul className="py-1 px-2 list-none m-0">
             {menuGroups.map((group) => (
               <li key={group.label}>
                 {/* Section Header */}
@@ -165,7 +165,7 @@ export function Sidebar({
 
                         {/* 折叠态 Active: 左侧垂直条 */}
                         {isActive && !isExpanded && (
-                          <div className="absolute left-2 top-2 bottom-2 w-1 bg-[#525f7f] rounded-r-full" />
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#525f7f] rounded-r-full" />
                         )}
 
                         <Link
@@ -174,13 +174,13 @@ export function Sidebar({
                             "flex items-center rounded-md text-[15px] transition-all duration-200 relative no-underline group",
                             isExpanded
                               ? "px-4 py-2.5 gap-3"
-                              : "px-0 py-2.5 justify-center",
+                              : "w-12 h-12 mx-auto my-0.5 flex items-center justify-center p-0",
                             /* Active 状态已在上面用绝对定位背景处理 */
                             !isActive
                               ? "text-[#525f7f] dark:text-[#525f7f] hover:bg-[#f8f9fa] dark:hover:bg-[#f8f9fa]"
                               : isExpanded
                               ? "text-[#32325d] dark:text-[#32325d] font-medium"
-                              : "text-[#32325d]",
+                              : "text-[#32325d] bg-[#f0f2f7]",
                           )}
                           onClick={() => window.innerWidth < 1024 && onClose()}
                         >
@@ -241,7 +241,7 @@ export function Sidebar({
                   "flex items-center rounded-md text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline",
                   isExpanded
                     ? "px-4 py-2.5 gap-3"
-                    : "px-0 py-2.5 justify-center",
+                    : "w-12 h-12 mx-auto flex items-center justify-center p-0",
                 )}
               >
                 <LogOut
