@@ -44,6 +44,7 @@ import {
 import { useEffect, useState } from "react";
 import { GripVertical, MoreVertical } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -460,7 +461,6 @@ function ToolFormModal({ open, tool, onSave, onCancel }: ToolFormModalProps) {
 
 // Main Page Component
 export default function ToolsManagementPage() {
-  const [tools, setTools] = useState<Tool[]>([]);
   const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "All">(
     "All"
@@ -469,7 +469,22 @@ export default function ToolsManagementPage() {
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeId, setActiveId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  // Load tools from API using React Query
+  const { data: toolsData } = useQuery({
+    queryKey: ["admin-tools"],
+    queryFn: async () => {
+      const response = await toolsApi.list();
+      if (response.success && response.data) {
+        return response.data.map(mapApiToolToFrontend);
+      }
+      return [];
+    },
+  });
+
+  const tools = toolsData || [];
+  const loading = false;
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -478,27 +493,6 @@ export default function ToolsManagementPage() {
     })
   );
 
-  // Load tools from API
-  useEffect(() => {
-    loadTools();
-  }, []);
-
-  const loadTools = async () => {
-    try {
-      setLoading(true);
-      const response = await toolsApi.list();
-      if (response.success && response.data) {
-        const mappedTools = response.data.map(mapApiToolToFrontend);
-        setTools(mappedTools);
-      }
-    } catch (error) {
-      console.error("Failed to load tools:", error);
-      message.error("Failed to load tools from API");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSave = async (values: Partial<Tool>) => {
     try {
       if (editingTool) {
@@ -506,7 +500,7 @@ export default function ToolsManagementPage() {
         const apiData = mapFrontendToolToApi({ ...editingTool, ...values } as Tool);
         const response = await toolsApi.update(editingTool.id, apiData);
         if (response.success) {
-          await loadTools();
+          queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
           message.success("Tool updated successfully");
         }
       } else {
@@ -523,7 +517,7 @@ export default function ToolsManagementPage() {
         } as Tool);
         const response = await toolsApi.create(apiData as Parameters<typeof toolsApi.create>[0]);
         if (response.success) {
-          await loadTools();
+          queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
           message.success("Tool created successfully");
         }
       }
@@ -544,7 +538,7 @@ export default function ToolsManagementPage() {
       onOk: async () => {
         try {
           await toolsApi.delete(tool.id);
-          await loadTools();
+          queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
           message.success("Tool deleted successfully");
         } catch (error) {
           console.error("Failed to delete tool:", error);

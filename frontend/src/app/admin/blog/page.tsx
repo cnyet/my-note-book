@@ -26,6 +26,7 @@ import { toast } from "sonner";
 
 import { BLOG_CONSTANTS } from "./constants";
 import { blogApi, type BlogPost as ApiBlogPost } from "@/lib/admin-api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // 前端 BlogPost 类型（与 API 类型兼容）
 type BlogPost = ApiBlogPost;
@@ -38,10 +39,9 @@ export default function BlogListPage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // State
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,25 +61,20 @@ export default function BlogListPage() {
     actions: true,
   });
 
-  // Load posts from API
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  const loadPosts = async () => {
-    try {
-      setLoading(true);
+  // Load posts from API using React Query
+  const { data: postsData, isLoading } = useQuery({
+    queryKey: ["admin-blog-posts"],
+    queryFn: async () => {
       const response = await blogApi.list();
       if (response.success && response.data) {
-        setPosts(response.data);
+        return response.data;
       }
-    } catch (error) {
-      console.error("Failed to load blog posts:", error);
-      message.error("Failed to load blog posts");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    },
+  });
+
+  const posts = postsData || [];
+  const loading = isLoading;
 
   // Memoized filtered and sorted posts
   const filteredPosts = useMemo(() => {
@@ -146,7 +141,7 @@ export default function BlogListPage() {
       onOk: async () => {
         try {
           await blogApi.delete(id);
-          await loadPosts();
+          queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
           toast.success("Blog post deleted successfully");
         } catch (error) {
           console.error("Failed to delete blog post:", error);
@@ -166,7 +161,7 @@ export default function BlogListPage() {
       onOk: async () => {
         try {
           await Promise.all(selectedRowKeys.map(id => blogApi.delete(id as number)));
-          await loadPosts();
+          queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
           setSelectedRowKeys([]);
           toast.success(`${selectedRowKeys.length} blog post(s) deleted successfully`);
         } catch (error) {
@@ -200,7 +195,7 @@ export default function BlogListPage() {
               .filter((key) => posts.find((p) => p.id === key)?.status === "draft")
               .map(id => blogApi.togglePublish(id as number))
           );
-          await loadPosts();
+          queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
           setSelectedRowKeys([]);
           toast.success(`${draftCount} post(s) published successfully`);
         } catch (error) {
@@ -214,7 +209,7 @@ export default function BlogListPage() {
   const handleStatusToggle = async (id: number) => {
     try {
       await blogApi.togglePublish(id);
-      await loadPosts();
+      queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
       toast.success("Post status updated successfully");
     } catch (error) {
       console.error("Failed to toggle post status:", error);

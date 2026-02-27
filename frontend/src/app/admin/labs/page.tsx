@@ -29,6 +29,7 @@ import {
   Users,
 } from "lucide-react";
 import { labsApi, type Lab as ApiLab } from "@/lib/admin-api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -321,33 +322,26 @@ function EditLabModal({
 }
 
 export default function LabsPage() {
-  const [labs, setLabs] = useState<Lab[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingLab, setEditingLab] = useState<Lab | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // Load labs from API
-  useEffect(() => {
-    loadLabs();
-  }, []);
-
-  const loadLabs = async () => {
-    try {
-      setLoading(true);
+  // Load labs from API using React Query
+  const { data: labsData } = useQuery({
+    queryKey: ["admin-labs"],
+    queryFn: async () => {
       const response = await labsApi.list();
       if (response.success && response.data) {
-        const mappedLabs = response.data.map(mapApiLabToFrontend);
-        setLabs(mappedLabs);
+        return response.data.map(mapApiLabToFrontend);
       }
-    } catch (error) {
-      console.error("Failed to load labs:", error);
-      message.error("Failed to load labs from API");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    },
+  });
+
+  const labs = labsData || [];
+  const loading = false;
 
   const handleSaveLab = async (lab: Lab) => {
     try {
@@ -356,7 +350,7 @@ export default function LabsPage() {
         const apiData = mapFrontendLabToApi(lab);
         const response = await labsApi.update(lab.id, apiData as Parameters<typeof labsApi.update>[1]);
         if (response.success) {
-          await loadLabs();
+          queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
           message.success("Lab updated successfully");
         }
       } else {
@@ -364,7 +358,7 @@ export default function LabsPage() {
         const apiData = mapFrontendLabToApi(lab);
         const response = await labsApi.create(apiData as Parameters<typeof labsApi.create>[0]);
         if (response.success) {
-          await loadLabs();
+          queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
           message.success("Lab created successfully");
         }
       }
@@ -385,7 +379,7 @@ export default function LabsPage() {
       onOk: async () => {
         try {
           await labsApi.delete(lab.id);
-          await loadLabs();
+          queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
           message.success("Lab deleted successfully");
         } catch (error) {
           console.error("Failed to delete lab:", error);

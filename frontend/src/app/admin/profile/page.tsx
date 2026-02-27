@@ -21,6 +21,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { adminAuthApi } from "@/lib/admin-api";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
 
 interface UserProfile {
@@ -51,8 +52,6 @@ export default function ProfilePage() {
   const [passwordForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [tokens, setTokens] = useState<ApiToken[]>([]);
-  const [tokensLoading, setTokensLoading] = useState(false);
   const [newTokenName, setNewTokenName] = useState("");
   const [creatingToken, setCreatingToken] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
@@ -62,40 +61,44 @@ export default function ProfilePage() {
     percent: 0,
   });
 
-  // Load user profile
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const response = await adminAuthApi.get<UserProfile>("/admin/profile");
-        if (response.success && response.data) {
-          profileForm.setFieldsValue({
-            username: response.data.username,
-            email: response.data.email,
-            display_name: response.data.display_name || "",
-          });
-        }
-      } catch (error) {
-        message.error("Failed to load profile");
+  const queryClient = useQueryClient();
+
+  // Load user profile using React Query
+  const { data: profile } = useQuery({
+    queryKey: ["admin-profile"],
+    queryFn: async () => {
+      const response = await adminAuthApi.get<UserProfile>("/admin/profile");
+      if (response.success && response.data) {
+        return response.data;
       }
-    };
+      return null;
+    },
+  });
 
-    loadProfile();
-    loadTokens();
-  }, [profileForm]);
-
-  const loadTokens = async () => {
-    setTokensLoading(true);
-    try {
+  // Load tokens using React Query
+  const { data: tokensData } = useQuery({
+    queryKey: ["admin-profile-tokens"],
+    queryFn: async () => {
       const response = await adminAuthApi.get<ApiToken[]>("/admin/profile/tokens");
       if (response.success && response.data) {
-        setTokens(response.data);
+        return response.data;
       }
-    } catch (error) {
-      message.error("Failed to load tokens");
-    } finally {
-      setTokensLoading(false);
+      return [];
+    },
+  });
+
+  const tokens = tokensData || [];
+
+  // Set form values when profile loads
+  useEffect(() => {
+    if (profile) {
+      profileForm.setFieldsValue({
+        username: profile.username,
+        email: profile.email,
+        display_name: profile.display_name || "",
+      });
     }
-  };
+  }, [profile, profileForm]);
 
   const calculatePasswordStrength = (password: string): PasswordStrength => {
     if (!password) {
@@ -199,7 +202,7 @@ export default function ProfilePage() {
           `Token created: ${response.data.id}. Save it now, you won't see it again!`,
         );
         setNewTokenName("");
-        loadTokens();
+        queryClient.invalidateQueries({ queryKey: ["admin-profile-tokens"] });
       } else {
         message.error("Failed to create token");
       }
@@ -217,8 +220,8 @@ export default function ProfilePage() {
       );
 
       if (response.success) {
+        queryClient.invalidateQueries({ queryKey: ["admin-profile-tokens"] });
         message.success("Token revoked successfully");
-        loadTokens();
       } else {
         message.error("Failed to revoke token");
       }
@@ -532,7 +535,7 @@ export default function ProfilePage() {
           columns={tokenColumns}
           dataSource={tokens}
           rowKey="id"
-          loading={tokensLoading}
+          loading={queryClient.isFetching({ queryKey: ["admin-profile-tokens"] })}
           pagination={false}
           className="dark:[&_th]:bg-[#2b2c40] dark:[_tr:hover_.ant-table-cell]:bg-[#323249]"
         />

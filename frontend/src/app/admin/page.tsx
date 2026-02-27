@@ -12,39 +12,24 @@ import {
   GoalProgressCard,
   ProjectRemindersCard,
 } from "@/components/admin/dashboard";
-import { adminAuthApi, apiClient } from "@/lib/admin-api";
+import { apiClient } from "@/lib/admin-api";
 import { Col, Row } from "antd";
 import { BarChart3, CreditCard, ShoppingCart, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState<{
-    usersCount: number;
-    agentsCount: number;
-    toolsCount: number;
-    blogPostsCount: number;
-  } | null>(null);
-
-  useEffect(() => {
-    const loadStats = async () => {
-      try {
-        const response = await apiClient.get<{
-          usersCount: number;
-          agentsCount: number;
-          toolsCount: number;
-          blogPostsCount: number;
-        }>("/admin/dashboard/stats");
-
-        if (response.data) {
-          setStats(response.data);
-        }
-      } catch (err) {
-        console.error("Failed to load stats", err);
-      }
-    };
-
-    loadStats();
-  }, []);
+  const { data: stats } = useQuery({
+    queryKey: ["admin-dashboard-stats"],
+    queryFn: async () => {
+      const response = await apiClient.get<{
+        usersCount: number;
+        agentsCount: number;
+        toolsCount: number;
+        blogPostsCount: number;
+      }>("/admin/dashboard/stats");
+      return response.data;
+    },
+  });
 
   return (
     <div className="animate-in fade-in-50 duration-500">

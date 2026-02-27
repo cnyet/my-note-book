@@ -38,6 +38,7 @@ import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -649,34 +650,44 @@ function EditAgentModal({
 }
 
 export default function AgentsPage() {
-  const [agents, setAgents] = useState<Agent[]>([]);
   const [filteredAgents, setFilteredAgents] = useState<Agent[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null);
   const [dragEnabled, setDragEnabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // Load agents from API
-  useEffect(() => {
-    loadAgents();
-  }, []);
-
-  const loadAgents = async () => {
-    try {
-      setLoading(true);
+  // Load agents from API using React Query
+  const { data: agentsData, isLoading } = useQuery({
+    queryKey: ["admin-agents"],
+    queryFn: async () => {
       const response = await agentsApi.list();
       if (response.success && response.data) {
-        const mappedAgents = response.data.map(mapApiAgentToFrontend);
-        setAgents(mappedAgents);
+        return response.data.map(mapApiAgentToFrontend);
       }
-    } catch (error) {
-      console.error("Failed to load agents:", error);
-      message.error("Failed to load agents from API");
-    } finally {
-      setLoading(false);
-    }
+      return [];
+    },
+  });
+
+  const agents = agentsData || [];
+
+  // Mutation for deleting agent
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await agentsApi.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
+      message.success("Agent deleted successfully");
+    },
+    onError: () => {
+      message.error("Failed to delete agent");
+    },
+  });
+
+  const loadAgents = async () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
   };
 
   // Filter agents - 添加过滤逻辑
@@ -785,14 +796,7 @@ export default function AgentsPage() {
       okText: "Delete",
       okButtonProps: { danger: true },
       onOk: async () => {
-        try {
-          await agentsApi.delete(agent.id);
-          await loadAgents();
-          message.success("Agent deleted successfully");
-        } catch (error) {
-          console.error("Failed to delete agent:", error);
-          message.error("Failed to delete agent");
-        }
+        deleteMutation.mutate(agent.id);
       },
     });
   };
@@ -872,7 +876,7 @@ export default function AgentsPage() {
               <div>
                 <Text className="text-[#697a8d] text-xs block">Total Agents</Text>
                 <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-lg font-bold">
-                  {agents.length}
+                  {agents.length || 0}
                 </Text>
               </div>
             </div>
