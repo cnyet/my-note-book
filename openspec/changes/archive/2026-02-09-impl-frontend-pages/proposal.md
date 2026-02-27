@@ -5,7 +5,8 @@
 - **Date**: 2026-02-09
 - **Change ID**: `impl-frontend-pages`
 - **Owner**: Antigravity
-- **Status**: Draft
+- **Status**: ✅ Completed
+- **Archived**: 2026-02-27
 
 ## Summary
 
