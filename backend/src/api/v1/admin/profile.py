@@ -3,10 +3,11 @@ from fastapi import APIRouter, HTTPException, status, Header, Depends
 from pydantic import BaseModel, Field, EmailStr, field_validator, validator
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from ....core.database import get_db
 from ....core.security import verify_password, hash_password
 from ....api.deps import get_current_active_user
-from ....models import User
+from ....models import User, APIToken
 from ....schemas.user import UserResponse
 import secrets
 import string
@@ -96,71 +97,83 @@ async def change_password(
 
 
 @router.get("/tokens", response_model=List[TokenInfo])
-async def list_tokens(current_user: User = Depends(get_current_active_user)):
+async def list_tokens(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
     """List all API tokens for current user"""
-    # Mock tokens - in production, these would be stored in database
-    # For now, return mock data based on user ID
-    mock_tokens = [
-        {
-            "id": "token-1",
-            "name": "Frontend - Local Development",
-            "created_at": datetime(2025, 2, 10, 9, 0, 0),
-            "expires_at": datetime(2025, 12, 31, 23, 59, 0),
-            "is_active": True,
-            "last_used": datetime(2025, 2, 12, 10, 0, 0),
-        },
-        {
-            "id": "token-2",
-            "name": "Mobile App - Production",
-            "created_at": datetime(2025, 1, 15, 14, 0, 0),
-            "expires_at": datetime(2026, 1, 15, 14, 0, 0),
-            "is_active": True,
-            "last_used": datetime(2025, 2, 14, 8, 0, 0),
-        },
-        {
-            "id": "token-3",
-            "name": "API Script - Automation",
-            "created_at": datetime(2024, 12, 1, 10, 0, 0),
-            "expires_at": datetime(2025, 3, 1, 10, 0, 0),
-            "is_active": False,
-            "last_used": datetime(2025, 1, 20, 15, 0, 0),
-        },
-    ]
+    result = await db.execute(
+        select(APIToken)
+        .where(APIToken.user_id == current_user.id)
+        .order_by(APIToken.created_at.desc())
+    )
+    tokens = result.scalars().all()
 
-    # Filter tokens for this user (in production, filter by user_id)
-    return mock_tokens
+    return [
+        TokenInfo(
+            id=token.id,
+            name=token.name,
+            created_at=token.created_at,
+            expires_at=token.expires_at,
+            is_active=token.is_active,
+            last_used=token.last_used_at,
+        )
+        for token in tokens
+    ]
 
 
 @router.post("/tokens", response_model=TokenInfo)
 async def create_token(
     token_request: CreateTokenRequest,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     """Create a new API token"""
-    # Generate secure random token
-    token_id = secrets.token_urlsafe(16)
-
-    new_token = TokenInfo(
-        id=token_id,
+    # Create token record
+    new_token = APIToken(
         name=token_request.name,
-        created_at=datetime.now(timezone.utc),
-        expires_at=datetime.now(timezone.utc) + timedelta(days=30),  # Default 30 day expiry
+        user_id=current_user.id,
+        expires_at=datetime.now(timezone.utc) + timedelta(days=30),
         is_active=True,
-        last_used=None,
     )
+    db.add(new_token)
+    await db.commit()
+    await db.refresh(new_token)
 
-    # In production, store in database
-    return new_token
+    return TokenInfo(
+        id=new_token.id,
+        name=new_token.name,
+        created_at=new_token.created_at,
+        expires_at=new_token.expires_at,
+        is_active=new_token.is_active,
+        last_used=new_token.last_used_at,
+    )
 
 
 @router.delete("/tokens/{token_id}")
 async def revoke_token(
     token_id: str,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
-    """Revoke (delete) an API token"""
-    # In production, remove from database
-    # For now, just return success
+    """Revoke (soft delete) an API token"""
+    result = await db.execute(
+        select(APIToken).where(
+            APIToken.id == token_id,
+            APIToken.user_id == current_user.id,
+        )
+    )
+    token = result.scalars().first()
+
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token not found",
+        )
+
+    token.is_active = False
+    await db.commit()
+
     return {"message": f"Token {token_id} revoked"}
 
 

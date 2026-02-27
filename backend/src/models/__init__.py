@@ -11,6 +11,7 @@ SQLAlchemy ORM models for MyNoteBook Admin
 """
 
 from datetime import datetime, timezone
+from uuid import uuid4
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from ..core.database import Base
@@ -137,11 +138,36 @@ class PostTag(Base):
         return f"<PostTag(tag_name='{self.tag_name}')>"
 
 
+class SystemSettings(Base):
+    """系统设置表 (单行记录, id=1)"""
+    __tablename__ = "system_settings"
+
+    id = Column(Integer, primary_key=True)  # Always id=1 for single row
+
+    # General
+    site_title = Column(String(100), default="MyNoteBook", nullable=False)
+    site_description = Column(Text, nullable=True)
+    logo_url = Column(String(500), nullable=True)
+    items_per_page = Column(Integer, default=10, nullable=False)
+
+    # Security
+    session_timeout = Column(Integer, default=60, nullable=False)  # minutes
+    max_login_attempts = Column(Integer, default=5, nullable=False)
+    ip_whitelist = Column(Text, default="", nullable=False)  # Comma-separated IPs
+
+    # Data
+    enable_auto_backup = Column(Boolean, default=False, nullable=False)
+    backup_retention_days = Column(Integer, default=30, nullable=False)
+    log_retention_days = Column(Integer, default=7, nullable=False)
+
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
 class APIToken(Base):
     """API Token 表"""
     __tablename__ = "api_tokens"
 
-    id = Column(String(36), primary_key=True, default="api_token_", index=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True)
     name = Column(String(100), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     expires_at = Column(DateTime, nullable=False)
@@ -156,11 +182,12 @@ class APIToken(Base):
 
 # 导出所有模型
 __all__ = [
-    User,
-    BlogPost,
-    Agent,
-    Tool,
-    Lab,
-    PostTag,
-    APIToken,
+    "User",
+    "BlogPost",
+    "Agent",
+    "Tool",
+    "Lab",
+    "PostTag",
+    "APIToken",
+    "SystemSettings",
 ]

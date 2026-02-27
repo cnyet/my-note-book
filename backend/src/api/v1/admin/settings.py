@@ -1,8 +1,13 @@
 # backend/src/api/v1/admin/settings.py
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel, Field, validator
-from datetime import datetime
+from datetime import datetime, timezone
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+
+from ....core.database import get_db
+from ....models import SystemSettings
 
 router = APIRouter()
 
@@ -39,50 +44,78 @@ class SettingsResponse(BaseModel):
     updated_at: datetime
 
 
-# Mock settings
-mock_settings = {
-    "general": {
-        "site_title": "MyNoteBook",
-        "site_description": "Your intelligent workspace for notes, AI agents, and creative tools",
-        "logo_url": "/images/logo.png",
-        "items_per_page": 10,
-    },
-    "security": {
-        "session_timeout": 30,  # 30 minutes
-        "max_login_attempts": 5,
-        "ip_whitelist": "127.0.0.1,192.168.1.100",
-    },
-    "data": {
-        "enable_auto_backup": True,
-        "backup_retention_days": 30,
-        "log_retention_days": 7,
-    },
-    "updated_at": datetime(2025, 2, 1, 12, 0, 0),
-}
+def settings_to_response(settings: SystemSettings) -> dict:
+    """Convert SystemSettings model to response dict"""
+    return {
+        "general": {
+            "site_title": settings.site_title,
+            "site_description": settings.site_description,
+            "logo_url": settings.logo_url,
+            "items_per_page": settings.items_per_page,
+        },
+        "security": {
+            "session_timeout": settings.session_timeout,
+            "max_login_attempts": settings.max_login_attempts,
+            "ip_whitelist": settings.ip_whitelist or "",
+        },
+        "data": {
+            "enable_auto_backup": settings.enable_auto_backup,
+            "backup_retention_days": settings.backup_retention_days,
+            "log_retention_days": settings.log_retention_days,
+        },
+        "updated_at": settings.updated_at,
+    }
 
 
 @router.get("", response_model=SettingsResponse)
-async def get_settings():
+async def get_settings(db: AsyncSession = Depends(get_db)):
     """Get all system settings"""
-    return mock_settings
+    result = await db.execute(select(SystemSettings).filter_by(id=1))
+    settings = result.scalars().first()
+
+    if not settings:
+        # Create default settings if not exists
+        settings = SystemSettings(id=1)
+        db.add(settings)
+        await db.commit()
+        await db.refresh(settings)
+
+    return settings_to_response(settings)
 
 
 @router.put("", response_model=SettingsResponse)
-async def update_settings(settings_update: SettingsUpdate):
+async def update_settings(
+    settings_update: SettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+):
     """Update system settings (supports partial updates)"""
+    result = await db.execute(select(SystemSettings).filter_by(id=1))
+    settings = result.scalars().first()
+
+    if not settings:
+        # Create default settings if not exists
+        settings = SystemSettings(id=1)
+        db.add(settings)
+        await db.flush()
+
     update_data = settings_update.model_dump(exclude_unset=True)
-    
+
     # Update each section
     if update_data.get("general"):
-        mock_settings["general"].update(update_data["general"])
+        for key, value in update_data["general"].items():
+            setattr(settings, key, value)
     if update_data.get("security"):
-        mock_settings["security"].update(update_data["security"])
+        for key, value in update_data["security"].items():
+            setattr(settings, key, value)
     if update_data.get("data"):
-        mock_settings["data"].update(update_data["data"])
-    
-    mock_settings["updated_at"] = datetime.now()
-    
-    return mock_settings
+        for key, value in update_data["data"].items():
+            setattr(settings, key, value)
+
+    settings.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(settings)
+
+    return settings_to_response(settings)
 
 
 @router.post("/backup")

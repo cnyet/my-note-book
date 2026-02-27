@@ -61,7 +61,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db():
     """初始化数据库表并创建初始数据"""
-    from ..models import User, BlogPost, Agent  # 延迟导入以避免循环依赖
+    from ..models import User, BlogPost, Agent, SystemSettings  # 延迟导入以避免循环依赖
 
     logger.info("Initializing database...")
     async with engine.begin() as conn:
@@ -94,4 +94,22 @@ async def init_db():
                 logger.info("Admin user already exists")
         except Exception as e:
             logger.error(f"Error during initial data creation: {e}")
+            await session.rollback()
+
+    # 创建默认系统设置 (单行记录)
+    async with AsyncSessionLocal() as session:
+        try:
+            from sqlalchemy import select
+            result = await session.execute(select(SystemSettings).filter_by(id=1))
+            existing_settings = result.scalars().first()
+
+            if not existing_settings:
+                default_settings = SystemSettings(id=1)
+                session.add(default_settings)
+                await session.commit()
+                logger.info("Default system settings created")
+            else:
+                logger.info("System settings already exist")
+        except Exception as e:
+            logger.error(f"Error creating default settings: {e}")
             await session.rollback()
