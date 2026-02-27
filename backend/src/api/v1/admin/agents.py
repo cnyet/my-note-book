@@ -12,9 +12,10 @@ from sqlalchemy.orm import Session # Should probably remove if not used elsewher
 from pydantic import BaseModel, Field
 
 from ....core.database import get_db
-from ....models import Agent
+from ....models import Agent, AgentSession
 from ....services.crud import get_crud_service
 from ....schemas.user import UserResponse
+from ....agents.manager import AgentManager, AgentStatus
 
 router = APIRouter()
 
@@ -339,3 +340,193 @@ async def get_agents_summary(
         "offline": offline,
         "by_category": {row[0]: row[1] for row in category_stats},
     }
+
+
+# ============================================================================
+# Agent Lifecycle Management (Sprint 2)
+# ============================================================================
+
+class SpawnResponse(BaseModel):
+    """启动智能体响应"""
+    session_id: str
+    agent_id: int
+    status: str
+    started_at: str
+
+
+class StatusResponse(BaseModel):
+    """智能体状态响应"""
+    agent_id: int
+    agent_name: str
+    status: str
+    session_id: Optional[str] = None
+    uptime_seconds: Optional[int] = None
+    error_message: Optional[str] = None
+
+
+class SessionResponse(BaseModel):
+    """会话历史响应"""
+    id: str
+    agent_id: int
+    status: str
+    started_at: str
+    ended_at: Optional[str] = None
+    error_message: Optional[str] = None
+
+
+@router.post("/{agent_id}/spawn", response_model=SpawnResponse)
+async def spawn_agent(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    启动智能体
+
+    参数:
+        agent_id: 智能体 ID
+        db: 数据库会话
+    """
+    # 检查智能体是否存在
+    agent = await agent_service.get_by_id(db, agent_id)
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="智能体不存在"
+        )
+
+    try:
+        agent_manager = AgentManager(db)
+        session = await agent_manager.spawn(str(agent_id))
+        return {
+            "session_id": session.id,
+            "agent_id": agent_id,
+            "status": session.status,
+            "started_at": session.started_at.isoformat(),
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"启动智能体失败: {e}"
+        )
+
+
+@router.post("/{agent_id}/terminate")
+async def terminate_agent(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    终止智能体
+
+    参数:
+        agent_id: 智能体 ID
+        db: 数据库会话
+    """
+    # 检查智能体是否存在
+    agent = await agent_service.get_by_id(db, agent_id)
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="智能体不存在"
+        )
+
+    try:
+        agent_manager = AgentManager(db)
+        await agent_manager.terminate(str(agent_id))
+        return {"message": "智能体已终止"}
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"终止智能体失败: {e}"
+        )
+
+
+@router.get("/{agent_id}/status", response_model=StatusResponse)
+async def get_agent_status(
+    agent_id: int,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    获取智能体状态
+
+    参数:
+        agent_id: 智能体 ID
+        db: 数据库会话
+    """
+    # 检查智能体是否存在
+    agent = await agent_service.get_by_id(db, agent_id)
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="智能体不存在"
+        )
+
+    try:
+        agent_manager = AgentManager(db)
+        status_info = await agent_manager.get_status(str(agent_id))
+        return {
+            "agent_id": agent_id,
+            "agent_name": agent.name,
+            "status": status_info["status"],
+            "session_id": status_info.get("session_id"),
+            "uptime_seconds": status_info.get("uptime_seconds"),
+            "error_message": status_info.get("error_message"),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"获取智能体状态失败: {e}"
+        )
+
+
+@router.get("/{agent_id}/sessions", response_model=List[SessionResponse])
+async def get_agent_sessions(
+    agent_id: int,
+    limit: int = Query(10, ge=1, le=100),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    获取智能体会话历史
+
+    参数:
+        agent_id: 智能体 ID
+        limit: 返回记录数
+        db: 数据库会话
+    """
+    # 检查智能体是否存在
+    agent = await agent_service.get_by_id(db, agent_id)
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="智能体不存在"
+        )
+
+    try:
+        agent_manager = AgentManager(db)
+        sessions = await agent_manager.get_session_history(str(agent_id), limit)
+        return [
+            {
+                "id": s.id,
+                "agent_id": agent_id,
+                "status": s.status,
+                "started_at": s.started_at.isoformat(),
+                "ended_at": s.ended_at.isoformat() if s.ended_at else None,
+                "error_message": s.error_message,
+            }
+            for s in sessions
+        ]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"获取会话历史失败: {e}"
+        )

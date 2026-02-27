@@ -6,6 +6,10 @@ SQLAlchemy ORM models for MyNoteBook Admin
 - users: 管理员用户
 - blog_posts: 博客文章
 - agents: AI 智能体配置
+- agent_sessions: 智能体会话
+- agent_memory: 智能体记忆
+- agent_messages: 跨智能体消息
+- ws_connections: WebSocket 连接
 - tools: 工具库
 - labs: 实验室功能
 """
@@ -15,6 +19,12 @@ from uuid import uuid4
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import relationship
 from ..core.database import Base
+
+# 导入 Sprint 2 新模型
+from .agent_session import AgentSession
+from .agent_memory import AgentMemory
+from .agent_message import AgentMessage
+from .ws_connection import WSConnection
 
 
 class User(Base):
@@ -190,4 +200,8 @@ __all__ = [
     "PostTag",
     "APIToken",
     "SystemSettings",
+    "AgentSession",
+    "AgentMemory",
+    "AgentMessage",
+    "WSConnection",
 ]
