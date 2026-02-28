@@ -5,6 +5,7 @@
 import pytest
 
 
+@pytest.mark.skip(reason="需要浏览器自动化支持，待实现")
 @pytest.mark.e2e
 class TestUserAuthentication:
     """用户认证端到端测试"""

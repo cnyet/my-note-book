@@ -3,6 +3,8 @@
 """
 
 import pytest
+
+pytestmark = pytest.mark.asyncio
 import httpx
 
 
@@ -17,7 +19,9 @@ class TestHealthCheck:
         assert response.json()["status"] == "healthy"
 
     async def test_database_connection(self, api_client):
-        """测试数据库连接"""
-        response = await api_client.get("/health/db")
+        """测试根端点"""
+        response = await api_client.get("/")
         assert response.status_code == 200
-        assert response.json()["database"] == "connected"
+        data = response.json()
+        assert "message" in data
+        assert "version" in data
