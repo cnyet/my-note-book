@@ -1,7 +1,7 @@
 # Session Summary
 
 > 上次会话：2026-02-27T06:00:00Z - Sprint 2 设计
-> 本次会话：2026-02-28T11:15:00Z - Sprint 2 完成 + Bug 修复
+> 本次会话：2026-02-28T12:00:00Z - Sprint 2 完成 + Bug 修复
 
 ---
 
@@ -16,6 +16,7 @@
 | 测试套件 | ✅ | 后端集成测试 2/2 通过 |
 | Dashboard 500 错误 | ✅ | 修复 Agent 模型关系 |
 | Tools 页面无限循环 | ✅ | 使用 useMemo 替代 useEffect |
+| Profile 401 错误 | ✅ | Token 过期检查 + 自动重定向 |
 
 ### Bug 修复详情
 
@@ -38,12 +39,22 @@
 - 使用 `useMemo` 计算 `filteredTools`
 - 修复 `handleDragEnd` 使用 API 更新排序
 
+#### 3. Profile 页面 401 错误
+**原因**: localStorage 中的 JWT token 已过期（过期时间：2026-02-15）
+
+**修复**:
+- `admin-auth.ts` 添加 `isTokenExpired()` 和 `hasValidAuth()`
+- `useAdminAuth` hook 自动清除过期 token
+- Profile 页面检测到 401 时自动重定向到登录页
+
 ### 删除的文件
 - `frontend/src/components/admin/AgentLiveStatusCard.tsx`
 - `frontend/src/components/admin/AgentControlPanel.tsx`
 - `frontend/src/hooks/use-agent-websocket.ts`
 
 ### 提交历史
+- `5e62d05` docs: update todo-tracker with profile 401 fix
+- `3419205` fix: add token expiration check and 401 redirect
 - `ba2ea55` docs: update todo-tracker with dashboard API fix
 - `23fe3d2` fix: add Agent model relationships and fix dashboard API
 - `c4e686c` refactor: remove unused use-agent-websocket hook

@@ -1,6 +1,6 @@
 # Active Context
 
-> 最后更新：2026-02-28T11:15:00Z
+> 最后更新：2026-02-28T12:00:00Z
 
 ## 当前项目状态
 
@@ -34,6 +34,11 @@
 ### 5. Tools 页面无限循环修复 ✅
 - 将 filteredTools 从 useEffect 改为 useMemo
 - 修复 handleDragEnd 函数（删除不存在的 setTools 调用）
+
+### 6. Profile 401 错误修复 ✅
+- 添加 JWT token 过期检查（isTokenExpired, hasValidAuth）
+- 更新 useAdminAuth hook 自动清除过期 token
+- Profile 页面 401 错误自动重定向到登录页
 
 ## 待办事项
 
