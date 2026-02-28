@@ -41,7 +41,7 @@ import {
   Typography,
   message,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GripVertical, MoreVertical } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -461,7 +461,6 @@ function ToolFormModal({ open, tool, onSave, onCancel }: ToolFormModalProps) {
 
 // Main Page Component
 export default function ToolsManagementPage() {
-  const [filteredTools, setFilteredTools] = useState<Tool[]>([]);
   const [activeCategory, setActiveCategory] = useState<ToolCategory | "All">(
     "All"
   );
@@ -552,22 +551,30 @@ export default function ToolsManagementPage() {
     setActiveId(event.active.id as number);
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setTools((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+      const oldIndex = tools.findIndex((item) => item.id === active.id);
+      const newIndex = tools.findIndex((item) => item.id === over.id);
 
-        const reordered = arrayMove(items, oldIndex, newIndex);
+      const reordered = arrayMove(tools, oldIndex, newIndex);
 
-        // Update sortOrder
-        return reordered.map((item, index) => ({
-          ...item,
-          sortOrder: index + 1,
-        }));
-      });
+      // Update sortOrder for all affected tools
+      try {
+        // Update each tool's sort order via API
+        for (let i = 0; i < reordered.length; i++) {
+          const tool = reordered[i];
+          if (tool.sortOrder !== i + 1) {
+            await toolsApi.update(tool.id, { sort_order: i + 1 });
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
+        message.success("Tools reordered successfully");
+      } catch (error) {
+        console.error("Failed to reorder tools:", error);
+        message.error("Failed to reorder tools");
+      }
     }
 
     setActiveId(null);
@@ -588,8 +595,8 @@ export default function ToolsManagementPage() {
     setEditingTool(null);
   };
 
-  // Filter tools by category and search query
-  useEffect(() => {
+  // Filter tools by category and search query using useMemo
+  const filteredTools = useMemo(() => {
     let result = [...tools];
 
     // Category filter
@@ -610,7 +617,7 @@ export default function ToolsManagementPage() {
     // Sort by sortOrder
     result.sort((a, b) => a.sortOrder - b.sortOrder);
 
-    setFilteredTools(result);
+    return result;
   }, [tools, activeCategory, searchQuery]);
 
   return (

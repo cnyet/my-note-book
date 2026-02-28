@@ -1,50 +1,44 @@
 # Active Context
 
-> 最后更新：2026-02-27T08:00:00Z
+> 最后更新：2026-02-28T11:15:00Z
 
 ## 当前项目状态
 
 | 维度 | 状态 |
 |------|------|
-| 分支 | `feature/agent-orchestration` |
+| 分支 | `main` (已合并 feature/agent-orchestration) |
 | 后端 | **Sprint 2 ✅ 完成** - Agent Orchestration Core 已实施 |
-| 前端 | 6 个管理页面 + React Query + **WebSocket Hooks** |
+| 前端 | 6 个管理页面 + React Query |
 | OpenSpec | 3 个变更提案已归档 |
 | **Sprint** | **Sprint 2 ✅ 完成** |
 
-## Sprint 2 完成摘要
+## 本会话完成的工作
 
-### Phase 1: Infrastructure ✅
-- 数据库表：agent_sessions, agent_memory, agent_messages, ws_connections
-- AgentManager：spawn/terminate/status 生命周期管理
-- REST API：/spawn, /terminate, /status, /sessions
+### 1. 分支合并 ✅
+- 手动合并 `feature/agent-orchestration` → `main`
+- 提交测试配置和修复
 
-### Phase 2: WebSocket Communication ✅
-- ConnectionHub：连接管理、广播、订阅
-- WebSocket 端点：/ws/agents, /ws/chat/{agent_id}
-- 前端 Hooks：useAgentWebSocket, useAgentChat
+### 2. 前端集成 ✅
+- Dashboard 页面集成 AgentLiveStatusCard（后删除）
+- 删除不需要的 WebSocket 组件和 Hooks
 
-### Phase 3: Message Bus ✅
-- MessageBus：publish/subscribe 模式
-- 消息持久化与异步处理
+### 3. 测试套件运行 ✅
+- 后端集成测试：2/2 通过
+- 前端：无测试文件
 
-### Phase 4: Memory Store ✅
-- MemoryStore：short_term/long_term/context 存储
-- AES-256-GCM 加密支持
-- 自动过期清理
+### 4. Dashboard 500 错误修复 ✅
+- 修复 Agent 模型关系（sessions, memories, sent_messages, received_messages）
+- 修复 AgentMemory 和 AgentMessage 模型的 back_populates
+- 修复 dashboard.py 使用正确的 status 过滤器
 
-## 最近提交
-
-```
-dc304b0 feat(agent-orchestration): implement Sprint 2 Agent Orchestration Core
-b680d69 docs: update memory and add sprint-2 design document
-```
+### 5. Tools 页面无限循环修复 ✅
+- 将 filteredTools 从 useEffect 改为 useMemo
+- 修复 handleDragEnd 函数（删除不存在的 setTools 调用）
 
 ## 待办事项
 
+- [ ] 清理 Sprint 2 WebSocket 相关代码（已删除）
 - [ ] 测试覆盖 (单元测试/集成测试)
-- [ ] 前端页面集成 WebSocket 状态
-- [ ] Dashboard 实时状态卡片
 - [ ] Agent 工作台增强
 
 ## 技术栈
