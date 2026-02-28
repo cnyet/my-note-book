@@ -17,7 +17,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto">
-        <div className="animate-in fade-in duration-1000 space-y-40">
+        <div className="space-y-40">
           <Hero />
           <PerformanceSection />
           <SecuritySection />

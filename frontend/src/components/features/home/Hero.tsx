@@ -4,22 +4,22 @@ import { MousePointer2, Zap } from "lucide-react";
 
 export const Hero = () => {
   return (
-    <section className="text-center relative pt-10">
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-300 mb-10 backdrop-blur-md">
+    <section className="text-center relative pt-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-300 mb-10 backdrop-blur-md animate-in fade-in duration-1000 delay-100">
         <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
         Intelligent Workflow Suite
       </div>
-      <h1 className="text-7xl md:text-9xl font-black mb-10 tracking-tighter leading-[0.85] text-white">
+      <h1 className="text-7xl md:text-9xl font-black mb-10 tracking-tighter leading-[0.85] text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
         Build Beyond <br />
         <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
           Imagination
         </span>
       </h1>
-      <p className="text-slate-400 text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-medium">
+      <p className="text-slate-400 text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
         The ultimate notebook for the AI era. Orchestrate specialized agents and
         high-performance tools in one unified workspace.
       </p>
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
         <button className="w-full sm:w-auto bg-white text-slate-950 px-10 py-5 rounded-2xl font-black text-lg hover:scale-105 transition-all active:scale-95 flex items-center justify-center gap-3 shadow-2xl shadow-white/5">
           Launch Notebook <Zap size={22} className="fill-current" />
         </button>
@@ -28,7 +28,7 @@ export const Hero = () => {
         </button>
       </div>
 
-      <div className="mt-24 relative px-4">
+      <div className="mt-24 relative px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
         <div className="max-w-6xl mx-auto backdrop-blur-md bg-white/5 rounded-[48px] p-3 border border-white/10 shadow-3xl group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
           <img

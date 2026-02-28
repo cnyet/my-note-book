@@ -4,11 +4,11 @@ import { EyeOff, Fingerprint, Lock, ShieldCheck } from "lucide-react";
 
 export const SecuritySection = () => {
   return (
-    <section className="py-12 px-6 overflow-hidden">
+    <section className="py-12 px-6 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="max-w-7xl mx-auto backdrop-blur-md bg-white/5 rounded-[80px] p-16 md:p-32 border border-white/5 flex flex-col lg:flex-row items-center gap-20 relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px]"></div>
-        <div className="lg:w-1/2 space-y-8 relative z-10">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+        <div className="lg:w-1/2 space-y-8 relative z-10 animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
+          <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 animate-in fade-in zoom-in duration-700">
             <Lock size={28} />
           </div>
           <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">
@@ -37,7 +37,8 @@ export const SecuritySection = () => {
             ].map((item, i) => (
               <li
                 key={i}
-                className="flex items-center gap-4 text-slate-300 font-bold"
+                className="flex items-center gap-4 text-slate-300 font-bold animate-in fade-in slide-in-from-left-4 duration-500"
+                style={{ animationDelay: `${300 + i * 100}ms` }}
               >
                 <span className="text-indigo-500">{item.icon}</span>
                 {item.text}
@@ -45,7 +46,7 @@ export const SecuritySection = () => {
             ))}
           </ul>
         </div>
-        <div className="lg:w-1/2 flex justify-center relative">
+        <div className="lg:w-1/2 flex justify-center relative animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
           <div className="relative w-80 h-80 md:w-[450px] md:h-[450px]">
             <div className="absolute inset-0 bg-indigo-500/20 rounded-full blur-[80px] animate-pulse"></div>
             <div className="relative h-full w-full bg-slate-950/80 rounded-[60px] border border-white/10 flex flex-col items-center justify-center overflow-hidden shadow-3xl">
@@ -57,7 +58,8 @@ export const SecuritySection = () => {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="w-12 h-1.5 rounded-full bg-white/10"
+                    className="w-12 h-1.5 rounded-full bg-white/10 animate-in fade-in duration-500"
+                    style={{ animationDelay: `${500 + i * 100}ms` }}
                   ></div>
                 ))}
               </div>

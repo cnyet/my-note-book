@@ -8,9 +8,9 @@ export const PerformanceSection = () => {
   useEffect(() => setMounted(true), []);
 
   return (
-    <section className="relative py-12 px-6">
+    <section className="relative py-12 px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
           <div className="inline-block px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
             Engineered for Speed
           </div>
@@ -39,7 +39,7 @@ export const PerformanceSection = () => {
           </div>
         </div>
 
-        <div className="relative group">
+        <div className="relative group animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
           <div className="absolute inset-0 bg-indigo-500/10 blur-[120px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-1000"></div>
           <div className="relative backdrop-blur-md bg-white/5 aspect-square rounded-[80px] border border-white/10 flex items-center justify-center p-12 overflow-hidden shadow-2xl">
             <div className="w-full h-full relative flex items-center justify-center">

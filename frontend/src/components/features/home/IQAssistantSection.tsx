@@ -4,22 +4,22 @@ import { Box, Zap } from "lucide-react";
 
 export const IQAssistantSection = () => {
   return (
-    <section className="mt-16 backdrop-blur-md bg-white/5 rounded-[60px] p-8 md:p-20 border border-white/10 overflow-hidden relative">
+    <section className="mt-16 backdrop-blur-md bg-white/5 rounded-[60px] p-8 md:p-20 border border-white/10 overflow-hidden relative animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-        <div className="text-left">
-          <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 flex items-center justify-center mb-10 text-indigo-400 border border-indigo-500/20">
+        <div className="text-left animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
+          <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 flex items-center justify-center mb-10 text-indigo-400 border border-indigo-500/20 animate-in fade-in zoom-in duration-700">
             <Zap size={32} />
           </div>
-          <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.9] text-white">
+          <h2 className="text-5xl md:text-7xl font-black mb-10 leading-[0.9] text-white animate-in fade-in slide-in-from-left-8 duration-1000 delay-300">
             Ask IQ Assistant.
           </h2>
-          <p className="text-slate-400 text-xl mb-12 leading-relaxed font-medium">
+          <p className="text-slate-400 text-xl mb-12 leading-relaxed font-medium animate-in fade-in slide-in-from-left-8 duration-1000 delay-400">
             Our Gemini-powered assistant is available across the platform to
             help you build faster and smarter.
           </p>
         </div>
 
-        <div className="bg-slate-950/80 rounded-[40px] border border-white/10 h-[450px] flex flex-col shadow-2xl relative">
+        <div className="bg-slate-950/80 rounded-[40px] border border-white/10 h-[450px] flex flex-col shadow-2xl relative animate-in fade-in slide-in-from-right-12 duration-1000 delay-300">
           <div className="flex-1 overflow-y-auto p-8 space-y-6">
             <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
               <p className="text-lg font-bold text-slate-400 italic">

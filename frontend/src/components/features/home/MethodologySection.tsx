@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 export const MethodologySection = () => {
   return (
-    <section className="py-12">
+    <section className="py-12 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <SectionHeader
         centered
         tag="Methodology"
@@ -37,7 +37,8 @@ export const MethodologySection = () => {
         ].map((item, idx) => (
           <div
             key={idx}
-            className="relative backdrop-blur-md bg-white/5 p-10 rounded-[40px] border border-white/5 group hover:bg-indigo-600 transition-all duration-500 overflow-hidden"
+            className="relative backdrop-blur-md bg-white/5 p-10 rounded-[40px] border border-white/5 group hover:bg-indigo-600 transition-all duration-500 overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700"
+            style={{ animationDelay: `${200 + idx * 150}ms` }}
           >
             <span className="text-5xl font-black text-white/5 absolute top-4 right-4 group-hover:text-white/20 transition-colors">
               {item.step}
