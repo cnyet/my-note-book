@@ -88,6 +88,8 @@
     font-family: var(--font-body);
     font-feature-settings: "cv11", "ss01";
     scroll-behavior: smooth;
+    /* Fallback background color to prevent FOUC */
+    background-color: #f5f5f9;
   }
 
   h1,
