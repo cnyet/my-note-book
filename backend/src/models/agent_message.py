@@ -7,10 +7,27 @@
 """
 
 from datetime import datetime, timezone
+from enum import Enum
 from uuid import uuid4
 from sqlalchemy import Column, String, DateTime, Text, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from ..core.database import Base
+
+
+class MessageType(Enum):
+    """消息类型枚举"""
+    REQUEST = "request"      # 请求
+    RESPONSE = "response"    # 响应
+    EVENT = "event"          # 事件
+    BROADCAST = "broadcast"  # 广播
+
+
+class MessageStatus(Enum):
+    """消息状态枚举"""
+    PENDING = "pending"       # 待处理
+    DELIVERED = "delivered"   # 已送达
+    PROCESSED = "processed"   # 已处理
+    FAILED = "failed"         # 失败
 
 
 class AgentMessage(Base):

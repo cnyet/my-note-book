@@ -8,6 +8,8 @@ import {
   LinkOutlined,
   ApiOutlined,
   SettingOutlined,
+  PlayCircleOutlined,
+  StopOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -142,18 +144,39 @@ function AgentCard({
   agent,
   onEdit,
   onDelete,
+  onSpawn,
+  onTerminate,
 }: {
   agent: Agent;
   onEdit: (agent: Agent) => void;
   onDelete: (agent: Agent) => void;
+  onSpawn?: (agent: Agent) => void;
+  onTerminate?: (agent: Agent) => void;
 }) {
   const config = statusConfig[agent.status];
+  const isRunning = agent.status === "spawned" || agent.status === "idle";
+
   const items: MenuProps["items"] = [
     {
       key: "edit",
       label: "Edit",
       icon: <EditOutlined />,
       onClick: () => onEdit(agent),
+    },
+    {
+      key: "spawn",
+      label: isRunning ? "Restart" : "Start",
+      icon: <PlayCircleOutlined />,
+      onClick: () => onSpawn?.(agent),
+      disabled: false,
+    },
+    {
+      key: "terminate",
+      label: "Stop",
+      icon: <StopOutlined />,
+      onClick: () => onTerminate?.(agent),
+      disabled: !isRunning,
+      danger: true,
     },
     { type: "divider" },
     {
@@ -252,14 +275,28 @@ function AgentCard({
         >
           Edit
         </Button>
-        <Button
-          type="default"
-          size="small"
-          icon={<LinkOutlined />}
-          className="flex-1"
-        >
-          Connect
-        </Button>
+        {isRunning ? (
+          <Button
+            type="default"
+            size="small"
+            danger
+            icon={<StopOutlined />}
+            onClick={() => onTerminate?.(agent)}
+            className="flex-1"
+          >
+            Stop
+          </Button>
+        ) : (
+          <Button
+            type="primary"
+            size="small"
+            icon={<PlayCircleOutlined />}
+            onClick={() => onSpawn?.(agent)}
+            className="flex-1 bg-[#71dd37] hover:bg-[#67c732]"
+          >
+            Start
+          </Button>
+        )}
       </div>
     </Card>
   );
@@ -270,9 +307,11 @@ interface SortableAgentCardProps {
   agent: Agent;
   onEdit: (agent: Agent) => void;
   onDelete: (agent: Agent) => void;
+  onSpawn?: (agent: Agent) => void;
+  onTerminate?: (agent: Agent) => void;
 }
 
-function SortableAgentCard({ agent, onEdit, onDelete }: SortableAgentCardProps) {
+function SortableAgentCard({ agent, onEdit, onDelete, onSpawn, onTerminate }: SortableAgentCardProps) {
   const {
     attributes,
     listeners,
@@ -291,7 +330,13 @@ function SortableAgentCard({ agent, onEdit, onDelete }: SortableAgentCardProps) 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <div {...listeners}>
-        <AgentCard agent={agent} onEdit={onEdit} onDelete={onDelete} />
+        <AgentCard
+          agent={agent}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onSpawn={onSpawn}
+          onTerminate={onTerminate}
+        />
       </div>
     </div>
   );
@@ -686,8 +731,39 @@ export default function AgentsPage() {
     },
   });
 
-  const loadAgents = async () => {
-    queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
+  // Mutation for agent lifecycle
+  const spawnMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiClient.post(`/admin/agents/${id}/spawn`);
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
+      message.success("Agent started successfully");
+    },
+    onError: () => {
+      message.error("Failed to start agent");
+    },
+  });
+
+  const terminateMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiClient.post(`/admin/agents/${id}/terminate`);
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
+      message.success("Agent stopped");
+    },
+    onError: () => {
+      message.error("Failed to stop agent");
+    },
+  });
+
+  const handleSpawn = (agent: Agent) => {
+    spawnMutation.mutate(agent.id);
+  };
+
+  const handleTerminate = (agent: Agent) => {
+    terminateMutation.mutate(agent.id);
   };
 
   // Filter agents - 添加过滤逻辑
@@ -760,7 +836,7 @@ export default function AgentsPage() {
         const apiData = mapFrontendAgentToApi(agent);
         const response = await agentsApi.update(agent.id, apiData);
         if (response.success) {
-          await loadAgents();
+          queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
           message.success("Agent updated successfully");
         }
       } else {
@@ -777,7 +853,7 @@ export default function AgentsPage() {
         };
         const response = await agentsApi.create(apiData);
         if (response.success) {
-          await loadAgents();
+          queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
           message.success("Agent created successfully");
         }
       }
@@ -955,6 +1031,8 @@ export default function AgentsPage() {
                     agent={agent}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onSpawn={handleSpawn}
+                    onTerminate={handleTerminate}
                   />
                 </Col>
               ))}
@@ -965,7 +1043,13 @@ export default function AgentsPage() {
         <Row gutter={[24, 24]}>
           {filteredAgents.map((agent) => (
             <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
-              <AgentCard agent={agent} onEdit={handleEdit} onDelete={handleDelete} />
+              <AgentCard
+                agent={agent}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onSpawn={handleSpawn}
+                onTerminate={handleTerminate}
+              />
             </Col>
           ))}
         </Row>

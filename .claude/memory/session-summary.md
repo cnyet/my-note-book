@@ -1,6 +1,51 @@
 # Session Summary
 
-> 会话时间：2026-02-27T06:00:00Z - 2026-02-27T06:30:00Z
+> 上次会话：2026-02-27T06:00:00Z - Sprint 2 设计
+> 本次会话：2026-02-28T07:00:00Z - Sprint 2 实施完成
+
+---
+
+## 会话概要：Sprint 2 实施完成
+
+### 完成的工作
+
+用户在 `feature/agent-orchestration` 分支中完成了 Sprint 2 的全部 4 个 Phase：
+
+| Phase | 内容 | 交付物 |
+|-------|------|--------|
+| **Phase 1** | 基础设施 | 4 个数据库表、AgentManager、生命周期 API |
+| **Phase 2** | WebSocket 通信 | ConnectionHub、双端点、前端 Hooks |
+| **Phase 3** | Message Bus | pub/sub、消息持久化、异步处理 |
+| **Phase 4** | Memory Store | AES-256-GCM 加密、过期清理 |
+
+### 关键决策
+
+| 决策 | 说明 |
+|------|------|
+| `metadata` → `meta_data` | 避免 SQLAlchemy 保留字冲突 |
+| 枚举定义在 manager.py | AgentStatus 不放在模型，避免循环导入 |
+| 运行时实例化 AgentManager | 依赖注入 AsyncSession，非单例 |
+
+### 文件变更统计
+
+```
+17 个新文件，~2200 行代码
+- backend/src/agents/* (manager, memory)
+- backend/src/websocket/* (hub, handlers)
+- backend/src/message_bus/* (bus)
+- backend/src/models/* (4 个新模型)
+- frontend/hooks/use-agent-websocket.ts
+```
+
+### 待办
+
+- [ ] 手动合并 feature/agent-orchestration → main
+- [ ] 运行完整测试套件
+- [ ] Dashboard 页面添加 AgentLiveStatusCard
+
+---
+
+## 历史会话
 
 ## 会话概要
 

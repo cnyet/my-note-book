@@ -6,6 +6,7 @@ import {
 } from "@/components/admin/DashboardCards";
 import { StatCard } from "@/components/admin/StatCard";
 import { WelcomeCard } from "@/components/admin/WelcomeCard";
+import { AgentLiveStatusCard } from "@/components/admin/AgentLiveStatusCard";
 import {
   EmailReportsCard,
   BrowserStatesCard,
@@ -101,7 +102,14 @@ export default function AdminDashboardPage() {
         </Col>
       </Row>
 
-      {/* Row 3: Email Reports + Browser States */}
+      {/* Row 3: Agent Live Status (WebSocket Real-time) */}
+      <Row gutter={[24, 24]} className="mt-6">
+        <Col xs={24}>
+          <AgentLiveStatusCard />
+        </Col>
+      </Row>
+
+      {/* Row 4: Email Reports + Browser States */}
       <Row gutter={[24, 24]} className="mt-6">
         <Col xs={24} lg={12}>
           <EmailReportsCard />

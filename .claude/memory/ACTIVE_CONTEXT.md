@@ -1,33 +1,51 @@
 # Active Context
 
-> 最后更新：2026-02-27T06:30:00Z
+> 最后更新：2026-02-27T08:00:00Z
 
 ## 当前项目状态
 
 | 维度 | 状态 |
 |------|------|
-| 分支 | main (与远程同步) |
-| 后端 | SystemSettings + APIToken 数据持久化完成 |
-| 前端 | 6 个管理页面已实现 + React Query 集成 |
+| 分支 | `feature/agent-orchestration` |
+| 后端 | **Sprint 2 ✅ 完成** - Agent Orchestration Core 已实施 |
+| 前端 | 6 个管理页面 + React Query + **WebSocket Hooks** |
 | OpenSpec | 3 个变更提案已归档 |
-| **Sprint** | **Sprint 1 ✅ 完成 → Sprint 2 设计文档已创建** |
+| **Sprint** | **Sprint 2 ✅ 完成** |
+
+## Sprint 2 完成摘要
+
+### Phase 1: Infrastructure ✅
+- 数据库表：agent_sessions, agent_memory, agent_messages, ws_connections
+- AgentManager：spawn/terminate/status 生命周期管理
+- REST API：/spawn, /terminate, /status, /sessions
+
+### Phase 2: WebSocket Communication ✅
+- ConnectionHub：连接管理、广播、订阅
+- WebSocket 端点：/ws/agents, /ws/chat/{agent_id}
+- 前端 Hooks：useAgentWebSocket, useAgentChat
+
+### Phase 3: Message Bus ✅
+- MessageBus：publish/subscribe 模式
+- 消息持久化与异步处理
+
+### Phase 4: Memory Store ✅
+- MemoryStore：short_term/long_term/context 存储
+- AES-256-GCM 加密支持
+- 自动过期清理
 
 ## 最近提交
 
 ```
-05e8940 chore(openspec): Archive completed impl-frontend-pages proposal
-0687882 chore: Remove unused local skill files
-bb2c104 docs: Simplify AGENTS.md and OpenSpec documentation
-bf9a0d5 feat(backend): Replace mock data with database persistence
+dc304b0 feat(agent-orchestration): implement Sprint 2 Agent Orchestration Core
+b680d69 docs: update memory and add sprint-2 design document
 ```
 
 ## 待办事项
 
-- [ ] Sprint 2 实施: Agent Orchestration Core
-  - [ ] Phase 1: 数据库表 + AgentManager
-  - [ ] Phase 2: WebSocket 通信
-  - [ ] Phase 3: Message Bus
-  - [ ] Phase 4: Memory Store + 加密
+- [ ] 测试覆盖 (单元测试/集成测试)
+- [ ] 前端页面集成 WebSocket 状态
+- [ ] Dashboard 实时状态卡片
+- [ ] Agent 工作台增强
 
 ## 技术栈
 
@@ -35,14 +53,4 @@ bf9a0d5 feat(backend): Replace mock data with database persistence
 - Backend: FastAPI (Python 3.11+), SQLAlchemy 2.0, Pydantic v2, WebSocket
 - Database: SQLite (开发) → PostgreSQL (生产)
 - Real-time: WebSocket Server, Message Bus
-
-## Sprint 2 概要
-
-| 目标 | 描述 |
-|------|------|
-| Agent Lifecycle | Spawn → Idle → Terminate |
-| WebSocket Server | 实时状态同步 |
-| Message Bus | 跨智能体消息传递 |
-| Agent Memory | 状态持久化 + 加密 |
-
-**设计文档**: `docs/planning/sprint-2.md`
+- Encryption: AES-256-GCM
