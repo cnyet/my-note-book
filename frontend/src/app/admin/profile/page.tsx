@@ -20,6 +20,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { adminAuthApi } from "@/lib/admin-api";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
@@ -61,10 +62,11 @@ export default function ProfilePage() {
     percent: 0,
   });
 
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   // Load user profile using React Query
-  const { data: profile } = useQuery({
+  const { data: profile, error: profileError } = useQuery({
     queryKey: ["admin-profile"],
     queryFn: async () => {
       const response = await adminAuthApi.get<UserProfile>("/admin/profile");
@@ -73,10 +75,11 @@ export default function ProfilePage() {
       }
       return null;
     },
+    retry: false, // Don't retry on 401
   });
 
   // Load tokens using React Query
-  const { data: tokensData } = useQuery({
+  const { data: tokensData, error: tokensError } = useQuery({
     queryKey: ["admin-profile-tokens"],
     queryFn: async () => {
       const response = await adminAuthApi.get<ApiToken[]>("/admin/profile/tokens");
@@ -85,7 +88,15 @@ export default function ProfilePage() {
       }
       return [];
     },
+    retry: false, // Don't retry on 401
   });
+
+  // Redirect to login if 401
+  useEffect(() => {
+    if (profileError?.status === 401 || tokensError?.status === 401) {
+      router.push("/login");
+    }
+  }, [profileError, tokensError, router]);
 
   const tokens = tokensData || [];
 
