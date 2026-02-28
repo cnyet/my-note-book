@@ -16,3 +16,8 @@ slowapi>=0.1.9
 sqlalchemy>=2.0.0
 uvicorn[standard]>=0.32.0
 greenlet
+
+# News Agent dependencies
+feedparser>=6.0.0
+apscheduler>=3.10.0
+anthropic>=0.18.0

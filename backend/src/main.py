@@ -9,6 +9,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from .core.config import settings
 from .core.database import init_db
 from .api.v1.admin import auth, dashboard, agents, tools, labs, blog, profile, settings as admin_settings
+from .api.v1 import news as news_api
 from .websocket import handlers as ws_handlers
 
 # 配置日志
@@ -78,6 +79,9 @@ app.include_router(labs.router, prefix=f"{api_prefix}/labs", tags=["admin-labs"]
 app.include_router(blog.router, prefix=f"{api_prefix}/blog", tags=["admin-blog"])
 app.include_router(profile.router, prefix=f"{api_prefix}/profile", tags=["admin-profile"])
 app.include_router(admin_settings.router, prefix=f"{api_prefix}/settings", tags=["admin-settings"])
+
+# News API 路由 (不放在 admin 下)
+app.include_router(news_api.router, prefix="/api/v1", tags=["news"])
 
 # WebSocket 路由
 app.include_router(ws_handlers.router, tags=["websocket"])
