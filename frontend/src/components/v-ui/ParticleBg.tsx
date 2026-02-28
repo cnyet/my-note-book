@@ -124,7 +124,7 @@ export function ParticleBg() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none -z-10 bg-transparent"
+      className="fixed inset-0 pointer-events-none -z-10 bg-abyss"
     />
   );
 }
