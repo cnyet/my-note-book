@@ -1,7 +1,7 @@
 # Session Summary
 
 > 上次会话：2026-02-27T06:00:00Z - Sprint 2 设计
-> 本次会话：2026-02-28T12:00:00Z - Sprint 2 完成 + Bug 修复
+> 本次会话：2026-02-28T12:00:00Z - Sprint 2 完成 + Bug 修复 + 首页动画优化
 
 ---
 
@@ -17,6 +17,8 @@
 | Dashboard 500 错误 | ✅ | 修复 Agent 模型关系 |
 | Tools 页面无限循环 | ✅ | 使用 useMemo 替代 useEffect |
 | Profile 401 错误 | ✅ | Token 过期检查 + 自动重定向 |
+| 首页 FOUC 修复 | ✅ | 添加 CSS 回退背景色 |
+| 首页动画优化 | ✅ | 渐进式淡入/滑入动画 |
 
 ### Bug 修复详情
 
@@ -47,18 +49,37 @@
 - `useAdminAuth` hook 自动清除过期 token
 - Profile 页面检测到 401 时自动重定向到登录页
 
+#### 4. 首页黑色背景闪烁 (FOUC)
+**原因**: CSS 变量未定义前，浏览器回退到默认黑色背景
+
+**修复**:
+- `globals.css` 添加 `background-color: #f5f5f9` 回退色
+- `layout.tsx` 添加 `className="light"` 到 `<html>` 标签
+- `tailwind.config.js` 显式声明 `darkMode: 'class'`
+
+#### 5. 首页动画优化
+**原因**: 单一 `animate-in fade-in duration-1000` 不够流畅
+
+**优化**:
+- Hero 组件：徽章→标题→描述→按钮→图片，依次淡入滑入（delay 递增）
+- PerformanceSection：左右内容分别从两侧滑入
+- SecuritySection：列表项渐进显示，带动效
+- MethodologySection：4 个卡片依次从下方滑入
+- IQAssistantSection：左右内容分别从两侧滑入
+- CTABanner：标题和按钮依次显示
+
 ### 删除的文件
 - `frontend/src/components/admin/AgentLiveStatusCard.tsx`
 - `frontend/src/components/admin/AgentControlPanel.tsx`
 - `frontend/src/hooks/use-agent-websocket.ts`
 
-### 提交历史
+### 提交历史 (本次会话新增)
+- `7415cff` feat: add progressive scroll animations to homepage sections
+- `1d02069` revert: keep ParticleBg background as bg-abyss
+- `6c64a14` fix: prevent black background flash on homepage
+- `e4610c8` fix: add default light class to prevent FOUC on homepage
 - `5e62d05` docs: update todo-tracker with profile 401 fix
 - `3419205` fix: add token expiration check and 401 redirect
-- `ba2ea55` docs: update todo-tracker with dashboard API fix
-- `23fe3d2` fix: add Agent model relationships and fix dashboard API
-- `c4e686c` refactor: remove unused use-agent-websocket hook
-- `53aa64c` refactor: remove AgentLiveStatusCard and AgentControlPanel components
 
 ---
 

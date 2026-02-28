@@ -1,6 +1,6 @@
 # Active Context
 
-> 最后更新：2026-02-28T12:00:00Z
+> 最后更新：2026-02-28T14:00:00Z
 
 ## 当前项目状态
 
@@ -8,7 +8,7 @@
 |------|------|
 | 分支 | `main` (已合并 feature/agent-orchestration) |
 | 后端 | **Sprint 2 ✅ 完成** - Agent Orchestration Core 已实施 |
-| 前端 | 6 个管理页面 + React Query |
+| 前端 | 6 个管理页面 + React Query + 首页动画优化 |
 | OpenSpec | 3 个变更提案已归档 |
 | **Sprint** | **Sprint 2 ✅ 完成** |
 
@@ -40,9 +40,21 @@
 - 更新 useAdminAuth hook 自动清除过期 token
 - Profile 页面 401 错误自动重定向到登录页
 
+### 7. 首页 FOUC 修复 ✅
+- 添加 CSS 回退背景色 `background-color: #f5f5f9`
+- `<html>` 标签添加 `className="light"`
+- `tailwind.config.js` 显式声明 `darkMode: 'class'`
+
+### 8. 首页动画优化 ✅
+- Hero 组件：5 层渐进式动画（delay 100-700ms）
+- PerformanceSection：左右内容分别从两侧滑入
+- SecuritySection：列表项渐进显示
+- MethodologySection：4 个卡片依次滑入
+- IQAssistantSection：左右内容分别从两侧滑入
+- CTABanner：标题和按钮依次显示
+
 ## 待办事项
 
-- [ ] 清理 Sprint 2 WebSocket 相关代码（已删除）
 - [ ] 测试覆盖 (单元测试/集成测试)
 - [ ] Agent 工作台增强
 
