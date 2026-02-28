@@ -56,8 +56,8 @@ class AgentMessage(Base):
     processed_at = Column(DateTime, nullable=True)
 
     # 关系
-    from_agent = relationship("Agent", foreign_keys=[from_agent_id])
-    to_agent = relationship("Agent", foreign_keys=[to_agent_id])
+    from_agent = relationship("Agent", foreign_keys=[from_agent_id], back_populates="sent_messages")
+    to_agent = relationship("Agent", foreign_keys=[to_agent_id], back_populates="received_messages")
 
     def __repr__(self):
         return (

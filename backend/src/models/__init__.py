@@ -90,6 +90,12 @@ class Agent(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
 
+    # 关系
+    sessions = relationship("AgentSession", back_populates="agent")
+    memories = relationship("AgentMemory", back_populates="agent")
+    sent_messages = relationship("AgentMessage", foreign_keys="AgentMessage.from_agent_id", back_populates="from_agent")
+    received_messages = relationship("AgentMessage", foreign_keys="AgentMessage.to_agent_id", back_populates="to_agent")
+
     def __repr__(self):
         return f"<Agent(id={self.id}, name='{self.name}')>"
 

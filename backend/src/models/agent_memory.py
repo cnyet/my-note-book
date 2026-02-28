@@ -45,6 +45,7 @@ class AgentMemory(Base):
 
     # 关系
     session = relationship("AgentSession", back_populates="memories")
+    agent = relationship("Agent", back_populates="memories")
 
     def __repr__(self):
         return f"<AgentMemory(id={self.id}, agent_id={self.agent_id}, type={self.memory_type}, key={self.key})>"

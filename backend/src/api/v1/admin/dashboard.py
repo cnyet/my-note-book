@@ -31,7 +31,7 @@ async def get_dashboard_stats(
     blog_posts_count = await blog_service.count(db)
 
     # 获取活跃统计
-    active_agents = await agent_service.get_all(db, filters={"is_active": True}, limit=1000)
+    active_agents = await agent_service.get_all(db, filters={"status": "idle"}, limit=1000)
     active_tools = await tool_service.get_all(db, filters={"status": "active"}, limit=1000)
     published_posts = await blog_service.get_all(db, filters={"status": "published"}, limit=1000)
 
