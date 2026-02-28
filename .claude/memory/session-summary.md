@@ -2,6 +2,7 @@
 
 > 上次会话：2026-02-27T06:00:00Z - Sprint 2 设计
 > 本次会话：2026-02-28T12:00:00Z - Sprint 2 完成 + Bug 修复 + 首页动画优化
+> 后续会话：2026-02-28T21:30:00Z - Sprint 3 规划：News Agent Implementation
 
 ---
 
@@ -19,6 +20,14 @@
 | Profile 401 错误 | ✅ | Token 过期检查 + 自动重定向 |
 | 首页 FOUC 修复 | ✅ | 添加 CSS 回退背景色 |
 | 首页动画优化 | ✅ | 渐进式淡入/滑入动画 |
+
+### 当前规划：Sprint 3
+
+| 任务 | 状态 | 详情 |
+|------|------|------|
+| Sprint 3 计划 | 🔄 | 重新审视并规划：News Agent Implementation |
+| WebSocket 功能 | ❌ | 已决定不在前端实现 WebSocket 功能 |
+| News Agent | 📋 | 核心爬取和摘要功能规划中 |
 
 ### Bug 修复详情
 
@@ -93,3 +102,12 @@
 | **Phase 2** | WebSocket 通信 | ConnectionHub、双端点、前端 Hooks |
 | **Phase 3** | Message Bus | pub/sub、消息持久化、异步处理 |
 | **Phase 4** | Memory Store | AES-256-GCM 加密、过期清理 |
+
+### Sprint 3 规划 (2026-02-28T21:30:00Z)
+
+| Decision | 内容 | 原因 |
+|----------|------|------|
+| **Focus** | News Agent Implementation | 作为第一个实际工作的智能体 |
+| **WebSocket** | 前端不实现 | 用户明确表示项目中不需要此功能 |
+| **Security** | 保留加密功能 | 遵循项目安全要求 |
+| **Scope** | 专注单一功能 | 避免范围蔓延，确保质量 |
