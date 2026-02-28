@@ -2,7 +2,7 @@
 """
 Summarizer - AI 摘要生成器
 
-使用 LLM API 生成新闻摘要
+使用本地 Ollama 部署的 deepseek-r1 模型生成新闻摘要
 """
 
 import logging
@@ -16,7 +16,8 @@ class Summarizer:
     AI 摘要生成器
 
     支持:
-    - Anthropic Claude API
+    - Ollama (deepseek-r1) - 本地部署
+    - Anthropic Claude API (可选)
     - OpenAI API (可选)
 
     功能:
@@ -39,22 +40,39 @@ class Summarizer:
 
     def __init__(
         self,
+        ollama_base_url: str = "http://localhost:11434",
+        model: str = "deepseek-r1",
         api_key: Optional[str] = None,
-        model: str = "claude-sonnet-4-6",
-        provider: str = "anthropic",
+        provider: str = "ollama",
         max_retries: int = 3
     ):
+        self.ollama_base_url = ollama_base_url
         self.api_key = api_key
         self.model = model
         self.provider = provider
         self.max_retries = max_retries
-        self._client = None
+        self._available = True
 
-        # 检查 API 密钥是否可用
-        self._available = api_key is not None and len(api_key) > 0
+        # 对于 Ollama，检查服务是否可访问
+        if provider == "ollama":
+            self._check_ollama_availability()
 
-        if not self._available:
-            logger.warning("No API key provided, summarization will be skipped")
+    def _check_ollama_availability(self) -> None:
+        """检查 Ollama 服务是否可用"""
+        import httpx
+        try:
+            # 简单检查 Ollama 服务
+            with httpx.Client(timeout=5.0) as client:
+                response = client.get(f"{self.ollama_base_url}/api/tags")
+                if response.status_code == 200:
+                    logger.info(f"Ollama service available at {self.ollama_base_url}")
+                    self._available = True
+                else:
+                    logger.warning(f"Ollama service returned status {response.status_code}")
+                    self._available = False
+        except Exception as e:
+            logger.warning(f"Could not connect to Ollama: {e}. Summarization will be skipped.")
+            self._available = False
 
     def is_available(self) -> bool:
         """检查摘要服务是否可用"""
@@ -87,7 +105,9 @@ class Summarizer:
 
         for attempt in range(self.max_retries):
             try:
-                if self.provider == "anthropic":
+                if self.provider == "ollama":
+                    return await self._summarize_with_ollama(prompt, max_length)
+                elif self.provider == "anthropic":
                     return await self._summarize_with_anthropic(prompt, max_length)
                 elif self.provider == "openai":
                     return await self._summarize_with_openai(prompt, max_length)
@@ -102,6 +122,39 @@ class Summarizer:
                     return None
 
         return None
+
+    async def _summarize_with_ollama(self, prompt: str, max_length: int) -> Optional[str]:
+        """使用本地 Ollama 服务生成摘要"""
+        try:
+            import httpx
+
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(
+                    f"{self.ollama_base_url}/api/generate",
+                    json={
+                        "model": self.model,
+                        "prompt": prompt,
+                        "stream": False,
+                        "options": {
+                            "temperature": 0.3,
+                            "top_p": 0.9,
+                            "num_predict": 500
+                        }
+                    }
+                )
+                response.raise_for_status()
+                result = response.json()
+                summary = result.get("response", "").strip()
+
+                # 清理摘要
+                summary = self._clean_summary(summary)
+
+                logger.info(f"Generated summary using Ollama {self.model}")
+                return summary
+
+        except Exception as e:
+            logger.error(f"Ollama API error: {e}")
+            raise
 
     async def _summarize_with_anthropic(self, prompt: str, max_length: int) -> Optional[str]:
         """使用 Anthropic API 生成摘要"""

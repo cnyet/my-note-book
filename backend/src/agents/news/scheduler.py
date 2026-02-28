@@ -50,7 +50,7 @@ class NewsScheduler:
     def add_job(
         self,
         source_id: str,
-        crawl_func: Callable[[str], Awaitable[None]],
+        crawl_func: Callable[[Optional[str], int], Awaitable[int]],
         interval_seconds: int = 3600,
         cron_expression: Optional[str] = None
     ) -> str:
@@ -81,7 +81,7 @@ class NewsScheduler:
         job = self.scheduler.add_job(
             crawl_func,
             trigger=trigger,
-            args=[source_id],
+            args=[source_id, 10],  # 限制每个源 10 条
             id=f"news_crawl_{source_id}",
             name=f"Crawl news source {source_id}",
             replace_existing=True,
@@ -89,6 +89,38 @@ class NewsScheduler:
 
         self._jobs[source_id] = job.id
         logger.info(f"Job {job.id} added for source {source_id}")
+        return job.id
+
+    def add_daily_job(
+        self,
+        crawl_func: Callable[[Optional[str], int], Awaitable[int]],
+        hour: int = 9  # 默认每天 9 点执行（UTC 时间）
+    ) -> str:
+        """
+        添加每日定时任务
+
+        Args:
+            crawl_func: 爬取函数
+            hour: 执行时间（UTC 小时）
+
+        Returns:
+            str: 任务 ID
+        """
+        # 使用 Cron 调度：每天指定时间执行
+        cron_expr = f"0 {hour} * * *"
+        trigger = CronTrigger.from_crontab(cron_expr)
+
+        job = self.scheduler.add_job(
+            crawl_func,
+            trigger=trigger,
+            args=[None, 10],  # 不指定 source_id 则爬取所有源，限制 10 条
+            id="news_daily_crawl",
+            name="Daily news crawl (10 articles)",
+            replace_existing=True,
+        )
+
+        self._jobs["daily"] = job.id
+        logger.info(f"Daily job added: {job.id} at {hour}:00 UTC")
         return job.id
 
     def remove_job(self, source_id: str) -> bool:
