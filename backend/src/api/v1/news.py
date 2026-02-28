@@ -123,7 +123,203 @@ def article_to_response(article: NewsArticle, source_name: Optional[str] = None)
     )
 
 
+# ==================== Source Endpoints ====================
+# NOTE: /sources must be registered BEFORE /{article_id} to avoid route conflicts
+
+
+@router.get("/sources", response_model=List[NewsSourceResponse])
+async def get_sources(
+    db: AsyncSession = Depends(get_db),
+    active_only: bool = Query(True, description="是否只看活跃源"),
+):
+    """获取所有新闻源"""
+    query = select(NewsSource).order_by(desc(NewsSource.created_at))
+    if active_only:
+        query = query.where(NewsSource.is_active == True)
+
+    result = await db.execute(query)
+    sources = result.scalars().all()
+
+    return [
+        NewsSourceResponse(
+            id=s.id,
+            name=s.name,
+            url=s.url,
+            source_type=s.source_type,
+            category=s.category,
+            language=s.language,
+            is_active=s.is_active,
+            crawl_interval=s.crawl_interval,
+            last_crawled_at=s.last_crawled_at,
+            created_at=s.created_at,
+            updated_at=s.updated_at,
+        )
+        for s in sources
+    ]
+
+
+@router.post("/sources", response_model=NewsSourceResponse)
+async def create_source(
+    source_data: NewsSourceCreate,
+    db: AsyncSession = Depends(get_db),
+):
+    """添加新闻源"""
+    from uuid import uuid4
+
+    source = NewsSource(
+        id=f"src_{uuid4().hex[:12]}",
+        name=source_data.name,
+        url=source_data.url,
+        source_type=source_data.source_type,
+        category=source_data.category,
+        language=source_data.language,
+        crawl_interval=source_data.crawl_interval,
+        is_active=True,
+    )
+
+    db.add(source)
+    await db.commit()
+    await db.refresh(source)
+
+    return NewsSourceResponse(
+        id=source.id,
+        name=source.name,
+        url=source.url,
+        source_type=source.source_type,
+        category=source.category,
+        language=source.language,
+        is_active=source.is_active,
+        crawl_interval=source.crawl_interval,
+        last_crawled_at=source.last_crawled_at,
+        created_at=source.created_at,
+        updated_at=souce.updated_at,
+    )
+
+
+@router.delete("/sources/{source_id}")
+async def delete_source(
+    source_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """删除新闻源"""
+    result = await db.execute(
+        select(NewsSource).where(NewsSource.id == source_id)
+    )
+    source = result.scalar_one_or_none()
+
+    if not source:
+        raise HTTPException(status_code=404, detail="新闻源不存在")
+
+    await db.delete(source)
+    await db.commit()
+
+    return {"message": "新闻源已删除"}
+
+
+@router.post("/sources/{source_id}/toggle")
+async def toggle_source(
+    source_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """切换新闻源状态"""
+    result = await db.execute(
+        select(NewsSource).where(NewsSource.id == source_id)
+    )
+    source = result.scalar_one_or_none()
+
+    if not source:
+        raise HTTPException(status_code=404, detail="新闻源不存在")
+
+    source.is_active = not source.is_active
+    await db.commit()
+
+    return {"is_active": source.is_active}
+
+
+# ==================== Stats Endpoint ====================
+# NOTE: /stats must be registered BEFORE /{article_id}
+
+
+@router.get("/stats", response_model=NewsStatsResponse)
+async def get_news_stats(
+    db: AsyncSession = Depends(get_db),
+):
+    """获取新闻统计信息"""
+    # 统计源
+    active_sources_result = await db.execute(
+        select(func.count(NewsSource.id)).where(NewsSource.is_active == True)
+    )
+    active_sources = active_sources_result.scalar() or 0
+
+    total_sources_result = await db.execute(select(func.count(NewsSource.id)))
+    total_sources = total_sources_result.scalar() or 0
+
+    # 统计文章
+    total_articles_result = await db.execute(select(func.count(NewsArticle.id)))
+    total_articles = total_articles_result.scalar() or 0
+
+    summarized_result = await db.execute(
+        select(func.count(NewsArticle.id)).where(NewsArticle.summary.isnot(None))
+    )
+    summarized = summarized_result.scalar() or 0
+
+    featured_result = await db.execute(
+        select(func.count(NewsArticle.id)).where(NewsArticle.is_featured == True)
+    )
+    featured = featured_result.scalar() or 0
+
+    # 最后爬取时间
+    last_crawl_result = await db.execute(
+        select(func.max(NewsSource.last_crawled_at)).where(NewsSource.is_active == True)
+    )
+    last_crawl = last_crawl_result.scalar()
+
+    return NewsStatsResponse(
+        active_sources=active_sources,
+        total_sources=total_sources,
+        total_articles=total_articles,
+        summarized_articles=summarized,
+        featured_articles=featured,
+        last_crawl_time=last_crawl,
+    )
+
+
+# ==================== Refresh Endpoint ====================
+
+
+@router.post("/refresh")
+async def refresh_news(
+    request: RefreshRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """手动刷新新闻"""
+    news_agent = await get_news_agent(db)
+
+    try:
+        if request.source_ids:
+            # 刷新指定源
+            total_added = 0
+            for source_id in request.source_ids:
+                added = await news_agent.crawl_and_summarize(source_id)
+                total_added += added
+            added_count = total_added
+        else:
+            # 刷新所有
+            added_count = await news_agent.crawl_and_summarize()
+
+        return {
+            "status": "success",
+            "message": f"Added {added_count} new articles",
+            "added_count": added_count,
+        }
+
+    except Exception as e:
+        logger.error(f"Refresh failed: {e}")
+        raise HTTPException(status_code=500, detail=f"刷新失败：{str(e)}")
+
+
 # ==================== News Endpoints ====================
+# Dynamic routes registered LAST
 
 
 @router.get("", response_model=NewsListResponse)
@@ -211,196 +407,3 @@ async def get_article(
     source_name = source_result.scalar_one_or_none()
 
     return article_to_response(article, source_name)
-
-
-# ==================== Source Endpoints ====================
-
-
-@router.get("/sources", response_model=List[NewsSourceResponse])
-async def get_sources(
-    db: AsyncSession = Depends(get_db),
-    active_only: bool = Query(True, description="是否只看活跃源"),
-):
-    """获取所有新闻源"""
-    query = select(NewsSource).order_by(desc(NewsSource.created_at))
-    if active_only:
-        query = query.where(NewsSource.is_active == True)
-
-    result = await db.execute(query)
-    sources = result.scalars().all()
-
-    return [
-        NewsSourceResponse(
-            id=s.id,
-            name=s.name,
-            url=s.url,
-            source_type=s.source_type,
-            category=s.category,
-            language=s.language,
-            is_active=s.is_active,
-            crawl_interval=s.crawl_interval,
-            last_crawled_at=s.last_crawled_at,
-            created_at=s.created_at,
-            updated_at=s.updated_at,
-        )
-        for s in sources
-    ]
-
-
-@router.post("/sources", response_model=NewsSourceResponse)
-async def create_source(
-    source_data: NewsSourceCreate,
-    db: AsyncSession = Depends(get_db),
-):
-    """添加新闻源"""
-    from uuid import uuid4
-
-    source = NewsSource(
-        id=f"src_{uuid4().hex[:12]}",
-        name=source_data.name,
-        url=source_data.url,
-        source_type=source_data.source_type,
-        category=source_data.category,
-        language=source_data.language,
-        crawl_interval=source_data.crawl_interval,
-        is_active=True,
-    )
-
-    db.add(source)
-    await db.commit()
-    await db.refresh(source)
-
-    return NewsSourceResponse(
-        id=source.id,
-        name=source.name,
-        url=source.url,
-        source_type=source.source_type,
-        category=source.category,
-        language=source.language,
-        is_active=source.is_active,
-        crawl_interval=source.crawl_interval,
-        last_crawled_at=source.last_crawled_at,
-        created_at=source.created_at,
-        updated_at=source.updated_at,
-    )
-
-
-@router.delete("/sources/{source_id}")
-async def delete_source(
-    source_id: str,
-    db: AsyncSession = Depends(get_db),
-):
-    """删除新闻源"""
-    result = await db.execute(
-        select(NewsSource).where(NewsSource.id == source_id)
-    )
-    source = result.scalar_one_or_none()
-
-    if not source:
-        raise HTTPException(status_code=404, detail="新闻源不存在")
-
-    await db.delete(source)
-    await db.commit()
-
-    return {"message": "新闻源已删除"}
-
-
-@router.post("/sources/{source_id}/toggle")
-async def toggle_source(
-    source_id: str,
-    db: AsyncSession = Depends(get_db),
-):
-    """切换新闻源状态"""
-    result = await db.execute(
-        select(NewsSource).where(NewsSource.id == source_id)
-    )
-    source = result.scalar_one_or_none()
-
-    if not source:
-        raise HTTPException(status_code=404, detail="新闻源不存在")
-
-    source.is_active = not source.is_active
-    await db.commit()
-
-    return {"is_active": source.is_active}
-
-
-# ==================== Refresh Endpoint ====================
-
-
-@router.post("/refresh")
-async def refresh_news(
-    request: RefreshRequest,
-    db: AsyncSession = Depends(get_db),
-):
-    """手动刷新新闻"""
-    news_agent = await get_news_agent(db)
-
-    try:
-        if request.source_ids:
-            # 刷新指定源
-            total_added = 0
-            for source_id in request.source_ids:
-                added = await news_agent.crawl_and_summarize(source_id)
-                total_added += added
-            added_count = total_added
-        else:
-            # 刷新所有
-            added_count = await news_agent.crawl_and_summarize()
-
-        return {
-            "status": "success",
-            "message": f"Added {added_count} new articles",
-            "added_count": added_count,
-        }
-
-    except Exception as e:
-        logger.error(f"Refresh failed: {e}")
-        raise HTTPException(status_code=500, detail=f"刷新失败：{str(e)}")
-
-
-# ==================== Stats Endpoint ====================
-
-
-@router.get("/stats", response_model=NewsStatsResponse)
-async def get_news_stats(
-    db: AsyncSession = Depends(get_db),
-):
-    """获取新闻统计信息"""
-    # 统计源
-    active_sources_result = await db.execute(
-        select(func.count(NewsSource.id)).where(NewsSource.is_active == True)
-    )
-    active_sources = active_sources_result.scalar() or 0
-
-    total_sources_result = await db.execute(select(func.count(NewsSource.id)))
-    total_sources = total_sources_result.scalar() or 0
-
-    # 统计文章
-    total_articles_result = await db.execute(select(func.count(NewsArticle.id)))
-    total_articles = total_articles_result.scalar() or 0
-
-    summarized_result = await db.execute(
-        select(func.count(NewsArticle.id)).where(NewsArticle.summary.isnot(None))
-    )
-    summarized = summarized_result.scalar() or 0
-
-    featured_result = await db.execute(
-        select(func.count(NewsArticle.id)).where(NewsArticle.is_featured == True)
-    )
-    featured = featured_result.scalar() or 0
-
-    # 最后爬取时间
-    last_crawl_result = await db.execute(
-        select(func.max(NewsSource.last_crawled_at)).where(NewsSource.is_active == True)
-    )
-    last_crawl = last_crawl_result.scalar()
-
-    return NewsStatsResponse(
-        active_sources=active_sources,
-        total_sources=total_sources,
-        total_articles=total_articles,
-        summarized_articles=summarized,
-        featured_articles=featured,
-        last_crawl_time=last_crawl,
-    )

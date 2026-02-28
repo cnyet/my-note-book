@@ -1,64 +1,145 @@
 // frontend/src/hooks/use-news.ts
 /**
- * News React Query Hooks
+ * News API Hooks
+ *
+ * 提供新闻相关的 React Query hooks
  */
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchNewsList,
-  fetchArticle,
-  fetchSources,
-  fetchNewsStats,
-  refreshNews,
-  type NewsArticle,
-  type NewsSource,
-  type NewsStats,
-} from "@/lib/api/news";
 
-// Query keys
-export const newsKeys = {
-  all: ["news"] as const,
-  lists: () => [...newsKeys.all, "list"] as const,
-  list: (filters: Record<string, string | boolean | number>) =>
-    [...newsKeys.lists(), filters] as const,
-  sources: () => [...newsKeys.all, "sources"] as const,
-  stats: () => [...newsKeys.all, "stats"] as const,
-  article: (id: string) => [...newsKeys.all, "article", id] as const,
-};
+// ==================== Types ====================
 
-// Hooks
-export function useNewsList(filters?: {
-  page?: number;
-  page_size?: number;
+export interface NewsArticle {
+  id: string;
+  source_id: string;
+  source_name?: string;
+  title: string;
+  url: string;
+  author?: string;
+  published_at: string;
+  crawled_at: string;
+  summary?: string;
   category?: string;
-  source_id?: string;
-  featured?: boolean;
-}) {
-  return useQuery({
-    queryKey: newsKeys.list(filters || {}),
-    queryFn: () => fetchNewsList(filters),
-  });
+  tags?: string[];
+  image_url?: string;
+  is_featured: boolean;
+  view_count: number;
 }
 
-export function useArticle(id: string) {
-  return useQuery({
-    queryKey: newsKeys.article(id),
-    queryFn: () => fetchArticle(id),
-    enabled: !!id,
-  });
+export interface NewsSource {
+  id: string;
+  name: string;
+  url: string;
+  source_type: string;
+  category?: string;
+  language: string;
+  is_active: boolean;
+  crawl_interval: number;
+  last_crawled_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export function useSources(activeOnly = true) {
+export interface NewsStats {
+  active_sources: number;
+  total_sources: number;
+  total_articles: number;
+  summarized_articles: number;
+  featured_articles: number;
+  last_crawl_time?: string;
+}
+
+export interface NewsListResponse {
+  articles: NewsArticle[];
+  total: number;
+  page: number;
+  page_size: number;
+  has_more: boolean;
+}
+
+export interface RefreshResponse {
+  status: string;
+  message: string;
+  added_count: number;
+}
+
+// ==================== API Functions ====================
+
+const API_BASE = "/api/v1";
+
+async function fetchNews(
+  page = 1,
+  pageSize = 20,
+  filters?: {
+    category?: string;
+    source_id?: string;
+    featured?: boolean;
+  }
+): Promise<NewsListResponse> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    page_size: pageSize.toString(),
+    ...(filters?.category && { category: filters.category }),
+    ...(filters?.source_id && { source_id: filters.source_id }),
+    ...(filters?.featured !== undefined && { featured: filters.featured.toString() }),
+  });
+
+  const res = await fetch(`${API_BASE}/news?${params}`);
+  if (!res.ok) throw new Error("Failed to fetch news");
+  return res.json();
+}
+
+async function fetchNewsStats(): Promise<NewsStats> {
+  const res = await fetch(`${API_BASE}/news/stats`);
+  if (!res.ok) throw new Error("Failed to fetch stats");
+  return res.json();
+}
+
+async function fetchNewsSources(): Promise<NewsSource[]> {
+  const res = await fetch(`${API_BASE}/news/sources`);
+  if (!res.ok) throw new Error("Failed to fetch sources");
+  return res.json();
+}
+
+async function refreshNews(sourceIds?: string[]): Promise<RefreshResponse> {
+  const res = await fetch(`${API_BASE}/news/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source_ids: sourceIds }),
+  });
+  if (!res.ok) throw new Error("Failed to refresh news");
+  return res.json();
+}
+
+// ==================== Hooks ====================
+
+export function useNewsList(
+  page = 1,
+  pageSize = 20,
+  filters?: {
+    category?: string;
+    source_id?: string;
+    featured?: boolean;
+  }
+) {
   return useQuery({
-    queryKey: newsKeys.sources(),
-    queryFn: () => fetchSources(activeOnly),
+    queryKey: ["news", "list", { page, pageSize, ...filters }],
+    queryFn: () => fetchNews(page, pageSize, filters),
   });
 }
 
 export function useNewsStats() {
   return useQuery({
-    queryKey: newsKeys.stats(),
-    queryFn: () => fetchNewsStats(),
+    queryKey: ["news", "stats"],
+    queryFn: fetchNewsStats,
+    refetchInterval: 60000, // 每分钟刷新
+  });
+}
+
+export function useNewsSources() {
+  return useQuery({
+    queryKey: ["news", "sources"],
+    queryFn: fetchNewsSources,
   });
 }
 
@@ -66,11 +147,10 @@ export function useRefreshNews() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (sourceIds?: string[]) => refreshNews(sourceIds),
+    mutationFn: refreshNews,
     onSuccess: () => {
-      // Invalidate news list and stats queries
-      queryClient.invalidateQueries({ queryKey: newsKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: newsKeys.stats() });
+      // 刷新成功后，更新新闻列表和统计
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     },
   });
 }
