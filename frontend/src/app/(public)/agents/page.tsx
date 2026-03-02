@@ -1,8 +1,10 @@
 "use client";
 
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { Activity, Box, Code2, Globe, Palette, Search } from "lucide-react";
+import { Activity, Box, Code2, Globe, Palette, Search, Newspaper } from "lucide-react";
 import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const AgentsFooter = () => (
   <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
@@ -28,6 +30,8 @@ const AgentsFooter = () => (
 );
 
 export default function AgentsPage() {
+  const router = useRouter();
+
   const agents = [
     {
       name: "Archon",
@@ -35,6 +39,7 @@ export default function AgentsPage() {
       icon: <Box className="text-indigo-400" />,
       status: "Available",
       capabilities: ["Component Logic", "Documentation", "Token Strategy"],
+      link: "/agents/archon",
     },
     {
       name: "Lexa",
@@ -42,6 +47,7 @@ export default function AgentsPage() {
       icon: <Search className="text-purple-400" />,
       status: "Online",
       capabilities: ["User Journeys", "Competitor Analysis", "Accessibility"],
+      link: "/agents/lexa",
     },
     {
       name: "Koda",
@@ -49,6 +55,7 @@ export default function AgentsPage() {
       icon: <Activity className="text-pink-400" />,
       status: "Occupied",
       capabilities: ["Framing", "Easing Optimization", "Lottie Export"],
+      link: "/agents/koda",
     },
     {
       name: "Vira",
@@ -56,6 +63,7 @@ export default function AgentsPage() {
       icon: <Palette className="text-orange-400" />,
       status: "Online",
       capabilities: ["Moodboards", "Color Science", "Logo Evolution"],
+      link: "/agents/vira",
     },
     {
       name: "Nova",
@@ -67,6 +75,7 @@ export default function AgentsPage() {
         "Complex Datasets",
         "SVG Generation",
       ],
+      link: "/agents/nova",
     },
     {
       name: "Sudo",
@@ -74,6 +83,16 @@ export default function AgentsPage() {
       icon: <Code2 className="text-emerald-400" />,
       status: "Idle",
       capabilities: ["React Prototype", "Storybook Sync", "CSS-in-JS"],
+      link: "/agents/sudo",
+    },
+    {
+      name: "News Hub",
+      role: "News Curator",
+      icon: <Newspaper className="text-blue-400" />,
+      status: "Online",
+      capabilities: ["Tech News", "AI Research", "Daily Digest"],
+      link: "/agents/news",
+      featured: true,
     },
   ];
 
@@ -91,11 +110,13 @@ export default function AgentsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
           {/* Left: Agent Grid - 2 columns on large screens */}
           <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {agents.map((agent) => (
                 <div
                   key={agent.name}
-                  className="backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10"
+                  className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10 ${
+                    agent.featured ? "md:col-span-2 lg:col-span-1" : ""
+                  }`}
                 >
                   <div className="flex items-center justify-between mb-8">
                     <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all">
@@ -130,9 +151,12 @@ export default function AgentsPage() {
                     ))}
                   </div>
                   <div className="mt-auto">
-                    <button className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm hover:bg-white hover:text-slate-950 transition-all">
+                    <Link
+                      href={agent.link}
+                      className="block w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm text-center hover:bg-white hover:text-slate-950 transition-all"
+                    >
                       Consult Agent
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

@@ -63,7 +63,8 @@ async def init_db():
     """初始化数据库表并创建初始数据"""
     from ..models import (
         User, BlogPost, Agent, SystemSettings,
-        AgentSession, AgentMemory, AgentMessage, WSConnection
+        AgentSession, AgentMemory, AgentMessage, WSConnection,
+        NewsSource, NewsArticle
     )  # 延迟导入以避免循环依赖
 
     logger.info("Initializing database...")

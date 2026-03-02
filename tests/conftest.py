@@ -36,6 +36,13 @@ async def api_client():
 async def test_database():
     """测试数据库 fixture - 每个测试自动运行"""
     from src.core.database import Base, engine
+    # 导入所有模型以确保表被创建
+    from src.models import (
+        User, BlogPost, Agent, SystemSettings,
+        AgentSession, AgentMemory, AgentMessage, WSConnection,
+        Tool, Lab, APIToken,
+        NewsSource, NewsArticle  # News Agent models
+    )
 
     # 创建测试表
     async with engine.begin() as conn:

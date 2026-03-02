@@ -196,6 +196,11 @@ class APIToken(Base):
     user = relationship("User", back_populates="tokens")
 
 
+# 导入 News Agent 模型
+from .news_source import NewsSource
+from .news_article import NewsArticle
+
+
 # 导出所有模型
 __all__ = [
     "User",
@@ -210,4 +215,6 @@ __all__ = [
     "AgentMemory",
     "AgentMessage",
     "WSConnection",
+    "NewsSource",
+    "NewsArticle",
 ]

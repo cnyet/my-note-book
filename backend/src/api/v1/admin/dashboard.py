@@ -6,7 +6,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 from ....core.database import get_db
-from ....models import User, Agent, Tool, Lab, BlogPost
+from ....models import User, Agent, Tool, Lab, BlogPost, NewsSource, NewsArticle
 from ....services.crud import get_crud_service
 
 router = APIRouter()
@@ -24,11 +24,20 @@ async def get_dashboard_stats(
     db: AsyncSession = Depends(get_db)
 ) -> Dict[str, Any]:
     """获取仪表板统计数据"""
+    from sqlalchemy import func, select
+
     users_count = await user_service.count(db)
     agents_count = await agent_service.count(db)
     tools_count = await tool_service.count(db)
     labs_count = await lab_service.count(db)
     blog_posts_count = await blog_service.count(db)
+
+    # News 统计（直接使用 SQLAlchemy）
+    news_sources_result = await db.execute(select(func.count(NewsSource.id)))
+    news_sources_count = news_sources_result.scalar() or 0
+
+    news_articles_result = await db.execute(select(func.count(NewsArticle.id)))
+    news_articles_count = news_articles_result.scalar() or 0
 
     # 获取活跃统计
     active_agents = await agent_service.get_all(db, filters={"status": "idle"}, limit=1000)
@@ -41,6 +50,8 @@ async def get_dashboard_stats(
         "toolsCount": tools_count,
         "labsCount": labs_count,
         "blogPostsCount": blog_posts_count,
+        "newsSourcesCount": news_sources_count,
+        "newsArticlesCount": news_articles_count,
         "activeAgentsCount": len(active_agents),
         "activeToolsCount": len(active_tools),
         "publishedPostsCount": len(published_posts),
