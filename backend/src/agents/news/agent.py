@@ -83,7 +83,7 @@ class NewsAgent:
         Returns:
             int: 新增文章数量
         """
-        from ..models import NewsSource, NewsArticle
+        from ...models import NewsSource, NewsArticle
 
         logger.info(f"Starting crawl job, source_id={source_id}, daily_limit={daily_limit}")
 
@@ -225,7 +225,7 @@ class NewsAgent:
 
     async def get_stats(self) -> dict:
         """获取统计信息"""
-        from ..models import NewsSource, NewsArticle
+        from ...models import NewsSource, NewsArticle
         from sqlalchemy import func
 
         # 统计源数量
