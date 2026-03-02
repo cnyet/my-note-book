@@ -140,9 +140,8 @@ class NewsScheduler:
                 logger.info(f"Job {job_id} removed for source {source_id}")
             except Exception as e:
                 logger.warning(f"Failed to remove job {job_id}: {e}")
-            finally:
-                del self._jobs[source_id]
-                return True
+            del self._jobs[source_id]
+            return True
         return False
 
     def pause_job(self, source_id: str) -> bool:

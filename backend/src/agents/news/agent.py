@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .crawler import NewsCrawler
 from .summarizer import Summarizer
+from .scheduler import NewsScheduler
 from ..manager import AgentManager, AgentStatus
 
 logger = logging.getLogger(__name__)
@@ -36,19 +37,29 @@ class NewsAgent:
         agent_id: str,
         session: AsyncSession,
         ollama_base_url: str = "http://localhost:11434",
-        llm_model: str = "deepseek-r1"
+        llm_model: str = "deepseek-r1",
+        default_daily_limit: int = 10
     ):
         self.agent_id = agent_id
         self.session = session
         self.crawler = NewsCrawler()
         self.summarizer = Summarizer(ollama_base_url=ollama_base_url, model=llm_model, provider="ollama")
         self.manager = AgentManager(session)
+        self.scheduler = NewsScheduler()
         self._is_running = False
+        self.default_daily_limit = default_daily_limit
 
     async def start(self) -> None:
         """启动新闻智能体"""
         logger.info(f"NewsAgent {self.agent_id} starting...")
         self._is_running = True
+
+        # 启动定时调度器
+        self.scheduler.start()
+        logger.info("NewsScheduler started")
+
+        # 注册定时任务
+        await self._register_scheduled_jobs()
 
         # 注册到 AgentManager
         try:
@@ -62,11 +73,48 @@ class NewsAgent:
         logger.info(f"NewsAgent {self.agent_id} stopping...")
         self._is_running = False
 
+        # 停止定时调度器
+        try:
+            self.scheduler.stop(wait=False)
+            logger.info("NewsScheduler stopped")
+        except Exception as e:
+            logger.warning(f"Could not stop scheduler: {e}")
+
         # 从 AgentManager 注销
         try:
             await self.manager.terminate(self.agent_id, "user request")
         except Exception as e:
             logger.warning(f"Could not terminate with AgentManager: {e}")
+
+    async def _register_scheduled_jobs(self) -> None:
+        """为所有活跃新闻源注册定时任务"""
+        from ...models import NewsSource
+
+        try:
+            # 获取所有活跃新闻源
+            result = await self.session.execute(
+                select(NewsSource).where(NewsSource.is_active == True)
+            )
+            sources = result.scalars().all()
+
+            for source in sources:
+                # 为每个源添加定时任务
+                self.scheduler.add_job(
+                    source_id=source.id,
+                    crawl_func=self.crawl_and_summarize,
+                    interval_seconds=source.crawl_interval,
+                )
+                logger.info(f"Registered scheduled job for source: {source.name}")
+
+            # 添加每日全局爬取任务（作为备份）
+            self.scheduler.add_daily_job(
+                crawl_func=self.crawl_and_summarize,
+                hour=9,  # UTC 9 点执行
+            )
+            logger.info("Registered daily crawl job")
+
+        except Exception as e:
+            logger.error(f"Failed to register scheduled jobs: {e}")
 
     async def crawl_and_summarize(
         self,
@@ -246,10 +294,26 @@ class NewsAgent:
         )
         summarized_articles = result.scalar() or 0
 
+        # 获取调度器任务信息
+        scheduled_jobs = self.scheduler.get_all_jobs() if self.scheduler else []
+
         return {
             "agent_id": self.agent_id,
             "is_running": self._is_running,
             "active_sources": active_sources,
             "total_articles": total_articles,
             "summarized_articles": summarized_articles,
+            "scheduled_jobs": scheduled_jobs,
         }
+
+    async def trigger_crawl(self, source_id: Optional[str] = None) -> int:
+        """
+        手动触发爬取任务
+
+        Args:
+            source_id: 可选的新闻源 ID，不指定则爬取所有活跃源
+
+        Returns:
+            int: 新增文章数量
+        """
+        return await self.crawl_and_summarize(source_id=source_id, daily_limit=self.default_daily_limit)
