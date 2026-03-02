@@ -65,6 +65,7 @@ export interface RefreshResponse {
 
 // ==================== API Functions ====================
 
+// 使用相对路径，通过 Next.js rewrite 代理到后端
 const API_BASE = "/api/v1";
 
 async function fetchNews(

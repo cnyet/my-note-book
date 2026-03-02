@@ -1,8 +1,123 @@
 # Session Summary
 
 > 上次会话：2026-02-28T21:30:00Z - Sprint 3 规划
-> 本次会话：2026-03-02T13:45:00Z - Sprint 3 News Agent 完成
-> 下次会话：准备分支合并和 Sprint 4 规划
+> 本次会话：2026-03-02T13:45:00Z - Sprint 3 完成 + Sprint 4 规划完成
+> 下次会话：开始实施 Sprint 4 Phase 1
+
+---
+
+## 本次会话完成的工作
+
+### 1. 分支合并 ✅
+- 将 `feature/sprint-3-news-agent` 成功合并到 `main` 分支
+- 添加了 Sprint 3 完成报告
+
+### 2. API 404 错误修复 ✅
+**问题**: 前端访问 `http://localhost:3001/api/v1/news/stats` 返回 404
+
+**原因分析**:
+1. 后端服务器未运行在正确端口
+2. 前端 `use-news.ts` 使用了完整 URL 绕过 Next.js 代理
+
+**修复步骤**:
+- 配置 `frontend/next.config.mjs` 添加 rewrite 规则
+- 修改 `frontend/src/hooks/use-news.ts` 使用相对路径 `/api/v1`
+- 确保前端运行在端口 3001，后端运行在端口 8001
+
+**最终配置**:
+```javascript
+// next.config.mjs
+async rewrites() {
+  return [
+    {
+      source: "/api/v1/:path*",
+      destination: "http://localhost:8001/api/v1/:path*",
+    },
+  ];
+}
+```
+
+### 3. News Agent 数据灌入 ✅
+- 从 5 个新闻源爬取了 6 篇文章
+- 使用 deepseek-r1 生成中文摘要
+- 数据来源：TechCrunch AI, MIT Technology Review
+
+**验证结果**:
+```json
+{
+  "active_sources": 26,
+  "total_articles": 6,
+  "summarized_articles": 6
+}
+```
+
+### 4. Sprint 4 规划完成 ✅
+**文档**: `docs/planning/sprint-4.md`
+
+**目标**: AI Assistant Agent - 智能问答助手
+
+**5 个 Phase**:
+| Phase | 内容 | 预计时间 |
+|-------|------|----------|
+| Phase 1 | AI 模型适配器层 | 2 天 |
+| Phase 2 | 对话管理 | 2 天 |
+| Phase 3 | AI Assistant Agent 核心 | 2 天 |
+| Phase 4 | 前端界面 | 3 天 |
+| Phase 5 | 测试与集成 | 2 天 |
+
+**技术栈**:
+- 后端：FastAPI, SQLAlchemy, Pydantic
+- AI 适配器：Ollama, Anthropic, OpenAI
+- 前端：Next.js, React Query, Framer Motion
+- 数据库：Conversation, Message 表
+
+**成功标准**:
+- 支持 ≥2 种 AI 模型
+- 对话历史正确保存和恢复
+- 响应时间 < 3 秒
+- ≥20 个测试通过
+
+---
+
+## 关键决策
+
+| 决策 | 选项 | 选择 | 原因 |
+|------|------|------|------|
+| API 代理方案 | 环境变量 / rewrite | rewrite | 浏览器端自动代理，无需修改代码 |
+| 端口配置 | 动态端口 / 固定端口 | 固定端口 | 严格遵循 README.md 规范 |
+| Sprint 4 方向 | Roadmap 剩余功能 / 新规划 | 新规划 | roadmap.md 是废弃计划 |
+| OpenSpec 提案 | 创建提案 / 直接规划 | 直接规划 | 用户要求不创建 OpenSpec 提案 |
+
+---
+
+## 踩过的坑
+
+1. **RSS 解析测试**: `mock_entry.content = []` 空列表导致 content 为空
+2. **Summarizer mock**: patch 路径应该是 `httpx.AsyncClient` 而不是完整路径
+3. **OpenAI 测试**: openai 库未安装，删除依赖外部库的测试
+4. **conftest.py 模型导入**: 测试数据库 fixture 需要显式导入 NewsSource 和 NewsArticle
+5. **pytest mock 作用域**: 在测试函数内部使用 `with patch` 可能不生效
+6. **use-news.ts**: 使用完整 URL 会绕过 Next.js rewrite 代理
+7. **Next.js 端口**: 默认 3000，需要用 `PORT=3001` 显式指定
+
+---
+
+## 代码质量
+
+- **类型安全**: 所有公共方法有类型注解
+- **错误处理**: try/except 捕获异常，记录日志，适当回滚
+- **测试覆盖**: 49 单元 + 16 集成 = 65 测试全部通过
+- **代码审查**: 两个阶段审查（规范 + 质量）
+
+---
+
+## 待办延续
+
+- [ ] Sprint 4 Phase 1: AI 模型适配器层
+- [ ] Sprint 4 Phase 2: 对话管理
+- [ ] Sprint 4 Phase 3: AI Assistant Agent 核心
+- [ ] Sprint 4 Phase 4: 前端界面
+- [ ] Sprint 4 Phase 5: 测试与集成
 
 ---
 

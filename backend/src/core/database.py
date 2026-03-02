@@ -67,6 +67,10 @@ async def init_db():
         NewsSource, NewsArticle
     )  # 延迟导入以避免循环依赖
 
+    # 导入 AI Assistant 相关模型
+    from ..models.conversation import Conversation
+    from ..models.message import Message
+
     logger.info("Initializing database...")
     async with engine.begin() as conn:
         # 在异步环境下创建所有表

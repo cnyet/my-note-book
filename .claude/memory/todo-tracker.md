@@ -1,6 +1,6 @@
 # TODO Tracker
 
-> 最后更新：2026-03-02T13:45:00Z
+> 最后更新：2026-03-02T15:30:00Z
 
 ## 已完成
 
@@ -12,6 +12,9 @@
 | **Sprint 3.3: 单元测试** | 2026-03-02 | 49 测试（Crawler/Summarizer/Scheduler） |
 | **Sprint 3.4: 集成测试** | 2026-03-02 | 16 测试（API 端点） |
 | **Sprint 3.5: 管理端 UI** | 2026-03-02 | CRUD + Toggle + 模态框 |
+| **Sprint 3.6: 分支合并** | 2026-03-02 | feature/sprint-3-news-agent → main |
+| **Sprint 3.7: API 代理修复** | 2026-03-02 | Next.js rewrite 配置 |
+| **Sprint 3.8: 数据灌入** | 2026-03-02 | 6 篇文章已爬取并生成摘要 |
 | **Sprint 2 全部完成** | 2026-02-28 | 4 个 Phase + 前端集成 |
 | **Sprint 2 设计文档** | 2026-02-27 | `docs/planning/sprint-2.md` |
 | **重复 API 请求修复** | 2026-02-27 | React Query 集成到 6 个管理页面 |
@@ -23,6 +26,9 @@
 
 | 任务 | 优先级 | 预计时间 | 详情 |
 |------|--------|----------|------|
-| **分支合并** | P0 | 30 分钟 | feature/sprint-3-news-agent → main |
-| **Sprint 4 规划** | P1 | 2-3 小时 | 下一个智能体功能规划 |
+| **Sprint 4 Phase 1** | P0 | 2 天 | AI 模型适配器层（Ollama/Anthropic/OpenAI） |
+| **Sprint 4 Phase 2** | P0 | 2 天 | 对话管理（数据库、上下文窗口） |
+| **Sprint 4 Phase 3** | P0 | 2 天 | AI Assistant Agent 核心 |
+| **Sprint 4 Phase 4** | P0 | 3 天 | 前端聊天界面 |
+| **Sprint 4 Phase 5** | P0 | 2 天 | 测试与集成 |
 | **安全功能实现** | P2 | 2-3 天 | AES-256-GCM 加密实现 |
