@@ -154,3 +154,104 @@ export function useRefreshNews() {
     },
   });
 }
+
+// ==================== Management Hooks ====================
+
+interface CreateSourceData {
+  name: string;
+  url: string;
+  source_type: "rss" | "http";
+  category?: string;
+  language: string;
+  crawl_interval: number;
+}
+
+interface UpdateSourceData {
+  name?: string;
+  url?: string;
+  is_active?: boolean;
+  crawl_interval?: number;
+}
+
+async function createNewsSource(data: CreateSourceData): Promise<NewsSource> {
+  const res = await fetch(`${API_BASE}/news/sources`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create source");
+  return res.json();
+}
+
+async function updateNewsSource(
+  id: string,
+  data: UpdateSourceData
+): Promise<NewsSource> {
+  const res = await fetch(`${API_BASE}/news/sources/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update source");
+  return res.json();
+}
+
+async function deleteNewsSource(id: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/news/sources/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete source");
+}
+
+async function toggleNewsSource(id: string): Promise<NewsSource> {
+  const res = await fetch(`${API_BASE}/news/sources/${id}/toggle`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to toggle source");
+  return res.json();
+}
+
+export function useCreateNewsSource() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createNewsSource,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["news", "sources"] });
+    },
+  });
+}
+
+export function useUpdateNewsSource() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateSourceData }) =>
+      updateNewsSource(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["news", "sources"] });
+    },
+  });
+}
+
+export function useDeleteNewsSource() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteNewsSource,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["news", "sources"] });
+    },
+  });
+}
+
+export function useToggleNewsSource() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: toggleNewsSource,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["news", "sources"] });
+    },
+  });
+}

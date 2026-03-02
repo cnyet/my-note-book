@@ -17,8 +17,22 @@ import {
   CheckCircle,
   Clock,
   ArrowLeft,
+  Plus,
+  Edit,
+  Trash2,
+  Power,
+  Play,
+  Pause,
 } from "lucide-react";
-import { useNewsStats, useNewsSources, useRefreshNews } from "@/hooks/use-news";
+import {
+  useNewsStats,
+  useNewsSources,
+  useRefreshNews,
+  useCreateNewsSource,
+  useUpdateNewsSource,
+  useDeleteNewsSource,
+  useToggleNewsSource,
+} from "@/hooks/use-news";
 import type { NewsSource } from "@/hooks/use-news";
 import {
   Card,
@@ -32,6 +46,12 @@ import {
   message,
   Modal,
   Spin,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Popconfirm,
+  Divider,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 
@@ -41,7 +61,15 @@ export default function NewsManagementPage() {
   const { data: stats, isLoading: statsLoading } = useNewsStats();
   const { data: sources, isLoading: sourcesLoading } = useNewsSources();
   const { mutate: refresh, isPending: isRefreshing } = useRefreshNews();
+  const { mutate: createSource, isPending: isCreating } = useCreateNewsSource();
+  const { mutate: updateSource } = useUpdateNewsSource();
+  const { mutate: deleteSource } = useDeleteNewsSource();
+  const { mutate: toggleSource } = useToggleNewsSource();
+
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingSource, setEditingSource] = useState<NewsSource | null>(null);
+  const [form] = Form.useForm();
 
   const handleRefresh = () => {
     refresh(selectedSources.length > 0 ? selectedSources : undefined, {
@@ -55,12 +83,69 @@ export default function NewsManagementPage() {
     });
   };
 
-  const handleToggleSource = (sourceId: string) => {
-    setSelectedSources((prev) =>
-      prev.includes(sourceId)
-        ? prev.filter((id) => id !== sourceId)
-        : [...prev, sourceId]
+  const handleAddSource = (values: any) => {
+    createSource(values, {
+      onSuccess: () => {
+        message.success("新闻源添加成功");
+        setIsAddModalOpen(false);
+        form.resetFields();
+      },
+      onError: () => {
+        message.error("添加失败，请重试");
+      },
+    });
+  };
+
+  const handleEditSource = (values: any) => {
+    if (!editingSource) return;
+    updateSource(
+      { id: editingSource.id, data: values },
+      {
+        onSuccess: () => {
+          message.success("新闻源更新成功");
+          setEditingSource(null);
+          form.resetFields();
+        },
+        onError: () => {
+          message.error("更新失败，请重试");
+        },
+      }
     );
+  };
+
+  const handleDeleteSource = (sourceId: string) => {
+    deleteSource(sourceId, {
+      onSuccess: () => {
+        message.success("新闻源已删除");
+      },
+      onError: () => {
+        message.error("删除失败，请重试");
+      },
+    });
+  };
+
+  const handleToggleSource = (sourceId: string, currentStatus: boolean) => {
+    toggleSource(sourceId, {
+      onSuccess: () => {
+        message.success(currentStatus ? "新闻源已禁用" : "新闻源已启用");
+      },
+      onError: () => {
+        message.error("操作失败，请重试");
+      },
+    });
+  };
+
+  const openEditModal = (source: NewsSource) => {
+    setEditingSource(source);
+    form.setFieldsValue({
+      name: source.name,
+      url: source.url,
+      source_type: source.source_type,
+      category: source.category,
+      language: source.language,
+      crawl_interval: source.crawl_interval / 3600, // 转换为小时
+      is_active: source.is_active,
+    });
   };
 
   const columns: ColumnsType<NewsSource> = [
@@ -115,6 +200,13 @@ export default function NewsManagementPage() {
         ),
     },
     {
+      title: "爬取间隔",
+      dataIndex: "crawl_interval",
+      key: "crawl_interval",
+      width: 100,
+      render: (interval: number) => `${(interval / 3600).toFixed(1)}小时`,
+    },
+    {
       title: "最后爬取",
       dataIndex: "last_crawled_at",
       key: "last_crawled_at",
@@ -134,18 +226,53 @@ export default function NewsManagementPage() {
     {
       title: "操作",
       key: "action",
-      width: 120,
+      width: 220,
       render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="link"
-            size="small"
-            href={record.url}
-            target="_blank"
-            icon={<ExternalLink size={14} />}
-          >
-            访问
-          </Button>
+        <Space size="small" direction="vertical">
+          <Space>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => openEditModal(record)}
+              icon={<Edit size={14} />}
+            >
+              编辑
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => handleToggleSource(record.id, record.is_active)}
+              icon={<Power size={14} />}
+            >
+              {record.is_active ? "禁用" : "启用"}
+            </Button>
+          </Space>
+          <Space>
+            <Button
+              type="link"
+              size="small"
+              href={record.url}
+              target="_blank"
+              icon={<ExternalLink size={14} />}
+            >
+              访问
+            </Button>
+            <Popconfirm
+              title="确定要删除这个新闻源吗？"
+              onConfirm={() => handleDeleteSource(record.id)}
+              okText="确定"
+              cancelText="取消"
+            >
+              <Button
+                type="link"
+                size="small"
+                danger
+                icon={<Trash2 size={14} />}
+              >
+                删除
+              </Button>
+            </Popconfirm>
+          </Space>
         </Space>
       ),
     },
@@ -176,6 +303,12 @@ export default function NewsManagementPage() {
           </Space>
           <Space>
             <Button
+              icon={<Plus />}
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              添加新闻源
+            </Button>
+            <Button
               icon={<RefreshCw className={isRefreshing ? "animate-spin" : ""} />}
               onClick={handleRefresh}
               loading={isRefreshing}
@@ -183,7 +316,9 @@ export default function NewsManagementPage() {
             >
               {isRefreshing ? "刷新中..." : "立即刷新"}
             </Button>
-            <Button icon={<Settings />}>配置</Button>
+            <Button icon={<Settings />} disabled>
+              配置
+            </Button>
           </Space>
         </div>
       </div>
@@ -287,6 +422,95 @@ export default function NewsManagementPage() {
           />
         )}
       </Card>
+
+      {/* Add/Edit Modal */}
+      <Modal
+        title={editingSource ? "编辑新闻源" : "添加新闻源"}
+        open={!!editingSource || isAddModalOpen}
+        onCancel={() => {
+          setEditingSource(null);
+          setIsAddModalOpen(false);
+          form.resetFields();
+        }}
+        onOk={() => form.submit()}
+        confirmLoading={isCreating}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={editingSource ? handleEditSource : handleAddSource}
+          initialValues={{
+            source_type: "rss",
+            language: "en",
+            crawl_interval: 1,
+            is_active: true,
+          }}
+        >
+          <Form.Item
+            name="name"
+            label="新闻源名称"
+            rules={[{ required: true, message: "请输入新闻源名称" }]}
+          >
+            <Input placeholder="例如：OpenAI Blog" />
+          </Form.Item>
+
+          <Form.Item
+            name="url"
+            label="RSS/HTTP 地址"
+            rules={[
+              { required: true, message: "请输入地址" },
+              { type: "url", message: "请输入有效的 URL" },
+            ]}
+          >
+            <Input placeholder="https://example.com/rss" />
+          </Form.Item>
+
+          <Form.Item
+            name="source_type"
+            label="来源类型"
+            rules={[{ required: true }]}
+          >
+            <Select>
+              <Select.Option value="rss">RSS Feed</Select.Option>
+              <Select.Option value="http">HTTP/HTML</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="category" label="分类">
+            <Input placeholder="例如：AI, Tech, Research" />
+          </Form.Item>
+
+          <Form.Item
+            name="language"
+            label="语言"
+            rules={[{ required: true }]}
+          >
+            <Select>
+              <Select.Option value="en">English</Select.Option>
+              <Select.Option value="zh">中文</Select.Option>
+              <Select.Option value="ja">日本語</Select.Option>
+              <Select.Option value="ko">한국어</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="crawl_interval"
+            label="爬取间隔（小时）"
+            rules={[{ required: true }]}
+          >
+            <InputNumber min={0.5} max={24} step={0.5} style={{ width: "100%" }} />
+          </Form.Item>
+
+          {editingSource && (
+            <Form.Item name="is_active" label="状态" valuePropName="checked">
+              <Select>
+                <Select.Option value={true}>活跃</Select.Option>
+                <Select.Option value={false}>已禁用</Select.Option>
+              </Select>
+            </Form.Item>
+          )}
+        </Form>
+      </Modal>
     </div>
   );
 }
