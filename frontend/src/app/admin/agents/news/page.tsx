@@ -1,11 +1,12 @@
-// frontend/src/app/admin/news/page.tsx
+// frontend/src/app/admin/agents/news/page.tsx
 /**
- * News Management Page
+ * News Agent Management Page
  *
- * 新闻源管理和监控页面
+ * 新闻源管理和监控页面 - News Agent 专属管理
  */
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Newspaper,
@@ -15,6 +16,7 @@ import {
   ExternalLink,
   CheckCircle,
   Clock,
+  ArrowLeft,
 } from "lucide-react";
 import { useNewsStats, useNewsSources, useRefreshNews } from "@/hooks/use-news";
 import type { NewsSource } from "@/hooks/use-news";
@@ -151,30 +153,39 @@ export default function NewsManagementPage() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <Space>
-          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-            <Newspaper className="text-indigo-500" size={24} />
-          </div>
-          <div>
-            <Title level={4} style={{ margin: 0 }}>
-              News Hub 管理
-            </Title>
-            <Text type="secondary">管理新闻源和监控爬取状态</Text>
-          </div>
-        </Space>
-        <Space>
-          <Button
-            icon={<RefreshCw className={isRefreshing ? "animate-spin" : ""} />}
-            onClick={handleRefresh}
-            loading={isRefreshing}
-            type="primary"
-          >
-            {isRefreshing ? "刷新中..." : "立即刷新"}
-          </Button>
-          <Button icon={<Settings />}>配置</Button>
-        </Space>
+      {/* Header with Back Button */}
+      <div className="flex flex-col gap-4">
+        <Link
+          href="/admin/agents"
+          className="inline-flex items-center gap-2 text-[#696cff] hover:underline w-fit"
+        >
+          <ArrowLeft size={16} />
+          返回 Agents 管理
+        </Link>
+        <div className="flex justify-between items-center">
+          <Space>
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+              <Newspaper className="text-indigo-500" size={24} />
+            </div>
+            <div>
+              <Title level={4} style={{ margin: 0 }}>
+                News Hub Agent
+              </Title>
+              <Text type="secondary">管理新闻源和监控爬取状态</Text>
+            </div>
+          </Space>
+          <Space>
+            <Button
+              icon={<RefreshCw className={isRefreshing ? "animate-spin" : ""} />}
+              onClick={handleRefresh}
+              loading={isRefreshing}
+              type="primary"
+            >
+              {isRefreshing ? "刷新中..." : "立即刷新"}
+            </Button>
+            <Button icon={<Settings />}>配置</Button>
+          </Space>
+        </div>
       </div>
 
       {/* Stats Cards */}

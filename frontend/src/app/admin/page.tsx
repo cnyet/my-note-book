@@ -9,7 +9,7 @@ import {
 } from "@/components/admin/dashboard";
 import { apiClient } from "@/lib/admin-api";
 import { Col, Row, Card, Spin } from "antd";
-import { Bot, Wrench, FlaskConical, PenTool, Newspaper, Users, ShoppingCart, Wallet, CreditCard, BarChart3 } from "lucide-react";
+import { Bot, Wrench, FlaskConical, PenTool, Users, ShoppingCart, Wallet, CreditCard, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 interface DashboardStats {
@@ -129,7 +129,7 @@ export default function AdminDashboardPage() {
             value={stats?.newsSourcesCount || 0}
             icon={Newspaper}
             color="bg-[#3b82f6]/10 text-[#3b82f6]"
-            href="/admin/news"
+            href="/admin/agents/news"
           />
         </Col>
         <Col xs={24} sm={12} lg={8}>
