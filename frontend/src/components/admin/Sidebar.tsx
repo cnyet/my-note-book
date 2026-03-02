@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   MoreHorizontal,
+  Newspaper,
   PenTool,
   Settings,
   UserCircle,
@@ -34,6 +35,7 @@ const menuGroups = [
     items: [
       { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
       { href: "/admin/agents", icon: Bot, label: "Agents" },
+      { href: "/admin/news", icon: Newspaper, label: "News Hub" },
       { href: "/admin/tools", icon: Wrench, label: "Tools" },
       { href: "/admin/labs", icon: FlaskConical, label: "Labs" },
       { href: "/admin/blog", icon: PenTool, label: "Blog" },
