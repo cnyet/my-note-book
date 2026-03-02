@@ -192,7 +192,7 @@ async def create_source(
         crawl_interval=source.crawl_interval,
         last_crawled_at=source.last_crawled_at,
         created_at=source.created_at,
-        updated_at=souce.updated_at,
+        updated_at=source.updated_at,
     )
 
 
@@ -365,10 +365,12 @@ async def get_news_list(
 
     # 获取源名称
     source_ids = list(set(a.source_id for a in articles))
-    sources_result = await db.execute(
-        select(NewsSource.id, NewsSource.name).where(NewsSource.id.in_(source_ids))
-    )
-    sources_map = {row.id: row.name for row in sources_result.scalars().all()}
+    sources_map = {}
+    if source_ids:
+        sources_result = await db.execute(
+            select(NewsSource.id, NewsSource.name).where(NewsSource.id.in_(source_ids))
+        )
+        sources_map = {row[0]: row[1] for row in sources_result.all()}
 
     return NewsListResponse(
         articles=[
