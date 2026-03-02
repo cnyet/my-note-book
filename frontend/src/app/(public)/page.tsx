@@ -16,7 +16,7 @@ export default function Home() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[140px] animate-pulse delay-1000"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-7xl mx-auto">
         <div className="space-y-40">
           <Hero />
           <PerformanceSection />

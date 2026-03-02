@@ -91,7 +91,7 @@ export default function AgentsPage() {
       icon: <Newspaper className="text-blue-400" />,
       status: "Online",
       capabilities: ["Tech News", "AI Research", "Daily Digest"],
-      link: "/news",
+      link: "/agents/news",
       featured: true,
     },
   ];
