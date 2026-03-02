@@ -98,6 +98,9 @@ async def list_agents(
     # 转换为响应模型
     response_data = []
     for agent in result:
+        # 从 config JSON 中提取 system_prompt 和 model
+        import json
+        config = json.loads(agent.config) if agent.config else {}
         response_data.append({
             "id": agent.id,
             "name": agent.name,
@@ -106,9 +109,9 @@ async def list_agents(
             "icon_url": agent.icon_url or "",
             "link": agent.link or "",
             "category": agent.category,
-            "system_prompt": agent.system_prompt or "",
-            "model": agent.model,
-            "is_active": agent.is_active,
+            "system_prompt": config.get("system_prompt", ""),
+            "model": config.get("model", "gpt-4"),
+            "is_active": agent.status != "offline",
             "created_at": agent.created_at.isoformat(),
             "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
             "sort_order": agent.sort_order,
@@ -138,6 +141,10 @@ async def get_agent(
             detail="智能体不存在"
         )
 
+    # 从 config JSON 中提取 system_prompt 和 model
+    import json
+    config = json.loads(agent.config) if agent.config else {}
+
     return {
         "id": agent.id,
         "name": agent.name,
@@ -146,9 +153,9 @@ async def get_agent(
         "icon_url": agent.icon_url or "",
         "link": agent.link or "",
         "category": agent.category,
-        "system_prompt": agent.system_prompt or "",
-        "model": agent.model,
-        "is_active": agent.is_active,
+        "system_prompt": config.get("system_prompt", ""),
+        "model": config.get("model", "gpt-4"),
+        "is_active": agent.status != "offline",
         "created_at": agent.created_at.isoformat(),
         "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
         "sort_order": agent.sort_order,
@@ -167,6 +174,8 @@ async def create_agent(
         agent_data: 智能体数据
         db: 数据库会话
     """
+    import json
+
     # 检查 slug 唯一性
     result = await db.execute(select(Agent).filter(Agent.slug == agent_data.slug))
     existing = result.scalars().first()
@@ -176,6 +185,12 @@ async def create_agent(
                 detail=f"智能体 slug '{agent_data.slug}' 已存在"
             )
 
+    # 将 system_prompt 和 model 存储到 config JSON 中
+    config = {
+        "model": agent_data.model,
+        "system_prompt": agent_data.system_prompt or "",
+    }
+
     # 创建新智能体
     new_agent = await agent_service.create(db, {
         "name": agent_data.name,
@@ -184,13 +199,27 @@ async def create_agent(
         "icon_url": agent_data.icon_url,
         "link": agent_data.link,
         "category": agent_data.category,
-        "system_prompt": agent_data.system_prompt,
-        "model": agent_data.model,
-        "is_active": True,
+        "config": json.dumps(config),
+        "status": "idle" if agent_data.is_active else "offline",
         "sort_order": 0,  # 默认排序
     })
 
-    return new_agent
+    # 返回响应时从 config 中提取字段
+    return {
+        "id": new_agent.id,
+        "name": new_agent.name,
+        "slug": new_agent.slug,
+        "description": new_agent.description or "",
+        "icon_url": new_agent.icon_url or "",
+        "link": new_agent.link or "",
+        "category": new_agent.category,
+        "system_prompt": config.get("system_prompt", ""),
+        "model": config.get("model", "gpt-4"),
+        "is_active": new_agent.status != "offline",
+        "created_at": new_agent.created_at.isoformat(),
+        "updated_at": new_agent.updated_at.isoformat() if new_agent.updated_at else None,
+        "sort_order": new_agent.sort_order,
+    }
 
 
 @router.put("/{agent_id}", response_model=AgentResponse)
