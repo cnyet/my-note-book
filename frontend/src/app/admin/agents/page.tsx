@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import {
   Button,
-  Card,
+  Card as AntCard,
   Col,
   Dropdown,
   Input,
@@ -22,11 +22,11 @@ import {
   Row,
   Select,
   Space,
-  Tag,
   Typography,
   message,
 } from "antd";
 import { ChangeEvent, useState, useMemo, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   ArrowUpDown,
   Bot,
@@ -35,12 +35,15 @@ import {
   Clock,
   Link2,
   Server,
+  Zap,
+  MessageSquare,
 } from "lucide-react";
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, StatusBadge } from "@/components/ui/Card";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -71,10 +74,9 @@ interface Agent {
 
 /** 将后端 API Agent 转换为前端 Agent */
 function mapApiAgentToFrontend(apiAgent: ApiAgent): Agent {
-  // 将后端 is_active 转换为前端 status
   let status: AgentStatus = "offline";
   if (apiAgent.is_active) {
-    status = "spawned"; // active = spawned/online
+    status = "spawned";
   }
 
   return {
@@ -114,30 +116,17 @@ function mapFrontendAgentToApi(agent: Agent): Partial<ApiAgent> {
   };
 }
 
-/** Status Badge Colors */
-const statusConfig: Record<
-  AgentStatus,
-  { color: string; bgColor: string; textColor: string; label: string }
-> = {
-  offline: {
-    color: "#697a8d",
-    bgColor: "bg-[#697a8d]/10",
-    textColor: "text-[#697a8d]",
-    label: "Offline",
-  },
-  spawned: {
-    color: "#71dd37",
-    bgColor: "bg-[#71dd37]/10",
-    textColor: "text-[#71dd37]",
-    label: "Online",
-  },
-  idle: {
-    color: "#ffab00",
-    bgColor: "bg-[#ffab00]/10",
-    textColor: "text-[#ffab00]",
-    label: "Idle",
-  },
-};
+/** Status to Badge Props */
+function getStatusBadgeProps(status: AgentStatus): { status: string; label: string } {
+  switch (status) {
+    case "spawned":
+      return { status: "online", label: "Online" };
+    case "idle":
+      return { status: "idle", label: "Idle" };
+    default:
+      return { status: "offline", label: "Offline" };
+  }
+}
 
 /** Draggable Agent Card Component */
 function AgentCard({
@@ -153,8 +142,8 @@ function AgentCard({
   onSpawn?: (agent: Agent) => void;
   onTerminate?: (agent: Agent) => void;
 }) {
-  const config = statusConfig[agent.status];
   const isRunning = agent.status === "spawned" || agent.status === "idle";
+  const badgeProps = getStatusBadgeProps(agent.status);
 
   const items: MenuProps["items"] = [
     {
@@ -168,7 +157,6 @@ function AgentCard({
       label: isRunning ? "Restart" : "Start",
       icon: <PlayCircleOutlined />,
       onClick: () => onSpawn?.(agent),
-      disabled: false,
     },
     {
       key: "terminate",
@@ -190,109 +178,100 @@ function AgentCard({
 
   return (
     <Card
-      bordered={false}
-      className="h-full sneat-card-shadow transition-all hover:translate-y-[-2px]"
-      styles={{ body: { padding: "1.5rem", height: "100%" } }}
+      hover
+      className="h-full"
+      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       {/* Header: Status Badge + Drag Handle + More Menu */}
-      <div className="flex justify-between items-start mb-4">
-        <Tag
-          className={`${config.bgColor} ${config.textColor} border-none m-0`}
-          style={{
-            backgroundColor: config.color + "20",
-            color: config.color,
-            fontSize: "11px",
-            fontWeight: 600,
-            padding: "4px 10px",
-            borderRadius: "4px",
-          }}
-        >
-          {config.label}
-        </Tag>
+      <div className="flex justify-between items-start mb-5">
+        <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
         <div className="flex items-center gap-2">
           <Button
             type="text"
             shape="circle"
-            icon={<ArrowUpDown size={14} className="text-[#8592a3]" />}
+            icon={<ArrowUpDown size={14} className="text-gray-400" />}
             size="small"
-            className="cursor-grab active:cursor-grabbing"
+            className="cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-800"
           />
           <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
             <Button
               type="text"
               shape="circle"
-              icon={<MoreVertical size={16} className="text-[#8592a3]" />}
+              icon={<MoreVertical size={16} className="text-gray-400" />}
               size="small"
+              className="hover:bg-gray-100 dark:hover:bg-gray-800"
             />
           </Dropdown>
         </div>
       </div>
 
-      {/* Agent Icon/Avatar */}
-      <div className="w-[64px] h-[64px] rounded-full bg-gradient-to-br from-[#696cff]/20 to-[#9c27b0]/20 flex items-center justify-center mb-4 mx-auto">
-        <Bot className="text-[#696cff]" size={32} />
+      {/* Agent Icon/Avatar - Larger gradient circle */}
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
+        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
+          <Bot className="text-indigo-500" size={36} />
+        </div>
       </div>
 
       {/* Agent Name */}
-      <h4 className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-1 text-center">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
         {agent.name}
-      </h4>
+      </h3>
 
       {/* Slug */}
-      <Text className="text-[#8592a3] text-xs mb-3 block text-center">
-        /{agent.slug}
-      </Text>
+      <div className="flex items-center justify-center gap-1 mb-3">
+        <span className="text-xs text-gray-400">/</span>
+        <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
+          {agent.slug}
+        </Text>
+      </div>
 
       {/* Description */}
-      <Text className="text-[#697a8d] text-sm line-clamp-2 mb-4 block text-center">
+      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
         {agent.description}
-      </Text>
+      </p>
 
-      {/* Config Info */}
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-[#8592a3]">Model:</span>
-          <span className="text-[#566a7f] dark:text-[#a3b1c2] font-medium">
-            {agent.config.model}
-          </span>
-        </div>
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-[#8592a3]">Priority:</span>
-          <span className="text-[#566a7f] dark:text-[#a3b1c2] font-medium">
-            {agent.config.websocketPriority}
-          </span>
-        </div>
+      {/* Config Info - Styled badges */}
+      <div className="flex flex-wrap gap-2 justify-center mb-5">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 text-xs font-semibold">
+          <Zap size={12} />
+          {agent.config.model}
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-500 text-xs font-semibold">
+          <MessageSquare size={12} />
+          P{agent.config.websocketPriority}
+        </span>
       </div>
 
       {/* Footer: Action Buttons */}
-      <div className="flex gap-2 pt-3 border-t border-[#eceef1] dark:border-[#444564]">
+      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
         <Button
           type="default"
-          size="small"
+          size="large"
           icon={<EditOutlined />}
           onClick={() => onEdit(agent)}
-          className="flex-1"
+          className="flex-1 h-11 rounded-xl font-semibold"
         >
           Edit
         </Button>
         {isRunning ? (
           <Button
             type="default"
-            size="small"
+            size="large"
             danger
             icon={<StopOutlined />}
             onClick={() => onTerminate?.(agent)}
-            className="flex-1"
+            className="flex-1 h-11 rounded-xl font-semibold"
           >
             Stop
           </Button>
         ) : (
           <Button
             type="primary"
-            size="small"
+            size="large"
             icon={<PlayCircleOutlined />}
             onClick={() => onSpawn?.(agent)}
-            className="flex-1 bg-[#71dd37] hover:bg-[#67c732]"
+            className="flex-1 h-11 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-500 border-none"
           >
             Start
           </Button>
@@ -325,6 +304,7 @@ function SortableAgentCard({ agent, onEdit, onDelete, onSpawn, onTerminate }: So
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
   };
 
   return (
@@ -407,95 +387,101 @@ function EditAgentModal({
   return (
     <Modal
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
-          {agent ? "Edit Agent" : "Add New Agent"}
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <Bot className="text-white" size={20} />
+          </div>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
+            {agent ? "Edit Agent" : "Add New Agent"}
+          </span>
+        </div>
       }
       open={open}
       onOk={handleSave}
       onCancel={onCancel}
       okText="Save"
-      okButtonProps={{ className: "bg-[#696cff] hover:bg-[#5f61e6]" }}
-      width={600}
-      styles={{ body: { padding: "1.5rem" } }}
+      okButtonProps={{ className: "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700" }}
+      cancelButtonProps={{ className: "rounded-xl" }}
+      width={640}
+      styles={{
+        body: { padding: "1.5rem" },
+        header: { borderBottom: "1px solid #f0f0f0", paddingBottom: "1rem" },
+        footer: { borderTop: "1px solid #f0f0f0", paddingTop: "1rem" },
+      }}
     >
-      {/* Tab Navigation */}
-      <div className="flex gap-1 mb-6 p-1 bg-[#f5f5f9] dark:bg-[#232333] rounded-lg">
+      {/* Tab Navigation - Enhanced */}
+      <div className="flex gap-1.5 mb-6 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-xl">
         <button
           onClick={() => setActiveTab("basic")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "basic"
-              ? "bg-white dark:bg-[#2b2c40] text-[#696cff] shadow-sm"
-              : "text-[#697a8d] hover:text-[#566a7f]"
+              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           }`}
         >
-          <span className="flex items-center justify-center gap-2">
-            <Bot size={16} />
-            Basic Info
-          </span>
+          <Bot size={16} />
+          Basic
         </button>
         <button
           onClick={() => setActiveTab("config")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "config"
-              ? "bg-white dark:bg-[#2b2c40] text-[#696cff] shadow-sm"
-              : "text-[#697a8d] hover:text-[#566a7f]"
+              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           }`}
         >
-          <span className="flex items-center justify-center gap-2">
-            <SettingOutlined />
-            Config
-          </span>
+          <SettingOutlined />
+          Config
         </button>
         <button
           onClick={() => setActiveTab("connections")}
-          className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "connections"
-              ? "bg-white dark:bg-[#2b2c40] text-[#696cff] shadow-sm"
-              : "text-[#697a8d] hover:text-[#566a7f]"
+              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           }`}
         >
-          <span className="flex items-center justify-center gap-2">
-            <Link2 size={16} />
-            Connections
-          </span>
+          <Link2 size={16} />
+          Connections
         </button>
       </div>
 
-      <Space direction="vertical" size="large" className="w-full">
+      <Space direction="vertical" size="middle" className="w-full">
         {/* Basic Info Tab */}
         {activeTab === "basic" && (
           <>
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-                Name <span className="text-[#ff3e1d]">*</span>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Name <span className="text-red-500">*</span>
               </label>
               <Input
                 value={form.name}
                 onChange={handleNameChange}
                 placeholder="Enter agent name"
-                className="h-10"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Slug */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-                Slug <span className="text-[#ff3e1d]">*</span>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Slug <span className="text-red-500">*</span>
               </label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
                 placeholder="agent-slug"
-                className="h-10"
-                prefix="/"
+                className="h-11 rounded-xl"
+                prefix={<span className="text-gray-400 text-sm">/</span>}
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Description
               </label>
               <TextArea
@@ -503,25 +489,28 @@ function EditAgentModal({
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder="Enter agent description"
                 rows={3}
+                className="rounded-xl"
+                styles={{ textarea: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Icon URL */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Icon URL
               </label>
               <Input
                 value={form.iconUrl}
                 onChange={(e) => setForm({ ...form, iconUrl: e.target.value })}
                 placeholder="/icons/agent.png"
-                className="h-10"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Status
               </label>
               <Select<AgentStatus>
@@ -533,6 +522,9 @@ function EditAgentModal({
                   { label: "Online (Spawned)", value: "spawned" },
                   { label: "Idle", value: "idle" },
                 ]}
+                styles={{
+                  selector: { borderRadius: "12px", height: "44px" },
+                }}
               />
             </div>
           </>
@@ -543,7 +535,7 @@ function EditAgentModal({
           <>
             {/* Model Selection */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Model
               </label>
               <Select<string>
@@ -562,12 +554,15 @@ function EditAgentModal({
                   { label: "DALL-E", value: "DALL-E" },
                   { label: "Other", value: "Other" },
                 ]}
+                styles={{
+                  selector: { borderRadius: "12px", height: "44px" },
+                }}
               />
             </div>
 
             {/* Prompt Template */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Prompt Template
               </label>
               <TextArea
@@ -580,12 +575,14 @@ function EditAgentModal({
                 }
                 placeholder="Enter the prompt template for this agent"
                 rows={4}
+                className="rounded-xl"
+                styles={{ textarea: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Call Quota */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Call Quota
               </label>
               <Input
@@ -598,13 +595,14 @@ function EditAgentModal({
                   })
                 }
                 placeholder="1000"
-                className="h-10"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* WebSocket Priority */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 WebSocket Priority
               </label>
               <Input
@@ -619,9 +617,10 @@ function EditAgentModal({
                 placeholder="1"
                 min={1}
                 max={10}
-                className="h-10"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
               />
-              <Text className="text-[#a1acb8] text-xs">
+              <Text className="text-gray-400 text-xs mt-1 block">
                 Lower numbers = higher priority (1 = highest)
               </Text>
             </div>
@@ -633,7 +632,7 @@ function EditAgentModal({
           <>
             {/* LobeChat URL */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 LobeChat URL
               </label>
               <Input
@@ -645,14 +644,15 @@ function EditAgentModal({
                   })
                 }
                 placeholder="https://lobe.chat/agent/..."
-                className="h-10"
-                prefix={<LinkOutlined className="text-[#8592a3]" />}
+                className="h-11 rounded-xl"
+                prefix={<LinkOutlined className="text-gray-400" />}
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* API Endpoint */}
             <div>
-              <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Internal API Endpoint
               </label>
               <Input
@@ -664,24 +664,21 @@ function EditAgentModal({
                   })
                 }
                 placeholder="/api/v1/agents/..."
-                className="h-10"
-                prefix={<ApiOutlined className="text-[#8592a3]" />}
+                className="h-11 rounded-xl"
+                prefix={<ApiOutlined className="text-gray-400" />}
+                styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Connection Status */}
-            <Card
-              bordered={false}
-              className="bg-[#f5f5f9] dark:bg-[#232333]"
-              styles={{ body: { padding: "1rem" } }}
-            >
+            <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#71dd37] animate-pulse" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                 <div>
-                  <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-sm font-medium block">
+                  <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold block">
                     Connection Status
                   </Text>
-                  <Text className="text-[#697a8d] text-xs">
+                  <Text className="text-gray-500 dark:text-gray-400 text-xs">
                     {agent?.status === "spawned" ? "Connected" : "Disconnected"}
                   </Text>
                 </div>
@@ -878,19 +875,19 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="animate-in fade-in-50 duration-500 p-6">
-      {/* Header Section */}
-      <Row gutter={[24, 24]} align="middle" className="mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0f0f1a] dark:to-[#1a1a2e] p-6">
+      {/* Header Section - Enhanced with gradient and better typography */}
+      <Row gutter={[24, 24]} align="middle" className="mb-8">
         <Col xs={24} md={12}>
-          <div className="flex items-center gap-3">
-            <div className="w-[42px] h-[42px] rounded-lg bg-[#696cff]/10 flex items-center justify-center">
-              <Bot className="text-[#696cff]" size={22} />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Bot className="text-white" size={26} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white m-0">
                 Agents Management
-              </h2>
-              <p className="text-[#697a8d] text-sm m-0">
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
                 Configure and manage AI agents
               </p>
             </div>
@@ -901,27 +898,38 @@ export default function AgentsPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <Input
               placeholder="Search agents..."
-              prefix={<SearchOutlined className="text-[#8592a3]" />}
+              prefix={<SearchOutlined className="text-gray-400" />}
               value={searchQuery}
               onChange={handleSearchChange}
-              className="h-10 w-full sm:w-[200px]"
+              className="h-11 w-full sm:w-[240px] rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              styles={{
+                input: { fontSize: "14px" },
+              }}
             />
             <Select
               value={statusFilter}
               onChange={handleStatusChange}
-              className="w-full sm:w-[140px]"
+              className="w-full sm:w-[140px] rounded-xl"
               options={[
                 { label: "All Status", value: "all" },
                 { label: "Online", value: "online" },
                 { label: "Offline", value: "offline" },
                 { label: "Idle", value: "idle" },
               ]}
+              styles={{
+                selector: { borderRadius: "12px", height: "44px" },
+              }}
             />
             <Button
               type="default"
               icon={<ArrowUpDown size={16} />}
               onClick={() => setDragEnabled(!dragEnabled)}
-              className={dragEnabled ? "bg-[#696cff]/20 text-[#696cff]" : "h-10"}
+              className={`h-11 rounded-xl font-semibold ${
+                dragEnabled ? "bg-indigo-500 text-white" : ""
+              }`}
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
             >
               {dragEnabled ? "Sorting..." : "Reorder"}
             </Button>
@@ -929,7 +937,10 @@ export default function AgentsPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddNew}
-              className="bg-[#696cff] hover:bg-[#5f61e6] h-10"
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
             >
               Add Agent
             </Button>
@@ -937,83 +948,41 @@ export default function AgentsPage() {
         </Col>
       </Row>
 
-      {/* Stats Row */}
-      <Row gutter={[24, 24]} className="mb-6">
+import { StatCard } from "@/components/ui/Card/StatCard";
+
+      {/* Stats Row - Enhanced with StatCard component */}
+      <Row gutter={[24, 24]} className="mb-8">
         <Col xs={24} sm={8} md={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-[40px] h-[40px] rounded-lg bg-[#696cff]/10 flex items-center justify-center">
-                <Bot className="text-[#696cff]" size={18} />
-              </div>
-              <div>
-                <Text className="text-[#697a8d] text-xs block">Total Agents</Text>
-                <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-lg font-bold">
-                  {agents.length || 0}
-                </Text>
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            icon={<Bot size={20} />}
+            label="Total Agents"
+            value={agents.length || 0}
+            gradient="blue"
+          />
         </Col>
         <Col xs={24} sm={8} md={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-[40px] h-[40px] rounded-lg bg-[#71dd37]/10 flex items-center justify-center">
-                <Activity className="text-[#71dd37]" size={18} />
-              </div>
-              <div>
-                <Text className="text-[#697a8d] text-xs block">Online</Text>
-                <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-lg font-bold">
-                  {agents.filter((a) => a.status === "spawned").length}
-                </Text>
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            icon={<Activity size={20} />}
+            label="Online"
+            value={agents.filter((a) => a.status === "spawned").length}
+            gradient="green"
+          />
         </Col>
         <Col xs={24} sm={8} md={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-[40px] h-[40px] rounded-lg bg-[#ffab00]/10 flex items-center justify-center">
-                <Clock className="text-[#ffab00]" size={18} />
-              </div>
-              <div>
-                <Text className="text-[#697a8d] text-xs block">Idle</Text>
-                <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-lg font-bold">
-                  {agents.filter((a) => a.status === "idle").length}
-                </Text>
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            icon={<Clock size={20} />}
+            label="Idle"
+            value={agents.filter((a) => a.status === "idle").length}
+            gradient="orange"
+          />
         </Col>
         <Col xs={24} sm={8} md={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-[40px] h-[40px] rounded-lg bg-[#697a8d]/10 flex items-center justify-center">
-                <Server className="text-[#697a8d]" size={18} />
-              </div>
-              <div>
-                <Text className="text-[#697a8d] text-xs block">Offline</Text>
-                <Text className="text-[#566a7f] dark:text-[#a3b1c2] text-lg font-bold">
-                  {agents.filter((a) => a.status === "offline").length}
-                </Text>
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            icon={<Server size={20} />}
+            label="Offline"
+            value={agents.filter((a) => a.status === "offline").length}
+            gradient="gray"
+          />
         </Col>
       </Row>
 
@@ -1055,15 +1024,32 @@ export default function AgentsPage() {
         </Row>
       )}
 
-      {/* Empty State */}
+      {/* Empty State - Enhanced design */}
       {filteredAgents.length === 0 && (
-        <Card bordered={false} className="text-center py-12 sneat-card-shadow">
-          <Bot size={48} className="text-[#eceef1] dark:text-[#444564] mx-auto mb-4" />
-          <Text className="text-[#697a8d] text-lg">No agents found</Text>
-          <div className="mt-2">
-            <Text className="text-[#a1acb8] text-sm">
-              Try adjusting your filters or add a new agent
-            </Text>
+        <Card className="text-center py-16">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
+              <Bot size={40} className="text-indigo-500" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-2">
+                No agents found
+              </h3>
+              <Text className="text-gray-500 dark:text-gray-400">
+                Try adjusting your filters or add a new agent
+              </Text>
+            </div>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAddNew}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
+            >
+              Add Your First Agent
+            </Button>
           </div>
         </Card>
       )}

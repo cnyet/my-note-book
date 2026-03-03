@@ -20,31 +20,33 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  CheckOutlined,
-  CloseOutlined,
   EditOutlined,
   PlusOutlined,
   SearchOutlined,
+  DeleteOutlined,
+  CheckOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import {
   Button,
-  Card,
   Col,
   Form,
   Input,
   Modal,
   Row,
   Segmented,
+  Select,
   Space,
   Switch,
-  Tag,
   Typography,
   message,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { GripVertical, MoreVertical } from "lucide-react";
+import { motion } from "framer-motion";
+import { GripVertical, MoreVertical, Wrench, Layers, Link2 } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Card, CategoryBadge, StatusBadge } from "@/components/ui/Card";
 
 const { Text, Title } = Typography;
 const { TextArea } = Input;
@@ -65,14 +67,6 @@ interface Tool {
   seoTitle?: string;
   seoDescription?: string;
 }
-
-// Category color mapping
-const categoryColors: Record<ToolCategory, string> = {
-  Dev: "#696cff",
-  Auto: "#71dd37",
-  Intel: "#00cfdd",
-  Creative: "#ffab00",
-};
 
 // 将后端 API Tool 转换为前端 Tool
 function mapApiToolToFrontend(apiTool: ApiTool): Tool {
@@ -108,9 +102,10 @@ function mapFrontendToolToApi(tool: Tool): Partial<ApiTool> {
 interface SortableToolCardProps {
   tool: Tool;
   onEdit: (tool: Tool) => void;
+  onDelete: (tool: Tool) => void;
 }
 
-function SortableToolCard({ tool, onEdit }: SortableToolCardProps) {
+function SortableToolCard({ tool, onEdit, onDelete }: SortableToolCardProps) {
   const {
     attributes,
     listeners,
@@ -124,98 +119,107 @@ function SortableToolCard({ tool, onEdit }: SortableToolCardProps) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
   };
 
+  const statusBadgeProps = tool.status === "active"
+    ? { status: "active" as const, label: "Active" }
+    : { status: "inactive" as const, label: "Inactive" };
+
+  const items = [
+    {
+      key: "edit",
+      label: "Edit",
+      icon: <EditOutlined />,
+      onClick: () => onEdit(tool),
+    },
+    { type: "divider" } as const,
+    {
+      key: "delete",
+      label: "Delete",
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: () => onDelete(tool),
+    },
+  ];
+
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="group relative"
+    <Card
+      hover
+      className="h-full"
+      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <Card
-        bordered={false}
-        className="sneat-card-shadow h-full hover:translate-y-[-2px] transition-transform duration-300"
-        styles={{ body: { padding: "1.25rem" } }}
-      >
-        {/* Drag Handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="absolute top-4 left-4 p-1 cursor-grab active:cursor-grabbing text-[#a1acb8] hover:text-[#696cff] transition-colors"
-          aria-label="Drag to reorder"
+      {/* Header: Category Badge + Drag Handle + More Menu */}
+      <div className="flex justify-between items-start mb-5">
+        <CategoryBadge category={tool.category} />
+        <div className="flex items-center gap-2">
+          <Button
+            type="text"
+            shape="circle"
+            icon={<GripVertical size={14} className="text-gray-400" />}
+            size="small"
+            className="cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-800"
+            {...attributes}
+            {...listeners}
+          />
+          <Button
+            type="text"
+            shape="circle"
+            icon={<MoreVertical size={16} className="text-gray-400" />}
+            size="small"
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
+            onClick={() => onDelete(tool)}
+          />
+        </div>
+      </div>
+
+      {/* Tool Icon/Avatar - Larger gradient circle */}
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
+        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
+          <span className="text-indigo-500 text-2xl font-bold">
+            {tool.icon.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      </div>
+
+      {/* Tool Name */}
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
+        {tool.name}
+      </h3>
+
+      {/* Description */}
+      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
+        {tool.description}
+      </p>
+
+      {/* Status Badge */}
+      <div className="flex justify-center mb-5">
+        <StatusBadge status={statusBadgeProps.status} label={statusBadgeProps.label} size="md" />
+      </div>
+
+      {/* Footer: Action Buttons */}
+      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <Button
+          type="default"
+          size="large"
+          icon={<EditOutlined />}
+          onClick={() => onEdit(tool)}
+          className="flex-1 h-11 rounded-xl font-semibold"
         >
-          <GripVertical className="w-4 h-4" />
-        </button>
-
-        {/* Category Badge */}
-        <div className="absolute top-4 right-4">
-          <Tag
-            style={{
-              backgroundColor: `${categoryColors[tool.category]}15`,
-              color: categoryColors[tool.category],
-              border: "none",
-              borderRadius: "4px",
-              padding: "2px 8px",
-              fontWeight: 600,
-              fontSize: "11px",
-            }}
-          >
-            {tool.category}
-          </Tag>
-        </div>
-
-        {/* Tool Content */}
-        <div className="mt-8">
-          {/* Icon Preview */}
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-3 bg-[#696cff]/10">
-            <span className="text-[#696cff] text-lg font-bold">
-              {tool.icon.charAt(0).toUpperCase()}
-            </span>
-          </div>
-
-          {/* Title */}
-          <Title level={5} className="m-0 mb-2 text-[#566a7f] dark:text-[#a3b1c2]">
-            {tool.name}
-          </Title>
-
-          {/* Description */}
-          <Text
-            className="text-[#8592a3] text-sm line-clamp-2"
-            style={{ display: "block", marginBottom: "12px" }}
-          >
-            {tool.description}
-          </Text>
-
-          {/* Footer: Status + Actions */}
-          <div className="flex items-center justify-between pt-3 border-t border-[#eceef1] dark:border-[#444564]">
-            {/* Status Badge */}
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-2 h-2 rounded-full ${
-                  tool.status === "active"
-                    ? "bg-[#71dd37]"
-                    : "bg-[#a1acb8]"
-                }`}
-              />
-              <Text className="text-xs text-[#8592a3] font-medium">
-                {tool.status === "active" ? "Active" : "Inactive"}
-              </Text>
-            </div>
-
-            {/* Action Button */}
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined className="text-xs" />}
-              onClick={() => onEdit(tool)}
-              className="text-[#696cff] hover:bg-[#696cff]/10"
-            >
-              Edit
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </div>
+          Edit
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          icon={<Link2 size={16} />}
+          onClick={() => window.open(tool.link, "_blank")}
+          className="flex-1 h-11 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 border-none"
+        >
+          Open
+        </Button>
+      </div>
+    </Card>
   );
 }
 
@@ -225,30 +229,16 @@ function DragOverlayItem({ tool }: { tool: Tool | null }) {
 
   return (
     <Card
-      bordered={false}
-      className="sneat-card-shadow opacity-80"
-      styles={{ body: { padding: "1.25rem" } }}
+      className="opacity-80"
     >
-      <div className="flex items-center gap-3">
-        <GripVertical className="w-4 h-4 text-[#696cff]" />
+      <div className="flex items-center gap-3 p-4">
+        <GripVertical className="w-4 h-4 text-indigo-500" />
         <div className="flex-1">
-          <Text strong className="text-[#566a7f] dark:text-[#a3b1c2]">
+          <Text strong className="text-gray-900 dark:text-white">
             {tool.name}
           </Text>
         </div>
-        <Tag
-          style={{
-            backgroundColor: `${categoryColors[tool.category]}15`,
-            color: categoryColors[tool.category],
-            border: "none",
-            borderRadius: "4px",
-            padding: "2px 8px",
-            fontWeight: 600,
-            fontSize: "11px",
-          }}
-        >
-          {tool.category}
-        </Tag>
+        <CategoryBadge category={tool.category} />
       </div>
     </Card>
   );
@@ -264,6 +254,7 @@ interface ToolFormModalProps {
 
 function ToolFormModal({ open, tool, onSave, onCancel }: ToolFormModalProps) {
   const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState<"basic" | "seo">("basic");
 
   const isEdit = tool !== null;
 
@@ -290,171 +281,179 @@ function ToolFormModal({ open, tool, onSave, onCancel }: ToolFormModalProps) {
   return (
     <Modal
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
-          {isEdit ? "Edit Tool" : "Add New Tool"}
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <Wrench className="text-white" size={20} />
+          </div>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
+            {isEdit ? "Edit Tool" : "Add New Tool"}
+          </span>
+        </div>
       }
       open={open}
       onCancel={onCancel}
-      footer={
-        <div className="flex justify-end gap-2">
-          <Button onClick={onCancel} icon={<CloseOutlined />}>
-            Cancel
-          </Button>
-          <Button
-            type="primary"
-            onClick={handleSave}
-            icon={<CheckOutlined />}
-            style={{ backgroundColor: "#696cff" }}
-          >
-            {isEdit ? "Save Changes" : "Create Tool"}
-          </Button>
-        </div>
-      }
-      width={600}
+      onOk={handleSave}
+      okText="Save"
+      okButtonProps={{
+        className: "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-xl",
+        icon: <CheckOutlined />
+      }}
+      cancelButtonProps={{ className: "rounded-xl" }}
+      width={640}
+      styles={{
+        body: { padding: "1.5rem" },
+        header: { borderBottom: "1px solid #f0f0f0", paddingBottom: "1rem" },
+        footer: { borderTop: "1px solid #f0f0f0", paddingTop: "1rem" },
+      }}
     >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={{
-          status: "active",
-          category: "Dev",
-        }}
-      >
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter tool name" }]}
+      {/* Tab Navigation */}
+      <div className="flex gap-1.5 mb-6 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <button
+          onClick={() => setActiveTab("basic")}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "basic"
+              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
         >
-          <Input
-            placeholder="e.g., Code Runner"
-            prefix={
-              <span className="text-[#a1acb8]">
-                <EditOutlined />
-              </span>
-            }
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Category"
-          name="category"
-          rules={[{ required: true, message: "Please select a category" }]}
+          <Wrench size={16} />
+          Basic
+        </button>
+        <button
+          onClick={() => setActiveTab("seo")}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "seo"
+              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
         >
-          <Segmented
-            options={[
-              {
-                label: "Dev",
-                value: "Dev",
-              },
-              {
-                label: "Auto",
-                value: "Auto",
-              },
-              {
-                label: "Intel",
-                value: "Intel",
-              },
-              {
-                label: "Creative",
-                value: "Creative",
-              },
-            ]}
-            block
-          />
-        </Form.Item>
+          <SearchOutlined />
+          SEO
+        </button>
+      </div>
 
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[{ required: true, message: "Please enter description" }]}
-        >
-          <TextArea
-            rows={3}
-            placeholder="Describe what this tool does..."
-            showCount
-            maxLength={200}
-          />
-        </Form.Item>
+      <Space direction="vertical" size="middle" className="w-full">
+        {/* Basic Info Tab */}
+        {activeTab === "basic" && (
+          <>
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                value={tool?.name}
+                placeholder="e.g., Code Runner"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
 
-        <Form.Item
-          label="Icon"
-          name="icon"
-          rules={[{ required: true, message: "Please enter icon name" }]}
-          extra="Lucide icon name (e.g., code, zap, wand-2)"
-        >
-          <Input
-            placeholder="e.g., code"
-            prefix={
-              <span className="text-[#a1acb8]">
-                <EditOutlined />
-              </span>
-            }
-          />
-        </Form.Item>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Category <span className="text-red-500">*</span>
+              </label>
+              <Segmented
+                options={[
+                  { label: "Dev", value: "Dev" },
+                  { label: "Auto", value: "Auto" },
+                  { label: "Intel", value: "Intel" },
+                  { label: "Creative", value: "Creative" },
+                ]}
+                block
+                className="rounded-xl"
+              />
+            </div>
 
-        <Form.Item
-          label="Link"
-          name="link"
-          rules={[
-            { required: true, message: "Please enter the tool link" },
-            { type: "url", message: "Please enter a valid URL" },
-          ]}
-        >
-          <Input
-            placeholder="/tools/code-runner"
-            prefix={
-              <span className="text-[#a1acb8]">
-                <EditOutlined />
-              </span>
-            }
-          />
-        </Form.Item>
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <TextArea
+                rows={3}
+                placeholder="Describe what this tool does..."
+                showCount
+                maxLength={200}
+                className="rounded-xl"
+                styles={{ textarea: { fontSize: "14px" } }}
+              />
+            </div>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          valuePropName="checked"
-        >
-          <Switch
-            checkedChildren="Active"
-            unCheckedChildren="Inactive"
-            style={{
-              backgroundColor: "#696cff",
-            }}
-          />
-        </Form.Item>
+            {/* Icon */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Icon <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="e.g., code (Lucide icon name)"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
+                extra="Lucide icon name (e.g., code, zap, wand-2)"
+              />
+            </div>
 
-        <Title level={5} className="text-[#566a7f] dark:text-[#a3b1c2] mt-6 mb-4">
-          SEO Metadata
-        </Title>
+            {/* Link */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Link <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="/tools/code-runner"
+                className="h-11 rounded-xl"
+                prefix={<Link2 className="text-gray-400" size={16} />}
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
 
-        <Form.Item
-          label="SEO Title"
-          name="seoTitle"
-        >
-          <Input
-            placeholder="SEO-friendly title for search engines"
-            prefix={
-              <span className="text-[#a1acb8]">
-                <EditOutlined />
-              </span>
-            }
-          />
-        </Form.Item>
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <Switch
+                checkedChildren="Active"
+                unCheckedChildren="Inactive"
+                className="rounded-full"
+                style={{ backgroundColor: "#696cff" }}
+              />
+            </div>
+          </>
+        )}
 
-        <Form.Item
-          label="SEO Description"
-          name="seoDescription"
-        >
-          <TextArea
-            rows={2}
-            placeholder="Meta description for search engines"
-            showCount
-            maxLength={160}
-          />
-        </Form.Item>
-      </Form>
+        {/* SEO Tab */}
+        {activeTab === "seo" && (
+          <>
+            {/* SEO Title */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                SEO Title
+              </label>
+              <Input
+                placeholder="SEO-friendly title for search engines"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
+
+            {/* SEO Description */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                SEO Description
+              </label>
+              <TextArea
+                rows={3}
+                placeholder="Meta description for search engines"
+                showCount
+                maxLength={160}
+                className="rounded-xl"
+                styles={{ textarea: { fontSize: "14px" } }}
+              />
+            </div>
+          </>
+        )}
+      </Space>
     </Modal>
   );
 }
@@ -482,7 +481,7 @@ export default function ToolsManagementPage() {
     },
   });
 
-  const tools = toolsData || [];
+  const tools = useMemo(() => toolsData || [], [toolsData]);
   const loading = false;
 
   const sensors = useSensors(
@@ -621,75 +620,127 @@ export default function ToolsManagementPage() {
   }, [tools, activeCategory, searchQuery]);
 
   return (
-    <div className="animate-in fade-in-50 duration-500">
-      {/* Page Header */}
-      <div className="mb-6">
-        <Title level={2} className="text-[#2c3e50] dark:text-[#e8e8e8] m-0 mb-2">
-          Tools Management
-        </Title>
-        <Text className="text-[#8592a3]">
-          Manage and organize your development tools and utilities
-        </Text>
-      </div>
-
-      {/* Filters Bar */}
-      <Card
-        bordered={false}
-        className="sneat-card-shadow mb-6"
-        styles={{ body: { padding: "1.25rem" } }}
-      >
-        <Row gutter={[24, 16]} align="middle">
-          {/* Category Filter */}
-          <Col xs={24} md={12} lg={16}>
-            <Space size="middle" wrap>
-              <Text className="text-sm text-[#8592a3] font-medium">
-                Category:
-              </Text>
-              <Segmented
-                value={activeCategory}
-                onChange={(value) => setActiveCategory(value as typeof activeCategory)}
-                options={[
-                  { label: "All", value: "All" },
-                  { label: "Dev", value: "Dev" },
-                  { label: "Auto", value: "Auto" },
-                  { label: "Intel", value: "Intel" },
-                  { label: "Creative", value: "Creative" },
-                ]}
-              />
-            </Space>
-          </Col>
-
-          {/* Search + Add Button */}
-          <Col xs={24} md={12} lg={8}>
-            <div className="flex gap-3">
-              <Input
-                placeholder="Search tools..."
-                prefix={<SearchOutlined className="text-[#a1acb8]" />}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                allowClear
-                className="flex-1"
-              />
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}
-                style={{ backgroundColor: "#696cff" }}
-              >
-                <span className="hidden sm:inline">Add Tool</span>
-              </Button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0f0f1a] dark:to-[#1a1a2e] p-6">
+      {/* Header Section - Enhanced with gradient and better typography */}
+      <Row gutter={[24, 24]} align="middle" className="mb-8">
+        <Col xs={24} md={12}>
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <Wrench className="text-white" size={26} />
             </div>
-          </Col>
-        </Row>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white m-0">
+                Tools Management
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
+                Manage and organize your development tools
+              </p>
+            </div>
+          </div>
+        </Col>
 
-        {/* Results Count */}
-        <div className="mt-4 pt-4 border-t border-[#eceef1] dark:border-[#444564]">
-          <Text className="text-sm text-[#8592a3]">
-            Showing <Text strong className="text-[#566a7f] dark:text-[#a3b1c2]">{filteredTools.length}</Text> of{" "}
-            <Text strong className="text-[#566a7f] dark:text-[#a3b1c2]">{tools.length}</Text> tools
-          </Text>
-        </div>
-      </Card>
+        <Col xs={24} md={12}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-end">
+            <Input
+              placeholder="Search tools..."
+              prefix={<SearchOutlined className="text-gray-400" />}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              allowClear
+              className="h-11 w-full sm:w-[240px] rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              styles={{
+                input: { fontSize: "14px" },
+              }}
+            />
+            <Select
+              value={activeCategory}
+              onChange={(value) => setActiveCategory(value as typeof activeCategory)}
+              className="w-full sm:w-[140px] rounded-xl"
+              options={[
+                { label: "All", value: "All" },
+                { label: "Dev", value: "Dev" },
+                { label: "Auto", value: "Auto" },
+                { label: "Intel", value: "Intel" },
+                { label: "Creative", value: "Creative" },
+              ]}
+              styles={{
+                selector: { borderRadius: "12px", height: "44px" },
+              }}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
+            >
+              Add Tool
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Stats Row */}
+      <Row gutter={[24, 24]} className="mb-8">
+        <Col xs={24} sm={12} md={6}>
+          <Card className="text-center p-4" gradient>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                <Layers className="text-indigo-500" size={20} />
+              </div>
+              <div>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase">Total Tools</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{tools.length}</p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card className="text-center p-4" gradient>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              </div>
+              <div>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase">Active</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {tools.filter((t) => t.status === "active").length}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card className="text-center p-4" gradient>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                <span className="text-indigo-500 font-bold text-sm">Dev</span>
+              </div>
+              <div>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase">Dev Tools</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {tools.filter((t) => t.category === "Dev").length}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card className="text-center p-4" gradient>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                <Link2 className="text-purple-500" size={20} />
+              </div>
+              <div>
+                <p className="text-gray-500 dark:text-gray-400 text-xs font-semibold uppercase">Categories</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">4</p>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Tools Grid */}
       <DndContext
@@ -704,8 +755,8 @@ export default function ToolsManagementPage() {
         >
           <Row gutter={[24, 24]}>
             {filteredTools.map((tool) => (
-              <Col key={tool.id} xs={24} sm={12} lg={8} xl={6}>
-                <SortableToolCard tool={tool} onEdit={handleEdit} />
+              <Col xs={24} sm={12} lg={8} xl={6} key={tool.id}>
+                <SortableToolCard tool={tool} onEdit={handleEdit} onDelete={handleDelete} />
               </Col>
             ))}
           </Row>
@@ -718,29 +769,29 @@ export default function ToolsManagementPage() {
         </DragOverlay>
       </DndContext>
 
-      {/* Empty State */}
+      {/* Empty State - Enhanced design */}
       {filteredTools.length === 0 && (
-        <Card
-          bordered={false}
-          className="sneat-card-shadow text-center py-12"
-        >
+        <Card className="text-center py-16">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[#f5f5f9] dark:bg-[#323249] flex items-center justify-center">
-              <SearchOutlined className="text-2xl text-[#a1acb8]" />
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
+              <Wrench size={40} className="text-indigo-500" />
             </div>
             <div>
-              <Title level={5} className="text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-1">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-2">
                 No tools found
-              </Title>
-              <Text className="text-[#8592a3]">
-                Try adjusting your search or filter criteria
+              </h3>
+              <Text className="text-gray-500 dark:text-gray-400">
+                Try adjusting your filters or add a new tool
               </Text>
             </div>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAdd}
-              style={{ backgroundColor: "#696cff" }}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
             >
               Add Your First Tool
             </Button>

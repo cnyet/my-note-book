@@ -5,10 +5,10 @@ import {
   EyeOutlined,
   PlusOutlined,
   SearchOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import {
   Button,
-  Card,
   Col,
   Dropdown,
   Input,
@@ -17,19 +17,25 @@ import {
   Row,
   Select,
   Space,
-  Tag,
   Typography,
   message,
 } from "antd";
-import { useCallback, useMemo, memo, useState, useEffect } from "react";
+import { useCallback, useMemo, memo, useState, useEffect, ChangeEvent } from "react";
+import { motion } from "framer-motion";
 import {
   FlaskConical,
   Globe,
   MoreVertical,
   Users,
+  Beaker,
+  Activity,
+  Archive,
+  Eye,
 } from "lucide-react";
 import { labsApi, type Lab as ApiLab } from "@/lib/admin-api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, StatusBadge } from "@/components/ui/Card";
+import { StatCard } from "@/components/ui/Card/StatCard";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -81,108 +87,96 @@ function mapFrontendLabToApi(lab: Lab): Partial<ApiLab> {
   };
 }
 
-/** Status Badge Colors */
-const statusConfig: Record<
-  LabStatus,
-  { color: string; bgColor: string; textColor: string }
-> = {
-  Experimental: {
-    color: "#ffab00",
-    bgColor: "bg-[#ffab00]/10",
-    textColor: "text-[#ffab00]",
-  },
-  Preview: {
-    color: "#00cfdd",
-    bgColor: "bg-[#00cfdd]/10",
-    textColor: "text-[#00cfdd]",
-  },
-  Live: {
-    color: "#71dd37",
-    bgColor: "bg-[#71dd37]/10",
-    textColor: "text-[#71dd37]",
-  },
-  Archived: {
-    color: "#697a8d",
-    bgColor: "bg-[#697a8d]/10",
-    textColor: "text-[#697a8d]",
-  },
-};
+/** Status Badge Props Mapper */
+function getStatusBadgeProps(status: LabStatus): { status: string; label: string } {
+  switch (status) {
+    case "Experimental":
+      return { status: "experimental", label: "Experimental" };
+    case "Preview":
+      return { status: "preview", label: "Preview" };
+    case "Live":
+      return { status: "live", label: "Live" };
+    case "Archived":
+      return { status: "archived", label: "Archived" };
+  }
+}
 
 /** Lab Card Component */
-const LabCard = memo(function LabCard({ lab, onEdit }: { lab: Lab; onEdit: (lab: Lab) => void }) {
-  const config = statusConfig[lab.status];
+const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onEdit: (lab: Lab) => void; onDelete: (lab: Lab) => void }) {
+  const badgeProps = getStatusBadgeProps(lab.status);
   const items: MenuProps["items"] = [
     {
       key: "view",
       label: "View Demo",
       icon: <EyeOutlined />,
       disabled: !lab.demoLink,
+      onClick: () => lab.demoLink && window.open(lab.demoLink, "_blank"),
     },
     { key: "edit", label: "Edit", icon: <EditOutlined />, onClick: () => onEdit(lab) },
     { type: "divider" },
-    { key: "delete", label: "Delete", danger: true },
+    { key: "delete", label: "Delete", danger: true, icon: <DeleteOutlined />, onClick: () => onDelete(lab) },
   ];
 
   return (
     <Card
-      bordered={false}
-      className="h-full sneat-card-shadow transition-all hover:translate-y-[-2px]"
-      styles={{ body: { padding: "1.5rem", height: "100%" } }}
+      hover
+      className="h-full"
+      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      {/* Header: Status + More Menu */}
-      <div className="flex justify-between items-start mb-4">
-        <Tag
-          className={config.bgColor + " " + config.textColor + " border-none m-0"}
-          style={{
-            backgroundColor: config.color + "20",
-            color: config.color,
-            fontSize: "11px",
-            fontWeight: 600,
-            padding: "4px 10px",
-            borderRadius: "4px",
-          }}
-        >
-          {lab.status}
-        </Tag>
+      {/* Header: Status Badge + More Menu */}
+      <div className="flex justify-between items-start mb-5">
+        <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
         <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
           <Button
             type="text"
             shape="circle"
-            icon={<MoreVertical size={16} className="text-[#8592a3]" />}
+            icon={<MoreVertical size={16} className="text-gray-400" />}
             size="small"
+            className="hover:bg-gray-100 dark:hover:bg-gray-800"
           />
         </Dropdown>
       </div>
 
-      {/* Lab Icon */}
-      <div className="w-[48px] h-[48px] rounded-lg bg-[#696cff]/10 flex items-center justify-center mb-4">
-        <FlaskConical className="text-[#696cff]" size={24} />
+      {/* Lab Icon/Avatar - Larger gradient circle */}
+      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 via-amber-500/20 to-yellow-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
+        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
+          <Beaker className="text-orange-500" size={36} />
+        </div>
       </div>
 
       {/* Lab Name */}
-      <h4 className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0 mb-2">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
         {lab.name}
-      </h4>
+      </h3>
+
+      {/* Slug */}
+      <div className="flex items-center justify-center gap-1 mb-3">
+        <span className="text-xs text-gray-400">/</span>
+        <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
+          {lab.slug}
+        </Text>
+      </div>
 
       {/* Description */}
-      <Text className="text-[#697a8d] text-sm line-clamp-2 mb-4 block">
+      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
         {lab.description}
-      </Text>
+      </p>
 
       {/* Footer: Online Count + Demo Link */}
-      <div className="flex items-center justify-between pt-3 border-t border-[#eceef1] dark:border-[#444564]">
-        <div className="flex items-center gap-1.5">
-          <Users size={14} className="text-[#8592a3]" />
-          <Text className="text-[#8592a3] text-xs">
+      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
+        <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800">
+          <Users size={16} className="text-gray-400" />
+          <Text className="text-gray-600 dark:text-gray-400 text-xs font-semibold">
             {lab.onlineCount} online
           </Text>
         </div>
         {lab.demoLink && (
           <Button
-            type="link"
-            size="small"
-            icon={<EyeOutlined />}
-            className="text-[#696cff] p-0 h-auto"
+            type="default"
+            size="large"
+            icon={<Eye size={16} />}
+            className="flex-1 h-11 rounded-xl font-semibold"
           >
             Demo
           </Button>
@@ -205,6 +199,11 @@ function EditLabModal({
   onCancel: () => void;
 }) {
   const [form, setForm] = useState<Partial<Lab>>(lab || {});
+  const [activeTab, setActiveTab] = useState<"basic" | "config">("basic");
+
+  useEffect(() => {
+    setForm(lab || {});
+  }, [lab]);
 
   const handleSave = () => {
     if (form.name && form.status) {
@@ -222,99 +221,193 @@ function EditLabModal({
     }
   };
 
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  };
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setForm({
+      ...form,
+      name,
+      slug: form.slug || generateSlug(name),
+    });
+  };
+
   return (
     <Modal
       title={
-        <span className="text-lg font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
-          {lab ? "Edit Lab" : "Add New Lab"}
-        </span>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
+            <Beaker className="text-white" size={20} />
+          </div>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
+            {lab ? "Edit Lab" : "Add New Lab"}
+          </span>
+        </div>
       }
       open={open}
       onOk={handleSave}
       onCancel={onCancel}
       okText="Save"
-      okButtonProps={{ className: "bg-[#696cff] hover:bg-[#5f61e6]" }}
-      styles={{ body: { padding: "1.5rem" } }}
+      okButtonProps={{ className: "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700" }}
+      cancelButtonProps={{ className: "rounded-xl" }}
+      width={640}
+      styles={{
+        body: { padding: "1.5rem" },
+        header: { borderBottom: "1px solid #f0f0f0", paddingBottom: "1rem" },
+        footer: { borderTop: "1px solid #f0f0f0", paddingTop: "1rem" },
+      }}
     >
-      <Space direction="vertical" size="large" className="w-full">
-        {/* Name */}
-        <div>
-          <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-            Name <span className="text-[#ff3e1d]">*</span>
-          </label>
-          <Input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Enter lab name"
-            className="h-10"
-          />
-        </div>
+      {/* Tab Navigation - Enhanced */}
+      <div className="flex gap-1.5 mb-6 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-xl">
+        <button
+          onClick={() => setActiveTab("basic")}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "basic"
+              ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
+        >
+          <Beaker size={16} />
+          Basic
+        </button>
+        <button
+          onClick={() => setActiveTab("config")}
+          className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
+            activeTab === "config"
+              ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
+        >
+          <Globe size={16} />
+          Config
+        </button>
+      </div>
 
-        {/* Description */}
-        <div>
-          <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-            Description
-          </label>
-          <TextArea
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Enter lab description"
-            rows={3}
-          />
-        </div>
+      <Space direction="vertical" size="middle" className="w-full">
+        {/* Basic Info Tab */}
+        {activeTab === "basic" && (
+          <>
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                value={form.name}
+                onChange={handleNameChange}
+                placeholder="Enter lab name"
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
 
-        {/* Status */}
-        <div>
-          <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-            Status
-          </label>
-          <Select<LabStatus>
-            value={form.status}
-            onChange={(status) => setForm({ ...form, status })}
-            className="w-full"
-            options={[
-              { label: "Experimental", value: "Experimental" },
-              { label: "Preview", value: "Preview" },
-              { label: "Live", value: "Live" },
-              { label: "Archived", value: "Archived" },
-            ]}
-          />
-        </div>
+            {/* Slug */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Slug <span className="text-red-500">*</span>
+              </label>
+              <Input
+                value={form.slug}
+                onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                placeholder="lab-slug"
+                className="h-11 rounded-xl"
+                prefix={<span className="text-gray-400 text-sm">/</span>}
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
 
-        {/* Demo Link */}
-        <div>
-          <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-            Demo Link
-          </label>
-          <Input
-            value={form.demoLink}
-            onChange={(e) => setForm({ ...form, demoLink: e.target.value })}
-            placeholder="/labs/example"
-            prefix={<Globe size={16} className="text-[#8592a3]" />}
-          />
-        </div>
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Description
+              </label>
+              <TextArea
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder="Enter lab description"
+                rows={3}
+                className="rounded-xl"
+                styles={{ textarea: { fontSize: "14px" } }}
+              />
+            </div>
 
-        {/* Media Assets (Placeholder) */}
-        <div>
-          <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-            Media Assets
-          </label>
-          <div className="border-2 border-dashed border-[#eceef1] dark:border-[#444564] rounded-lg p-6 text-center">
-            <Text className="text-[#8592a3] text-sm">
-              Click to upload or drag and drop
-            </Text>
-            <div className="text-[#a1acb8] text-xs mt-1">PNG, JPG, GIF up to 10MB</div>
-          </div>
-        </div>
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Status
+              </label>
+              <Select<LabStatus>
+                value={form.status}
+                onChange={(status) => setForm({ ...form, status })}
+                className="w-full"
+                options={[
+                  { label: "Experimental", value: "Experimental" },
+                  { label: "Preview", value: "Preview" },
+                  { label: "Live", value: "Live" },
+                  { label: "Archived", value: "Archived" },
+                ]}
+                styles={{
+                  selector: { borderRadius: "12px", height: "44px" },
+                }}
+              />
+            </div>
+          </>
+        )}
 
-        {/* Online Count (Read-only) */}
-        {lab && (
-          <div>
-            <label className="block text-sm font-medium text-[#566a7f] dark:text-[#a3b1c2] mb-2">
-              Online Count
-            </label>
-            <Input value={lab.onlineCount} disabled className="bg-[#f5f5f9] dark:bg-[#323249]" />
-          </div>
+        {/* Config Tab */}
+        {activeTab === "config" && (
+          <>
+            {/* Demo Link */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Demo Link
+              </label>
+              <Input
+                value={form.demoLink}
+                onChange={(e) => setForm({ ...form, demoLink: e.target.value })}
+                placeholder="/labs/example"
+                prefix={<Globe className="text-gray-400" size={16} />}
+                className="h-11 rounded-xl"
+                styles={{ input: { fontSize: "14px" } }}
+              />
+            </div>
+
+            {/* Media Assets (Placeholder) */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Media Assets
+              </label>
+              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:border-orange-400 dark:hover:border-orange-500 transition-colors cursor-pointer">
+                <Beaker size={24} className="text-gray-400 mx-auto mb-2" />
+                <Text className="text-gray-600 dark:text-gray-400 text-sm font-medium">
+                  Click to upload or drag and drop
+                </Text>
+                <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                  PNG, JPG, GIF up to 10MB
+                </div>
+              </div>
+            </div>
+
+            {/* Online Count (Read-only) */}
+            {lab && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Online Count
+                </label>
+                <Input
+                  value={lab.onlineCount}
+                  disabled
+                  className="bg-gray-50 dark:bg-gray-800 rounded-xl"
+                  prefix={<Users size={16} className="text-gray-400" />}
+                />
+              </div>
+            )}
+          </>
         )}
       </Space>
     </Modal>
@@ -341,7 +434,21 @@ export default function LabsPage() {
   });
 
   const labs = labsData || [];
-  const loading = false;
+  const isLoading = false;
+
+  // Mutation for deleting lab
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await labsApi.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
+      message.success("Lab deleted successfully");
+    },
+    onError: () => {
+      message.error("Failed to delete lab");
+    },
+  });
 
   const handleSaveLab = async (lab: Lab) => {
     try {
@@ -370,21 +477,14 @@ export default function LabsPage() {
     }
   };
 
-  const handleDeleteLab = async (lab: Lab) => {
+  const handleDeleteLab = (lab: Lab) => {
     Modal.confirm({
       title: "Delete Lab",
       content: `Are you sure you want to delete "${lab.name}"? This action cannot be undone.`,
       okText: "Delete",
       okType: "danger",
       onOk: async () => {
-        try {
-          await labsApi.delete(lab.id);
-          queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
-          message.success("Lab deleted successfully");
-        } catch (error) {
-          console.error("Failed to delete lab:", error);
-          message.error("Failed to delete lab");
-        }
+        deleteMutation.mutate(lab.id);
       },
     });
   };
@@ -415,7 +515,7 @@ export default function LabsPage() {
     setStatusFilter(value);
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
@@ -435,19 +535,19 @@ export default function LabsPage() {
   };
 
   return (
-    <div className="animate-in fade-in-50 duration-500 p-6">
-      {/* Header Section */}
-      <Row gutter={[24, 24]} align="middle" className="mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0f0f1a] dark:to-[#1a1a2e] p-6">
+      {/* Header Section - Enhanced with gradient and better typography */}
+      <Row gutter={[24, 24]} align="middle" className="mb-8">
         <Col xs={24} md={12}>
-          <div className="flex items-center gap-3">
-            <div className="w-[42px] h-[42px] rounded-lg bg-[#696cff]/10 flex items-center justify-center">
-              <FlaskConical className="text-[#696cff]" size={22} />
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+              <FlaskConical className="text-white" size={26} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white m-0">
                 Labs Management
-              </h2>
-              <p className="text-[#697a8d] text-sm m-0">
+              </h1>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
                 Manage experimental features and demos
               </p>
             </div>
@@ -458,15 +558,18 @@ export default function LabsPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <Input
               placeholder="Search labs..."
-              prefix={<SearchOutlined className="text-[#8592a3]" />}
+              prefix={<SearchOutlined className="text-gray-400" />}
               value={searchQuery}
               onChange={handleSearchChange}
-              className="h-10 w-full sm:w-[240px]"
+              className="h-11 w-full sm:w-[240px] rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              styles={{
+                input: { fontSize: "14px" },
+              }}
             />
             <Select
               value={statusFilter}
               onChange={handleStatusChange}
-              className="w-full sm:w-[140px]"
+              className="w-full sm:w-[140px] rounded-xl"
               options={[
                 { label: "All Status", value: "all" },
                 { label: "Experimental", value: "Experimental" },
@@ -474,12 +577,18 @@ export default function LabsPage() {
                 { label: "Live", value: "Live" },
                 { label: "Archived", value: "Archived" },
               ]}
+              styles={{
+                selector: { borderRadius: "12px", height: "44px" },
+              }}
             />
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddNew}
-              className="bg-[#696cff] hover:bg-[#5f61e6] h-10"
+              className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-orange-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
             >
               Add Lab
             </Button>
@@ -487,24 +596,77 @@ export default function LabsPage() {
         </Col>
       </Row>
 
+      {/* Stats Row - Enhanced with StatCard component */}
+      <Row gutter={[24, 24]} className="mb-8">
+        <Col xs={24} sm={12} md={6}>
+          <StatCard
+            icon={<Beaker size={20} />}
+            label="Total Labs"
+            value={labs.length || 0}
+            gradient="orange"
+          />
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <StatCard
+            icon={<Activity size={20} />}
+            label="Experimental"
+            value={labs.filter((l) => l.status === "Experimental").length}
+            gradient="orange"
+          />
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <StatCard
+            icon={<Eye size={20} />}
+            label="Preview"
+            value={labs.filter((l) => l.status === "Preview").length}
+            gradient="cyan"
+          />
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <StatCard
+            icon={<Archive size={20} />}
+            label="Archived"
+            value={labs.filter((l) => l.status === "Archived").length}
+            gradient="gray"
+          />
+        </Col>
+      </Row>
+
       {/* Labs Grid */}
       <Row gutter={[24, 24]}>
         {filteredLabs.map((lab) => (
           <Col xs={24} sm={12} lg={8} xl={6} key={lab.id}>
-            <LabCard lab={lab} onEdit={handleEdit} />
+            <LabCard lab={lab} onEdit={handleEdit} onDelete={handleDeleteLab} />
           </Col>
         ))}
       </Row>
 
-      {/* Empty State */}
+      {/* Empty State - Enhanced design */}
       {filteredLabs.length === 0 && (
-        <Card bordered={false} className="text-center py-12 sneat-card-shadow">
-          <FlaskConical size={48} className="text-[#eceef1] dark:text-[#444564] mx-auto mb-4" />
-          <Text className="text-[#697a8d] text-lg">No labs found</Text>
-          <div className="mt-2">
-            <Text className="text-[#a1acb8] text-sm">
-              Try adjusting your filters or add a new lab
-            </Text>
+        <Card className="text-center py-16">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 flex items-center justify-center">
+              <FlaskConical size={40} className="text-orange-500" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-2">
+                No labs found
+              </h3>
+              <Text className="text-gray-500 dark:text-gray-400">
+                Try adjusting your filters or add a new lab
+              </Text>
+            </div>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAddNew}
+              className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-orange-500/30"
+              styles={{
+                button: { borderRadius: "12px" },
+              }}
+            >
+              Add Your First Lab
+            </Button>
           </div>
         </Card>
       )}
@@ -514,7 +676,7 @@ export default function LabsPage() {
         open={editModalOpen}
         lab={editingLab}
         onSave={handleSaveLab}
-        onCancel={() => setEditModalOpen(false)}
+        onCancel={handleEditModalCancel}
       />
     </div>
   );
