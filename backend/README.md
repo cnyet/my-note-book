@@ -1,96 +1,114 @@
 # my-note-book 后端
 
-基于 FastAPI 的后端服务，提供多智能体平台的核心功能，包括用户认证、数据管理、API 接口和实时通信服务。后端实现了完整的身份验证系统、数据库操作、WebSocket 实时通信和智能体编排功能。
+基于 FastAPI 的后端服务，提供多智能体平台的核心功能，包括用户认证、数据管理、API 接口、实时通信和智能体编排。
 
 ## 🚀 快速开始
 
 ```bash
+# 创建虚拟环境
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+
 # 安装依赖
 pip install -r requirements.txt
 
 # 启动开发服务器
 uvicorn src.main:app --reload --host 0.0.0.0 --port 8001
-
-# 访问地址
-# - API: http://localhost:8001
-# - 文档: http://localhost:8001/docs
-# - ReDoc: http://localhost:8001/redoc
 ```
 
-## 📋 管理脚本
-
-> **注意**: 管理脚本将在项目完整初始化后可用。
-
-### 1. 创建超级用户
-初始化系统管理员账户：
-
-```bash
-# python src/scripts/create_superuser.py
-```
-
-### 2. 初始化数据
-填充数据库，创建默认数据：
-
-```bash
-# python src/scripts/seed.py
-```
+**访问地址:**
+- API: http://localhost:8001
+- 文档: http://localhost:8001/docs
+- ReDoc: http://localhost:8001/redoc
 
 ## 🏗️ 项目结构
 
 ```
 backend/
-├── alembic/                # 数据库迁移脚本
-├── data/                   # 数据库文件存储
-│   └── my_note_book.db      # SQLite 数据库文件
-├── .venv/                  # Python 虚拟环境
-├── src/                    # 源代码目录
-├── requirements.txt        # Python 依赖包列表
-├── .env                    # 环境变量配置
-└── .env.example            # 环境变量模板
+├── src/                        # 源代码
+│   ├── agents/                 # 智能体模块
+│   │   ├── assistant/         # AI Assistant Agent
+│   │   └── news/              # News Agent
+│   ├── api/                    # API 路由
+│   │   ├── routes/            # 各模块路由
+│   │   └── dependencies.py    # 依赖注入
+│   ├── core/                   # 核心配置
+│   │   ├── config.py          # 环境配置
+│   │   ├── security.py        # 安全模块
+│   │   └── database.py        # 数据库连接
+│   ├── models/                 # SQLAlchemy 模型
+│   ├── schemas/                # Pydantic 模式
+│   ├── services/               # 业务服务
+│   ├── message_bus/            # 消息总线
+│   ├── websocket/              # WebSocket 服务
+│   ├── scripts/                # 管理脚本
+│   └── main.py                 # 应用入口
+├── data/                       # 数据库文件
+│   └── my_note_book.db        # SQLite 数据库
+├── tests/                      # 测试
+│   └── assistant/             # Assistant Agent 测试
+├── logs/                       # 日志文件
+├── .venv/                      # 虚拟环境
+├── requirements.txt            # Python 依赖
+├── .env                        # 环境变量
+└── .env.example                # 环境变量模板
 ```
 
-> **注意**: 当前为项目精简结构，完整源代码将逐步实现。
+## 🛠️ 技术栈
 
-## ⚙️ 数据库
+| 技术 | 版本 | 用途 |
+|------|------|------|
+| Python | 3.11+ | 编程语言 |
+| FastAPI | 0.115+ | Web 框架 |
+| SQLAlchemy | 2.0+ | ORM |
+| Pydantic | 2.0+ | 数据验证 |
+| python-jose | 3.3+ | JWT 处理 |
+| passlib | 1.7+ | 密码加密 |
+| httpx | 0.28+ | HTTP 客户端 |
+| anthropic | 0.18+ | Claude API |
+| openai | 1.0+ | OpenAI API |
+| feedparser | 6.0+ | RSS 解析 |
+| apscheduler | 3.10+ | 定时任务 |
+
+## 💾 数据库
 
 - **引擎**: SQLite (通过 `aiosqlite` 支持异步)
 - **ORM**: SQLAlchemy 2.0+
-- **位置**: `./data/my_note_book.db` (默认)
-
-### 数据库迁移 (Alembic)
-
-> **注意**: 迁移配置将在项目完整初始化后可用。
-
-```bash
-# 应用迁移以更新数据库模式（需配置 alembic.ini）
-# alembic upgrade head
-
-# 在修改模型后创建新迁移
-# alembic revision --autogenerate -m "描述更改内容"
-```
+- **位置**: `./data/my_note_book.db`
 
 ## 🔐 认证系统
 
-系统采用 JWT (JSON Web Token) 进行身份验证，支持以下功能：
+采用 JWT 身份验证：
+
 - 用户注册与登录
-- 令牌刷新机制
+- Token 刷新机制
 - 基于角色的访问控制 (RBAC)
 - OAuth 集成 (GitHub/Google)
 
-## 💬 WebSocket 实时通信
+## 🤖 智能体模块
 
-后端提供 WebSocket 服务以支持实时功能：
+### AI Assistant Agent
+
+位于 `src/agents/assistant/`:
+- 多模型支持 (Ollama, Anthropic, OpenAI)
+- 对话会话管理
+- 流式响应
+- 上下文记忆
+
+### News Agent
+
+位于 `src/agents/news/`:
+- RSS 源管理
+- 自动爬取和摘要
+- 定时调度器
+
+## 💬 WebSocket 服务
+
+位于 `src/websocket/`:
 - 实验室在线人数统计
 - 智能体间实时通信
 - 状态同步更新
-
-## 🤖 智能体编排
-
-实现智能体编排引擎，支持：
-- 跨智能体消息传递
-- 上下文共享机制
-- 统一身份传播协议
-- 智能体记忆管理
 
 ## 🌐 环境变量
 
@@ -98,7 +116,7 @@ backend/
 
 ```env
 # 数据库
-DATABASE_URL=sqlite:///./data/my_note_book.db
+DATABASE_URL=sqlite+aiosqlite:///./data/my_note_book.db
 
 # JWT 认证
 SECRET_KEY=your-secret-key-here
@@ -108,34 +126,32 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 # CORS
 ALLOWED_ORIGINS=http://localhost:3001
 
-# WebSocket
-WEBSOCKET_HOST=0.0.0.0
-WEBSOCKET_PORT=8001
-
-# 应用配置
-APP_ENV=development
+# AI 模型 (可选)
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
+OLLAMA_BASE_URL=http://localhost:11434
 ```
 
-## 🛠️ 技术栈
+## 🧪 测试
 
-- **框架**: FastAPI 0.109+
-- **数据库**: SQLAlchemy 2.0+ + SQLite
-- **迁移工具**: Alembic 1.13+
-- **认证**: JWT (python-jose 3.3+) + bcrypt
-- **验证**: Pydantic 2.5+
-- **测试**: pytest 7.4+
-- **异步支持**: asyncio
+```bash
+# 运行所有测试
+pytest
+
+# 运行特定测试
+pytest tests/assistant/
+
+# 带覆盖率
+pytest --cov=src
+```
 
 ## 📚 相关文档
 
 - [系统架构设计](../docs/design/architecture.md)
 - [API 接口文档](../docs/design/api-design.md)
 - [数据库设计](../docs/design/database-schema.md)
-- [OpenSpec 工作流](../docs/development/openspec-guide.md)
+- [项目指令](../CLAUDE.md)
 
-## 🚨 注意事项
+---
 
-- 系统默认使用 SQLite 数据库，适用于开发和小型部署
-- 生产环境中建议考虑 PostgreSQL 等更强大的数据库
-- 请确保在生产环境中使用强密钥和 HTTPS
-- 定期备份数据库以防止数据丢失
+**最后更新**: 2026年3月4日

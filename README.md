@@ -116,7 +116,7 @@ cd frontend && npm run dev
 curl http://localhost:8001/health
 
 # 运行测试
-./scripts/test/test.sh
+./scripts/test.sh
 ```
 
 ### 常见问题
@@ -193,25 +193,36 @@ tail -f logs/frontend.log
 
 ```
 my-note-book/
-├── .agent/                # Agent 配置文件
-├── ai-configs/            # AI 工具配置统一入口
 ├── backend/               # FastAPI 后端服务
-│   ├── src/               # 后端源代码 (API 路由、模型、服务层)
-│   ├── alembic/           # 数据库迁移配置
+│   ├── src/               # 后端源代码
+│   │   ├── agents/        # 智能体模块
+│   │   ├── api/           # API 路由
+│   │   ├── core/          # 核心配置
+│   │   ├── models/        # 数据模型
+│   │   ├── schemas/       # Pydantic 模式
+│   │   ├── services/      # 业务服务
+│   │   └── websocket/     # WebSocket 服务
 │   ├── data/              # 数据库文件 (SQLite)
+│   ├── tests/             # 后端测试
 │   └── requirements.txt   # Python 依赖
 ├── frontend/              # Next.js 前端应用
-│   ├── src/               # 前端源代码 (页面、组件、v-ui)
-│   ├── design-assets/     # 高保真设计图与原型资产
-│   ├── public/            # 静态资源 (logo, favicon)
+│   ├── src/               # 前端源代码
+│   │   ├── app/           # 页面路由
+│   │   ├── components/    # 组件库
+│   │   ├── hooks/         # React Hooks
+│   │   └── lib/           # 工具函数
+│   ├── design-assets/     # 设计资产
+│   ├── public/            # 静态资源
 │   └── package.json       # Node.js 依赖
 ├── docs/                  # 项目文档
-│   ├── design/            # 设计文档 (架构、API、数据库、前端规范)
+│   ├── design/            # 设计文档
 │   ├── development/       # 开发指南
-│   └── planning/          # 项目规划 (PRD v1.1, Roadmap)
-├── openspec/              # OpenSpec 规范文件
-├── scripts/               # 项目自动化脚本 (setup, start-dev, test, lint, clean, build, deploy)
-├── tests/                 # 顶层测试目录
+│   └── planning/          # Sprint 规划
+├── scripts/               # 自动化脚本
+├── tests/                 # E2E/集成测试
+│   ├── e2e/               # 端到端测试
+│   ├── integration/       # 集成测试
+│   └── unit/              # 单元测试
 └── logs/                  # 运行日志
 ```
 
@@ -219,14 +230,28 @@ my-note-book/
 
 该项目目前处于 **Active Development (积极开发)** 阶段。
 
-- [x] 基础架构与脚本配置完成
-- [x] PRD v1.1 (前端专题) 已制定
-- [x] 设计规范 (Genesis Design System) 已对齐
-- [x] 核心组件库 (v-ui) 构建 (GlassCard, GlitchText, NeonButton 等)
-- [x] 公共页面开发 (Home, Agents, Blog, Tools, Labs)
-- [x] Admin 后台 (Dashboard, Sidebar, 用户认证)
-- [ ] Admin CRUD 功能完善 (进行中)
-- [ ] 实时通信 (WebSocket) 集成
+### Sprint 进度
+
+| Sprint | 功能模块 | 状态 |
+|--------|----------|------|
+| Sprint 1 | 基础架构、核心组件库 | ✅ 完成 |
+| Sprint 2 | 前端页面开发 | ✅ 完成 |
+| Sprint 3 | News Agent | ✅ 完成 |
+| Sprint 4 | AI Assistant Agent | ✅ 完成 |
+
+### 已完成功能
+
+- [x] 基础架构与脚本配置
+- [x] 设计规范 (Genesis Design System)
+- [x] 核心组件库 (v-ui): GlassCard, GlitchText, NeonButton 等
+- [x] 公共页面: Home, Agents, Blog, Tools, Labs
+- [x] Admin 后台: Dashboard, Sidebar, 用户认证
+- [x] AI Assistant Agent: 多模型支持、对话管理、流式响应
+
+### 进行中
+
+- [ ] Admin CRUD 功能完善
+- [ ] WebSocket 实时推送优化
 
 ## 🛠️ 技术栈
 
@@ -244,20 +269,12 @@ my-note-book/
 - Python 3.11+
 - FastAPI
 - SQLAlchemy 2.0
-- Alembic
 - Pydantic v2
-
-## 📝 开发规范
-
-请严格遵守 [AGENTS.md](openspec/AGENTS.md) 与 [PRD.md](docs/planning/PRD.md) 中定义的开发规范：
-
-- **100% 像素级还原**: 必须使用 `ui-ux-pro-max-skill` 进行设计对齐。
-- **最佳实践**: 必须使用 `react-best-practices` 进行编码审计。
-- **UI 评分**: 每个页面需通过视觉对比验证，分值需 ≥ 95。
+- WebSocket
 
 ---
 
 **Build High-Quality Software!** 🚀
 
 **项目状态**: Active Development (积极开发中)
-**最后更新**: 2026年2月16日
+**最后更新**: 2026年3月4日

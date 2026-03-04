@@ -18,27 +18,26 @@
 
 ## 📁 规划文档
 
-### [产品需求](requirements.md)
-详细定义平台的核心功能：
-- 主页、智能体、工具、实验室、博客五大页面
-- 后台管理系统
-- 认证系统
-- 数据库设计
-- 第三方集成
+### Sprint 规划
 
-### [项目路线图](roadmap.md)
-开发阶段和时间规划：
-- Phase 1: 核心功能实现
-- Phase 2: 智能体编排
-- Phase 3: 社区功能
-- Phase 4: 性能优化和扩展
+| 文档 | 状态 | 内容 |
+|------|------|------|
+| [sprint-1.md](sprint-1.md) | ✅ 完成 | 基础架构、核心组件库 |
+| [sprint-2.md](sprint-2.md) | ✅ 完成 | 前端页面开发 |
+| [sprint-3.md](sprint-3.md) | ✅ 完成 | News Agent |
+| [sprint-4.md](sprint-4.md) | ✅ 完成 | AI Assistant Agent |
+
+### 其他文档
+
+- [ideas-draft.md](ideas-draft.md) - 产品创意草稿
+- [QA.md](QA.md) - 质量保证检查清单
 
 ## 🔗 相关资源
 
 - [系统架构设计](../design/architecture.md)
-- [OpenSpec 工作流](../development/openspec-guide.md)
 - [项目 README](../../README.md)
+- [项目指令 CLAUDE.md](../../CLAUDE.md)
 
 ---
 
-**最后更新**: 2026年2月6日
+**最后更新**: 2026年3月4日
