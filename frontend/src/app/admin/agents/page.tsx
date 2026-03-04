@@ -44,6 +44,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, StatusBadge } from "@/components/ui/Card";
+import { StatCard } from "@/components/ui/Card/StatCard";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -177,107 +178,126 @@ function AgentCard({
   ];
 
   return (
-    <Card
-      hover
-      className="h-full"
-      whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    <motion.div
+      whileHover={{ y: -8, scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="group relative h-full"
     >
-      {/* Header: Status Badge + Drag Handle + More Menu */}
-      <div className="flex justify-between items-start mb-5">
-        <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
-        <div className="flex items-center gap-2">
-          <Button
-            type="text"
-            shape="circle"
-            icon={<ArrowUpDown size={14} className="text-gray-400" />}
-            size="small"
-            className="cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-800"
-          />
-          <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
-            <Button
-              type="text"
-              shape="circle"
-              icon={<MoreVertical size={16} className="text-gray-400" />}
-              size="small"
-              className="hover:bg-gray-100 dark:hover:bg-gray-800"
-            />
-          </Dropdown>
+      {/* Glow Effect on Hover - Genesis Style */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+
+      {/* Main Card */}
+      <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 overflow-hidden">
+        {/* Card Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        <div className="relative p-6 h-full flex flex-col">
+          {/* Header: Status Badge + Actions */}
+          <div className="flex justify-between items-start mb-4">
+            <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-indigo-500 hover:bg-indigo-500/10 cursor-grab active:cursor-grabbing transition-colors"
+                aria-label="Drag to reorder"
+              >
+                <ArrowUpDown size={14} />
+              </motion.button>
+              <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 cursor-pointer transition-colors"
+                  aria-label="More options"
+                >
+                  <MoreVertical size={16} />
+                </motion.button>
+              </Dropdown>
+            </div>
+          </div>
+
+          {/* Agent Icon/Avatar - Enhanced with pulsing glow */}
+          <div className="relative mb-5 mx-auto">
+            {/* Outer Glow Ring */}
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-lg shadow-indigo-500/30 group-hover:shadow-xl group-hover:shadow-indigo-500/40 transition-shadow duration-300">
+              {/* Inner Circle */}
+              <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
+                <Bot className="text-indigo-500" size={40} />
+              </div>
+            </div>
+            {/* Status Pulse Indicator */}
+            {isRunning && (
+              <div className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white dark:border-[#1a1a2e] animate-pulse" />
+            )}
+          </div>
+
+          {/* Agent Name - Gradient Text */}
+          <h3 className="text-lg font-bold text-center bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent m-0 mb-1">
+            {agent.name}
+          </h3>
+
+          {/* Slug */}
+          <div className="flex items-center justify-center gap-1 mb-4">
+            <span className="text-xs text-gray-400">/</span>
+            <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
+              {agent.slug}
+            </Text>
+          </div>
+
+          {/* Description - Improved readability */}
+          <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2 flex-grow">
+            {agent.description}
+          </p>
+
+          {/* Config Info - Tech badges with icons */}
+          <div className="flex flex-wrap gap-2 justify-center mb-5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-500 dark:text-indigo-400 text-xs font-semibold border border-indigo-500/20">
+              <Zap size={12} className="fill-current" />
+              {agent.config.model}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-500 dark:text-purple-400 text-xs font-semibold border border-purple-500/20">
+              <MessageSquare size={12} />
+              P{agent.config.websocketPriority}
+            </span>
+          </div>
+
+          {/* Footer: Action Buttons - Enhanced */}
+          <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-white/10 mt-auto">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onEdit(agent)}
+              className="flex-1 h-11 rounded-xl font-semibold text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <EditOutlined size={14} />
+              Edit
+            </motion.button>
+            {isRunning ? (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onTerminate?.(agent)}
+                className="flex-1 h-11 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <StopOutlined size={14} />
+                Stop
+              </motion.button>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => onSpawn?.(agent)}
+                className="flex-1 h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+              >
+                <PlayCircleOutlined size={14} />
+                Start
+              </motion.button>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Agent Icon/Avatar - Larger gradient circle */}
-      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
-        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
-          <Bot className="text-indigo-500" size={36} />
-        </div>
-      </div>
-
-      {/* Agent Name */}
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
-        {agent.name}
-      </h3>
-
-      {/* Slug */}
-      <div className="flex items-center justify-center gap-1 mb-3">
-        <span className="text-xs text-gray-400">/</span>
-        <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
-          {agent.slug}
-        </Text>
-      </div>
-
-      {/* Description */}
-      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
-        {agent.description}
-      </p>
-
-      {/* Config Info - Styled badges */}
-      <div className="flex flex-wrap gap-2 justify-center mb-5">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-500 text-xs font-semibold">
-          <Zap size={12} />
-          {agent.config.model}
-        </span>
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-500 text-xs font-semibold">
-          <MessageSquare size={12} />
-          P{agent.config.websocketPriority}
-        </span>
-      </div>
-
-      {/* Footer: Action Buttons */}
-      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <Button
-          type="default"
-          size="large"
-          icon={<EditOutlined />}
-          onClick={() => onEdit(agent)}
-          className="flex-1 h-11 rounded-xl font-semibold"
-        >
-          Edit
-        </Button>
-        {isRunning ? (
-          <Button
-            type="default"
-            size="large"
-            danger
-            icon={<StopOutlined />}
-            onClick={() => onTerminate?.(agent)}
-            className="flex-1 h-11 rounded-xl font-semibold"
-          >
-            Stop
-          </Button>
-        ) : (
-          <Button
-            type="primary"
-            size="large"
-            icon={<PlayCircleOutlined />}
-            onClick={() => onSpawn?.(agent)}
-            className="flex-1 h-11 rounded-xl font-semibold bg-gradient-to-r from-green-500 to-emerald-500 border-none"
-          >
-            Start
-          </Button>
-        )}
-      </div>
-    </Card>
+    </motion.div>
   );
 }
 
@@ -947,8 +967,6 @@ export default function AgentsPage() {
           </div>
         </Col>
       </Row>
-
-import { StatCard } from "@/components/ui/Card/StatCard";
 
       {/* Stats Row - Enhanced with StatCard component */}
       <Row gutter={[24, 24]} className="mb-8">
