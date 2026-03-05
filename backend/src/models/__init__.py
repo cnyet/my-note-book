@@ -155,7 +155,7 @@ class PostTag(Base):
 
 
 class SystemSettings(Base):
-    """系统设置表 (单行记录, id=1)"""
+    """系统设置表 (单行记录，id=1)"""
     __tablename__ = "system_settings"
 
     id = Column(Integer, primary_key=True)  # Always id=1 for single row
@@ -206,6 +206,9 @@ from .task_agent import TaskCategory, Task, TaskPriority, TaskStatus
 # 导入 Life Agent 模型
 from .life_agent import HealthMetrics, HealthSuggestion
 
+# 导入 Review Agent 模型
+from .review_agent import DailyReview, UserPreference
+
 
 # 导出所有模型
 __all__ = [
@@ -229,4 +232,6 @@ __all__ = [
     "TaskStatus",
     "HealthMetrics",
     "HealthSuggestion",
+    "DailyReview",
+    "UserPreference",
 ]
