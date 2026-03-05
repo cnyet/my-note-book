@@ -1,28 +1,27 @@
 "use client";
 
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { Activity, Box, Code2, Globe, Palette, Search, Newspaper } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt } from "lucide-react";
 import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const AgentsFooter = () => (
   <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
     <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
       <div className="text-left">
         <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
-          Expand Your Workforce
+          AI Personal Assistants
         </h3>
         <p className="text-slate-500 font-medium">
-          MyNoteBook Agents are updated weekly with new capabilities.
+          Your daily workflow automation powered by AI.
         </p>
       </div>
       <div className="flex gap-4">
         <button className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-all">
-          Join as Agent
+          Learn More
         </button>
         <button className="px-8 py-4 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
-          Marketplace API
+          API Docs
         </button>
       </div>
     </div>
@@ -30,105 +29,105 @@ const AgentsFooter = () => (
 );
 
 export default function AgentsPage() {
-  const router = useRouter();
-
   const agents = [
     {
-      name: "Archon",
-      role: "System Architect",
-      icon: <Box className="text-indigo-400" />,
-      status: "Available",
-      capabilities: ["Component Logic", "Documentation", "Token Strategy"],
-      link: "/agents/archon",
-    },
-    {
-      name: "Lexa",
-      role: "UX Researcher",
-      icon: <Search className="text-purple-400" />,
-      status: "Online",
-      capabilities: ["User Journeys", "Competitor Analysis", "Accessibility"],
-      link: "/agents/lexa",
-    },
-    {
-      name: "Koda",
-      role: "Motion Engineer",
-      icon: <Activity className="text-pink-400" />,
-      status: "Occupied",
-      capabilities: ["Framing", "Easing Optimization", "Lottie Export"],
-      link: "/agents/koda",
-    },
-    {
-      name: "Vira",
-      role: "Brand Alchemist",
-      icon: <Palette className="text-orange-400" />,
-      status: "Online",
-      capabilities: ["Moodboards", "Color Science", "Logo Evolution"],
-      link: "/agents/vira",
-    },
-    {
-      name: "Nova",
-      role: "Data Visualization",
-      icon: <Globe className="text-cyan-400" />,
-      status: "Ready",
-      capabilities: [
-        "Interactive Charts",
-        "Complex Datasets",
-        "SVG Generation",
-      ],
-      link: "/agents/nova",
-    },
-    {
-      name: "Sudo",
-      role: "Design Engineer",
-      icon: <Code2 className="text-emerald-400" />,
-      status: "Idle",
-      capabilities: ["React Prototype", "Storybook Sync", "CSS-in-JS"],
-      link: "/agents/sudo",
-    },
-    {
       name: "News Hub",
-      role: "News Curator",
+      role: "AI 资讯聚合",
       icon: <Newspaper className="text-blue-400" />,
       status: "Online",
-      capabilities: ["Tech News", "AI Research", "Daily Digest"],
+      capabilities: ["自动爬取", "AI 摘要", "每日更新"],
       link: "/agents/news",
-      featured: true,
+      color: "blue",
+    },
+    {
+      name: "Task Flow",
+      role: "任务管理",
+      icon: <CheckSquare className="text-emerald-400" />,
+      status: "Online",
+      capabilities: ["智能生成", "优先级管理", "进度追踪"],
+      link: "/agents/task",
+      color: "emerald",
+    },
+    {
+      name: "Life Vital",
+      role: "健康管理",
+      icon: <Heart className="text-red-400" />,
+      status: "Online",
+      capabilities: ["健康记录", "AI 建议", "数据分析"],
+      link: "/agents/life",
+      color: "red",
+    },
+    {
+      name: "Review Mate",
+      role: "每日复盘",
+      icon: <BookOpen className="text-purple-400" />,
+      status: "Online",
+      capabilities: ["自动汇总", "偏好提取", "成长追踪"],
+      link: "/agents/review",
+      color: "purple",
+    },
+    {
+      name: "Outfit AI",
+      role: "穿搭推荐",
+      icon: <Shirt className="text-orange-400" />,
+      status: "Online",
+      capabilities: ["天气适配", "日程搭配", "AI 生成"],
+      link: "/agents/outfit",
+      color: "orange",
     },
   ];
+
+  const statusColorMap: Record<string, string> = {
+    Online: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  };
+
+  const colorMap: Record<string, string> = {
+    blue: "hover:border-blue-500/40 hover:shadow-blue-500/10 group-hover:bg-blue-500/10",
+    emerald: "hover:border-emerald-500/40 hover:shadow-emerald-500/10 group-hover:bg-emerald-500/10",
+    red: "hover:border-red-500/40 hover:shadow-red-500/10 group-hover:bg-red-500/10",
+    purple: "hover:border-purple-500/40 hover:shadow-purple-500/10 group-hover:bg-purple-500/10",
+    orange: "hover:border-orange-500/40 hover:shadow-orange-500/10 group-hover:bg-orange-500/10",
+  };
+
+  const iconColorMap: Record<string, string> = {
+    blue: "group-hover:text-blue-400",
+    emerald: "group-hover:text-emerald-400",
+    red: "group-hover:text-red-400",
+    purple: "group-hover:text-purple-400",
+    orange: "group-hover:text-orange-400",
+  };
 
   return (
     <div className="min-h-screen pt-32 px-6 pb-0">
       <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-[1600px] mx-auto">
         <SectionHeader
           centered
-          tag="Personnel"
-          title="Autonomous <br/>Design Agents."
-          subtitle="The world's most capable design workforce. Hire AI specialists for every part of your creative stack."
+          tag="Sprint 6"
+          title="AI Personal <br/>Assistants."
+          subtitle="Five intelligent agents to automate your daily workflow. From news curation to health tracking, we've got you covered."
         />
 
         {/* Split-screen layout: Agent Grid (left) + LobeChat Panel (right) */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-          {/* Left: Agent Grid - 2 columns on large screens */}
+          {/* Left: Agent Grid */}
           <div className="lg:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {agents.map((agent) => (
                 <div
                   key={agent.name}
-                  className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg hover:shadow-indigo-500/10 ${
-                    agent.featured ? "md:col-span-2 lg:col-span-1" : ""
+                  className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg ${
+                    colorMap[agent.color] || ""
                   }`}
                 >
                   <div className="flex items-center justify-between mb-8">
-                    <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all">
+                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all ${
+                      iconColorMap[agent.color] || ""
+                    }`}>
                       {agent.icon}
                     </div>
                     <div
                       className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                        agent.status === "Online" ||
-                        agent.status === "Available" ||
-                        agent.status === "Ready"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-orange-500/10 text-orange-400 border-orange-500/20"
+                        statusColorMap[agent.status] || ""
                       }`}
                     >
                       {agent.status}
@@ -155,7 +154,7 @@ export default function AgentsPage() {
                       href={agent.link}
                       className="block w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm text-center hover:bg-white hover:text-slate-950 transition-all"
                     >
-                      Consult Agent
+                      Use Agent
                     </Link>
                   </div>
                 </div>
