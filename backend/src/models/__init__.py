@@ -200,6 +200,9 @@ class APIToken(Base):
 from .news_source import NewsSource
 from .news_article import NewsArticle
 
+# 导入 Task Agent 模型
+from .task_agent import TaskCategory, Task, TaskPriority, TaskStatus
+
 
 # 导出所有模型
 __all__ = [
@@ -217,4 +220,8 @@ __all__ = [
     "WSConnection",
     "NewsSource",
     "NewsArticle",
+    "TaskCategory",
+    "Task",
+    "TaskPriority",
+    "TaskStatus",
 ]
