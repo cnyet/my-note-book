@@ -36,7 +36,6 @@ import {
   Link2,
   Server,
   Zap,
-  MessageSquare,
 } from "lucide-react";
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
@@ -129,7 +128,7 @@ function getStatusBadgeProps(status: AgentStatus): { status: string; label: stri
   }
 }
 
-/** Draggable Agent Card Component */
+/** Draggable Agent Card Component - Compact */
 function AgentCard({
   agent,
   onEdit,
@@ -179,27 +178,26 @@ function AgentCard({
 
   return (
     <motion.div
-      whileHover={{ y: -8, scale: 1.03 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="group relative h-full"
     >
-      {/* Glow Effect on Hover - Genesis Style */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+      {/* Glow Effect on Hover */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
 
       {/* Main Card */}
       <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 overflow-hidden">
-        {/* Card Background Gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="relative p-6 h-full flex flex-col">
-          {/* Header: Status Badge + Actions */}
-          <div className="flex justify-between items-start mb-4">
-            <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
+        <div className="relative p-4 h-full flex flex-col">
+          {/* Header: Status Badge */}
+          <div className="flex justify-between items-start mb-3">
+            <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="sm" />
             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-indigo-500 hover:bg-indigo-500/10 cursor-grab active:cursor-grabbing transition-colors"
+                className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-indigo-500 hover:bg-indigo-500/10 cursor-grab active:cursor-grabbing transition-colors"
                 aria-label="Drag to reorder"
               >
                 <ArrowUpDown size={14} />
@@ -208,69 +206,54 @@ function AgentCard({
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 cursor-pointer transition-colors"
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 cursor-pointer transition-colors"
                   aria-label="More options"
                 >
-                  <MoreVertical size={16} />
+                  <MoreVertical size={14} />
                 </motion.button>
               </Dropdown>
             </div>
           </div>
 
-          {/* Agent Icon/Avatar - Enhanced with pulsing glow */}
-          <div className="relative mb-5 mx-auto">
-            {/* Outer Glow Ring */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-lg shadow-indigo-500/30 group-hover:shadow-xl group-hover:shadow-indigo-500/40 transition-shadow duration-300">
-              {/* Inner Circle */}
+          {/* Agent Icon - Compact */}
+          <div className="relative mb-3 mx-auto">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-md shadow-indigo-500/30 group-hover:shadow-lg group-hover:shadow-indigo-500/40 transition-shadow duration-300">
               <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
-                <Bot className="text-indigo-500" size={40} />
+                <Bot className="text-indigo-500" size={28} />
               </div>
             </div>
-            {/* Status Pulse Indicator */}
             {isRunning && (
-              <div className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-white dark:border-[#1a1a2e] animate-pulse" />
+              <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-[#1a1a2e] animate-pulse" />
             )}
           </div>
 
-          {/* Agent Name - Gradient Text */}
-          <h3 className="text-lg font-bold text-center bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent m-0 mb-1">
+          {/* Agent Name */}
+          <h3 className="text-base font-bold text-center bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent m-0 mb-2">
             {agent.name}
           </h3>
 
-          {/* Slug */}
-          <div className="flex items-center justify-center gap-1 mb-4">
-            <span className="text-xs text-gray-400">/</span>
-            <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
-              {agent.slug}
-            </Text>
-          </div>
-
-          {/* Description - Improved readability */}
-          <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2 flex-grow">
+          {/* Description - Single line */}
+          <p className="text-gray-600 dark:text-gray-400 text-xs text-center leading-relaxed mb-3 line-clamp-1 flex-grow">
             {agent.description}
           </p>
 
-          {/* Config Info - Tech badges with icons */}
-          <div className="flex flex-wrap gap-2 justify-center mb-5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-500 dark:text-indigo-400 text-xs font-semibold border border-indigo-500/20">
-              <Zap size={12} className="fill-current" />
+          {/* Config Badge - Single */}
+          <div className="flex justify-center mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-500 dark:text-indigo-400 text-xs font-semibold border border-indigo-500/20">
+              <Zap size={10} className="fill-current" />
               {agent.config.model}
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-500 dark:text-purple-400 text-xs font-semibold border border-purple-500/20">
-              <MessageSquare size={12} />
-              P{agent.config.websocketPriority}
             </span>
           </div>
 
-          {/* Footer: Action Buttons - Enhanced */}
-          <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-white/10 mt-auto">
+          {/* Footer: Action Buttons - Compact */}
+          <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-white/10 mt-auto">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onEdit(agent)}
-              className="flex-1 h-11 rounded-xl font-semibold text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
-              <EditOutlined size={14} />
+              <EditOutlined size={12} />
               Edit
             </motion.button>
             {isRunning ? (
@@ -278,9 +261,9 @@ function AgentCard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onTerminate?.(agent)}
-                className="flex-1 h-11 rounded-xl font-semibold text-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <StopOutlined size={14} />
+                <StopOutlined size={12} />
                 Stop
               </motion.button>
             ) : (
@@ -288,9 +271,9 @@ function AgentCard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSpawn?.(agent)}
-                className="flex-1 h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer border-none"
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-md shadow-indigo-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
               >
-                <PlayCircleOutlined size={14} />
+                <PlayCircleOutlined size={12} />
                 Start
               </motion.button>
             )}

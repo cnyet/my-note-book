@@ -11,6 +11,7 @@ import { apiClient } from "@/lib/admin-api";
 import { Col, Row, Card, Spin } from "antd";
 import { Bot, Wrench, FlaskConical, PenTool, Newspaper, Users, ShoppingCart, Wallet, CreditCard, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { StatCard } from "@/components/ui/Card/StatCard";
 
 interface DashboardStats {
   usersCount: number;
@@ -27,34 +28,24 @@ function ModuleCard({
   title,
   value,
   icon: Icon,
-  color,
+  gradient,
   href,
 }: {
   title: string;
   value: number | string;
   icon: React.ElementType;
-  color: string;
+  gradient: "blue" | "green" | "orange" | "purple" | "pink" | "cyan" | "indigo";
   href: string;
 }) {
   return (
     <a href={href} className="block no-underline">
-      <Card
-        bordered={false}
-        className="sneat-card-shadow transition-all hover:translate-y-[-2px] hover:shadow-lg"
-        styles={{ body: { padding: "1.25rem" } }}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[#697a8d] text-xs font-medium mb-1">{title}</div>
-            <div className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
-              {value}
-            </div>
-          </div>
-          <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center`}>
-            <Icon size={22} />
-          </div>
-        </div>
-      </Card>
+      <StatCard
+        icon={<Icon size={20} />}
+        label={title}
+        value={value}
+        gradient={gradient}
+        className="h-full"
+      />
     </a>
   );
 }

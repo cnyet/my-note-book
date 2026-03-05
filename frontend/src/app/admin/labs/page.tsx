@@ -101,7 +101,7 @@ function getStatusBadgeProps(status: LabStatus): { status: string; label: string
   }
 }
 
-/** Lab Card Component */
+/** Lab Card Component - Compact */
 const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onEdit: (lab: Lab) => void; onDelete: (lab: Lab) => void }) {
   const badgeProps = getStatusBadgeProps(lab.status);
   const items: MenuProps["items"] = [
@@ -118,71 +118,78 @@ const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onE
   ];
 
   return (
-    <Card
-      hover
-      className="h-full"
-      whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    <motion.div
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="group relative h-full"
     >
-      {/* Header: Status Badge + More Menu */}
-      <div className="flex justify-between items-start mb-5">
-        <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="md" />
-        <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
-          <Button
-            type="text"
-            shape="circle"
-            icon={<MoreVertical size={16} className="text-gray-400" />}
-            size="small"
-            className="hover:bg-gray-100 dark:hover:bg-gray-800"
-          />
-        </Dropdown>
-      </div>
+      {/* Glow Effect on Hover */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
 
-      {/* Lab Icon/Avatar - Larger gradient circle */}
-      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 via-amber-500/20 to-yellow-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
-        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
-          <Beaker className="text-orange-500" size={36} />
+      {/* Main Card */}
+      <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        <div className="relative p-4 h-full flex flex-col">
+          {/* Header: Status Badge */}
+          <div className="flex justify-between items-start mb-3">
+            <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="sm" />
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-500 hover:bg-orange-500/10 cursor-pointer transition-colors"
+                  aria-label="More options"
+                >
+                  <MoreVertical size={14} />
+                </motion.button>
+              </Dropdown>
+            </div>
+          </div>
+
+          {/* Lab Icon - Compact */}
+          <div className="relative mb-3 mx-auto">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 p-[2px] shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 transition-shadow duration-300">
+              <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
+                <Beaker className="text-orange-500" size={28} />
+              </div>
+            </div>
+          </div>
+
+          {/* Lab Name */}
+          <h3 className="text-base font-bold text-center bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent m-0 mb-2">
+            {lab.name}
+          </h3>
+
+          {/* Description - Single line */}
+          <p className="text-gray-600 dark:text-gray-400 text-xs text-center leading-relaxed mb-4 line-clamp-1 flex-grow">
+            {lab.description}
+          </p>
+
+          {/* Footer: Online Count + Demo */}
+          <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-white/10 mt-auto">
+            <div className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
+              <Users size={14} className="text-gray-400" />
+              <Text className="text-gray-600 dark:text-gray-400 text-xs font-semibold">
+                {lab.onlineCount}
+              </Text>
+            </div>
+            {lab.demoLink && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => window.open(lab.demoLink, "_blank")}
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-600 hover:to-amber-700 shadow-md shadow-orange-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
+              >
+                <Eye size={14} />
+                Demo
+              </motion.button>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Lab Name */}
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
-        {lab.name}
-      </h3>
-
-      {/* Slug */}
-      <div className="flex items-center justify-center gap-1 mb-3">
-        <span className="text-xs text-gray-400">/</span>
-        <Text className="text-gray-500 dark:text-gray-400 text-xs font-medium">
-          {lab.slug}
-        </Text>
-      </div>
-
-      {/* Description */}
-      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
-        {lab.description}
-      </p>
-
-      {/* Footer: Online Count + Demo Link */}
-      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800">
-          <Users size={16} className="text-gray-400" />
-          <Text className="text-gray-600 dark:text-gray-400 text-xs font-semibold">
-            {lab.onlineCount} online
-          </Text>
-        </div>
-        {lab.demoLink && (
-          <Button
-            type="default"
-            size="large"
-            icon={<Eye size={16} />}
-            className="flex-1 h-11 rounded-xl font-semibold"
-          >
-            Demo
-          </Button>
-        )}
-      </div>
-    </Card>
+    </motion.div>
   );
 });
 

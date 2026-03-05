@@ -43,7 +43,7 @@ import {
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GripVertical, MoreVertical, Wrench, Layers, Link2 } from "lucide-react";
+import { GripVertical, Wrench, Layers, Link2 } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CategoryBadge, StatusBadge } from "@/components/ui/Card";
@@ -144,82 +144,95 @@ function SortableToolCard({ tool, onEdit, onDelete }: SortableToolCardProps) {
   ];
 
   return (
-    <Card
-      hover
-      className="h-full"
-      whileHover={{ y: -6, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    <motion.div
+      whileHover={{ y: -4, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="group relative h-full"
     >
-      {/* Header: Category Badge + Drag Handle + More Menu */}
-      <div className="flex justify-between items-start mb-5">
-        <CategoryBadge category={tool.category} />
-        <div className="flex items-center gap-2">
-          <Button
-            type="text"
-            shape="circle"
-            icon={<GripVertical size={14} className="text-gray-400" />}
-            size="small"
-            className="cursor-grab active:cursor-grabbing hover:bg-gray-100 dark:hover:bg-gray-800"
-            {...attributes}
-            {...listeners}
-          />
-          <Button
-            type="text"
-            shape="circle"
-            icon={<MoreVertical size={16} className="text-gray-400" />}
-            size="small"
-            className="hover:bg-gray-100 dark:hover:bg-gray-800"
-            onClick={() => onDelete(tool)}
-          />
+      {/* Glow Effect on Hover */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+
+      {/* Main Card */}
+      <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        <div className="relative p-4 h-full flex flex-col">
+          {/* Header: Category Badge + Actions */}
+          <div className="flex justify-between items-start mb-3">
+            <CategoryBadge category={tool.category} />
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-indigo-500 hover:bg-indigo-500/10 cursor-grab active:cursor-grabbing transition-colors"
+                aria-label="Drag to reorder"
+                {...attributes}
+                {...listeners}
+              >
+                <GripVertical size={14} />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => onDelete(tool)}
+                className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 cursor-pointer transition-colors"
+                aria-label="Delete tool"
+              >
+                <DeleteOutlined size={14} />
+              </motion.button>
+            </div>
+          </div>
+
+          {/* Tool Icon - Compact */}
+          <div className="relative mb-3 mx-auto">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-md shadow-indigo-500/30 group-hover:shadow-lg group-hover:shadow-indigo-500/40 transition-shadow duration-300">
+              <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
+                <span className="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                  {tool.icon.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tool Name */}
+          <h3 className="text-base font-bold text-center bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent m-0 mb-2">
+            {tool.name}
+          </h3>
+
+          {/* Description - Single line */}
+          <p className="text-gray-600 dark:text-gray-400 text-xs text-center leading-relaxed mb-3 line-clamp-1 flex-grow">
+            {tool.description}
+          </p>
+
+          {/* Status Badge */}
+          <div className="flex justify-center mb-3">
+            <StatusBadge status={statusBadgeProps.status} label={statusBadgeProps.label} size="sm" />
+          </div>
+
+          {/* Footer: Action Buttons - Compact */}
+          <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-white/10 mt-auto">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onEdit(tool)}
+              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <EditOutlined size={12} />
+              Edit
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => window.open(tool.link, "_blank")}
+              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-md shadow-indigo-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
+            >
+              <Link2 size={12} />
+              Open
+            </motion.button>
+          </div>
         </div>
       </div>
-
-      {/* Tool Icon/Avatar - Larger gradient circle */}
-      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-5 mx-auto shadow-lg">
-        <div className="w-16 h-16 rounded-full bg-white/80 dark:bg-gray-900/80 flex items-center justify-center backdrop-blur-sm">
-          <span className="text-indigo-500 text-2xl font-bold">
-            {tool.icon.charAt(0).toUpperCase()}
-          </span>
-        </div>
-      </div>
-
-      {/* Tool Name */}
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-1 text-center">
-        {tool.name}
-      </h3>
-
-      {/* Description */}
-      <p className="text-gray-600 dark:text-gray-400 text-sm text-center leading-relaxed mb-5 line-clamp-2">
-        {tool.description}
-      </p>
-
-      {/* Status Badge */}
-      <div className="flex justify-center mb-5">
-        <StatusBadge status={statusBadgeProps.status} label={statusBadgeProps.label} size="md" />
-      </div>
-
-      {/* Footer: Action Buttons */}
-      <div className="flex gap-2 pt-4 border-t border-gray-100 dark:border-gray-800">
-        <Button
-          type="default"
-          size="large"
-          icon={<EditOutlined />}
-          onClick={() => onEdit(tool)}
-          className="flex-1 h-11 rounded-xl font-semibold"
-        >
-          Edit
-        </Button>
-        <Button
-          type="primary"
-          size="large"
-          icon={<Link2 size={16} />}
-          onClick={() => window.open(tool.link, "_blank")}
-          className="flex-1 h-11 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 border-none"
-        >
-          Open
-        </Button>
-      </div>
-    </Card>
+    </motion.div>
   );
 }
 
