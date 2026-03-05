@@ -203,6 +203,9 @@ from .news_article import NewsArticle
 # 导入 Task Agent 模型
 from .task_agent import TaskCategory, Task, TaskPriority, TaskStatus
 
+# 导入 Life Agent 模型
+from .life_agent import HealthMetrics, HealthSuggestion
+
 
 # 导出所有模型
 __all__ = [
@@ -224,4 +227,6 @@ __all__ = [
     "Task",
     "TaskPriority",
     "TaskStatus",
+    "HealthMetrics",
+    "HealthSuggestion",
 ]

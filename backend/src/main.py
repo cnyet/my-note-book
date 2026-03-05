@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from .core.config import settings
 from .core.database import init_db
-from .api.v1.admin import auth, dashboard, agents, tools, labs, blog, profile, settings as admin_settings, task_agent
+from .api.v1.admin import auth, dashboard, agents, tools, labs, blog, profile, settings as admin_settings, task_agent, life_agent
 from .api.v1 import news as news_api
 from .websocket import handlers as ws_handlers
 
@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
         await init_db()
         logger.info("数据库初始化完成。")
     except Exception as e:
-        logger.error(f"数据库初始化失败: {e}")
+        logger.error(f"数据库初始化失败：{e}")
     yield
     # 关闭时的清理逻辑（如关闭数据库连接池等）
     logger.info("应用关闭，资源已清理。")
@@ -86,6 +86,9 @@ app.include_router(news_api.router, prefix="/api/v1", tags=["news"])
 # Task Agent API 路由
 app.include_router(task_agent.router, prefix="/api/v1/admin", tags=["task"])
 
+# Life Agent API 路由
+app.include_router(life_agent.router, prefix="/api/v1/admin", tags=["life"])
+
 # WebSocket 路由
 app.include_router(ws_handlers.router, tags=["websocket"])
 
@@ -98,4 +101,3 @@ def root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
-
