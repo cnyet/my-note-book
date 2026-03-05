@@ -128,7 +128,7 @@ function getStatusBadgeProps(status: AgentStatus): { status: string; label: stri
   }
 }
 
-/** Draggable Agent Card Component - Compact */
+/** Draggable Agent Card Component - Duralux Style */
 function AgentCard({
   agent,
   onEdit,
@@ -182,12 +182,12 @@ function AgentCard({
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="group relative h-full"
     >
-      {/* Glow Effect on Hover */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+      {/* Duralux Glow Effect */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-duralux-primary/30 via-duralux-info/30 to-duralux-primary/30 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
 
-      {/* Main Card */}
-      <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Main Card - Duralux Style */}
+      <div className="relative h-full rounded-2xl bg-white dark:bg-duralux-bg-dark-card border border-duralux-border-light dark:border-duralux-border-dark shadow-duralux-card dark:shadow-duralux-card-dark hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark transition-all duration-300 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-duralux-primary/5 via-duralux-info/5 to-duralux-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         <div className="relative p-4 h-full flex flex-col">
           {/* Header: Status Badge */}
@@ -197,7 +197,7 @@ function AgentCard({
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-indigo-500 hover:bg-indigo-500/10 cursor-grab active:cursor-grabbing transition-colors"
+                className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-primary hover:bg-duralux-primary-transparent cursor-grab active:cursor-grabbing transition-colors"
                 aria-label="Drag to reorder"
               >
                 <ArrowUpDown size={14} />
@@ -206,7 +206,7 @@ function AgentCard({
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-purple-500 hover:bg-purple-500/10 cursor-pointer transition-colors"
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-primary hover:bg-duralux-primary-transparent cursor-pointer transition-colors"
                   aria-label="More options"
                 >
                   <MoreVertical size={14} />
@@ -215,43 +215,43 @@ function AgentCard({
             </div>
           </div>
 
-          {/* Agent Icon - Compact */}
+          {/* Agent Icon - Duralux Style */}
           <div className="relative mb-3 mx-auto">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-[2px] shadow-md shadow-indigo-500/30 group-hover:shadow-lg group-hover:shadow-indigo-500/40 transition-shadow duration-300">
-              <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
-                <Bot className="text-indigo-500" size={28} />
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-duralux-primary via-duralux-info to-duralux-primary p-[2px] shadow-md shadow-duralux-primary/30 group-hover:shadow-lg group-hover:shadow-duralux-primary/40 transition-shadow duration-300">
+              <div className="w-full h-full rounded-full bg-white dark:bg-duralux-bg-dark-card flex items-center justify-center">
+                <Bot className="text-duralux-primary" size={28} />
               </div>
             </div>
             {isRunning && (
-              <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-green-500 border-2 border-white dark:border-[#1a1a2e] animate-pulse" />
+              <div className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-duralux-success border-2 border-white dark:border-duralux-bg-dark-card animate-pulse shadow-[0_0_8px_rgba(113,221,55,0.5)]" />
             )}
           </div>
 
           {/* Agent Name */}
-          <h3 className="text-base font-bold text-center bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent m-0 mb-2">
+          <h3 className="text-base font-bold text-center bg-gradient-to-r from-duralux-primary to-duralux-info bg-clip-text text-transparent m-0 mb-2">
             {agent.name}
           </h3>
 
-          {/* Description - Single line */}
-          <p className="text-gray-600 dark:text-gray-400 text-xs text-center leading-relaxed mb-3 line-clamp-1 flex-grow">
+          {/* Description */}
+          <p className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs text-center leading-relaxed mb-3 line-clamp-1 flex-grow">
             {agent.description}
           </p>
 
-          {/* Config Badge - Single */}
+          {/* Config Badge */}
           <div className="flex justify-center mb-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-indigo-500 dark:text-indigo-400 text-xs font-semibold border border-indigo-500/20">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-duralux-primary-transparent text-duralux-primary dark:text-duralux-primary text-xs font-semibold border border-duralux-primary/20">
               <Zap size={10} className="fill-current" />
               {agent.config.model}
             </span>
           </div>
 
-          {/* Footer: Action Buttons - Compact */}
-          <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-white/10 mt-auto">
+          {/* Footer: Action Buttons - Duralux Style */}
+          <div className="flex gap-2 pt-3 border-t border-duralux-border-light dark:border-duralux-border-dark mt-auto">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onEdit(agent)}
-              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-duralux-bg-page dark:bg-duralux-bg-dark-card text-duralux-text-secondary dark:text-duralux-text-dark-secondary hover:bg-duralux-bg-hover dark:hover:bg-duralux-bg-dark-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-duralux-border-light dark:border-duralux-border-dark"
             >
               <EditOutlined size={12} />
               Edit
@@ -261,7 +261,7 @@ function AgentCard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onTerminate?.(agent)}
-                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-duralux-danger-transparent text-duralux-danger hover:bg-duralux-danger-transparent/70 border border-duralux-danger/30 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <StopOutlined size={12} />
                 Stop
@@ -271,7 +271,7 @@ function AgentCard({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSpawn?.(agent)}
-                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 shadow-md shadow-indigo-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-duralux-primary to-duralux-primary-dark text-white hover:from-duralux-primary-dark hover:to-duralux-primary shadow-md shadow-duralux-primary/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
               >
                 <PlayCircleOutlined size={12} />
                 Start
@@ -284,7 +284,7 @@ function AgentCard({
   );
 }
 
-/** Sortable Agent Card (for drag & drop) */
+/* Sortable Agent Card */
 interface SortableAgentCardProps {
   agent: Agent;
   onEdit: (agent: Agent) => void;
@@ -325,7 +325,7 @@ function SortableAgentCard({ agent, onEdit, onDelete, onSpawn, onTerminate }: So
   );
 }
 
-/** Edit Agent Modal */
+/** Edit Agent Modal - Duralux Style */
 function EditAgentModal({
   open,
   agent,
@@ -391,10 +391,10 @@ function EditAgentModal({
     <Modal
       title={
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-duralux-primary to-duralux-info flex items-center justify-center shadow-lg shadow-duralux-primary/30">
             <Bot className="text-white" size={20} />
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">
+          <span className="text-xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
             {agent ? "Edit Agent" : "Add New Agent"}
           </span>
         </div>
@@ -403,7 +403,7 @@ function EditAgentModal({
       onOk={handleSave}
       onCancel={onCancel}
       okText="Save"
-      okButtonProps={{ className: "bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700" }}
+      okButtonProps={{ className: "bg-gradient-to-r from-duralux-primary to-duralux-info hover:from-duralux-primary-dark hover:to-duralux-info text-white" }}
       cancelButtonProps={{ className: "rounded-xl" }}
       width={640}
       styles={{
@@ -412,14 +412,14 @@ function EditAgentModal({
         footer: { borderTop: "1px solid #f0f0f0", paddingTop: "1rem" },
       }}
     >
-      {/* Tab Navigation - Enhanced */}
-      <div className="flex gap-1.5 mb-6 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-xl">
+      {/* Tab Navigation - Duralux Style */}
+      <div className="flex gap-1.5 mb-6 p-1.5 bg-duralux-bg-page dark:bg-duralux-bg-dark-card rounded-xl">
         <button
           onClick={() => setActiveTab("basic")}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "basic"
-              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "bg-white dark:bg-duralux-bg-dark-card text-duralux-primary shadow-sm"
+              : "text-duralux-text-muted hover:text-duralux-text-primary"
           }`}
         >
           <Bot size={16} />
@@ -429,8 +429,8 @@ function EditAgentModal({
           onClick={() => setActiveTab("config")}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "config"
-              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "bg-white dark:bg-duralux-bg-dark-card text-duralux-primary shadow-sm"
+              : "text-duralux-text-muted hover:text-duralux-text-primary"
           }`}
         >
           <SettingOutlined />
@@ -440,8 +440,8 @@ function EditAgentModal({
           onClick={() => setActiveTab("connections")}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "connections"
-              ? "bg-white dark:bg-gray-700 text-indigo-500 shadow-sm"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "bg-white dark:bg-duralux-bg-dark-card text-duralux-primary shadow-sm"
+              : "text-duralux-text-muted hover:text-duralux-text-primary"
           }`}
         >
           <Link2 size={16} />
@@ -453,10 +453,9 @@ function EditAgentModal({
         {/* Basic Info Tab */}
         {activeTab === "basic" && (
           <>
-            {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Name <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
+                Name <span className="text-duralux-danger">*</span>
               </label>
               <Input
                 value={form.name}
@@ -467,24 +466,22 @@ function EditAgentModal({
               />
             </div>
 
-            {/* Slug */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Slug <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
+                Slug <span className="text-duralux-danger">*</span>
               </label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
                 placeholder="agent-slug"
                 className="h-11 rounded-xl"
-                prefix={<span className="text-gray-400 text-sm">/</span>}
+                prefix={<span className="text-duralux-text-muted text-sm">/</span>}
                 styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
-            {/* Description */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Description
               </label>
               <TextArea
@@ -497,9 +494,8 @@ function EditAgentModal({
               />
             </div>
 
-            {/* Icon URL */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Icon URL
               </label>
               <Input
@@ -511,9 +507,8 @@ function EditAgentModal({
               />
             </div>
 
-            {/* Status */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Status
               </label>
               <Select<AgentStatus>
@@ -536,9 +531,8 @@ function EditAgentModal({
         {/* Config Tab */}
         {activeTab === "config" && (
           <>
-            {/* Model Selection */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Model
               </label>
               <Select<string>
@@ -563,9 +557,8 @@ function EditAgentModal({
               />
             </div>
 
-            {/* Prompt Template */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Prompt Template
               </label>
               <TextArea
@@ -583,9 +576,8 @@ function EditAgentModal({
               />
             </div>
 
-            {/* Call Quota */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Call Quota
               </label>
               <Input
@@ -603,9 +595,8 @@ function EditAgentModal({
               />
             </div>
 
-            {/* WebSocket Priority */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 WebSocket Priority
               </label>
               <Input
@@ -623,7 +614,7 @@ function EditAgentModal({
                 className="h-11 rounded-xl"
                 styles={{ input: { fontSize: "14px" } }}
               />
-              <Text className="text-gray-400 text-xs mt-1 block">
+              <Text className="text-duralux-text-muted text-xs mt-1 block">
                 Lower numbers = higher priority (1 = highest)
               </Text>
             </div>
@@ -633,9 +624,8 @@ function EditAgentModal({
         {/* Connections Tab */}
         {activeTab === "connections" && (
           <>
-            {/* LobeChat URL */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 LobeChat URL
               </label>
               <Input
@@ -648,14 +638,13 @@ function EditAgentModal({
                 }
                 placeholder="https://lobe.chat/agent/..."
                 className="h-11 rounded-xl"
-                prefix={<LinkOutlined className="text-gray-400" />}
+                prefix={<LinkOutlined className="text-duralux-text-muted" />}
                 styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
-            {/* API Endpoint */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
                 Internal API Endpoint
               </label>
               <Input
@@ -668,20 +657,19 @@ function EditAgentModal({
                 }
                 placeholder="/api/v1/agents/..."
                 className="h-11 rounded-xl"
-                prefix={<ApiOutlined className="text-gray-400" />}
+                prefix={<ApiOutlined className="text-duralux-text-muted" />}
                 styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
-            {/* Connection Status */}
-            <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
+            <Card className="bg-duralux-success-transparent border border-duralux-success/20">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                <div className="w-2.5 h-2.5 rounded-full bg-duralux-success animate-pulse" />
                 <div>
-                  <Text className="text-gray-700 dark:text-gray-300 text-sm font-semibold block">
+                  <Text className="text-duralux-text-primary dark:text-duralux-text-dark-primary text-sm font-semibold block">
                     Connection Status
                   </Text>
-                  <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                  <Text className="text-duralux-text-muted text-xs">
                     {agent?.status === "spawned" ? "Connected" : "Disconnected"}
                   </Text>
                 </div>
@@ -734,7 +722,7 @@ export default function AgentsPage() {
   // Mutation for agent lifecycle
   const spawnMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiClient.post(`/admin/agents/${id}/spawn`);
+      await fetch(`/api/v1/admin/agents/${id}/spawn`, { method: "POST" });
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
@@ -747,7 +735,7 @@ export default function AgentsPage() {
 
   const terminateMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiClient.post(`/admin/agents/${id}/terminate`);
+      await fetch(`/api/v1/admin/agents/${id}/terminate`, { method: "POST" });
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
@@ -766,11 +754,10 @@ export default function AgentsPage() {
     terminateMutation.mutate(agent.id);
   };
 
-  // Filter agents - 添加过滤逻辑
+  // Filter agents
   const filterAgents = useMemo(() => {
     let result = [...agents];
 
-    // Status filter
     if (statusFilter !== "all") {
       if (statusFilter === "online") {
         result = result.filter((agent) => agent.status === "spawned");
@@ -779,7 +766,6 @@ export default function AgentsPage() {
       }
     }
 
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -797,15 +783,13 @@ export default function AgentsPage() {
     setFilteredAgents(filterAgents);
   }, [filterAgents]);
 
-  // Handle drag end
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      setAgents((items) => {
+      setFilteredAgents((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over.id);
         const reordered = arrayMove(items, oldIndex, newIndex);
-        // Update sort orders
         return reordered.map((agent, index) => ({ ...agent, sortOrder: index + 1 }));
       });
     }
@@ -832,7 +816,6 @@ export default function AgentsPage() {
   const handleSaveAgent = async (agent: Agent) => {
     try {
       if (editingAgent) {
-        // Update existing agent via API
         const apiData = mapFrontendAgentToApi(agent);
         const response = await agentsApi.update(agent.id, apiData);
         if (response.success) {
@@ -840,7 +823,6 @@ export default function AgentsPage() {
           message.success("Agent updated successfully");
         }
       } else {
-        // Create new agent via API
         const apiData: Parameters<typeof agentsApi.create>[0] = {
           name: agent.name,
           slug: agent.slug,
@@ -878,181 +860,204 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0f0f1a] dark:to-[#1a1a2e] p-6">
-      {/* Header Section - Enhanced with gradient and better typography */}
-      <Row gutter={[24, 24]} align="middle" className="mb-8">
-        <Col xs={24} md={12}>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-              <Bot className="text-white" size={26} />
+    <div className="min-h-screen bg-duralux-bg-page dark:bg-duralux-bg-dark-page p-6">
+      {/* Header Section - Duralux Style */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-8"
+      >
+        <Row gutter={[24, 24]} align="middle">
+          <Col xs={24} md={12}>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duralux-primary to-duralux-info flex items-center justify-center shadow-lg shadow-duralux-primary/30">
+                <Bot className="text-white" size={26} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0">
+                  Agents Management
+                </h1>
+                <p className="text-duralux-text-muted text-sm mt-0.5">
+                  Configure and manage AI agents
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white m-0">
-                Agents Management
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
-                Configure and manage AI agents
-              </p>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
+              <Input
+                placeholder="Search agents..."
+                prefix={<SearchOutlined className="text-duralux-text-muted" />}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className="h-11 w-full sm:w-[240px] rounded-xl border-duralux-border-light dark:border-duralux-border-dark bg-white dark:bg-duralux-bg-dark-card"
+                styles={{
+                  input: { fontSize: "14px" },
+                }}
+              />
+              <Select
+                value={statusFilter}
+                onChange={handleStatusChange}
+                className="w-full sm:w-[140px] rounded-xl"
+                options={[
+                  { label: "All Status", value: "all" },
+                  { label: "Online", value: "online" },
+                  { label: "Offline", value: "offline" },
+                  { label: "Idle", value: "idle" },
+                ]}
+                styles={{
+                  selector: { borderRadius: "12px", height: "44px" },
+                }}
+              />
+              <Button
+                type="default"
+                icon={<ArrowUpDown size={16} />}
+                onClick={() => setDragEnabled(!dragEnabled)}
+                className={`h-11 rounded-xl font-semibold ${
+                  dragEnabled ? "bg-duralux-primary text-white" : ""
+                }`}
+                styles={{
+                  button: { borderRadius: "12px" },
+                }}
+              >
+                {dragEnabled ? "Sorting..." : "Reorder"}
+              </Button>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddNew}
+                className="bg-gradient-to-r from-duralux-primary to-duralux-info hover:from-duralux-primary-dark hover:to-duralux-info border-none h-11 rounded-xl font-semibold shadow-lg shadow-duralux-primary/30"
+                styles={{
+                  button: { borderRadius: "12px" },
+                }}
+              >
+                Add Agent
+              </Button>
             </div>
-          </div>
-        </Col>
+          </Col>
+        </Row>
+      </motion.div>
 
-        <Col xs={24} md={12}>
-          <div className="flex flex-col sm:flex-row gap-3 justify-end">
-            <Input
-              placeholder="Search agents..."
-              prefix={<SearchOutlined className="text-gray-400" />}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="h-11 w-full sm:w-[240px] rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
-              styles={{
-                input: { fontSize: "14px" },
-              }}
+      {/* Stats Row - Duralux Style */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <Row gutter={[24, 24]} className="mb-8">
+          <Col xs={24} sm={8} md={6}>
+            <StatCard
+              icon={<Bot size={20} />}
+              label="Total Agents"
+              value={agents.length || 0}
+              gradient="blue"
             />
-            <Select
-              value={statusFilter}
-              onChange={handleStatusChange}
-              className="w-full sm:w-[140px] rounded-xl"
-              options={[
-                { label: "All Status", value: "all" },
-                { label: "Online", value: "online" },
-                { label: "Offline", value: "offline" },
-                { label: "Idle", value: "idle" },
-              ]}
-              styles={{
-                selector: { borderRadius: "12px", height: "44px" },
-              }}
+          </Col>
+          <Col xs={24} sm={8} md={6}>
+            <StatCard
+              icon={<Activity size={20} />}
+              label="Online"
+              value={agents.filter((a) => a.status === "spawned").length}
+              gradient="green"
             />
-            <Button
-              type="default"
-              icon={<ArrowUpDown size={16} />}
-              onClick={() => setDragEnabled(!dragEnabled)}
-              className={`h-11 rounded-xl font-semibold ${
-                dragEnabled ? "bg-indigo-500 text-white" : ""
-              }`}
-              styles={{
-                button: { borderRadius: "12px" },
-              }}
-            >
-              {dragEnabled ? "Sorting..." : "Reorder"}
-            </Button>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddNew}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
-              styles={{
-                button: { borderRadius: "12px" },
-              }}
-            >
-              Add Agent
-            </Button>
-          </div>
-        </Col>
-      </Row>
-
-      {/* Stats Row - Enhanced with StatCard component */}
-      <Row gutter={[24, 24]} className="mb-8">
-        <Col xs={24} sm={8} md={6}>
-          <StatCard
-            icon={<Bot size={20} />}
-            label="Total Agents"
-            value={agents.length || 0}
-            gradient="blue"
-          />
-        </Col>
-        <Col xs={24} sm={8} md={6}>
-          <StatCard
-            icon={<Activity size={20} />}
-            label="Online"
-            value={agents.filter((a) => a.status === "spawned").length}
-            gradient="green"
-          />
-        </Col>
-        <Col xs={24} sm={8} md={6}>
-          <StatCard
-            icon={<Clock size={20} />}
-            label="Idle"
-            value={agents.filter((a) => a.status === "idle").length}
-            gradient="orange"
-          />
-        </Col>
-        <Col xs={24} sm={8} md={6}>
-          <StatCard
-            icon={<Server size={20} />}
-            label="Offline"
-            value={agents.filter((a) => a.status === "offline").length}
-            gradient="gray"
-          />
-        </Col>
-      </Row>
+          </Col>
+          <Col xs={24} sm={8} md={6}>
+            <StatCard
+              icon={<Clock size={20} />}
+              label="Idle"
+              value={agents.filter((a) => a.status === "idle").length}
+              gradient="orange"
+            />
+          </Col>
+          <Col xs={24} sm={8} md={6}>
+            <StatCard
+              icon={<Server size={20} />}
+              label="Offline"
+              value={agents.filter((a) => a.status === "offline").length}
+              gradient="gray"
+            />
+          </Col>
+        </Row>
+      </motion.div>
 
       {/* Agents Grid */}
-      {dragEnabled ? (
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext
-            items={filteredAgents.map((a) => a.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <Row gutter={[24, 24]}>
-              {filteredAgents.map((agent) => (
-                <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
-                  <SortableAgentCard
-                    agent={agent}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onSpawn={handleSpawn}
-                    onTerminate={handleTerminate}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </SortableContext>
-        </DndContext>
-      ) : (
-        <Row gutter={[24, 24]}>
-          {filteredAgents.map((agent) => (
-            <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
-              <AgentCard
-                agent={agent}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onSpawn={handleSpawn}
-                onTerminate={handleTerminate}
-              />
-            </Col>
-          ))}
-        </Row>
-      )}
-
-      {/* Empty State - Enhanced design */}
-      {filteredAgents.length === 0 && (
-        <Card className="text-center py-16">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
-              <Bot size={40} className="text-indigo-500" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-2">
-                No agents found
-              </h3>
-              <Text className="text-gray-500 dark:text-gray-400">
-                Try adjusting your filters or add a new agent
-              </Text>
-            </div>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAddNew}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-indigo-500/30"
-              styles={{
-                button: { borderRadius: "12px" },
-              }}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        {dragEnabled ? (
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={filteredAgents.map((a) => a.id)}
+              strategy={verticalListSortingStrategy}
             >
-              Add Your First Agent
-            </Button>
-          </div>
-        </Card>
+              <Row gutter={[24, 24]}>
+                {filteredAgents.map((agent) => (
+                  <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
+                    <SortableAgentCard
+                      agent={agent}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onSpawn={handleSpawn}
+                      onTerminate={handleTerminate}
+                    />
+                  </Col>
+                ))}
+              </Row>
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <Row gutter={[24, 24]}>
+            {filteredAgents.map((agent) => (
+              <Col xs={24} sm={12} lg={8} xl={6} key={agent.id}>
+                <AgentCard
+                  agent={agent}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onSpawn={handleSpawn}
+                  onTerminate={handleTerminate}
+                />
+              </Col>
+            ))}
+          </Row>
+        )}
+      </motion.div>
+
+      {/* Empty State - Duralux Style */}
+      {filteredAgents.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <Card className="text-center py-16">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-duralux-primary-transparent flex items-center justify-center">
+                <Bot size={40} className="text-duralux-primary" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0 mb-2">
+                  No agents found
+                </h3>
+                <Text className="text-duralux-text-muted">
+                  Try adjusting your filters or add a new agent
+                </Text>
+              </div>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddNew}
+                className="bg-gradient-to-r from-duralux-primary to-duralux-info hover:from-duralux-primary-dark hover:to-duralux-info border-none h-11 rounded-xl font-semibold shadow-lg shadow-duralux-primary/30"
+                styles={{
+                  button: { borderRadius: "12px" },
+                }}
+              >
+                Add Your First Agent
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
       )}
 
       {/* Edit Modal */}

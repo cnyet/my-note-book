@@ -235,7 +235,7 @@ export default function AssistantChatPage() {
     setSelectedModel(model);
     // Update current conversation's model if there is one
     if (currentConversation) {
-      setCurrentConversation(prev => ({ ...prev, model }));
+      setCurrentConversation((prev: any) => ({ ...prev, model }));
     }
   };
 

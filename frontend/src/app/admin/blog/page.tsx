@@ -13,6 +13,7 @@ import { Button, Card, Input, message, Modal, Select, Space, Table, Tag, Tooltip
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { exportToCSV } from "@/lib/table-utils";
 import { TableToolbar } from "@/components/admin/shared/TableToolbar";
+import { motion } from "framer-motion";
 
 type SorterType<T> = {
   column?: ColumnsType<T>[number];
@@ -34,6 +35,60 @@ type BlogPost = ApiBlogPost;
 type StatusFilter = "all" | "draft" | "published";
 type SortField = "date" | "title";
 type SortOrder = "asc" | "desc";
+
+/** 统计卡片组件 - Duralux Style */
+function StatWidget({
+  title,
+  value,
+  icon: Icon,
+  color,
+  bgColor,
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+}) {
+  return (
+    <Card
+      bordered={false}
+      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-0.5 overflow-hidden"
+      styles={{ body: { padding: "1.25rem" } }}
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-duralux-text-muted mb-1">{title}</p>
+          <p className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+            {value}
+          </p>
+        </div>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bgColor}`}>
+          <Icon className={color} size={20} />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/** 骨架屏统计卡片 */
+function SkeletonStatCard() {
+  return (
+    <Card
+      bordered={false}
+      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark overflow-hidden"
+      styles={{ body: { padding: "1.25rem" } }}
+    >
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="w-20 h-3 skeleton" />
+          <div className="w-24 h-6 skeleton" />
+        </div>
+        <div className="w-12 h-12 rounded-xl skeleton" />
+      </div>
+    </Card>
+  );
+}
 
 export default function BlogListPage() {
   const { theme } = useTheme();
@@ -237,7 +292,7 @@ export default function BlogListPage() {
     }));
   };
 
-  // Table columns
+  // Table columns - Duralux Style
   const columns: ColumnsType<BlogPost> = [
     {
       title: "Title",
@@ -246,10 +301,10 @@ export default function BlogListPage() {
       sorter: true,
       render: (title: string, record: BlogPost) => (
         <Space direction="vertical" size={0}>
-          <span className="font-medium text-[#566a7f] dark:text-[#a3b1c2]">
+          <span className="font-medium text-duralux-text-primary dark:text-duralux-text-dark-primary">
             {title}
           </span>
-          <span className="text-xs text-[#a1acb8] dark:text-[#696c80]">
+          <span className="text-xs text-duralux-text-muted">
             {record.summary}
           </span>
         </Space>
@@ -261,7 +316,7 @@ export default function BlogListPage() {
       key: "author",
       width: BLOG_CONSTANTS.COLUMN_WIDTHS.AUTHOR,
       render: (author: string) => (
-        <span className="text-[#697a8d] dark:text-[#a3b1c2]">{author}</span>
+        <span className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">{author}</span>
       ),
     },
     {
@@ -271,7 +326,7 @@ export default function BlogListPage() {
       width: BLOG_CONSTANTS.COLUMN_WIDTHS.PUBLISH_DATE,
       sorter: true,
       render: (date: string) => (
-        <span className="text-[#697a8d] dark:text-[#a3b1c2]">
+        <span className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">
           {new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "short",
@@ -287,11 +342,11 @@ export default function BlogListPage() {
       width: BLOG_CONSTANTS.COLUMN_WIDTHS.VIEWS,
       render: (views: number, record: BlogPost) =>
         record.status === "published" ? (
-          <span className="text-[#697a8d] dark:text-[#a3b1c2]">
+          <span className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">
             {views?.toLocaleString() || 0}
           </span>
         ) : (
-          <span className="text-[#a1acb8]">-</span>
+          <span className="text-duralux-text-muted">-</span>
         ),
     },
     {
@@ -301,13 +356,21 @@ export default function BlogListPage() {
       width: BLOG_CONSTANTS.COLUMN_WIDTHS.STATUS,
       render: (status: string, record: BlogPost) => (
         <Tag
-          className="cursor-pointer"
+          className="cursor-pointer !rounded-full text-xs font-medium px-3 py-0.5 border-0"
           role="button"
           tabIndex={0}
           color={status === "published" ? "success" : "default"}
           onClick={() => handleStatusToggle(record.id)}
           onKeyPress={(e) => handleStatusKeyPress(e, record.id)}
           aria-label={`Toggle status for ${record.title}, currently ${status}`}
+          style={{
+            backgroundColor: status === "published"
+              ? "var(--duralux-success-transparent)"
+              : "var(--duralux-bg-page)",
+            color: status === "published"
+              ? "var(--duralux-success)"
+              : "var(--duralux-text-muted)",
+          }}
         >
           {status === "published" ? "Published" : "Draft"}
         </Tag>
@@ -323,7 +386,7 @@ export default function BlogListPage() {
             <Button
               type="text"
               icon={<EyeOutlined />}
-              className="text-[#697a8d] hover:text-[#696cff]"
+              className="text-duralux-text-secondary hover:text-duralux-primary transition-colors"
               onClick={() => toast.info(`View post: ${record.title}`)}
             />
           </Tooltip>
@@ -331,7 +394,7 @@ export default function BlogListPage() {
             <Button
               type="text"
               icon={<EditOutlined />}
-              className="text-[#697a8d] hover:text-[#696cff]"
+              className="text-duralux-text-secondary hover:text-duralux-primary transition-colors"
               onClick={() => router.push(`/admin/blog/${record.id}`)}
             />
           </Tooltip>
@@ -339,7 +402,7 @@ export default function BlogListPage() {
             <Button
               type="text"
               icon={<DeleteOutlined />}
-              className="text-[#697a8d] hover:text-[#ff3e1d]"
+              className="text-duralux-text-secondary hover:text-duralux-danger transition-colors"
               onClick={() => handleDelete(record.id)}
             />
           </Tooltip>
@@ -382,87 +445,78 @@ export default function BlogListPage() {
   };
 
   return (
-    <div className="animate-in fade-in-50 duration-500 p-6">
-      {/* Page Header */}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6"
+    >
+      {/* Page Header - Duralux Style */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-[1.5rem] font-bold text-[#566a7f] dark:text-[#a3b1c2]">
+          <h1 className="text-[1.5rem] font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0">
             Blog Management
           </h1>
-          <p className="text-sm text-[#a1acb8] mt-1">
+          <p className="text-sm text-duralux-text-muted mt-1">
             Manage your blog posts, drafts, and publications
           </p>
         </div>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          className="bg-[#696cff] hover:bg-[#5f61e6] text-white border-none h-10 px-6"
+          className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-10 px-6 rounded-xl shadow-lg shadow-duralux-primary/30 transition-all duration-200"
           onClick={() => router.push("/admin/blog/new")}
         >
           New Post
         </Button>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Duralux Style */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="sneat-card-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[#a1acb8] mb-1">Total Posts</p>
-              <p className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
-                {stats.total}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-[#696cff]/10 flex items-center justify-center">
-              <FileTextOutlined className="text-[#696cff] text-xl" />
-            </div>
-          </div>
-        </Card>
-        <Card className="sneat-card-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[#a1acb8] mb-1">Published</p>
-              <p className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
-                {stats.published}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-[#71dd37]/10 flex items-center justify-center">
-              <FileTextOutlined className="text-[#71dd37] text-xl" />
-            </div>
-          </div>
-        </Card>
-        <Card className="sneat-card-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[#a1acb8] mb-1">Drafts</p>
-              <p className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
-                {stats.drafts}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-[#ffab00]/10 flex items-center justify-center">
-              <FileTextOutlined className="text-[#ffab00] text-xl" />
-            </div>
-          </div>
-        </Card>
-        <Card className="sneat-card-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[#a1acb8] mb-1">Total Views</p>
-              <p className="text-2xl font-bold text-[#566a7f] dark:text-[#a3b1c2]">
-                {stats.totalViews.toLocaleString()}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-lg bg-[#03c3ec]/10 flex items-center justify-center">
-              <EyeOutlined className="text-[#03c3ec] text-xl" />
-            </div>
-          </div>
-        </Card>
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonStatCard key={i} />
+          ))
+        ) : (
+          <>
+            <StatWidget
+              title="Total Posts"
+              value={stats.total}
+              icon={FileTextOutlined}
+              color="text-duralux-primary"
+              bgColor="bg-duralux-primary-transparent"
+            />
+            <StatWidget
+              title="Published"
+              value={stats.published}
+              icon={FileTextOutlined}
+              color="text-duralux-success"
+              bgColor="bg-duralux-success-transparent"
+            />
+            <StatWidget
+              title="Drafts"
+              value={stats.drafts}
+              icon={FileTextOutlined}
+              color="text-duralux-warning"
+              bgColor="bg-duralux-warning-transparent"
+            />
+            <StatWidget
+              title="Total Views"
+              value={stats.totalViews.toLocaleString()}
+              icon={EyeOutlined}
+              color="text-duralux-info"
+              bgColor="bg-duralux-info-transparent"
+            />
+          </>
+        )}
       </div>
 
-      {/* Filters and Actions */}
-      <Card className="sneat-card-shadow mb-4">
+      {/* Filters and Actions - Duralux Style */}
+      <Card
+        className="sneat-card-shadow mb-4 rounded-xl"
+        styles={{ body: { padding: "1.25rem" } }}
+      >
         <div className="flex flex-col gap-4">
-          {/* Table Toolbar with density, columns, export */}
+          {/* Table Toolbar */}
           <TableToolbar
             showDensity
             showColumnToggle
@@ -494,10 +548,10 @@ export default function BlogListPage() {
             {/* Search */}
             <Input
               placeholder="Search posts..."
-              prefix={<SearchOutlined className="text-[#a1acb8]" />}
+              prefix={<SearchOutlined className="text-duralux-text-muted" />}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="max-w-xs"
+              className="max-w-xs rounded-xl"
               allowClear
             />
 
@@ -505,12 +559,14 @@ export default function BlogListPage() {
             <Select
               value={statusFilter}
               onChange={setStatusFilter}
-              className="w-40"
+              className="w-40 rounded-xl"
               options={[
                 { label: "All Posts", value: "all" },
                 { label: "Published", value: "published" },
                 { label: "Drafts", value: "draft" },
               ]}
+              styles={{
+              }}
             />
 
             {/* Sort */}
@@ -521,13 +577,15 @@ export default function BlogListPage() {
                 setSortField(field as SortField);
                 setSortOrder(order as SortOrder);
               }}
-              className="w-40"
+              className="w-40 rounded-xl"
               options={[
                 { label: "Newest First", value: "date-desc" },
                 { label: "Oldest First", value: "date-asc" },
                 { label: "Title A-Z", value: "title-asc" },
                 { label: "Title Z-A", value: "title-desc" },
               ]}
+              styles={{
+              }}
             />
 
             <div className="flex-1" />
@@ -535,19 +593,19 @@ export default function BlogListPage() {
             {/* Batch Actions */}
             {selectedRowKeys.length > 0 && (
               <Space>
-                <span className="text-sm text-[#697a8d]">
+                <span className="text-sm text-duralux-text-secondary">
                   {selectedRowKeys.length} selected
                 </span>
                 <Button
                   icon={<ThunderboltOutlined />}
-                  className="text-[#71dd37] border-[#71dd37] hover:bg-[#71dd37] hover:text-white"
+                  className="text-duralux-success border-duralux-success hover:bg-duralux-success hover:text-white rounded-xl transition-all"
                   onClick={handleBatchPublish}
                 >
                   Publish
                 </Button>
                 <Button
                   icon={<DeleteOutlined />}
-                  className="text-[#ff3e1d] border-[#ff3e1d] hover:bg-[#ff3e1d] hover:text-white"
+                  className="text-duralux-danger border-duralux-danger hover:bg-duralux-danger hover:text-white rounded-xl transition-all"
                   onClick={handleBatchDelete}
                 >
                   Delete
@@ -558,8 +616,11 @@ export default function BlogListPage() {
         </div>
       </Card>
 
-      {/* Table */}
-      <Card className="sneat-card-shadow">
+      {/* Table - Duralux Style */}
+      <Card
+        className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark"
+        styles={{ body: { padding: "0" } }}
+      >
         <Table
           rowSelection={rowSelection}
           columns={columns.filter(col => {
@@ -574,10 +635,10 @@ export default function BlogListPage() {
             showSizeChanger: true,
             pageSizeOptions: [...BLOG_CONSTANTS.PAGINATION.PAGE_SIZE_OPTIONS],
             showTotal: (total: number) => `Total ${total} posts`,
-            className: "text-[#697a8d]",
+            className: "text-duralux-text-secondary",
           } as Record<string, unknown>}
           onChange={onTableChange as unknown as (pagination: TablePaginationConfig, filters: unknown, sorter: unknown) => void}
-          className="blog-table"
+          className="duralux-table"
           scroll={{ x: BLOG_CONSTANTS.TABLE_SCROLL_X }}
           size={density === "compact" ? "small" : density === "spacious" ? "large" : "middle"}
         />
@@ -585,43 +646,43 @@ export default function BlogListPage() {
 
       {/* Custom Styles for Table */}
       <style jsx global>{`
-        .blog-table .ant-table {
+        .duralux-table .ant-table {
           background: transparent !important;
         }
-        .blog-table .ant-table-thead > tr > th {
+        .duralux-table .ant-table-thead > tr > th {
           background: ${isDark ? "#2b2c40" : "#f8f7fa"} !important;
           border-bottom: 1px solid ${isDark ? "#444564" : "#eceef1"} !important;
           color: ${isDark ? "#a3b1c2" : "#566a7f"} !important;
           font-weight: 600;
           padding: ${density === "compact" ? "0.5rem 0.75rem" : density === "spacious" ? "1.5rem 1.25rem" : "1rem 1rem"} !important;
         }
-        .blog-table .ant-table-tbody > tr > td {
+        .duralux-table .ant-table-tbody > tr > td {
           border-bottom: 1px solid ${isDark ? "#444564" : "#eceef1"} !important;
           color: ${isDark ? "#a3b1c2" : "#697a8d"} !important;
           padding: ${density === "compact" ? "0.5rem 0.75rem" : density === "spacious" ? "1.5rem 1.25rem" : "1rem 1rem"} !important;
         }
-        .blog-table .ant-table-tbody > tr:hover > td {
+        .duralux-table .ant-table-tbody > tr:hover > td {
           background: ${isDark ? "#323249" : "#f8f7fa"} !important;
         }
-        .blog-table .ant-table-wrapper {
+        .duralux-table .ant-table-wrapper {
           background: transparent !important;
         }
-        .blog-table .ant-pagination-item-active {
+        .duralux-table .ant-pagination-item-active {
           background: #696cff !important;
           border-color: #696cff !important;
         }
-        .blog-table .ant-pagination-item-active a {
+        .duralux-table .ant-pagination-item-active a {
           color: white !important;
         }
-        .blog-table .ant-checkbox-checked .ant-checkbox-inner {
+        .duralux-table .ant-checkbox-checked .ant-checkbox-inner {
           background-color: #696cff !important;
           border-color: #696cff !important;
         }
-        .blog-table .ant-checkbox-wrapper:hover .ant-checkbox-inner,
-        .blog-table .ant-checkbox:hover .ant-checkbox-inner {
+        .duralux-table .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+        .duralux-table .ant-checkbox:hover .ant-checkbox-inner {
           border-color: #696cff !important;
         }
       `}</style>
-    </div>
+    </motion.div>
   );
 }

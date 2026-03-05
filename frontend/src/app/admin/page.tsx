@@ -8,7 +8,7 @@ import {
   ProjectRemindersCard,
 } from "@/components/admin/dashboard";
 import { apiClient } from "@/lib/admin-api";
-import { Col, Row, Card, Spin } from "antd";
+import { Card } from "antd";
 import { Bot, Wrench, FlaskConical, PenTool, Newspaper, Users, ShoppingCart, Wallet, CreditCard, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { StatCard } from "@/components/ui/Card/StatCard";
@@ -23,7 +23,7 @@ interface DashboardStats {
   newsArticlesCount: number;
 }
 
-/** 模块卡片组件 */
+/** 模块卡片组件 - Duralux Style */
 function ModuleCard({
   title,
   value,
@@ -50,6 +50,71 @@ function ModuleCard({
   );
 }
 
+/** 统计卡片组件 - Duralux Style */
+function StatWidget({
+  title,
+  value,
+  icon: Icon,
+  color,
+  bgColor,
+}: {
+  title: string;
+  value: string | number;
+  icon: React.ElementType;
+  color: string;
+  bgColor: string;
+}) {
+  return (
+    <Card
+      bordered={false}
+      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-0.5 overflow-hidden"
+      styles={{ body: { padding: "1.25rem" } }}
+    >
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bgColor}`}>
+          <Icon className={color} size={20} />
+        </div>
+        <div>
+          <div className="text-sm text-duralux-text-muted mb-0.5">{title}</div>
+          <div className="text-xl font-bold text-duralux-text-primary">
+            {value}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/** 骨架屏卡片组件 */
+function SkeletonCard({ className = "" }: { className?: string }) {
+  return (
+    <div className={`rounded-xl bg-white dark:bg-duralux-bg-dark-card p-5 shadow-duralux-card dark:shadow-duralux-card-dark ${className}`}>
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl skeleton" />
+        <div className="flex-1 space-y-2">
+          <div className="w-20 h-3 skeleton" />
+          <div className="w-24 h-5 skeleton" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** 骨架屏模块卡片 */
+function SkeletonModuleCard() {
+  return (
+    <div className="rounded-2xl bg-white dark:bg-duralux-bg-dark-card p-5 shadow-duralux-card dark:shadow-duralux-card-dark h-full">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl skeleton" />
+        <div className="flex-1 space-y-2">
+          <div className="w-16 h-3 skeleton" />
+          <div className="w-20 h-6 skeleton" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboardPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["admin-dashboard-stats"],
@@ -59,180 +124,138 @@ export default function AdminDashboardPage() {
     },
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
-    <div className="animate-in fade-in-50 duration-500">
+    <div className="space-y-6">
       {/* Row 1: Welcome Card */}
-      <Row gutter={[24, 24]} className="mb-6">
-        <Col xs={24}>
-          <WelcomeCard />
-        </Col>
-      </Row>
+      {isLoading ? (
+        <div className="rounded-xl bg-white dark:bg-duralux-bg-dark-card p-6 shadow-duralux-card dark:shadow-duralux-card-dark h-[180px] skeleton" />
+      ) : (
+        <WelcomeCard />
+      )}
 
       {/* Row 2: Core Module Stats Grid */}
-      <Row gutter={[24, 24]} className="mb-6">
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="Agents"
-            value={stats?.agentsCount || 0}
-            icon={Bot}
-            color="bg-[#696cff]/10 text-[#696cff]"
-            href="/admin/agents"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="Tools"
-            value={stats?.toolsCount || 0}
-            icon={Wrench}
-            color="bg-[#03c3ec]/10 text-[#03c3ec]"
-            href="/admin/tools"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="Labs"
-            value={stats?.labsCount || 0}
-            icon={FlaskConical}
-            color="bg-[#ffab00]/10 text-[#ffab00]"
-            href="/admin/labs"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="Blog Posts"
-            value={stats?.blogPostsCount || 0}
-            icon={PenTool}
-            color="bg-[#71dd37]/10 text-[#71dd37]"
-            href="/admin/blog"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="News Sources"
-            value={stats?.newsSourcesCount || 0}
-            icon={Newspaper}
-            color="bg-[#3b82f6]/10 text-[#3b82f6]"
-            href="/admin/agents/news"
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={8}>
-          <ModuleCard
-            title="Users"
-            value={stats?.usersCount || 0}
-            icon={Users}
-            color="bg-[#ec4899]/10 text-[#ec4899]"
-            href="/admin/settings"
-          />
-        </Col>
-      </Row>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonModuleCard key={i} />
+            ))
+          : (
+            <>
+              <ModuleCard
+                title="Agents"
+                value={stats?.agentsCount || 0}
+                icon={Bot}
+                gradient="blue"
+                href="/admin/agents"
+              />
+              <ModuleCard
+                title="Tools"
+                value={stats?.toolsCount || 0}
+                icon={Wrench}
+                gradient="cyan"
+                href="/admin/tools"
+              />
+              <ModuleCard
+                title="Labs"
+                value={stats?.labsCount || 0}
+                icon={FlaskConical}
+                gradient="orange"
+                href="/admin/labs"
+              />
+              <ModuleCard
+                title="Blog Posts"
+                value={stats?.blogPostsCount || 0}
+                icon={PenTool}
+                gradient="green"
+                href="/admin/blog"
+              />
+              <ModuleCard
+                title="News Sources"
+                value={stats?.newsSourcesCount || 0}
+                icon={Newspaper}
+                gradient="indigo"
+                href="/admin/agents/news"
+              />
+              <ModuleCard
+                title="Users"
+                value={stats?.usersCount || 0}
+                icon={Users}
+                gradient="pink"
+                href="/admin/settings"
+              />
+            </>
+          )}
+      </div>
 
       {/* Row 3: General Stats - Order/Sales/Payments/Revenue */}
-      <Row gutter={[24, 24]} className="mb-6">
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#696cff]/10 flex items-center justify-center">
-                <ShoppingCart className="text-[#696cff]" size={20} />
-              </div>
-              <div>
-                <div className="text-[#697a8d] text-xs font-medium">Orders</div>
-                <div className="text-xl font-bold text-[#566a7f]">
-                  {stats?.newsArticlesCount || 0}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#03c3ec]/10 flex items-center justify-center">
-                <Wallet className="text-[#03c3ec]" size={20} />
-              </div>
-              <div>
-                <div className="text-[#697a8d] text-xs font-medium">Sales</div>
-                <div className="text-xl font-bold text-[#566a7f]">
-                  ${stats?.usersCount ? (stats.usersCount * 17.5).toFixed(0) : "0"}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#ff3e1d]/10 flex items-center justify-center">
-                <CreditCard className="text-[#ff3e1d]" size={20} />
-              </div>
-              <div>
-                <div className="text-[#697a8d] text-xs font-medium">Payments</div>
-                <div className="text-xl font-bold text-[#566a7f]">
-                  ${stats?.toolsCount ? (stats.toolsCount * 124).toFixed(0) : "0"}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card
-            bordered={false}
-            className="sneat-card-shadow"
-            styles={{ body: { padding: "1.25rem" } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#71dd37]/10 flex items-center justify-center">
-                <BarChart3 className="text-[#71dd37]" size={20} />
-              </div>
-              <div>
-                <div className="text-[#697a8d] text-xs font-medium">Revenue</div>
-                <div className="text-xl font-bold text-[#566a7f]">
-                  ${stats?.blogPostsCount ? (stats.blogPostsCount * 89).toFixed(0) : "0"}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Col>
-      </Row>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))
+          : (
+            <>
+              <StatWidget
+                title="Orders"
+                value={stats?.newsArticlesCount || 0}
+                icon={ShoppingCart}
+                color="text-duralux-primary"
+                bgColor="bg-duralux-primary-transparent"
+              />
+              <StatWidget
+                title="Sales"
+                value={`$${stats?.usersCount ? (stats.usersCount * 17.5).toFixed(0) : "0"}`}
+                icon={Wallet}
+                color="text-duralux-info"
+                bgColor="bg-duralux-info-transparent"
+              />
+              <StatWidget
+                title="Payments"
+                value={`$${stats?.toolsCount ? (stats.toolsCount * 124).toFixed(0) : "0"}`}
+                icon={CreditCard}
+                color="text-duralux-danger"
+                bgColor="bg-duralux-danger-transparent"
+              />
+              <StatWidget
+                title="Revenue"
+                value={`$${stats?.blogPostsCount ? (stats.blogPostsCount * 89).toFixed(0) : "0"}`}
+                icon={BarChart3}
+                color="text-duralux-success"
+                bgColor="bg-duralux-success-transparent"
+              />
+            </>
+          )}
+      </div>
 
       {/* Row 4: Diverse Content - Email Reports + Browser States */}
-      <Row gutter={[24, 24]} className="mb-6">
-        <Col xs={24} lg={12}>
-          <EmailReportsCard />
-        </Col>
-        <Col xs={24} lg={12}>
-          <BrowserStatesCard />
-        </Col>
-      </Row>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {isLoading ? (
+          <>
+            <div className="rounded-xl bg-white dark:bg-duralux-bg-dark-card p-6 shadow-duralux-card dark:shadow-duralux-card-dark h-[300px] skeleton" />
+            <div className="rounded-xl bg-white dark:bg-duralux-bg-dark-card p-6 shadow-duralux-card dark:shadow-duralux-card-dark h-[300px] skeleton" />
+          </>
+        ) : (
+          <>
+            <EmailReportsCard />
+            <BrowserStatesCard />
+          </>
+        )}
+      </div>
 
       {/* Row 5: Diverse Content - Goal Progress + Project Reminders */}
-      <Row gutter={[24, 24]} className="mb-6">
-        <Col xs={24} lg={12}>
-          <GoalProgressCard />
-        </Col>
-        <Col xs={24} lg={12}>
-          <ProjectRemindersCard />
-        </Col>
-      </Row>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {isLoading ? (
+          <>
+            <div className="rounded-xl bg-white dark:bg-duralux-bg-dark-card p-6 shadow-duralux-card dark:shadow-duralux-card-dark h-[280px] skeleton" />
+            <div className="rounded-xl bg-white dark:bg-duralux-bg-dark-card p-6 shadow-duralux-card dark:shadow-duralux-card-dark h-[280px] skeleton" />
+          </>
+        ) : (
+          <>
+            <GoalProgressCard />
+            <ProjectRemindersCard />
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { MoreOutlined } from "@ant-design/icons";
 import { Button, Card, Dropdown, MenuProps, Table, Tag } from "antd";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { ColumnsType } from "antd/es/table";
 
 interface ProjectReminder {
   key: string;
@@ -53,9 +54,9 @@ const DATA: ProjectReminder[] = [
 ];
 
 const STATUS_CONFIG = {
-  completed: { color: "#71dd37", text: "Completed" },
-  pending: { color: "#ffab00", text: "Pending" },
-  "in-progress": { color: "#03c3ec", text: "In Progress" },
+  completed: { color: "text-duralux-success", bgColor: "bg-duralux-success-transparent", text: "Completed" },
+  pending: { color: "text-duralux-warning", bgColor: "bg-duralux-warning-transparent", text: "Pending" },
+  "in-progress": { color: "text-duralux-info", bgColor: "bg-duralux-info-transparent", text: "In Progress" },
 };
 
 export function ProjectRemindersCard() {
@@ -64,14 +65,14 @@ export function ProjectRemindersCard() {
     { key: "2", label: "Add New" },
   ];
 
-  const columns = [
+  const columns: ColumnsType<ProjectReminder> = [
     {
       title: "PROJECT",
       dataIndex: "project",
       key: "project",
-      className: "text-[#8898aa] text-xs font-medium",
+      className: "text-duralux-text-muted text-xs font-medium",
       render: (text: string) => (
-        <span className="text-sm font-medium text-[#32325d]">
+        <span className="text-sm font-medium text-duralux-text-primary dark:text-duralux-text-dark-primary">
           {text}
         </span>
       ),
@@ -80,16 +81,16 @@ export function ProjectRemindersCard() {
       title: "LEADER",
       dataIndex: "leader",
       key: "leader",
-      className: "text-[#8898aa] text-xs font-medium",
+      className: "text-duralux-text-muted text-xs font-medium",
       render: (leader: { name: string; avatar?: string }) => (
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6">
+          <Avatar className="h-7 w-7 border border-duralux-border-light dark:border-duralux-border-dark">
             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${leader.name}`} />
-            <AvatarFallback className="bg-[#32325d]/10 text-[#32325d] text-xs">
+            <AvatarFallback className="bg-duralux-bg-page text-duralux-text-primary text-xs">
               {leader.avatar}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-[#525f7f]">{leader.name}</span>
+          <span className="text-sm text-duralux-text-secondary dark:text-duralux-text-dark-secondary">{leader.name}</span>
         </div>
       ),
     },
@@ -97,14 +98,13 @@ export function ProjectRemindersCard() {
       title: "TEAM",
       dataIndex: "team",
       key: "team",
-      className: "text-[#8898aa] text-xs font-medium",
+      className: "text-duralux-text-muted text-xs font-medium",
       render: (team: string[]) => (
         <div className="flex items-center gap-1">
           {team.map((role) => (
             <Tag
               key={role}
-              color=""
-              className="!bg-[#f8f9fa] !text-[#525f7f] !border-none !rounded text-xs px-2 py-0.5"
+              className="!bg-duralux-bg-page !text-duralux-text-secondary !border-none !rounded-md text-xs px-2 py-0.5 font-medium"
             >
               {role}
             </Tag>
@@ -116,25 +116,25 @@ export function ProjectRemindersCard() {
       title: "DEADLINE",
       dataIndex: "deadline",
       key: "deadline",
-      className: "text-[#8898aa] text-xs font-medium",
+      className: "text-duralux-text-muted text-xs font-medium",
       render: (text: string) => (
-        <span className="text-sm text-[#525f7f]">{text}</span>
+        <span className="text-sm text-duralux-text-secondary dark:text-duralux-text-dark-secondary">{text}</span>
       ),
     },
     {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
-      className: "text-[#8898aa] text-xs font-medium",
+      className: "text-duralux-text-muted text-xs font-medium",
       render: (status: keyof typeof STATUS_CONFIG) => {
         const config = STATUS_CONFIG[status];
         return (
           <span
-            className="text-xs font-medium px-2 py-1 rounded"
-            style={{
-              backgroundColor: `${config.color}1a`,
-              color: config.color,
-            }}
+            className={cn(
+              "text-xs font-medium px-2.5 py-1 rounded-full",
+              config.color,
+              config.bgColor
+            )}
           >
             {config.text}
           </span>
@@ -146,7 +146,7 @@ export function ProjectRemindersCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#32325d]">
+        <span className="text-lg font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
           Project Reminders
         </span>
       }
@@ -155,13 +155,20 @@ export function ProjectRemindersCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            icon={<MoreOutlined className="text-duralux-text-muted hover:text-duralux-text-primary transition-colors" />}
             className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className={cn("rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer")}
+      className={cn(
+        "rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark",
+        "transition-all duration-200",
+        "hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark",
+        "hover:-translate-y-0.5",
+        "cursor-pointer",
+        "bg-white dark:bg-duralux-bg-dark-card"
+      )}
       styles={{
         body: { padding: "1.5rem" },
       }}
@@ -171,7 +178,8 @@ export function ProjectRemindersCard() {
         dataSource={DATA}
         pagination={false}
         size="small"
-        className="admin-table"
+        className="duralux-table"
+        scroll={{ x: 500 }}
       />
     </Card>
   );

@@ -24,6 +24,7 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import type { UploadFile } from "antd/es/upload/interface";
+import { motion } from "framer-motion";
 
 const { TextArea } = Input;
 
@@ -167,14 +168,14 @@ export default function SettingsPage() {
             name="site_title"
             rules={[{ required: true, message: "Please enter site title" }]}
           >
-            <Input placeholder="Enter site title" className="dark:bg-[#2b2c40]" />
+            <Input placeholder="Enter site title" className="dark:bg-[#2b2c40] rounded-xl" />
           </Form.Item>
 
           <Form.Item label="Site Description" name="site_description">
             <TextArea
               rows={4}
               placeholder="Enter site description"
-              className="dark:bg-[#2b2c40]"
+              className="dark:bg-[#2b2c40] rounded-xl"
             />
           </Form.Item>
 
@@ -191,12 +192,12 @@ export default function SettingsPage() {
             >
               <Button
                 icon={<UploadOutlined />}
-                className="dark:bg-[#2b2c40] dark:border-[#323249]"
+                className="dark:bg-[#2b2c40] dark:border-[#444564] rounded-xl"
               >
                 Upload Logo
               </Button>
             </Upload>
-            <div className="text-xs text-[#a1acb8] mt-1">
+            <div className="text-xs text-duralux-text-muted mt-1">
               Recommended size: 200x60px, Max 2MB
             </div>
           </Form.Item>
@@ -209,7 +210,7 @@ export default function SettingsPage() {
             <Select
               placeholder="Select timezone"
               options={timezones.map((tz) => ({ label: tz, value: tz }))}
-              className="dark:bg-[#2b2c40]"
+              className="dark:bg-[#2b2c40] rounded-xl"
             />
           </Form.Item>
 
@@ -219,7 +220,7 @@ export default function SettingsPage() {
               icon={<SaveOutlined />}
               onClick={() => handleSaveSection("general")}
               loading={saving}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Save Changes
             </Button>
@@ -240,7 +241,7 @@ export default function SettingsPage() {
             <InputNumber
               min={1}
               max={100}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="posts"
             />
           </Form.Item>
@@ -255,7 +256,7 @@ export default function SettingsPage() {
             <InputNumber
               min={5}
               max={300}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="seconds"
             />
           </Form.Item>
@@ -267,7 +268,7 @@ export default function SettingsPage() {
           >
             <Input
               placeholder="/content/posts"
-              className="dark:bg-[#2b2c40]"
+              className="dark:bg-[#2b2c40] rounded-xl"
             />
           </Form.Item>
 
@@ -277,7 +278,7 @@ export default function SettingsPage() {
               icon={<SaveOutlined />}
               onClick={() => handleSaveSection("content")}
               loading={saving}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Save Changes
             </Button>
@@ -298,7 +299,7 @@ export default function SettingsPage() {
             <Select
               placeholder="Select default AI model"
               options={aiModels}
-              className="dark:bg-[#2b2c40]"
+              className="dark:bg-[#2b2c40] rounded-xl"
             />
           </Form.Item>
 
@@ -310,7 +311,7 @@ export default function SettingsPage() {
             <InputNumber
               min={10}
               max={300}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="seconds"
             />
           </Form.Item>
@@ -325,7 +326,7 @@ export default function SettingsPage() {
             <InputNumber
               min={5}
               max={120}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="seconds"
             />
           </Form.Item>
@@ -336,7 +337,7 @@ export default function SettingsPage() {
               icon={<SaveOutlined />}
               onClick={() => handleSaveSection("agents")}
               loading={saving}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Save Changes
             </Button>
@@ -357,7 +358,7 @@ export default function SettingsPage() {
             <InputNumber
               min={5}
               max={10080}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="minutes"
             />
           </Form.Item>
@@ -372,7 +373,7 @@ export default function SettingsPage() {
             <InputNumber
               min={1}
               max={10}
-              className="w-full dark:bg-[#2b2c40]"
+              className="w-full dark:bg-[#2b2c40] rounded-xl"
               addonAfter="attempts"
             />
           </Form.Item>
@@ -381,9 +382,9 @@ export default function SettingsPage() {
             <TextArea
               rows={6}
               placeholder="Enter IP addresses (one per line)&#10;192.168.1.1&#10;10.0.0.1"
-              className="dark:bg-[#2b2c40]"
+              className="dark:bg-[#2b2c40] rounded-xl"
             />
-            <div className="text-xs text-[#a1acb8] mt-1">
+            <div className="text-xs text-duralux-text-muted mt-1">
               Leave empty to allow all IPs. One IP address per line.
             </div>
           </Form.Item>
@@ -394,7 +395,7 @@ export default function SettingsPage() {
               icon={<SaveOutlined />}
               onClick={() => handleSaveSection("security")}
               loading={saving}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Save Changes
             </Button>
@@ -408,7 +409,7 @@ export default function SettingsPage() {
       children: (
         <div className="space-y-6">
           <div>
-            <h4 className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2] mb-4">
+            <h4 className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-4">
               Database Operations
             </h4>
             <div className="flex flex-wrap gap-4">
@@ -416,7 +417,7 @@ export default function SettingsPage() {
                 type="default"
                 icon={<DatabaseOutlined />}
                 onClick={handleDatabaseBackup}
-                className="h-9 font-medium"
+                className="h-9 font-medium rounded-xl border-duralux-border-light dark:border-duralux-border-dark"
               >
                 Backup Database
               </Button>
@@ -430,7 +431,7 @@ export default function SettingsPage() {
                 <Button
                   danger
                   icon={<ClearOutlined />}
-                  className="h-9 font-medium"
+                  className="h-9 font-medium rounded-xl"
                 >
                   Clear Cache
                 </Button>
@@ -438,10 +439,10 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <Divider className="dark:border-[#323249]" />
+          <Divider className="dark:border-[#444564]" />
 
           <div>
-            <h4 className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2] mb-4">
+            <h4 className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-4">
               Log Management
             </h4>
             <Popconfirm
@@ -451,19 +452,19 @@ export default function SettingsPage() {
               okText="Clear"
               okButtonProps={{ danger: true }}
             >
-              <Button danger icon={<DeleteOutlined />} className="h-9 font-medium">
+              <Button danger icon={<DeleteOutlined />} className="h-9 font-medium rounded-xl">
                 Clear All Logs
               </Button>
             </Popconfirm>
           </div>
 
-          <Divider className="dark:border-[#323249]" />
+          <Divider className="dark:border-[#444564]" />
 
           <div>
-            <h4 className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2] mb-4">
+            <h4 className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-4">
               Reset Settings
             </h4>
-            <p className="text-sm text-[#697a8d] mb-4">
+            <p className="text-sm text-duralux-text-secondary mb-4">
               This will reset all settings to their default values. This action
               cannot be undone.
             </p>
@@ -477,7 +478,7 @@ export default function SettingsPage() {
               <Button
                 danger
                 icon={<UndoOutlined />}
-                className="h-9 font-medium"
+                className="h-9 font-medium rounded-xl"
               >
                 Reset All Settings
               </Button>
@@ -489,21 +490,25 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6 p-6"
+    >
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+          <h2 className="text-[1.5rem] font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0">
             Settings
           </h2>
-          <p className="text-[#697a8d] text-sm mt-1 mb-0">
+          <p className="text-duralux-text-muted text-sm mt-1 mb-0">
             Manage your application settings and preferences
           </p>
         </div>
       </div>
 
       <Card
-        className="sneat-card-shadow border-none"
+        className="shadow-duralux-card dark:shadow-duralux-card-dark border-none"
         bordered={false}
         styles={{ body: { padding: "1.5rem" } }}
       >
@@ -529,10 +534,10 @@ export default function SettingsPage() {
             activeKey={activeTab}
             onChange={setActiveTab}
             items={tabItems}
-            className="dark:[&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-[#696cff]"
+            className="dark:[&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-duralux-primary"
           />
         </Form>
       </Card>
-    </div>
+    </motion.div>
   );
 }

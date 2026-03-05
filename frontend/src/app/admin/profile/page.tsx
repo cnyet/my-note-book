@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { adminAuthApi } from "@/lib/admin-api";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
+import { motion } from "framer-motion";
 
 interface UserProfile {
   id: number;
@@ -58,7 +59,7 @@ export default function ProfilePage() {
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
     score: 0,
     label: "Weak",
-    color: "#ff4d4f",
+    color: "var(--duralux-danger)",
     percent: 0,
   });
 
@@ -75,7 +76,7 @@ export default function ProfilePage() {
       }
       return null;
     },
-    retry: false, // Don't retry on 401
+    retry: false,
   });
 
   // Load tokens using React Query
@@ -88,12 +89,12 @@ export default function ProfilePage() {
       }
       return [];
     },
-    retry: false, // Don't retry on 401
+    retry: false,
   });
 
   // Redirect to login if 401
   useEffect(() => {
-    if (profileError?.status === 401 || tokensError?.status === 401) {
+    if ((profileError as any)?.status === 401 || (tokensError as any)?.status === 401) {
       router.push("/login");
     }
   }, [profileError, tokensError, router]);
@@ -113,7 +114,7 @@ export default function ProfilePage() {
 
   const calculatePasswordStrength = (password: string): PasswordStrength => {
     if (!password) {
-      return { score: 0, label: "Weak", color: "#ff4d4f", percent: 0 };
+      return { score: 0, label: "Weak", color: "var(--duralux-danger)", percent: 0 };
     }
 
     let score = 0;
@@ -124,17 +125,17 @@ export default function ProfilePage() {
     if (/[^a-zA-Z0-9]/.test(password)) score += 12.5;
 
     let label = "Weak";
-    let color = "#ff4d4f";
+    let color = "var(--duralux-danger)";
 
     if (score >= 87.5) {
       label = "Strong";
-      color = "#52c41a";
+      color = "var(--duralux-success)";
     } else if (score >= 62.5) {
       label = "Good";
-      color = "#1890ff";
+      color = "var(--duralux-info)";
     } else if (score >= 37.5) {
       label = "Fair";
-      color = "#faad14";
+      color = "var(--duralux-warning)";
     }
 
     return { score, label, color, percent: score };
@@ -182,7 +183,7 @@ export default function ProfilePage() {
         setPasswordStrength({
           score: 0,
           label: "Weak",
-          color: "#ff4d4f",
+          color: "var(--duralux-danger)",
           percent: 0,
         });
       } else {
@@ -247,8 +248,8 @@ export default function ProfilePage() {
       dataIndex: "id",
       key: "id",
       render: (id: string) => (
-        <code className="bg-[#f5f5f9] dark:bg-[#323249] px-2 py-1 rounded text-sm">
-          ••••{id.slice(-4)}
+        <code className="bg-duralux-bg-page dark:bg-[#323249] px-2 py-1 rounded text-sm text-duralux-text-secondary">
+          {String.fromCharCode(8226).repeat(4)}{id.slice(-4)}
         </code>
       ),
     },
@@ -256,6 +257,11 @@ export default function ProfilePage() {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      render: (name: string) => (
+        <span className="text-duralux-text-primary dark:text-duralux-text-dark-primary font-medium">
+          {name}
+        </span>
+      ),
     },
     {
       title: "Created",
@@ -289,10 +295,10 @@ export default function ProfilePage() {
       key: "is_active",
       render: (active: boolean) => (
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
+          className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
             active
-              ? "bg-[#71dd37]/10 text-[#71dd37]"
-              : "bg-[#ff3e1d]/10 text-[#ff3e1d]"
+              ? "bg-[var(--duralux-success-transparent)] text-[var(--duralux-success)]"
+              : "bg-[var(--duralux-bg-hover)] text-[var(--duralux-text-muted)]"
           }`}
         >
           {active ? "Active" : "Revoked"}
@@ -316,6 +322,7 @@ export default function ProfilePage() {
             icon={<DeleteOutlined />}
             size="small"
             disabled={!record.is_active}
+            className="text-duralux-text-secondary hover:text-duralux-danger transition-colors"
           >
             Revoke
           </Button>
@@ -325,14 +332,18 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6 p-6"
+    >
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-semibold text-[#566a7f] dark:text-[#a3b1c2] m-0">
+          <h2 className="text-[1.5rem] font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0">
             My Profile
           </h2>
-          <p className="text-[#697a8d] text-sm mt-1 mb-0">
+          <p className="text-duralux-text-muted text-sm mt-1 mb-0">
             Manage your profile settings and preferences
           </p>
         </div>
@@ -341,11 +352,11 @@ export default function ProfilePage() {
       {/* Basic Info Card */}
       <Card
         title={
-          <span className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+          <span className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
             Basic Information
           </span>
         }
-        className="sneat-card-shadow border-none"
+        className="shadow-duralux-card dark:shadow-duralux-card-dark border-none"
         bordered={false}
         styles={{ body: { padding: "1.5rem" } }}
       >
@@ -358,9 +369,9 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Form.Item label="Username" name="username">
               <Input
-                prefix={<UserOutlined className="text-[#a1acb8]" />}
+                prefix={<UserOutlined className="text-duralux-text-muted" />}
                 disabled
-                className="bg-[#f5f5f9] dark:bg-[#323249] text-[#697a8d]"
+                className="bg-duralux-bg-page dark:bg-[#323249] text-duralux-text-secondary"
               />
             </Form.Item>
 
@@ -386,7 +397,7 @@ export default function ProfilePage() {
               ]}
             >
               <Input
-                prefix={<MailOutlined className="text-[#a1acb8]" />}
+                prefix={<MailOutlined className="text-duralux-text-muted" />}
                 placeholder="Enter email"
                 className="dark:bg-[#2b2c40]"
               />
@@ -398,7 +409,7 @@ export default function ProfilePage() {
               type="primary"
               htmlType="submit"
               loading={loading}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Save Changes
             </Button>
@@ -409,11 +420,11 @@ export default function ProfilePage() {
       {/* Password Change Card */}
       <Card
         title={
-          <span className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+          <span className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
             Change Password
           </span>
         }
-        className="sneat-card-shadow border-none"
+        className="shadow-duralux-card dark:shadow-duralux-card-dark border-none"
         bordered={false}
         styles={{ body: { padding: "1.5rem" } }}
       >
@@ -430,7 +441,7 @@ export default function ProfilePage() {
               rules={[{ required: true, message: "Please enter current password" }]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-[#a1acb8]" />}
+                prefix={<LockOutlined className="text-duralux-text-muted" />}
                 placeholder="Enter current password"
                 className="dark:bg-[#2b2c40]"
               />
@@ -445,7 +456,7 @@ export default function ProfilePage() {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-[#a1acb8]" />}
+                prefix={<LockOutlined className="text-duralux-text-muted" />}
                 placeholder="Enter new password"
                 className="dark:bg-[#2b2c40]"
                 onChange={(e) =>
@@ -471,7 +482,7 @@ export default function ProfilePage() {
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-[#a1acb8]" />}
+                prefix={<LockOutlined className="text-duralux-text-muted" />}
                 placeholder="Confirm new password"
                 className="dark:bg-[#2b2c40]"
               />
@@ -481,7 +492,7 @@ export default function ProfilePage() {
           {/* Password Strength Indicator */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-[#697a8d]">Password Strength:</span>
+              <span className="text-sm text-duralux-text-secondary">Password Strength:</span>
               <span
                 className="text-sm font-medium"
                 style={{ color: passwordStrength.color }}
@@ -503,7 +514,7 @@ export default function ProfilePage() {
               type="primary"
               htmlType="submit"
               loading={passwordLoading}
-              className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 px-6 font-medium"
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 px-6 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
             >
               Update Password
             </Button>
@@ -514,12 +525,12 @@ export default function ProfilePage() {
       {/* API Tokens Card */}
       <Card
         title={
-          <span className="text-base font-semibold text-[#566a7f] dark:text-[#a3b1c2]">
+          <span className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
             <KeyOutlined className="mr-2" />
             API Tokens
           </span>
         }
-        className="sneat-card-shadow border-none"
+        className="shadow-duralux-card dark:shadow-duralux-card-dark border-none"
         bordered={false}
         styles={{ body: { padding: "1.5rem" } }}
       >
@@ -529,14 +540,14 @@ export default function ProfilePage() {
             value={newTokenName}
             onChange={(e) => setNewTokenName(e.target.value)}
             onPressEnter={handleCreateToken}
-            className="max-w-xs dark:bg-[#2b2c40]"
+            className="max-w-xs dark:bg-[#2b2c40] rounded-xl"
           />
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleCreateToken}
             loading={creatingToken}
-            className="bg-[#696cff] hover:bg-[#5f61e6] border-none h-9 font-medium"
+            className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-9 font-medium rounded-xl shadow-lg shadow-duralux-primary/30"
           >
             Generate New Token
           </Button>
@@ -546,11 +557,11 @@ export default function ProfilePage() {
           columns={tokenColumns}
           dataSource={tokens}
           rowKey="id"
-          loading={queryClient.isFetching({ queryKey: ["admin-profile-tokens"] })}
+          loading={queryClient.isFetching({ queryKey: ["admin-profile-tokens"] }) > 0}
           pagination={false}
-          className="dark:[&_th]:bg-[#2b2c40] dark:[_tr:hover_.ant-table-cell]:bg-[#323249]"
+          className="dark:[&_th]:bg-[#2b2c40] dark:[_tr:hover_.ant-table-cell]:bg-[#323249] duralux-table"
         />
       </Card>
-    </div>
+    </motion.div>
   );
 }

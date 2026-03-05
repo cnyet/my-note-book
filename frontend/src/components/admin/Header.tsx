@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAdminAuth } from "@/lib/hooks/useAdminAuth";
+import { cn } from "@/lib/utils";
 import {
   AlertCircle,
   Bell,
@@ -19,8 +20,10 @@ import {
   Keyboard,
   Menu,
   Moon,
+  Search,
   Sun,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -31,7 +34,7 @@ interface AdminHeaderProps {
   onMenuClick: () => void;
 }
 
-/** 模拟通知数据 */
+/** 通知数据 */
 const NOTIFICATIONS = [
   {
     id: 1,
@@ -64,10 +67,10 @@ const NOTIFICATIONS = [
 ];
 
 const TYPE_CONFIG = {
-  info: { icon: AlertCircle, color: "#03c3ec", bg: "bg-[#03c3ec]/10" },
-  success: { icon: CheckCircle, color: "#71dd37", bg: "bg-[#71dd37]/10" },
-  error: { icon: AlertCircle, color: "#ff3e1d", bg: "bg-[#ff3e1d]/10" },
-  warning: { icon: Clock, color: "#ffab00", bg: "bg-[#ffab00]/10" },
+  info: { icon: AlertCircle, color: "#03c3ec", bg: "bg-duralux-info-transparent text-duralux-info" },
+  success: { icon: CheckCircle, color: "#71dd37", bg: "bg-duralux-success-transparent text-duralux-success" },
+  error: { icon: AlertCircle, color: "#ff3e1d", bg: "bg-duralux-danger-transparent text-duralux-danger" },
+  warning: { icon: Clock, color: "#ffab00", bg: "bg-duralux-warning-transparent text-duralux-warning" },
 };
 
 export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
@@ -78,6 +81,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     { startDate: Date; endDate: Date } | undefined
   >();
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const breadcrumbItems = generateBreadcrumbItems(pathname);
@@ -86,51 +90,59 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
     setNotifications(notifications.map((n) => ({ ...n, read: true })));
   };
 
-  // Keyboard shortcut for search (Ctrl+K)
-  if (typeof window !== "undefined") {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        // Focus search input - would need a ref to implement
-      }
-    });
-  }
-
   return (
-    <header className="z-10 w-full bg-white border-b border-[#e0e0e0]">
-      {/* Header 内容行 - 单行布局 */}
+    <header className="sticky top-0 z-20 w-full bg-white/80 dark:bg-[#2b2c40]/80 backdrop-blur-xl border-b border-duralux-border-light dark:border-duralux-border-dark">
+      {/* Header 内容行 */}
       <div className="flex items-center justify-between h-[72px] px-6">
-        {/* 左侧：菜单按钮 + 搜索框 */}
+        {/* 左侧：菜单按钮 + Breadcrumb + 搜索框 */}
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden text-[#525f7f]"
+          {/* 菜单按钮 - 移动端 */}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={onMenuClick}
+            className="lg:hidden p-2 rounded-lg hover:bg-duralux-bg-page text-duralux-text-secondary"
             aria-label="Toggle menu"
           >
             <Menu className="w-5 h-5" />
-          </Button>
+          </motion.button>
 
-          {/* Breadcrumb - Moved from StatusBar */}
-          <div className="hidden sm:flex items-center">
-            <Breadcrumb items={breadcrumbItems} className="text-[#8898aa]" />
-          </div>
+          {/* Breadcrumb */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="hidden sm:flex items-center"
+          >
+            <Breadcrumb items={breadcrumbItems} className="text-duralux-text-muted" />
+          </motion.div>
 
-          {/* 搜索框 */}
-          <div className="hidden md:flex items-center relative">
-            <div className="flex items-center w-64 lg:w-80 px-4 py-2.5 bg-[#f8f9fa] rounded-md transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-[#5e72e4]/20">
-              <Keyboard className="w-4 h-4 mr-3 text-[#8898aa]" />
+          {/* 搜索框 - Duralux Style */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="hidden md:flex items-center relative"
+          >
+            <div
+              className={cn(
+                "flex items-center w-64 lg:w-80 px-4 py-2.5 rounded-xl transition-all duration-200",
+                searchFocused
+                  ? "bg-white dark:bg-duralux-bg-dark-card shadow-[0_0_0_2px_rgba(105,108,255,0.2)]"
+                  : "bg-duralux-bg-page hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card"
+              )}
+            >
+              <Search className="w-4 h-4 mr-3 text-duralux-text-muted" />
               <input
                 type="text"
                 placeholder="Search (Ctrl+K)"
-                className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-[#525f7f] placeholder:text-[#8898aa]"
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                className="flex-1 bg-transparent border-none focus:outline-none focus:ring-0 text-sm text-duralux-text-primary placeholder:text-duralux-text-muted"
               />
-              <kbd className="hidden lg:inline-flex px-2 py-0.5 text-xs bg-white rounded text-[#8898aa]">
+              <kbd className="hidden lg:inline-flex px-2 py-0.5 text-xs bg-white dark:bg-duralux-bg-dark-card rounded text-duralux-text-muted border border-duralux-border-light dark:border-duralux-border-dark">
                 ⌘K
               </kbd>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* 右侧：功能按钮 */}
@@ -143,42 +155,46 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
           />
 
           {/* 主题切换 */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa] transition-colors"
+            className="p-2 rounded-lg text-duralux-text-secondary hover:bg-duralux-bg-page hover:text-duralux-primary transition-colors"
             aria-label="Toggle theme"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </Button>
+          </motion.button>
 
-          {/* 通知 */}
+          {/* 通知 - Duralux Style */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa] relative transition-colors"
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative p-2 rounded-lg text-duralux-text-secondary hover:bg-duralux-bg-page hover:text-duralux-primary transition-colors"
                 aria-label="Notifications"
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-[#f5365c] rounded-full border border-white" />
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute top-1.5 right-1.5 w-2 h-2 bg-duralux-danger rounded-full border-2 border-white dark:border-duralux-bg-dark"
+                  />
                 )}
-              </Button>
+              </motion.button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal p-4">
+              <DropdownMenuLabel className="font-normal p-4 border-b border-duralux-border-light dark:border-duralux-border-dark">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#525f7f]">
+                  <span className="text-sm font-semibold text-duralux-text-primary">
                     Notifications
                   </span>
                   {unreadCount > 0 && (
                     <button
                       onClick={handleMarkAllRead}
-                      className="text-xs text-[#5e72e4] hover:underline"
+                      className="text-xs text-duralux-primary hover:underline"
                     >
                       Mark all as read
                     </button>
@@ -186,7 +202,7 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <div className="max-h-[400px] overflow-y-auto">
+              <div className="max-h-[400px] overflow-y-auto duralux-scrollbar">
                 {notifications.map((notification) => {
                   const config =
                     TYPE_CONFIG[notification.type as keyof typeof TYPE_CONFIG];
@@ -195,33 +211,30 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     <DropdownMenuItem
                       key={notification.id}
                       className={cn(
-                        "py-3 px-4 cursor-pointer flex gap-3",
-                        !notification.read && "bg-[#f8f9fa]",
+                        "py-3 px-4 cursor-pointer flex gap-3 transition-colors",
+                        !notification.read && "bg-duralux-bg-page"
                       )}
                     >
                       <div
                         className={cn(
                           "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
-                          config.bg,
+                          config.bg
                         )}
                       >
-                        <Icon
-                          className="w-4 h-4"
-                          style={{ color: config.color }}
-                        />
+                        <Icon className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
                           className={cn(
                             "text-sm truncate",
                             !notification.read
-                              ? "font-semibold text-[#525f7f]"
-                              : "text-[#8898aa]",
+                              ? "font-semibold text-duralux-text-primary"
+                              : "text-duralux-text-muted"
                           )}
                         >
                           {notification.title}
                         </p>
-                        <p className="text-xs text-[#8898aa]">
+                        <p className="text-xs text-duralux-text-muted mt-0.5">
                           {notification.time}
                         </p>
                       </div>
@@ -230,35 +243,36 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                 })}
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="py-2 px-4 text-center cursor-pointer text-[#5e72e4] hover:text-[#5665e3]">
+              <DropdownMenuItem className="py-2 px-4 text-center cursor-pointer text-duralux-primary hover:bg-duralux-bg-page">
                 View all notifications
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* 用户头像 */}
+          {/* 用户头像 - Duralux Style */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-10 w-10 rounded-full p-0 hover:bg-[#f8f9fa] transition-colors"
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative rounded-full p-0 hover:ring-2 hover:ring-duralux-primary/20 transition-all"
               >
                 <div className="relative">
-                  <Avatar className="h-10 w-10 border border-[#e0e0e0]">
+                  <Avatar className="h-10 w-10 border-2 border-duralux-border-light dark:border-duralux-border-dark">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || "admin"}`}
                       alt={user?.username}
                     />
-                    <AvatarFallback className="bg-[#f0f2f7] text-[#525f7f]">
+                    <AvatarFallback className="bg-duralux-bg-page text-duralux-text-primary">
                       {user?.username?.[0]?.toUpperCase() || "A"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#71dd37] border-2 border-white rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-duralux-success border-2 border-white dark:border-duralux-bg-dark rounded-full" />
                 </div>
-              </Button>
+              </motion.button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal p-4">
+              <DropdownMenuLabel className="font-normal p-4 border-b border-duralux-border-light dark:border-duralux-border-dark">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
@@ -267,28 +281,25 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
                     <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-semibold leading-none text-[#525f7f]">
+                    <p className="text-sm font-semibold leading-none text-duralux-text-primary">
                       {user?.username || "John Doe"}
                     </p>
-                    <p className="text-xs leading-none text-[#8898aa]">
+                    <p className="text-xs leading-none text-duralux-text-muted">
                       Administrator
                     </p>
                   </div>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
+              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-duralux-text-secondary hover:text-duralux-primary hover:bg-duralux-bg-page">
                 My Profile
               </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
+              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-duralux-text-secondary hover:text-duralux-primary hover:bg-duralux-bg-page">
                 Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem className="py-2 px-4 cursor-pointer text-[#525f7f] hover:text-[#5e72e4] hover:bg-[#f8f9fa]">
-                Billing
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="py-2 px-4 text-[#f5365c] hover:text-[#f5365c] hover:bg-[#f5365c]/10 cursor-pointer"
+                className="py-2 px-4 text-duralux-danger hover:text-duralux-danger hover:bg-duralux-danger-transparent cursor-pointer"
                 onClick={logout}
               >
                 Log out
@@ -299,8 +310,4 @@ export default function AdminHeader({ onMenuClick }: AdminHeaderProps) {
       </div>
     </header>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

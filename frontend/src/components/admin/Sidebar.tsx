@@ -2,6 +2,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import {
   Bot,
   ChevronLeft,
@@ -9,7 +10,6 @@ import {
   FlaskConical,
   LayoutDashboard,
   LogOut,
-  MoreHorizontal,
   PenTool,
   Settings,
   UserCircle,
@@ -60,29 +60,48 @@ export function Sidebar({
   // 折叠态下 hover 时临时展开
   const isExpanded = !isCollapsed || isHovered;
 
+  // Animation variants
+  const sidebarVariants = {
+    collapsed: { width: 72 },
+    expanded: { width: 280 },
+  };
+
+  const textVariants = {
+    collapsed: { opacity: 0, x: -10, width: 0 },
+    expanded: { opacity: 1, x: 0, width: "auto" },
+  };
+
   return (
     <>
       {/* 移动端遮罩层 */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-30 bg-black/50 lg:hidden backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar */}
-      <aside
+      {/* Sidebar - Duralux Style */}
+      <motion.aside
+        variants={sidebarVariants}
+        initial={false}
+        animate={isExpanded ? "expanded" : "collapsed"}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          duration: 0.2,
+        }}
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen transition-[width,transform] duration-300 cubic-bezier-[0.4,0,0.2,1] lg:translate-x-0 overflow-hidden will-change-[width]",
-          "bg-white dark:bg-[#ffffff]",
-          "border-r border-[#e0e0e0] dark:border-[#2a2a2a]",
-          isExpanded ? "w-[280px]" : "w-[72px]",
-          /* hover 浮动展开时更大阴影 */
-          isCollapsed && isHovered
-            ? "shadow-[0_0_20px_rgba(0,0,0,0.12)]"
-            : "shadow-none",
+          "fixed top-0 left-0 z-40 h-screen lg:translate-x-0 overflow-hidden",
+          "bg-white dark:bg-[#2b2c40]",
+          "border-r border-duralux-border-light dark:border-duralux-border-dark",
+          "shadow-[4px_0_24px_rgba(0,0,0,0.04)]",
           /* 移动端 */
-          isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full",
+          isOpen ? "translate-x-0" : "-translate-x-full",
         )}
         onMouseEnter={() => isCollapsed && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -110,184 +129,190 @@ export function Sidebar({
             </span>
           </Link>
 
-          {/* 折叠切换按钮 - 放在右侧 */}
-          <button
+          {/* 折叠切换按钮 */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
             onClick={onToggleCollapse}
             className={cn(
-              "hidden lg:flex items-center justify-center w-8 h-8 rounded-md transition-all flex-shrink-0 cursor-pointer hover:bg-[#f8f9fa]",
+              "hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-all flex-shrink-0 cursor-pointer",
+              "border border-duralux-border-light dark:border-duralux-border-dark",
+              "bg-duralux-bg-page hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card dark:hover:bg-duralux-bg-dark-hover",
               !isExpanded && "opacity-0 pointer-events-none",
             )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5 text-[#525f7f]" />
+              <ChevronRight className="w-4 h-4 text-duralux-primary" />
             ) : (
-              <ChevronLeft className="w-5 h-5 text-[#525f7f]" />
+              <ChevronLeft className="w-4 h-4 text-duralux-primary" />
             )}
-          </button>
+          </motion.button>
         </div>
 
         {/* ═══ 滚动区域：菜单列表 ═══ */}
-        <ScrollArea className="h-[calc(100vh-4.5rem)]">
-          <ul className="py-1 px-2 list-none m-0">
-            {menuGroups.map((group) => (
+        <ScrollArea className="h-[calc(100vh-5rem)] duralux-scrollbar">
+          <ul className="py-3 px-3 list-none m-0">
+            {menuGroups.map((group, groupIndex) => (
               <li key={group.label}>
                 {/* Section Header */}
-                <div
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: groupIndex * 0.1 }}
                   className={cn(
-                    "flex items-center py-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
-                    isExpanded ? "px-3" : "justify-center px-0",
+                    "flex items-center py-2 px-2 mb-1 transition-all duration-300 whitespace-nowrap overflow-hidden",
+                    isExpanded ? "px-2" : "justify-center px-0",
                   )}
                 >
                   {isExpanded ? (
-                    <span className="text-[10px] font-semibold uppercase text-[#8898aa] tracking-wider select-none">
+                    <span className="text-[10px] font-semibold uppercase text-duralux-text-muted tracking-wider select-none">
                       {group.label}
                     </span>
                   ) : (
-                    <MoreHorizontal
-                      className="w-4 h-4 text-[#a1acb8]"
-                      strokeWidth={2}
-                    />
+                    <div className="w-1 h-1 rounded-full bg-duralux-primary/40" />
                   )}
-                </div>
+                </motion.div>
 
                 {/* 菜单项列表 */}
                 <ul className="list-none m-0 p-0">
-                  {group.items.map((item) => {
+                  {group.items.map((item, itemIndex) => {
                     const isActive =
                       item.href === "/admin"
                         ? pathname === "/admin"
                         : pathname.startsWith(item.href);
 
                     return (
-                      <li key={item.href} className="relative mb-1 group">
-                        {/* 展开态 Active: 圆角矩形背景包裹整个菜单项 */}
-                        {isActive && isExpanded && (
-                          <div className="absolute inset-x-0 inset-y-0 bg-[#f0f2f7] rounded-lg" />
-                        )}
-
+                      <li
+                        key={item.href}
+                        className="relative mb-0.5"
+                        style={{
+                          animationDelay: `${itemIndex * 50}ms`,
+                        }}
+                      >
                         <Link
                           href={item.href}
                           className={cn(
-                            "flex items-center rounded-lg text-[15px] transition-[padding,background-color,color,gap] duration-300 cubic-bezier-[0.4,0,0.2,1] relative no-underline cursor-pointer group",
+                            "flex items-center rounded-xl text-[14px] transition-all duration-200 relative no-underline cursor-pointer group",
                             isExpanded
-                              ? "px-4 py-2.5 gap-3"
+                              ? "px-2.5 py-2 gap-2"
                               : "w-12 h-12 mx-auto my-0.5 flex items-center justify-center p-0",
-                            /* Active 状态已在上面用绝对定位背景处理 */
-                            !isActive
-                              ? "text-[#525f7f] dark:text-[#525f7f] hover:bg-[#f8f9fa] dark:hover:bg-[#f8f9fa]"
-                              : isExpanded
-                                ? "text-[#32325d] dark:text-[#32325d] font-medium"
-                                : "text-[#32325d] bg-[#f0f2f7]",
+                            /* Active/Inactive States */
+                            isActive
+                              ? "bg-duralux-primary text-white shadow-[0_4px_8px_rgba(105,108,255,0.25)]"
+                              : "text-duralux-text-secondary hover:text-duralux-text-primary hover:bg-duralux-bg-page",
                           )}
                           onClick={() => window.innerWidth < 1024 && onClose()}
                         >
-                          <item.icon
+                          {/* Icon Container */}
+                          <div
                             className={cn(
-                              "w-5 h-5 flex-shrink-0 transition-colors",
-                              isActive && isExpanded && "text-[#32325d]",
-                              isActive && !isExpanded && "text-[#32325d]",
-                              !isActive && "text-[#525f7f] dark:text-[#525f7f]",
+                              "relative w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200",
+                              isActive
+                                ? "bg-white/20"
+                                : "bg-duralux-bg-page group-hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card dark:group-hover:bg-duralux-bg-dark-hover",
                             )}
-                            strokeWidth={1.5}
-                          />
-                          <span
+                          >
+                            <item.icon
+                              className={cn(
+                                "w-5 h-5 transition-colors duration-200",
+                                isActive
+                                  ? "text-white"
+                                  : "text-duralux-text-muted group-hover:text-duralux-text-primary",
+                              )}
+                              strokeWidth={1.8}
+                            />
+                          </div>
+
+                          {/* Label */}
+                          <motion.span
+                            variants={textVariants}
                             className={cn(
-                              "whitespace-nowrap transition-all duration-300 cubic-bezier-[0.4,0,0.2,1] leading-none",
-                              isExpanded
-                                ? "opacity-100 translate-x-0 flex-1"
-                                : "opacity-0 -translate-x-4 pointer-events-none absolute",
+                              "whitespace-nowrap leading-none flex-1 font-medium",
                             )}
                           >
                             {item.label}
-                          </span>
+                          </motion.span>
 
-                          {/* 展开态 hover 时显示右侧箭头 */}
-                          {isExpanded && !isActive && (
-                            <ChevronRight className="w-4 h-4 text-[#525f7f] opacity-0 group-hover:opacity-100 transition-opacity" />
-                          )}
-                          {isExpanded && isActive && (
-                            <ChevronRight className="w-4 h-4 text-[#32325d] opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {/* Active Indicator - Right Arrow */}
+                          {isExpanded && (
+                            <ChevronRight
+                              className={cn(
+                                "w-4 h-4 transition-all duration-200",
+                                isActive
+                                  ? "opacity-100 text-white/80"
+                                  : "opacity-0 group-hover:opacity-100 text-duralux-text-muted",
+                              )}
+                            />
                           )}
                         </Link>
                       </li>
                     );
                   })}
                 </ul>
+
+                {/* Divider between groups */}
+                {group.label !== "Settings" && isExpanded && (
+                  <div className="my-2 mx-2 h-px bg-gradient-to-r from-transparent via-duralux-border-light to-transparent dark:via-duralux-border-dark" />
+                )}
               </li>
             ))}
 
             {/* 底部：返回网站 */}
-            <li className="mt-4">
-              <div
-                className={cn(
-                  "flex items-center py-3 transition-all duration-300 whitespace-nowrap overflow-hidden",
-                  isExpanded ? "px-3" : "justify-center px-0",
-                )}
-              >
-                {isExpanded ? (
-                  <span className="text-[10px] font-semibold uppercase text-[#8898aa] tracking-wider select-none">
-                    Misc
-                  </span>
-                ) : (
-                  <MoreHorizontal
-                    className="w-4 h-4 text-[#a1acb8]"
-                    strokeWidth={2}
-                  />
-                )}
-              </div>
+            <li className="mt-4 pt-4 border-t border-duralux-border-light dark:border-duralux-border-dark">
               <Link
                 href="/"
                 className={cn(
-                  "flex items-center rounded-lg text-[15px] text-[#525f7f] hover:bg-[#f8f9fa] transition-colors no-underline cursor-pointer",
+                  "flex items-center rounded-xl text-[14px] transition-all duration-200 no-underline cursor-pointer group",
                   isExpanded
-                    ? "px-4 py-2.5 gap-3"
+                    ? "px-2.5 py-2 gap-2"
                     : "w-12 h-12 mx-auto flex items-center justify-center p-0",
+                  "text-duralux-text-secondary hover:text-duralux-text-primary hover:bg-duralux-bg-page",
+                  "dark:text-duralux-text-dark-secondary dark:hover:text-duralux-text-dark-primary dark:hover:bg-duralux-bg-dark-hover",
                 )}
               >
-                <LogOut
-                  className="w-5 h-5 text-[#525f7f] flex-shrink-0"
-                  strokeWidth={1.5}
-                />
-                <span
-                  className={cn(
-                    "whitespace-nowrap transition-all duration-300 cubic-bezier-[0.4,0,0.2,1] leading-none",
-                    isExpanded
-                      ? "opacity-100 translate-x-0"
-                      : "opacity-0 -translate-x-4 pointer-events-none absolute",
-                  )}
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-duralux-bg-page group-hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card dark:group-hover:bg-duralux-bg-dark-hover transition-colors">
+                  <LogOut className="w-5 h-5" strokeWidth={1.8} />
+                </div>
+                <motion.span
+                  variants={textVariants}
+                  className="whitespace-nowrap leading-none font-medium"
                 >
                   Back to Site
-                </span>
+                </motion.span>
               </Link>
             </li>
 
-            {/* 底部用户信息卡片 (仅展开态显示) */}
+            {/* 底部用户信息卡片 - Duralux Style (仅展开态显示) */}
             {isExpanded && (
-              <li className="mt-6">
-                <div className="bg-[#f8f9fa] rounded-lg p-4">
+              <li className="mt-4 pt-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative overflow-hidden rounded-xl bg-gradient-to-br from-duralux-bg-page to-duralux-bg-page/50 p-4 border border-duralux-border-light dark:from-duralux-bg-dark-card dark:to-duralux-bg-dark-card/50 dark:border-duralux-border-dark"
+                >
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <div className="w-10 h-10 rounded-full bg-[#f0f2f7] flex items-center justify-center">
-                        <UserCircle className="w-6 h-6 text-[#525f7f]" />
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-duralux-primary/20 to-duralux-success/20 flex items-center justify-center border-2 border-white dark:border-duralux-border-dark shadow-sm">
+                        <UserCircle className="w-6 h-6 text-duralux-primary" />
                       </div>
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-[#71dd37] border-2 border-white rounded-full" />
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-duralux-success border-2 border-white dark:border-duralux-bg-dark rounded-full shadow-[0_0_8px_rgba(113,221,55,0.4)]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#32325d] truncate">
-                        John Doe
+                      <p className="text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary truncate">
+                        Admin User
                       </p>
-                      <p className="text-xs text-[#8898aa] truncate">
+                      <p className="text-xs text-duralux-text-muted truncate">
                         Administrator
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </li>
             )}
           </ul>
         </ScrollArea>
-      </aside>
+      </motion.aside>
     </>
   );
 }

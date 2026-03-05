@@ -14,8 +14,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 232 31% 20%;
 
-    /* Duralux Primary: #32325d -> HSL 239 31% 29% */
-    --primary: 239 31% 29%;
+    /* Duralux Primary: #696cff -> HSL 237 88% 70% */
+    --primary: 237 88% 70%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
@@ -32,12 +32,12 @@
 
     --border: 220 13% 91%; /* #e0e0e0 */
     --input: 220 13% 91%;
-    --ring: 239 31% 29%;
+    --ring: 237 88% 70%;
 
     --radius: 0.75rem; /* rounded-xl */
 
     /* Duralux Data Visualization Colors */
-    --chart-primary: 239 31% 29%; /* #32325d */
+    --chart-primary: 237 88% 70%; /* #696cff */
     --chart-secondary: 188 100% 44%; /* #03c3ec */
     --chart-success: 114 87% 54%; /* #71dd37 */
     --chart-warning: 42 100% 50%; /* #ffab00 */
@@ -46,6 +46,53 @@
     /* Font Families */
     --font-body: "Fira Sans", system-ui, -apple-system, sans-serif;
     --font-mono: "Fira Code", monospace;
+
+    /* =====================================================
+       DURALUX ADMIN - CSS VARIABLES (for inline styles)
+       ===================================================== */
+    /* Main Colors */
+    --duralux-primary: #696cff;
+    --duralux-primary-dark: #5f61e6;
+    --duralux-primary-light: #7d80ff;
+
+    /* Status Colors */
+    --duralux-success: #71dd37;
+    --duralux-success-dark: #65c732;
+    --duralux-warning: #ffab00;
+    --duralux-warning-dark: #e69a00;
+    --duralux-danger: #ff3e1d;
+    --duralux-danger-dark: #e63819;
+    --duralux-info: #03c3ec;
+    --duralux-info-dark: #03b0d5;
+
+    /* Transparent variants */
+    --duralux-primary-transparent: rgba(105, 108, 255, 0.12);
+    --duralux-success-transparent: rgba(113, 221, 55, 0.12);
+    --duralux-warning-transparent: rgba(255, 171, 0, 0.12);
+    --duralux-danger-transparent: rgba(255, 62, 29, 0.12);
+    --duralux-info-transparent: rgba(3, 195, 236, 0.12);
+
+    /* Text Colors */
+    --duralux-text-primary: #566a7f;
+    --duralux-text-secondary: #697a8d;
+    --duralux-text-muted: #a1acb8;
+
+    --duralux-text-dark-primary: #d1d4db;
+    --duralux-text-dark-secondary: #a3b1c2;
+    --duralux-text-dark-muted: #6f7b8a;
+
+    /* Background Colors */
+    --duralux-bg-page: #f5f5f9;
+    --duralux-bg-card: #ffffff;
+    --duralux-bg-hover: #f5f5f9;
+
+    --duralux-bg-dark-page: #232333;
+    --duralux-bg-dark-card: #2b2c40;
+    --duralux-bg-dark-hover: #323249;
+
+    /* Border Colors */
+    --duralux-border-light: #eceef1;
+    --duralux-border-dark: #444564;
   }
 
   .dark {
@@ -219,5 +266,271 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* =====================================================
+     DURALUX ADMIN - SKELETON LOADING
+     ===================================================== */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      90deg,
+      #f0f2f7 0%,
+      #e4e6ef 20%,
+      #f0f2f7 40%,
+      #f0f2f7 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+  }
+
+  .dark .skeleton {
+    background: linear-gradient(
+      90deg,
+      #2b2c40 0%,
+      #3a3b50 20%,
+      #2b2c40 40%,
+      #2b2c40 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  @keyframes skeleton-loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Skeleton Shapes */
+  .skeleton-text {
+    height: 1rem;
+    border-radius: 0.25rem;
+  }
+
+  .skeleton-title {
+    height: 1.5rem;
+    border-radius: 0.375rem;
+  }
+
+  .skeleton-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+  }
+
+  .skeleton-card {
+    height: 8rem;
+    border-radius: 0.75rem;
+  }
+
+  /* =====================================================
+     DURALUX ADMIN - ENTRANCE ANIMATIONS
+     ===================================================== */
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .slide-in-right {
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* Stagger animation delays for lists */
+  .stagger-1 { animation-delay: 0.05s; }
+  .stagger-2 { animation-delay: 0.1s; }
+  .stagger-3 { animation-delay: 0.15s; }
+  .stagger-4 { animation-delay: 0.2s; }
+  .stagger-5 { animation-delay: 0.25s; }
+  .stagger-6 { animation-delay: 0.3s; }
+
+  /* =====================================================
+     DURALUX ADMIN - SCROLLBAR STYLES
+     ===================================================== */
+  .duralux-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+  }
+
+  .duralux-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .duralux-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .duralux-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 9999px;
+  }
+
+  .duralux-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #9ca3af;
+  }
+
+  .dark .duralux-scrollbar {
+    scrollbar-color: #4b5563 transparent;
+  }
+
+  .dark .duralux-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+  }
+
+  .dark .duralux-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+
+  /* =====================================================
+     DURALUX ADMIN - TABLE STYLES
+     ===================================================== */
+  .duralux-table {
+    @apply w-full text-left;
+  }
+
+  .duralux-table th {
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-wider;
+    @apply text-duralux-text-muted bg-duralux-bg-page/50;
+    @apply border-b border-duralux-border-light;
+  }
+
+  .dark .duralux-table th {
+    @apply text-duralux-text-dark-muted bg-duralux-bg-dark-card/50;
+    @apply border-b border-duralux-border-dark;
+  }
+
+  .duralux-table td {
+    @apply px-4 py-3 text-sm;
+    @apply text-duralux-text-secondary border-b border-duralux-border-light;
+  }
+
+  .dark .duralux-table td {
+    @apply text-duralux-text-dark-secondary border-b border-duralux-border-dark;
+  }
+
+  .duralux-table tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .duralux-table tbody tr:hover {
+    @apply bg-duralux-bg-hover;
+  }
+
+  .dark .duralux-table tbody tr:hover {
+    @apply bg-duralux-bg-dark-hover;
+  }
+
+  /* =====================================================
+     DURALUX ADMIN - BADGE STYLES
+     ===================================================== */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply bg-duralux-primary-transparent text-duralux-primary;
+  }
+
+  .badge-success {
+    @apply bg-duralux-success-transparent text-duralux-success;
+  }
+
+  .badge-warning {
+    @apply bg-duralux-warning-transparent text-duralux-warning;
+  }
+
+  .badge-danger {
+    @apply bg-duralux-danger-transparent text-duralux-danger;
+  }
+
+  .badge-info {
+    @apply bg-duralux-info-transparent text-duralux-info;
+  }
+
+  /* =====================================================
+     DURALUX ADMIN - BUTTON VARIANTS
+     ===================================================== */
+  .btn-duralux {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg;
+    @apply text-sm font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-1;
+  }
+
+  .btn-primary {
+    @apply bg-duralux-primary text-white;
+    @apply hover:bg-duralux-primary-dark;
+    @apply focus:ring-duralux-primary;
+  }
+
+  .btn-success {
+    @apply bg-duralux-success text-white;
+    @apply hover:bg-duralux-success-dark;
+    @apply focus:ring-duralux-success;
+  }
+
+  .btn-danger {
+    @apply bg-duralux-danger text-white;
+    @apply hover:bg-duralux-danger-dark;
+    @apply focus:ring-duralux-danger;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-duralux-text-primary border border-duralux-border-light;
+    @apply hover:bg-duralux-bg-hover;
+    @apply focus:ring-duralux-primary;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-duralux-bg-dark-card text-duralux-text-dark-primary border-duralux-border-dark;
+    @apply hover:bg-duralux-bg-dark-hover;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-duralux-text-secondary;
+    @apply hover:bg-duralux-bg-hover;
+  }
+
+  .dark .btn-ghost {
+    @apply text-duralux-text-dark-secondary hover:bg-duralux-bg-dark-hover;
   }
 }

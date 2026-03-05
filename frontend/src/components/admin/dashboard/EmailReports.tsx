@@ -33,14 +33,14 @@ const COLORS = {
   opened: "#03c3ec",
 };
 
-/** 自定义 Tooltip */
+/** 自定义 Tooltip - Duralux Style */
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-md bg-[#32325d] px-3 py-2 text-xs shadow-lg">
-        <p className="text-[#8898aa] mb-1">Day {label}</p>
+      <div className="rounded-lg bg-duralux-primary px-3 py-2.5 text-xs shadow-xl shadow-duralux-primary/30">
+        <p className="text-white/70 mb-1.5 font-medium">Day {label}</p>
         {payload.map((p: any, i: number) => (
-          <div key={i} className="flex items-center gap-2">
+          <div key={i} className="flex items-center gap-2 mt-1">
             <div
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: p.color }}
@@ -69,7 +69,7 @@ export function EmailReportsCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-[#32325d]">
+        <span className="text-lg font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
           Email Reports
         </span>
       }
@@ -78,33 +78,40 @@ export function EmailReportsCard() {
           <Button
             type="text"
             shape="circle"
-            icon={<MoreOutlined className="text-[#8592a3] hover:text-[#32325d] transition-colors" />}
+            icon={<MoreOutlined className="text-duralux-text-muted hover:text-duralux-text-primary transition-colors" />}
             className="cursor-pointer"
           />
         </Dropdown>
       }
       bordered={false}
-      className={cn("h-full rounded-xl shadow-[0_2px_6px_rgba(67,89,113,0.12)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(67,89,113,0.2)] hover:-translate-y-[2px] cursor-pointer")}
+      className={cn(
+        "h-full rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark",
+        "transition-all duration-200",
+        "hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark",
+        "hover:-translate-y-0.5",
+        "cursor-pointer",
+        "bg-white dark:bg-duralux-bg-dark-card"
+      )}
       styles={{
         body: { padding: "1.5rem", height: "100%" },
       }}
     >
       <div className="flex flex-col h-full">
-        {/* Stats Summary */}
+        {/* Stats Summary - Duralux Style */}
         <div className="flex items-center gap-6 mb-6">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#32325d]"></div>
-            <span className="text-xs text-[#8898aa]">Sent</span>
+            <div className="w-3 h-3 rounded-full bg-duralux-primary"></div>
+            <span className="text-xs text-duralux-text-muted">Sent</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#03c3ec]"></div>
-            <span className="text-xs text-[#8898aa]">Opened</span>
+            <div className="w-3 h-3 rounded-full bg-duralux-info"></div>
+            <span className="text-xs text-duralux-text-muted">Opened</span>
           </div>
-          <div className="ml-auto">
-            <span className="text-2xl font-bold text-[#32325d]">
+          <div className="ml-auto text-right">
+            <span className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
               {openRate}%
             </span>
-            <span className="text-xs text-[#8898aa] ml-1">Open Rate</span>
+            <span className="text-xs text-duralux-text-muted ml-1">Open Rate</span>
           </div>
         </div>
 
@@ -129,14 +136,14 @@ export function EmailReportsCard() {
               <Bar
                 dataKey="sent"
                 name="Sent"
-                fill="#32325d"
-                radius={[4, 4, 0, 0]}
+                fill={COLORS.sent}
+                radius={[6, 6, 0, 0]}
                 barSize={12}
               >
                 {DATA.map((entry, index) => (
                   <Cell
                     key={`cell-sent-${index}`}
-                    fill={index === DATA.length - 1 ? "#1e293b" : "#32325d"}
+                    fill={index === DATA.length - 1 ? "#4b4ed5" : COLORS.sent}
                   />
                 ))}
               </Bar>
@@ -144,13 +151,13 @@ export function EmailReportsCard() {
                 dataKey="opened"
                 name="Opened"
                 fill={COLORS.opened}
-                radius={[4, 4, 0, 0]}
+                radius={[6, 6, 0, 0]}
                 barSize={12}
               >
                 {DATA.map((entry, index) => (
                   <Cell
                     key={`cell-opened-${index}`}
-                    fill={index === DATA.length - 1 ? "#03adcf" : COLORS.opened}
+                    fill={index === DATA.length - 1 ? "#02a9c9" : COLORS.opened}
                   />
                 ))}
               </Bar>

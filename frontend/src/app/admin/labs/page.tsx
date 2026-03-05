@@ -6,6 +6,7 @@ import {
   PlusOutlined,
   SearchOutlined,
   DeleteOutlined,
+
 } from "@ant-design/icons";
 import {
   Button,
@@ -19,11 +20,11 @@ import {
   Space,
   Typography,
   message,
+  Card,
 } from "antd";
 import { useCallback, useMemo, memo, useState, useEffect, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import {
-  FlaskConical,
   Globe,
   MoreVertical,
   Users,
@@ -31,11 +32,10 @@ import {
   Activity,
   Archive,
   Eye,
+  FlaskConical,
 } from "lucide-react";
 import { labsApi, type Lab as ApiLab } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, StatusBadge } from "@/components/ui/Card";
-import { StatCard } from "@/components/ui/Card/StatCard";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -57,7 +57,6 @@ interface Lab {
 
 /** 将后端 API Lab 转换为前端 Lab */
 function mapApiLabToFrontend(apiLab: ApiLab): Lab {
-  // 映射后端状态到前端（后端无 "Live"，用 "Preview" 代替）
   let status: LabStatus = "Experimental";
   if (apiLab.status === "Archived") status = "Archived";
   else if (apiLab.status === "Preview") status = "Preview";
@@ -87,23 +86,111 @@ function mapFrontendLabToApi(lab: Lab): Partial<ApiLab> {
   };
 }
 
-/** Status Badge Props Mapper */
-function getStatusBadgeProps(status: LabStatus): { status: string; label: string } {
+/** Status Badge Props Mapper - Duralux Style */
+function getStatusBadgeProps(status: LabStatus): { status: string; label: string; color: string; bgColor: string } {
   switch (status) {
     case "Experimental":
-      return { status: "experimental", label: "Experimental" };
+      return {
+        status: "experimental",
+        label: "Experimental",
+        color: "var(--duralux-primary)",
+        bgColor: "var(--duralux-primary-transparent)"
+      };
     case "Preview":
-      return { status: "preview", label: "Preview" };
+      return {
+        status: "preview",
+        label: "Preview",
+        color: "var(--duralux-info)",
+        bgColor: "var(--duralux-info-transparent)"
+      };
     case "Live":
-      return { status: "live", label: "Live" };
+      return {
+        status: "live",
+        label: "Live",
+        color: "var(--duralux-success)",
+        bgColor: "var(--duralux-success-transparent)"
+      };
     case "Archived":
-      return { status: "archived", label: "Archived" };
+      return {
+        status: "archived",
+        label: "Archived",
+        color: "var(--duralux-text-muted)",
+        bgColor: "var(--duralux-bg-hover)"
+      };
   }
 }
 
-/** Lab Card Component - Compact */
+/** Status Badge Component - Duralux Style */
+function StatusBadge({ status, label }: { status: string; label: string }) {
+  const badgeProps = getStatusBadgeProps(status as LabStatus);
+
+  return (
+    <span
+      className="px-2.5 py-0.5 rounded-full text-xs font-medium border-0"
+      style={{
+        backgroundColor: badgeProps.bgColor,
+        color: badgeProps.color,
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+/** Stat Card Component - Duralux Style */
+function StatCard({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+}) {
+  return (
+    <Card
+      bordered={false}
+      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-0.5 overflow-hidden"
+      styles={{ body: { padding: "1.25rem" } }}
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-duralux-primary-transparent flex items-center justify-center text-duralux-primary">
+          {icon}
+        </div>
+        <div>
+          <p className="text-sm text-duralux-text-muted mb-0.5">{label}</p>
+          <p className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+            {value}
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/** Skeleton Stat Card */
+function SkeletonStatCard() {
+  return (
+    <Card
+      bordered={false}
+      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark overflow-hidden"
+      styles={{ body: { padding: "1.25rem" } }}
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl skeleton" />
+        <div className="space-y-2">
+          <div className="w-20 h-3 skeleton" />
+          <div className="w-16 h-6 skeleton" />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/** Lab Card Component - Duralux Style */
 const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onEdit: (lab: Lab) => void; onDelete: (lab: Lab) => void }) {
   const badgeProps = getStatusBadgeProps(lab.status);
+
   const items: MenuProps["items"] = [
     {
       key: "view",
@@ -119,27 +206,23 @@ const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onE
 
   return (
     <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="group relative h-full"
     >
-      {/* Glow Effect on Hover */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-
-      {/* Main Card */}
-      <div className="relative h-full rounded-2xl bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 shadow-lg hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-amber-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        <div className="relative p-4 h-full flex flex-col">
-          {/* Header: Status Badge */}
-          <div className="flex justify-between items-start mb-3">
-            <StatusBadge status={badgeProps.status as any} label={badgeProps.label} size="sm" />
+      <div className="relative h-full rounded-2xl bg-white dark:bg-[#2b2c40] border border-[#eceef1] dark:border-[#444564] shadow-duralux-card hover:shadow-duralux-hover dark:shadow-duralux-card-dark dark:hover:shadow-duralux-hover-dark transition-all duration-200 overflow-hidden">
+        <div className="relative p-5 h-full flex flex-col">
+          {/* Header: Status Badge + Menu */}
+          <div className="flex justify-between items-start mb-4">
+            <StatusBadge status={lab.status} label={badgeProps.label} />
             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-gray-400 hover:text-orange-500 hover:bg-orange-500/10 cursor-pointer transition-colors"
+                  className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-primary hover:bg-duralux-bg-hover cursor-pointer transition-colors"
                   aria-label="More options"
                 >
                   <MoreVertical size={14} />
@@ -148,30 +231,30 @@ const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onE
             </div>
           </div>
 
-          {/* Lab Icon - Compact */}
-          <div className="relative mb-3 mx-auto">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 p-[2px] shadow-md shadow-orange-500/30 group-hover:shadow-lg group-hover:shadow-orange-500/40 transition-shadow duration-300">
-              <div className="w-full h-full rounded-full bg-white dark:bg-[#1a1a2e] flex items-center justify-center">
-                <Beaker className="text-orange-500" size={28} />
+          {/* Lab Icon */}
+          <div className="relative mb-4 mx-auto">
+            <div className="w-16 h-16 rounded-full bg-duralux-primary-transparent p-[2px] shadow-md group-hover:shadow-lg transition-shadow duration-300">
+              <div className="w-full h-full rounded-full bg-white dark:bg-[#2b2c40] flex items-center justify-center">
+                <Beaker className="text-duralux-primary" size={28} />
               </div>
             </div>
           </div>
 
           {/* Lab Name */}
-          <h3 className="text-base font-bold text-center bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent m-0 mb-2">
+          <h3 className="text-base font-bold text-center text-duralux-text-primary dark:text-duralux-text-dark-primary m-0 mb-2">
             {lab.name}
           </h3>
 
-          {/* Description - Single line */}
-          <p className="text-gray-600 dark:text-gray-400 text-xs text-center leading-relaxed mb-4 line-clamp-1 flex-grow">
+          {/* Description */}
+          <p className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs text-center leading-relaxed mb-4 line-clamp-2 flex-grow">
             {lab.description}
           </p>
 
           {/* Footer: Online Count + Demo */}
-          <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-white/10 mt-auto">
-            <div className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800">
-              <Users size={14} className="text-gray-400" />
-              <Text className="text-gray-600 dark:text-gray-400 text-xs font-semibold">
+          <div className="flex gap-2 pt-3 border-t border-[#eceef1] dark:border-[#444564] mt-auto">
+            <div className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-duralux-bg-page dark:bg-[#323249]">
+              <Users size={14} className="text-duralux-text-muted" />
+              <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs font-semibold">
                 {lab.onlineCount}
               </Text>
             </div>
@@ -180,7 +263,7 @@ const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onE
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => window.open(lab.demoLink, "_blank")}
-                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-600 hover:to-amber-700 shadow-md shadow-orange-500/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-duralux-primary to-duralux-primary-dark text-white hover:from-duralux-primary-dark hover:to-duralux-primary shadow-md shadow-duralux-primary/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
               >
                 <Eye size={14} />
                 Demo
@@ -193,7 +276,7 @@ const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onE
   );
 });
 
-/** Edit Lab Modal */
+/** Edit Lab Modal - Duralux Style */
 function EditLabModal({
   open,
   lab,
@@ -248,10 +331,10 @@ function EditLabModal({
     <Modal
       title={
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center">
             <Beaker className="text-white" size={20} />
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">
+          <span className="text-xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
             {lab ? "Edit Lab" : "Add New Lab"}
           </span>
         </div>
@@ -260,23 +343,25 @@ function EditLabModal({
       onOk={handleSave}
       onCancel={onCancel}
       okText="Save"
-      okButtonProps={{ className: "bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700" }}
+      okButtonProps={{
+        className: "bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white"
+      }}
       cancelButtonProps={{ className: "rounded-xl" }}
       width={640}
       styles={{
         body: { padding: "1.5rem" },
-        header: { borderBottom: "1px solid #f0f0f0", paddingBottom: "1rem" },
-        footer: { borderTop: "1px solid #f0f0f0", paddingTop: "1rem" },
+        header: { borderBottom: "1px solid #eceef1", paddingBottom: "1rem" },
+        footer: { borderTop: "1px solid #eceef1", paddingTop: "1rem" },
       }}
     >
-      {/* Tab Navigation - Enhanced */}
-      <div className="flex gap-1.5 mb-6 p-1.5 bg-gray-100 dark:bg-gray-800 rounded-xl">
+      {/* Tab Navigation */}
+      <div className="flex gap-1.5 mb-6 p-1.5 bg-duralux-bg-page dark:bg-[#323249] rounded-xl">
         <button
           onClick={() => setActiveTab("basic")}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "basic"
-              ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "bg-white dark:bg-[#2b2c40] text-duralux-primary shadow-sm"
+              : "text-duralux-text-muted hover:text-duralux-text-secondary"
           }`}
         >
           <Beaker size={16} />
@@ -286,8 +371,8 @@ function EditLabModal({
           onClick={() => setActiveTab("config")}
           className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 ${
             activeTab === "config"
-              ? "bg-white dark:bg-gray-700 text-orange-500 shadow-sm"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "bg-white dark:bg-[#2b2c40] text-duralux-primary shadow-sm"
+              : "text-duralux-text-muted hover:text-duralux-text-secondary"
           }`}
         >
           <Globe size={16} />
@@ -301,8 +386,8 @@ function EditLabModal({
           <>
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Name <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
+                Name <span className="text-duralux-danger">*</span>
               </label>
               <Input
                 value={form.name}
@@ -315,22 +400,22 @@ function EditLabModal({
 
             {/* Slug */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Slug <span className="text-red-500">*</span>
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
+                Slug <span className="text-duralux-danger">*</span>
               </label>
               <Input
                 value={form.slug}
                 onChange={(e) => setForm({ ...form, slug: e.target.value })}
                 placeholder="lab-slug"
                 className="h-11 rounded-xl"
-                prefix={<span className="text-gray-400 text-sm">/</span>}
+                prefix={<span className="text-duralux-text-muted text-sm">/</span>}
                 styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
                 Description
               </label>
               <TextArea
@@ -345,7 +430,7 @@ function EditLabModal({
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
                 Status
               </label>
               <Select<LabStatus>
@@ -371,30 +456,30 @@ function EditLabModal({
           <>
             {/* Demo Link */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
                 Demo Link
               </label>
               <Input
                 value={form.demoLink}
                 onChange={(e) => setForm({ ...form, demoLink: e.target.value })}
                 placeholder="/labs/example"
-                prefix={<Globe className="text-gray-400" size={16} />}
+                prefix={<Globe className="text-duralux-text-muted" size={16} />}
                 className="h-11 rounded-xl"
                 styles={{ input: { fontSize: "14px" } }}
               />
             </div>
 
-            {/* Media Assets (Placeholder) */}
+            {/* Media Assets */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
                 Media Assets
               </label>
-              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:border-orange-400 dark:hover:border-orange-500 transition-colors cursor-pointer">
-                <Beaker size={24} className="text-gray-400 mx-auto mb-2" />
-                <Text className="text-gray-600 dark:text-gray-400 text-sm font-medium">
+              <div className="border-2 border-dashed border-duralux-border-light dark:border-duralux-border-dark rounded-xl p-6 text-center hover:border-duralux-primary dark:hover:border-duralux-primary transition-colors cursor-pointer">
+                <Beaker size={24} className="text-duralux-text-muted mx-auto mb-2" />
+                <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-sm font-medium">
                   Click to upload or drag and drop
                 </Text>
-                <div className="text-gray-400 dark:text-gray-500 text-xs mt-1">
+                <div className="text-duralux-text-muted text-xs mt-1">
                   PNG, JPG, GIF up to 10MB
                 </div>
               </div>
@@ -403,14 +488,14 @@ function EditLabModal({
             {/* Online Count (Read-only) */}
             {lab && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
                   Online Count
                 </label>
                 <Input
                   value={lab.onlineCount}
                   disabled
-                  className="bg-gray-50 dark:bg-gray-800 rounded-xl"
-                  prefix={<Users size={16} className="text-gray-400" />}
+                  className="bg-duralux-bg-page dark:bg-[#323249] rounded-xl"
+                  prefix={<Users size={16} className="text-duralux-text-muted" />}
                 />
               </div>
             )}
@@ -428,8 +513,8 @@ export default function LabsPage() {
   const [editingLab, setEditingLab] = useState<Lab | null>(null);
   const queryClient = useQueryClient();
 
-  // Load labs from API using React Query
-  const { data: labsData } = useQuery({
+  // Load labs from API
+  const { data: labsData, isLoading } = useQuery({
     queryKey: ["admin-labs"],
     queryFn: async () => {
       const response = await labsApi.list();
@@ -441,7 +526,6 @@ export default function LabsPage() {
   });
 
   const labs = labsData || [];
-  const isLoading = false;
 
   // Mutation for deleting lab
   const deleteMutation = useMutation({
@@ -460,7 +544,6 @@ export default function LabsPage() {
   const handleSaveLab = async (lab: Lab) => {
     try {
       if (editingLab) {
-        // Update existing lab via API
         const apiData = mapFrontendLabToApi(lab);
         const response = await labsApi.update(lab.id, apiData as Parameters<typeof labsApi.update>[1]);
         if (response.success) {
@@ -468,7 +551,6 @@ export default function LabsPage() {
           message.success("Lab updated successfully");
         }
       } else {
-        // Create new lab via API
         const apiData = mapFrontendLabToApi(lab);
         const response = await labsApi.create(apiData as Parameters<typeof labsApi.create>[0]);
         if (response.success) {
@@ -496,16 +578,14 @@ export default function LabsPage() {
     });
   };
 
-  // Filter labs using useMemo
+  // Filter labs
   const filteredLabs = useMemo(() => {
     let result = labs;
 
-    // Status filter
     if (statusFilter !== "all") {
       result = result.filter((lab) => lab.status === statusFilter);
     }
 
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -517,14 +597,6 @@ export default function LabsPage() {
 
     return result;
   }, [labs, statusFilter, searchQuery]);
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value);
-  };
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
 
   const handleEdit = useCallback((lab: Lab) => {
     setEditingLab(lab);
@@ -542,19 +614,23 @@ export default function LabsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-[#0f0f1a] dark:to-[#1a1a2e] p-6">
-      {/* Header Section - Enhanced with gradient and better typography */}
-      <Row gutter={[24, 24]} align="middle" className="mb-8">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="p-6 min-h-screen bg-duralux-bg-page dark:bg-duralux-bg-dark-page"
+    >
+      {/* Header Section */}
+      <Row gutter={[24, 24]} align="middle" className="mb-6">
         <Col xs={24} md={12}>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center shadow-lg shadow-duralux-primary/30">
               <FlaskConical className="text-white" size={26} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white m-0">
+              <h1 className="text-[1.5rem] font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0">
                 Labs Management
               </h1>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">
+              <p className="text-duralux-text-muted text-sm mt-1">
                 Manage experimental features and demos
               </p>
             </div>
@@ -565,17 +641,17 @@ export default function LabsPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-end">
             <Input
               placeholder="Search labs..."
-              prefix={<SearchOutlined className="text-gray-400" />}
+              prefix={<SearchOutlined className="text-duralux-text-muted" />}
               value={searchQuery}
-              onChange={handleSearchChange}
-              className="h-11 w-full sm:w-[240px] rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-11 w-full sm:w-[240px] rounded-xl"
               styles={{
                 input: { fontSize: "14px" },
               }}
             />
             <Select
               value={statusFilter}
-              onChange={handleStatusChange}
+              onChange={(value) => setStatusFilter(value)}
               className="w-full sm:w-[140px] rounded-xl"
               options={[
                 { label: "All Status", value: "all" },
@@ -592,10 +668,7 @@ export default function LabsPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddNew}
-              className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-orange-500/30"
-              styles={{
-                button: { borderRadius: "12px" },
-              }}
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-11 rounded-xl font-semibold shadow-lg shadow-duralux-primary/30"
             >
               Add Lab
             </Button>
@@ -603,39 +676,51 @@ export default function LabsPage() {
         </Col>
       </Row>
 
-      {/* Stats Row - Enhanced with StatCard component */}
-      <Row gutter={[24, 24]} className="mb-8">
+      {/* Stats Row */}
+      <Row gutter={[24, 24]} className="mb-6">
         <Col xs={24} sm={12} md={6}>
-          <StatCard
-            icon={<Beaker size={20} />}
-            label="Total Labs"
-            value={labs.length || 0}
-            gradient="orange"
-          />
+          {isLoading ? (
+            <SkeletonStatCard />
+          ) : (
+            <StatCard
+              icon={<Beaker size={20} />}
+              label="Total Labs"
+              value={labs.length}
+            />
+          )}
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <StatCard
-            icon={<Activity size={20} />}
-            label="Experimental"
-            value={labs.filter((l) => l.status === "Experimental").length}
-            gradient="orange"
-          />
+          {isLoading ? (
+            <SkeletonStatCard />
+          ) : (
+            <StatCard
+              icon={<Activity size={20} />}
+              label="Experimental"
+              value={labs.filter((l) => l.status === "Experimental").length}
+            />
+          )}
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <StatCard
-            icon={<Eye size={20} />}
-            label="Preview"
-            value={labs.filter((l) => l.status === "Preview").length}
-            gradient="cyan"
-          />
+          {isLoading ? (
+            <SkeletonStatCard />
+          ) : (
+            <StatCard
+              icon={<Eye size={20} />}
+              label="Preview"
+              value={labs.filter((l) => l.status === "Preview").length}
+            />
+          )}
         </Col>
         <Col xs={24} sm={12} md={6}>
-          <StatCard
-            icon={<Archive size={20} />}
-            label="Archived"
-            value={labs.filter((l) => l.status === "Archived").length}
-            gradient="gray"
-          />
+          {isLoading ? (
+            <SkeletonStatCard />
+          ) : (
+            <StatCard
+              icon={<Archive size={20} />}
+              label="Archived"
+              value={labs.filter((l) => l.status === "Archived").length}
+            />
+          )}
         </Col>
       </Row>
 
@@ -648,18 +733,18 @@ export default function LabsPage() {
         ))}
       </Row>
 
-      {/* Empty State - Enhanced design */}
-      {filteredLabs.length === 0 && (
-        <Card className="text-center py-16">
+      {/* Empty State */}
+      {filteredLabs.length === 0 && !isLoading && (
+        <Card className="text-center py-16 rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 flex items-center justify-center">
-              <FlaskConical size={40} className="text-orange-500" />
+            <div className="w-20 h-20 rounded-full bg-duralux-primary-transparent flex items-center justify-center">
+              <FlaskConical size={40} className="text-duralux-primary" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white m-0 mb-2">
+              <h3 className="text-xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary m-0 mb-2">
                 No labs found
               </h3>
-              <Text className="text-gray-500 dark:text-gray-400">
+              <Text className="text-duralux-text-muted">
                 Try adjusting your filters or add a new lab
               </Text>
             </div>
@@ -667,10 +752,7 @@ export default function LabsPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={handleAddNew}
-              className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 border-none h-11 rounded-xl font-semibold shadow-lg shadow-orange-500/30"
-              styles={{
-                button: { borderRadius: "12px" },
-              }}
+              className="bg-gradient-to-r from-duralux-primary to-duralux-primary-dark hover:from-duralux-primary-dark hover:to-duralux-primary text-white border-none h-11 rounded-xl font-semibold shadow-lg shadow-duralux-primary/30"
             >
               Add Your First Lab
             </Button>
@@ -685,6 +767,6 @@ export default function LabsPage() {
         onSave={handleSaveLab}
         onCancel={handleEditModalCancel}
       />
-    </div>
+    </motion.div>
   );
 }
