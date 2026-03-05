@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from .core.config import settings
 from .core.database import init_db
-from .api.v1.admin import auth, dashboard, agents, tools, labs, blog, profile, settings as admin_settings, task_agent, life_agent, review_agent
+from .api.v1.admin import auth, dashboard, agents, tools, labs, blog, profile, settings as admin_settings, task_agent, life_agent, review_agent, outfit_agent
 from .api.v1 import news as news_api
 from .websocket import handlers as ws_handlers
 
@@ -89,7 +89,9 @@ app.include_router(task_agent.router, prefix="/api/v1/admin", tags=["task"])
 # Life Agent API 路由
 
 # Review Agent API 路由
-app.include_router(review_agent.router, prefix="/api/v1/admin", tags=["review"])
+
+# Outfit Agent API 路由
+app.include_router(outfit_agent.router, prefix="/api/v1/admin", tags=["outfit"])
 app.include_router(life_agent.router, prefix="/api/v1/admin", tags=["life"])
 
 # WebSocket 路由

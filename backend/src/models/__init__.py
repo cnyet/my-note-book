@@ -1,17 +1,6 @@
 # backend/src/models/__init__.py
 """
 SQLAlchemy ORM models for MyNoteBook Admin
-
-数据库表：
-- users: 管理员用户
-- blog_posts: 博客文章
-- agents: AI 智能体配置
-- agent_sessions: 智能体会话
-- agent_memory: 智能体记忆
-- agent_messages: 跨智能体消息
-- ws_connections: WebSocket 连接
-- tools: 工具库
-- labs: 实验室功能
 """
 
 from datetime import datetime, timezone
@@ -57,7 +46,7 @@ class BlogPost(Base):
     cover_image = Column(String(500), nullable=True)
     seo_title = Column(String(70), nullable=True)
     seo_description = Column(String(160), nullable=True)
-    status = Column(String(20), nullable=False, default="draft")  # draft, published, archived
+    status = Column(String(20), nullable=False, default="draft")
     published_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
@@ -80,12 +69,12 @@ class Agent(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     slug = Column(String(50), unique=True, nullable=False, index=True)
-    category = Column(String(50), nullable=False)  # Dev, Auto, Intel, Creative
+    category = Column(String(50), nullable=False)
     description = Column(Text, nullable=True)
     icon_url = Column(String(500), nullable=True)
     link = Column(String(500), nullable=True)
-    config = Column(Text, nullable=True)  # JSON 配置
-    status = Column(String(20), nullable=False, default="offline")  # offline, spawning, idle, active
+    config = Column(Text, nullable=True)
+    status = Column(String(20), nullable=False, default="offline")
     sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
@@ -107,11 +96,11 @@ class Tool(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     slug = Column(String(50), unique=True, nullable=False, index=True)
-    category = Column(String(50), nullable=False)  # Dev, Auto, Intel, Creative
+    category = Column(String(50), nullable=False)
     description = Column(Text, nullable=True)
     icon_url = Column(String(500), nullable=True)
     link = Column(String(500), nullable=True)
-    status = Column(String(20), nullable=False, default="active")  # active, inactive
+    status = Column(String(20), nullable=False, default="active")
     sort_order = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
@@ -129,8 +118,8 @@ class Lab(Base):
     slug = Column(String(50), unique=True, nullable=False, index=True)
     description = Column(Text, nullable=True)
     demo_url = Column(String(500), nullable=True)
-    media_urls = Column(Text, nullable=True)  # JSON array stored as text
-    status = Column(String(20), nullable=False, default="experimental")  # experimental, preview, archived
+    media_urls = Column(Text, nullable=True)
+    status = Column(String(20), nullable=False, default="experimental")
     online_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")
@@ -155,27 +144,20 @@ class PostTag(Base):
 
 
 class SystemSettings(Base):
-    """系统设置表 (单行记录，id=1)"""
+    """系统设置表"""
     __tablename__ = "system_settings"
 
-    id = Column(Integer, primary_key=True)  # Always id=1 for single row
-
-    # General
+    id = Column(Integer, primary_key=True)
     site_title = Column(String(100), default="MyNoteBook", nullable=False)
     site_description = Column(Text, nullable=True)
     logo_url = Column(String(500), nullable=True)
     items_per_page = Column(Integer, default=10, nullable=False)
-
-    # Security
-    session_timeout = Column(Integer, default=60, nullable=False)  # minutes
+    session_timeout = Column(Integer, default=60, nullable=False)
     max_login_attempts = Column(Integer, default=5, nullable=False)
-    ip_whitelist = Column(Text, default="", nullable=False)  # Comma-separated IPs
-
-    # Data
+    ip_whitelist = Column(Text, default="", nullable=False)
     enable_auto_backup = Column(Boolean, default=False, nullable=False)
     backup_retention_days = Column(Integer, default=30, nullable=False)
     log_retention_days = Column(Integer, default=7, nullable=False)
-
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 
@@ -190,7 +172,7 @@ class APIToken(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     last_used_at = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
-    scopes = Column(Text, nullable=True)  # JSON array of permissions
+    scopes = Column(Text, nullable=True)
 
     # 关系
     user = relationship("User", back_populates="tokens")
@@ -208,6 +190,9 @@ from .life_agent import HealthMetrics, HealthSuggestion
 
 # 导入 Review Agent 模型
 from .review_agent import DailyReview, UserPreference
+
+# 导入 Outfit Agent 模型
+from .outfit_agent import OutfitRecommendation
 
 
 # 导出所有模型
@@ -234,4 +219,5 @@ __all__ = [
     "HealthSuggestion",
     "DailyReview",
     "UserPreference",
+    "OutfitRecommendation",
 ]
