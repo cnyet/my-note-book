@@ -617,10 +617,10 @@ export default function LabsPage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 min-h-screen bg-duralux-bg-page dark:bg-duralux-bg-dark-page"
+      className="space-y-6"
     >
       {/* Header Section */}
-      <Row gutter={[24, 24]} align="middle" className="mb-6">
+      <Row gutter={[24, 24]} align="middle" className="">
         <Col xs={24} md={12}>
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center shadow-lg shadow-duralux-primary/30">
@@ -677,7 +677,7 @@ export default function LabsPage() {
       </Row>
 
       {/* Stats Row */}
-      <Row gutter={[24, 24]} className="mb-6">
+      <Row gutter={[24, 24]} className="">
         <Col xs={24} sm={12} md={6}>
           {isLoading ? (
             <SkeletonStatCard />
