@@ -147,7 +147,7 @@ export default function BlogListPage() {
       filtered = filtered.filter(
         (post) =>
           post.title.toLowerCase().includes(query) ||
-          (post.summary || "").toLowerCase().includes(query)
+          (post.excerpt || "").toLowerCase().includes(query)
       );
     }
 
@@ -157,7 +157,7 @@ export default function BlogListPage() {
 
       if (sortField === "date") {
         comparison =
-          new Date(a.publish_date || 0).getTime() - new Date(b.publish_date || 0).getTime();
+          new Date(a.published_at || a.created_at || 0).getTime() - new Date(b.published_at || b.created_at || 0).getTime();
       } else if (sortField === "title") {
         comparison = a.title.localeCompare(b.title);
       }
@@ -281,7 +281,7 @@ export default function BlogListPage() {
   };
 
   const handleExport = () => {
-    const columns = ["title", "author", "publishDate", "status"];
+    const columns = ["title", "author", "published_at", "status"];
     exportToCSV(paginatedPosts as unknown as Record<string, unknown>[], columns, "blog_posts");
     toast.success("Blog posts exported successfully");
   };
@@ -306,7 +306,7 @@ export default function BlogListPage() {
             {title}
           </span>
           <span className="text-xs text-duralux-text-muted">
-            {record.summary}
+            {record.excerpt}
           </span>
         </Space>
       ),
@@ -537,11 +537,11 @@ export default function BlogListPage() {
             exportData={paginatedPosts.map(post => ({
               title: post.title,
               author: post.author,
-              publishDate: post.publish_date,
+              published_at: post.published_at,
               status: post.status,
               views: post.views || 0,
             }))}
-            exportColumns={["title", "author", "publishDate", "status", "views"]}
+            exportColumns={["title", "author", "published_at", "status", "views"]}
           />
 
           {/* Search and Filters */}

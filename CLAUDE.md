@@ -49,51 +49,11 @@
 - **ParticleBg** - Canvas 粒子背景
 - **OnlinePulse** - 实时状态脉冲
 
-### 卡片设计标准
-
-```tsx
-// 标准卡片悬停效果
-<motion.div
-  whileHover={{ y: -6, scale: 1.02 }}
-  className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900"
-/>
-
-// 状态徽章
-<span className="px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-400">
-  Active
-</span>
-
-// 渐变按钮
-<button className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/30">
-```
-
-## 📁 目录结构规范
-
-```
-frontend/src/
-├── app/                    # 页面路由 (App Router)
-│   ├── (public)/          # 公开页面
-│   ├── admin/             # 管理后台
-│   └── (admin)/assistant/ # AI 助手
-├── components/
-│   ├── ui/                # Shadcn/UI 基础组件
-│   ├── v-ui/              # Genesis 定制组件
-│   ├── features/          # 功能组件
-│   └── admin/             # 后台专用组件
-├── hooks/                  # 自定义 Hooks
-└── lib/                    # 工具函数
-
-backend/src/
-├── agents/                 # 智能体实现
-├── api/                    # API 路由
-├── core/                   # 核心配置
-├── models/                 # SQLAlchemy 模型
-├── schemas/                # Pydantic 模式
-├── services/               # 业务服务
-└── websocket/              # WebSocket 服务
-```
+详细设计令牌、组件示例和视觉规范统一参考 `docs/design/frontend-guide.md`。
 
 ## 🔧 开发工作流
+
+除本文件明确声明的项目特有约束外，通用的 Git、代码风格、测试、性能和通用工程规范默认遵循 `~/.claude/CLAUDE.md`，本文件不重复展开。
 
 ### 必须使用的技能
 
@@ -116,62 +76,21 @@ refactor/重构描述         # 重构
 
 ### 提交规范
 
-```
-feat: 新功能描述
-fix: 修复问题描述
-docs: 文档更新
-refactor: 重构描述
-style: 代码格式调整
-test: 测试相关
-```
+提交信息遵循 `~/.claude/CLAUDE.md` 中的 Conventional Commits 规范；本项目常用类型为 `feat`、`fix`、`docs`、`refactor`、`style`、`test`。
 
-## ⚡ 常用命令
-
-```bash
-# 启动开发环境
-./scripts/start-dev.sh
-
-# 或手动启动
-cd backend && source .venv/bin/activate && uvicorn src.main:app --reload --port 8001
-cd frontend && npm run dev
-
-# 运行测试
-./scripts/test.sh
-
-# 代码检查
-./scripts/lint.sh
-
-# 清理项目
-./scripts/clean.sh
-```
-
-## 🚨 常见问题处理
-
-### 端口被占用
-
-```bash
-lsof -ti:8001 | xargs kill -9
-lsof -ti:3001 | xargs kill -9
-```
-
-### Python 包问题
-
-```bash
-cd backend
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### Node 模块问题
-
-```bash
-cd frontend
-rm -rf node_modules package-lock.json
-npm install
-```
+运行命令、环境初始化和故障处理统一参考 `README.md` 与 `docs/development/README.md`。
 
 ## 📝 AI 行为约束
+
+### 规范优先级
+
+在查找和应用指令文档时，必须遵循以下顺序：
+
+1. `./CLAUDE.local.md` - 项目本地覆盖指令（如存在）
+2. `./CLAUDE.md` - 项目级指令
+3. `~/.claude/CLAUDE.md` - 用户级全局指令
+
+执行时应按上述顺序依次查找并合并约束；低优先级文档仅在不与高优先级文档冲突时生效。
 
 ### 必须遵守
 
