@@ -443,9 +443,6 @@ function EditLabModal({
                   { label: "Live", value: "Live" },
                   { label: "Archived", value: "Archived" },
                 ]}
-                styles={{
-                  selector: { borderRadius: "12px", height: "44px" },
-                }}
               />
             </div>
           </>
@@ -660,9 +657,6 @@ export default function LabsPage() {
                 { label: "Live", value: "Live" },
                 { label: "Archived", value: "Archived" },
               ]}
-              styles={{
-                selector: { borderRadius: "12px", height: "44px" },
-              }}
             />
             <Button
               type="primary"

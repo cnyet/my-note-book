@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Layout, Row, Col, Divider, Space, Alert, Button, Popover, Badge } from 'antd';
 import { ConversationList } from '@/components/assistant/ConversationList';
 import { ChatWindow } from '@/components/assistant/ChatWindow';
@@ -53,7 +53,7 @@ const mockApi = {
   }
 };
 
-export default function AssistantChatPage() {
+function AssistantChatPageContent() {
   const [conversations, setConversations] = useState<any[]>([]);
   const [currentConversation, setCurrentConversation] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -343,3 +343,13 @@ export default function AssistantChatPage() {
     </Layout>
   );
 }
+// Wrap with Suspense for useSearchParams
+function AssistantChatPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AssistantChatPageContent />
+    </Suspense>
+  );
+}
+
+export default AssistantChatPage;

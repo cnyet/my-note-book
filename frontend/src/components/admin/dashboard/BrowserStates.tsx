@@ -16,40 +16,35 @@ const BROWSER_DATA = [
     name: "Chrome",
     icon: Globe,
     value: 73.8,
-    color: "text-duralux-primary",
-    bgColor: "bg-duralux-primary-transparent",
+    color: "#1890ff",
     users: "2,456",
   },
   {
     name: "Safari",
     icon: Monitor,
     value: 52.3,
-    color: "text-duralux-info",
-    bgColor: "bg-duralux-info-transparent",
+    color: "#13c2c2",
     users: "1,892",
   },
   {
     name: "Firefox",
     icon: Tv,
     value: 38.5,
-    color: "text-duralux-warning",
-    bgColor: "bg-duralux-warning-transparent",
+    color: "#faad14",
     users: "1,245",
   },
   {
     name: "Mobile",
     icon: Smartphone,
     value: 62.1,
-    color: "text-duralux-success",
-    bgColor: "bg-duralux-success-transparent",
+    color: "#52c41a",
     users: "2,103",
   },
   {
     name: "Tablet",
     icon: Tablet,
     value: 28.4,
-    color: "text-duralux-danger",
-    bgColor: "bg-duralux-danger-transparent",
+    color: "#f5222d",
     users: "845",
   },
 ];
@@ -63,7 +58,7 @@ export function BrowserStatesCard() {
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+        <span className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
           Browser States
         </span>
       }
@@ -82,50 +77,46 @@ export function BrowserStatesCard() {
         "h-full rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark",
         "transition-all duration-200",
         "hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark",
-        "hover:-translate-y-0.5",
-        "cursor-pointer",
         "bg-white dark:bg-duralux-bg-dark-card"
       )}
       styles={{
-        body: { padding: "1.5rem", height: "100%" },
+        body: { padding: "1.25rem", height: "100%" },
       }}
     >
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-4">
         {BROWSER_DATA.map((browser) => (
-          <div key={browser.name} className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "w-9 h-9 rounded-xl flex items-center justify-center",
-                    browser.bgColor
-                  )}
-                >
-                  <browser.icon className={cn("w-4 h-4", browser.color)} size={16} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-duralux-text-primary dark:text-duralux-text-dark-primary">
-                    {browser.name}
-                  </p>
-                  <p className="text-xs text-duralux-text-muted">
-                    {browser.users} users
-                  </p>
-                </div>
-              </div>
-              <span className="text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
-                {browser.value}%
-              </span>
+          <div key={browser.name} className="flex items-center gap-3">
+            {/* Icon */}
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: `${browser.color}15` }}
+            >
+              <browser.icon className="w-4 h-4" style={{ color: browser.color }} size={16} />
             </div>
-            <Progress
-              percent={browser.value}
-              showInfo={false}
-              strokeColor={browser.color.replace("text-", "var(--duralux-")}
-              trailColor="#f0f2f7"
-              className="m-0"
-              size="small"
-              strokeWidth={8}
-              strokeLineCap="round"
-            />
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-duralux-text-primary dark:text-duralux-text-dark-primary">
+                  {browser.name}
+                </span>
+                <span className="text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+                  {browser.value}%
+                </span>
+              </div>
+              <Progress
+                percent={browser.value}
+                showInfo={false}
+                strokeColor={browser.color}
+                trailColor="#f0f2f7"
+                className="m-0"
+                strokeWidth={6}
+                strokeLinecap="round"
+              />
+              <p className="text-xs text-duralux-text-muted mt-1">
+                {browser.users} users
+              </p>
+            </div>
           </div>
         ))}
       </div>

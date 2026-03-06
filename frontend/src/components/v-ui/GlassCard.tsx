@@ -1,10 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { HTMLMotionProps, motion } from "framer-motion";
 import React from "react";
 
-interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GlassCardProps extends Omit<HTMLMotionProps<"div">, "drag"> {
   children: React.ReactNode;
   glow?: "primary" | "accent" | "none";
   hoverable?: boolean;
@@ -27,7 +27,7 @@ export function GlassCard({
 
   return (
     <motion.div
-      whileHover={hoverable ? { translateY: -4 } : {}}
+      whileHover={hoverable ? { y: -4 } : {}}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
         "relative glass-effect rounded-2xl p-6 overflow-hidden",

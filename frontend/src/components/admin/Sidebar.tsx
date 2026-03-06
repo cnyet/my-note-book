@@ -151,7 +151,7 @@ export function Sidebar({
         </div>
 
         {/* ═══ 滚动区域：菜单列表 ═══ */}
-        <ScrollArea className="h-[calc(100vh-5rem)] duralux-scrollbar">
+        <ScrollArea className="h-[calc(100vh-144px)] duralux-scrollbar">
           <ul className="py-3 px-3 list-none m-0">
             {menuGroups.map((group, groupIndex) => (
               <li key={group.label}>
@@ -258,60 +258,33 @@ export function Sidebar({
               </li>
             ))}
 
-            {/* 底部：返回网站 */}
-            <li className="mt-4 pt-4 border-t border-duralux-border-light dark:border-duralux-border-dark">
-              <Link
-                href="/"
-                className={cn(
-                  "flex items-center rounded-xl text-[14px] transition-all duration-200 no-underline cursor-pointer group",
-                  isExpanded
-                    ? "px-2.5 py-2 gap-2"
-                    : "w-12 h-12 mx-auto flex items-center justify-center p-0",
-                  "text-duralux-text-secondary hover:text-duralux-text-primary hover:bg-duralux-bg-page",
-                  "dark:text-duralux-text-dark-secondary dark:hover:text-duralux-text-dark-primary dark:hover:bg-duralux-bg-dark-hover",
-                )}
-              >
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-duralux-bg-page group-hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card dark:group-hover:bg-duralux-bg-dark-hover transition-colors">
-                  <LogOut className="w-5 h-5" strokeWidth={1.8} />
-                </div>
-                <motion.span
-                  variants={textVariants}
-                  className="whitespace-nowrap leading-none font-medium"
-                >
-                  Back to Site
-                </motion.span>
-              </Link>
-            </li>
-
-            {/* 底部用户信息卡片 - Duralux Style (仅展开态显示) */}
-            {isExpanded && (
-              <li className="mt-4 pt-4">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative overflow-hidden rounded-xl bg-gradient-to-br from-duralux-bg-page to-duralux-bg-page/50 p-4 border border-duralux-border-light dark:from-duralux-bg-dark-card dark:to-duralux-bg-dark-card/50 dark:border-duralux-border-dark"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-duralux-primary/20 to-duralux-success/20 flex items-center justify-center border-2 border-white dark:border-duralux-border-dark shadow-sm">
-                        <UserCircle className="w-6 h-6 text-duralux-primary" />
-                      </div>
-                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-duralux-success border-2 border-white dark:border-duralux-bg-dark rounded-full shadow-[0_0_8px_rgba(113,221,55,0.4)]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary truncate">
-                        Admin User
-                      </p>
-                      <p className="text-xs text-duralux-text-muted truncate">
-                        Administrator
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              </li>
-            )}
           </ul>
         </ScrollArea>
+
+        {/* 底部：返回网站 - 固定在 sidebar 最底部 */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-duralux-border-light dark:border-duralux-border-dark bg-white dark:bg-[#2b2c40]">
+          <Link
+            href="/"
+            className={cn(
+              "flex items-center rounded-xl text-[14px] transition-all duration-200 no-underline cursor-pointer group",
+              isExpanded
+                ? "px-2.5 py-2 gap-2"
+                : "w-full h-11 flex items-center justify-center p-0",
+              "text-duralux-text-secondary hover:text-duralux-text-primary hover:bg-duralux-bg-page",
+              "dark:text-duralux-text-dark-secondary dark:hover:text-duralux-text-dark-primary dark:hover:bg-duralux-bg-dark-hover",
+            )}
+          >
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-duralux-bg-page group-hover:bg-duralux-bg-hover dark:bg-duralux-bg-dark-card dark:group-hover:bg-duralux-bg-dark-hover transition-colors">
+              <LogOut className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <motion.span
+              variants={textVariants}
+              className="whitespace-nowrap leading-none font-medium"
+            >
+              Back to Site
+            </motion.span>
+          </Link>
+        </div>
       </motion.aside>
     </>
   );

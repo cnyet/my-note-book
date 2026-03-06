@@ -1,31 +1,11 @@
 "use client";
 
 import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
   EditOutlined,
   PlusOutlined,
   SearchOutlined,
   DeleteOutlined,
   CheckOutlined,
-  CloseOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -41,12 +21,17 @@ import {
   Typography,
   message,
   Card,
+  Table,
+  Tag,
+  Dropdown,
+  type MenuProps,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { GripVertical, Wrench, Layers, Link2 } from "lucide-react";
+import { Wrench, Layers, Link2, MoreVertical } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ColumnsType } from "antd/es/table";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -68,7 +53,7 @@ interface Tool {
   seoDescription?: string;
 }
 
-// 将后端 API Tool 转换为前端 Tool
+// Map API Tool to Frontend
 function mapApiToolToFrontend(apiTool: ApiTool): Tool {
   return {
     id: apiTool.id,
@@ -84,7 +69,7 @@ function mapApiToolToFrontend(apiTool: ApiTool): Tool {
   };
 }
 
-// 将前端 Tool 转换为后端 API 格式
+// Map Frontend Tool to API
 function mapFrontendToolToApi(tool: Tool): Partial<ApiTool> {
   return {
     name: tool.name,
@@ -98,46 +83,30 @@ function mapFrontendToolToApi(tool: Tool): Partial<ApiTool> {
   };
 }
 
-// Category Badge Component - Duralux Style
+// Category Badge Component
 function CategoryBadge({ category }: { category: ToolCategory }) {
-  const categoryColors: Record<ToolCategory, { color: string; bgColor: string }> = {
-    Dev: { color: "var(--duralux-primary)", bgColor: "var(--duralux-primary-transparent)" },
-    Auto: { color: "var(--duralux-info)", bgColor: "var(--duralux-info-transparent)" },
-    Intel: { color: "var(--duralux-warning)", bgColor: "var(--duralux-warning-transparent)" },
-    Creative: { color: "var(--duralux-success)", bgColor: "var(--duralux-success-transparent)" },
+  const categoryConfig: Record<ToolCategory, { color: string; text: string }> = {
+    Dev: { color: "blue", text: "Dev" },
+    Auto: { color: "cyan", text: "Auto" },
+    Intel: { color: "orange", text: "Intel" },
+    Creative: { color: "purple", text: "Creative" },
   };
 
-  const colors = categoryColors[category];
-
-  return (
-    <span
-      className="px-2.5 py-0.5 rounded-full text-xs font-medium border-0"
-      style={{ backgroundColor: colors.bgColor, color: colors.color }}
-    >
-      {category}
-    </span>
-  );
+  const config = categoryConfig[category];
+  return <Tag color={config.color}>{config.text}</Tag>;
 }
 
-// Status Badge Component - Duralux Style
-function StatusBadge({ status, label, size = "md" }: { status: ToolStatus; label: string; size?: "sm" | "md" }) {
-  const colors = status === "active"
-    ? { color: "var(--duralux-success)", bgColor: "var(--duralux-success-transparent)" }
-    : { color: "var(--duralux-text-muted)", bgColor: "var(--duralux-bg-hover)" };
-
-  const sizeClasses = size === "sm" ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-sm";
-
-  return (
-    <span
-      className={`${sizeClasses} rounded-full font-medium border-0`}
-      style={{ backgroundColor: colors.bgColor, color: colors.color }}
-    >
-      {label}
-    </span>
-  );
+// Status Badge Component
+function StatusBadge({ status }: { status: ToolStatus }) {
+  const badgeConfig = {
+    active: { color: "success", text: "Active" },
+    inactive: { color: "default", text: "Inactive" },
+  };
+  const config = badgeConfig[status] || badgeConfig.inactive;
+  return <Tag color={config.color}>{config.text}</Tag>;
 }
 
-// Stat Card Component - Duralux Style
+// Stat Card Component
 function StatCard({
   icon,
   label,
@@ -196,139 +165,7 @@ function SkeletonStatCard() {
   );
 }
 
-// Sortable Tool Card Component - Duralux Style
-function SortableToolCard({ tool, onEdit, onDelete }: { tool: Tool; onEdit: (tool: Tool) => void; onDelete: (tool: Tool) => void }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: tool.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 10 : 1,
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group relative h-full"
-    >
-      <div
-        ref={setNodeRef}
-        style={style}
-        className="relative h-full rounded-2xl bg-white dark:bg-[#2b2c40] border border-[#eceef1] dark:border-[#444564] shadow-duralux-card hover:shadow-duralux-hover dark:shadow-duralux-card-dark dark:hover:shadow-duralux-hover-dark transition-all duration-200 overflow-hidden"
-      >
-        <div className="relative p-5 h-full flex flex-col">
-          {/* Header: Category Badge + Actions */}
-          <div className="flex justify-between items-start mb-4">
-            <CategoryBadge category={tool.category} />
-            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-primary hover:bg-duralux-bg-hover cursor-grab active:cursor-grabbing transition-colors"
-                aria-label="Drag to reorder"
-                {...attributes}
-                {...listeners}
-              >
-                <GripVertical size={14} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => onDelete(tool)}
-                className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-danger hover:bg-duralux-danger-transparent cursor-pointer transition-colors"
-                aria-label="Delete tool"
-              >
-                <DeleteOutlined size={14} />
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Tool Icon */}
-          <div className="relative mb-4 mx-auto">
-            <div className="w-16 h-16 rounded-full bg-duralux-primary-transparent flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
-              <span className="text-2xl font-bold text-duralux-primary">
-                {tool.icon.charAt(0).toUpperCase()}
-              </span>
-            </div>
-          </div>
-
-          {/* Tool Name */}
-          <h3 className="text-base font-bold text-center text-duralux-text-primary dark:text-duralux-text-dark-primary m-0 mb-2">
-            {tool.name}
-          </h3>
-
-          {/* Description */}
-          <p className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs text-center leading-relaxed mb-4 line-clamp-2 flex-grow">
-            {tool.description}
-          </p>
-
-          {/* Status Badge */}
-          <div className="flex justify-center mb-4">
-            <StatusBadge
-              status={tool.status}
-              label={tool.status === "active" ? "Active" : "Inactive"}
-              size="sm"
-            />
-          </div>
-
-          {/* Footer: Action Buttons */}
-          <div className="flex gap-2 pt-3 border-t border-[#eceef1] dark:border-[#444564] mt-auto">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onEdit(tool)}
-              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-duralux-bg-page dark:bg-[#323249] text-duralux-text-secondary dark:text-duralux-text-dark-secondary hover:bg-duralux-bg-hover dark:hover:bg-duralux-bg-dark-hover transition-colors flex items-center justify-center gap-1.5 cursor-pointer border-none"
-            >
-              <EditOutlined size={12} />
-              Edit
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => window.open(tool.link, "_blank")}
-              className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-duralux-primary to-duralux-primary-dark text-white hover:from-duralux-primary-dark hover:to-duralux-primary shadow-md shadow-duralux-primary/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
-            >
-              <Link2 size={12} />
-              Open
-            </motion.button>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Drag Overlay Component
-function DragOverlayItem({ tool }: { tool: Tool | null }) {
-  if (!tool) return null;
-
-  return (
-    <Card className="opacity-80 rounded-xl">
-      <div className="flex items-center gap-3 p-4">
-        <GripVertical className="w-4 h-4 text-duralux-primary" />
-        <div className="flex-1">
-          <Text strong className="text-duralux-text-primary dark:text-duralux-text-dark-primary">
-            {tool.name}
-          </Text>
-        </div>
-        <CategoryBadge category={tool.category} />
-      </div>
-    </Card>
-  );
-}
-
-// Tool Form Modal - Duralux Style
+// Tool Form Modal
 function ToolFormModal({
   open,
   tool,
@@ -508,7 +345,6 @@ function ToolFormModal({
                 Status
               </label>
               <Switch
-                
                 defaultChecked={tool?.status !== "inactive"}
                 checkedChildren="Active"
                 unCheckedChildren="Inactive"
@@ -565,7 +401,6 @@ export default function ToolsManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [editingTool, setEditingTool] = useState<Tool | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeId, setActiveId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Load tools from API
@@ -582,12 +417,19 @@ export default function ToolsManagementPage() {
 
   const tools = useMemo(() => toolsData || [], [toolsData]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  // Mutations
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await toolsApi.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
+      message.success("Tool deleted successfully");
+    },
+    onError: () => {
+      message.error("Failed to delete tool");
+    },
+  });
 
   const handleSave = async (values: Partial<Tool>) => {
     try {
@@ -623,54 +465,16 @@ export default function ToolsManagementPage() {
     }
   };
 
-  const handleDelete = async (tool: Tool) => {
+  const handleDelete = (tool: Tool) => {
     Modal.confirm({
       title: "Delete Tool",
       content: `Are you sure you want to delete "${tool.name}"? This action cannot be undone.`,
       okText: "Delete",
       okType: "danger",
-      onOk: async () => {
-        try {
-          await toolsApi.delete(tool.id);
-          queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
-          message.success("Tool deleted successfully");
-        } catch (error) {
-          console.error("Failed to delete tool:", error);
-          message.error("Failed to delete tool");
-        }
+      onOk: () => {
+        deleteMutation.mutate(tool.id);
       },
     });
-  };
-
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as number);
-  };
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = tools.findIndex((item) => item.id === active.id);
-      const newIndex = tools.findIndex((item) => item.id === over.id);
-
-      const reordered = arrayMove(tools, oldIndex, newIndex);
-
-      try {
-        for (let i = 0; i < reordered.length; i++) {
-          const tool = reordered[i];
-          if (tool.sortOrder !== i + 1) {
-            await toolsApi.update(tool.id, { sort_order: i + 1 });
-          }
-        }
-        queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
-        message.success("Tools reordered successfully");
-      } catch (error) {
-        console.error("Failed to reorder tools:", error);
-        message.error("Failed to reorder tools");
-      }
-    }
-
-    setActiveId(null);
   };
 
   const handleEdit = (tool: Tool) => {
@@ -710,6 +514,96 @@ export default function ToolsManagementPage() {
     return result;
   }, [tools, activeCategory, searchQuery]);
 
+  // Action menu for each row
+  const getMenuItems = (tool: Tool): MenuProps["items"] => [
+    {
+      key: "edit",
+      label: "Edit",
+      icon: <EditOutlined />,
+      onClick: () => handleEdit(tool),
+    },
+    {
+      key: "open",
+      label: "Open",
+      icon: <Link2 size={16} />,
+      onClick: () => window.open(tool.link, "_blank"),
+    },
+    { type: "divider" },
+    {
+      key: "delete",
+      label: "Delete",
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: () => handleDelete(tool),
+    },
+  ];
+
+  // Table columns
+  const columns: ColumnsType<Tool> = [
+    {
+      title: "Tool",
+      dataIndex: "name",
+      key: "tool",
+      width: 200,
+      render: (_, tool) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center">
+            <span className="text-white font-bold text-sm">
+              {tool.icon.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div>
+            <div className="font-semibold text-duralux-text-primary">{tool.name}</div>
+            <div className="text-xs text-duralux-text-muted">{tool.icon}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      key: "category",
+      width: 100,
+      render: (category: ToolCategory) => <CategoryBadge category={category} />,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      ellipsis: true,
+      render: (text) => (
+        <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">
+          {text}
+        </Text>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      render: (status: ToolStatus) => <StatusBadge status={status} />,
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 100,
+      render: (_, tool) => (
+        <Dropdown
+          menu={{ items: getMenuItems(tool) }}
+          trigger={["click"]}
+          placement="bottomRight"
+        >
+          <Button
+            icon={<MoreVertical size={16} />}
+            size="small"
+            className="border-0 shadow-none"
+          />
+        </Dropdown>
+      ),
+    },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -717,7 +611,7 @@ export default function ToolsManagementPage() {
       className="space-y-6"
     >
       {/* Header Section */}
-      <Row gutter={[24, 24]} align="middle" className="">
+      <Row gutter={[24, 24]} align="middle">
         <Col xs={24} md={12}>
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center shadow-lg shadow-duralux-primary/30">
@@ -758,9 +652,6 @@ export default function ToolsManagementPage() {
                 { label: "Intel", value: "Intel" },
                 { label: "Creative", value: "Creative" },
               ]}
-              styles={{
-                selector: { borderRadius: "12px", height: "44px" },
-              }}
             />
             <Button
               type="primary"
@@ -775,7 +666,7 @@ export default function ToolsManagementPage() {
       </Row>
 
       {/* Stats Row */}
-      <Row gutter={[24, 24]} className="">
+      <Row gutter={[24, 24]}>
         <Col xs={24} sm={12} md={6}>
           {isLoading ? (
             <SkeletonStatCard />
@@ -826,32 +717,24 @@ export default function ToolsManagementPage() {
         </Col>
       </Row>
 
-      {/* Tools Grid */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+      {/* Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
       >
-        <SortableContext
-          items={filteredTools.map((t) => t.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <Row gutter={[24, 24]}>
-            {filteredTools.map((tool) => (
-              <Col xs={24} sm={12} lg={8} xl={6} key={tool.id}>
-                <SortableToolCard tool={tool} onEdit={handleEdit} onDelete={handleDelete} />
-              </Col>
-            ))}
-          </Row>
-        </SortableContext>
-
-        <DragOverlay>
-          <DragOverlayItem
-            tool={activeId ? tools.find((t) => t.id === activeId) || null : null}
-          />
-        </DragOverlay>
-      </DndContext>
+        <Table<Tool>
+          columns={columns}
+          dataSource={filteredTools}
+          rowKey="id"
+          loading={isLoading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+          }}
+          className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
+        />
+      </motion.div>
 
       {/* Empty State */}
       {filteredTools.length === 0 && !isLoading && (

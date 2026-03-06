@@ -7,25 +7,24 @@ import {
   Bar,
   BarChart,
   Cell,
+  ComposedChart,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { Mail, MousePointer, TrendingUp } from "lucide-react";
 
-const DATA = [
-  { day: "01", sent: 1250, opened: 890 },
-  { day: "02", sent: 1100, opened: 780 },
-  { day: "03", sent: 1450, opened: 1020 },
-  { day: "04", sent: 1350, opened: 950 },
-  { day: "05", sent: 1580, opened: 1180 },
-  { day: "06", sent: 1200, opened: 820 },
-  { day: "07", sent: 1680, opened: 1320 },
-  { day: "08", sent: 1420, opened: 980 },
-  { day: "09", sent: 1350, opened: 920 },
-  { day: "10", sent: 1750, opened: 1380 },
-  { day: "11", sent: 1520, opened: 1100 },
-  { day: "12", sent: 1280, opened: 850 },
+const EMAIL_DATA = [
+  { day: "Mon", sent: 1250, opened: 890 },
+  { day: "Tue", sent: 1100, opened: 780 },
+  { day: "Wed", sent: 1450, opened: 1020 },
+  { day: "Thu", sent: 1350, opened: 950 },
+  { day: "Fri", sent: 1580, opened: 1180 },
+  { day: "Sat", sent: 1200, opened: 820 },
+  { day: "Sun", sent: 1680, opened: 1320 },
 ];
 
 const COLORS = {
@@ -62,14 +61,14 @@ export function EmailReportsCard() {
     { key: "2", label: "Export" },
   ];
 
-  const totalSent = DATA.reduce((sum, item) => sum + item.sent, 0);
-  const totalOpened = DATA.reduce((sum, item) => sum + item.opened, 0);
+  const totalSent = EMAIL_DATA.reduce((sum, item) => sum + item.sent, 0);
+  const totalOpened = EMAIL_DATA.reduce((sum, item) => sum + item.opened, 0);
   const openRate = ((totalOpened / totalSent) * 100).toFixed(1);
 
   return (
     <Card
       title={
-        <span className="text-lg font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+        <span className="text-base font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary">
           Email Reports
         </span>
       }
@@ -87,82 +86,113 @@ export function EmailReportsCard() {
       className={cn(
         "h-full rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark",
         "transition-all duration-200",
-        "hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark",
-        "hover:-translate-y-0.5",
-        "cursor-pointer",
         "bg-white dark:bg-duralux-bg-dark-card"
       )}
       styles={{
-        body: { padding: "1.5rem", height: "100%" },
+        body: { padding: "1.25rem", height: "100%" },
       }}
     >
-      <div className="flex flex-col h-full">
-        {/* Stats Summary - Duralux Style */}
-        <div className="flex items-center gap-6 mb-6">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-duralux-primary"></div>
-            <span className="text-xs text-duralux-text-muted">Sent</span>
+      {/* Stats Summary - Payment Record Style */}
+      <div className="grid grid-cols-3 gap-4 mb-5">
+        {/* Sent */}
+        <div className="text-center">
+          <div className="w-10 h-10 rounded-lg bg-duralux-primary-transparent flex items-center justify-center mx-auto mb-2">
+            <Mail className="w-4 h-4 text-duralux-primary" />
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-duralux-info"></div>
-            <span className="text-xs text-duralux-text-muted">Opened</span>
+          <div className="text-lg font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+            {(totalSent / 1000).toFixed(1)}k
           </div>
-          <div className="ml-auto text-right">
-            <span className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
-              {openRate}%
-            </span>
-            <span className="text-xs text-duralux-text-muted ml-1">Open Rate</span>
-          </div>
+          <div className="text-xs text-duralux-text-muted mt-0.5">Sent</div>
         </div>
 
-        {/* Bar Chart */}
-        <div className="flex-1 min-h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={DATA} barGap={4}>
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#8898aa", fontSize: 11 }}
-                dy={10}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#8898aa", fontSize: 11 }}
-                tickFormatter={(value) => `${value / 1000}k`}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar
-                dataKey="sent"
-                name="Sent"
-                fill={COLORS.sent}
-                radius={[6, 6, 0, 0]}
-                barSize={12}
-              >
-                {DATA.map((entry, index) => (
-                  <Cell
-                    key={`cell-sent-${index}`}
-                    fill={index === DATA.length - 1 ? "#4b4ed5" : COLORS.sent}
-                  />
-                ))}
-              </Bar>
-              <Bar
-                dataKey="opened"
-                name="Opened"
-                fill={COLORS.opened}
-                radius={[6, 6, 0, 0]}
-                barSize={12}
-              >
-                {DATA.map((entry, index) => (
-                  <Cell
-                    key={`cell-opened-${index}`}
-                    fill={index === DATA.length - 1 ? "#02a9c9" : COLORS.opened}
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Opened */}
+        <div className="text-center">
+          <div className="w-10 h-10 rounded-lg bg-duralux-info-transparent flex items-center justify-center mx-auto mb-2">
+            <MousePointer className="w-4 h-4 text-duralux-info" />
+          </div>
+          <div className="text-lg font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+            {(totalOpened / 1000).toFixed(1)}k
+          </div>
+          <div className="text-xs text-duralux-text-muted mt-0.5">Opened</div>
+        </div>
+
+        {/* Open Rate */}
+        <div className="text-center">
+          <div className="w-10 h-10 rounded-lg bg-duralux-success-transparent flex items-center justify-center mx-auto mb-2">
+            <TrendingUp className="w-4 h-4 text-duralux-success" />
+          </div>
+          <div className="text-lg font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
+            {openRate}%
+          </div>
+          <div className="text-xs text-duralux-text-muted mt-0.5">Rate</div>
+        </div>
+      </div>
+
+      {/* Chart - Bar + Line (Payment Record Style) */}
+      <div className="h-[220px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={EMAIL_DATA}>
+            <defs>
+              <linearGradient id="sentGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={COLORS.sent} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={COLORS.sent} stopOpacity={0.3} />
+              </linearGradient>
+            </defs>
+            <XAxis
+              dataKey="day"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#8898aa", fontSize: 12 }}
+              dy={10}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#8898aa", fontSize: 12 }}
+              tickFormatter={(value) => `${value / 1000}k`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+
+            {/* Bar Chart - Sent */}
+            <Bar
+              dataKey="sent"
+              name="Sent"
+              fill="url(#sentGradient)"
+              radius={[6, 6, 0, 0]}
+              barSize={32}
+            >
+              {EMAIL_DATA.map((entry, index) => (
+                <Cell
+                  key={`cell-sent-${index}`}
+                  fill={index === EMAIL_DATA.length - 1 ? COLORS.sent : `url(#sentGradient)`}
+                  style={{ opacity: index === EMAIL_DATA.length - 1 ? 1 : 0.8 }}
+                />
+              ))}
+            </Bar>
+
+            {/* Line Chart - Open Rate Trend */}
+            <Line
+              type="monotone"
+              dataKey="opened"
+              name="Opened"
+              stroke={COLORS.opened}
+              strokeWidth={3}
+              dot={{ fill: COLORS.opened, r: 4, strokeWidth: 2, stroke: "#fff" }}
+              activeDot={{ r: 6, strokeWidth: 2 }}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center justify-center gap-6 mt-4">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS.sent }}></div>
+          <span className="text-xs text-duralux-text-muted">Sent</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS.opened }}></div>
+          <span className="text-xs text-duralux-text-muted">Opened Trend</span>
         </div>
       </div>
     </Card>
