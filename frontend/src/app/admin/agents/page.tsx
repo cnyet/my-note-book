@@ -507,12 +507,11 @@ export default function AgentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-duralux-bg-page dark:bg-duralux-bg-dark-page px-6 py-6">
+    <div className="space-y-6">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -561,7 +560,6 @@ export default function AgentsPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="mb-6"
       >
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} lg={6}>
