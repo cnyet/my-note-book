@@ -1,6 +1,6 @@
 # Active Context
 
-> 最后更新：2026-03-06T10:00:00Z
+> 最后更新：2026-03-06T11:00:00Z
 
 ## ✅ Sprint 6: 5 个 Agent 功能实现 - 全部完成并上线
 
@@ -16,6 +16,7 @@
 | Phase 6: 公共 Agents 页面改造 | ✅ | `569598e` |
 | Phase 7: 管理后台 | ✅ | 已有基础 |
 | Phase 8: 管理后台 padding 统一 | ✅ | 已完成 |
+| Phase 9: Blog 功能修复与增强 | ✅ | `1a70a68` + `fa3d89e` |
 
 ### 后端 API 汇总
 
@@ -26,6 +27,7 @@
 | Life | `/api/v1/admin/life` | HealthMetrics, HealthSuggestion | ✅ |
 | Review | `/api/v1/admin/review` | DailyReview, UserPreference | ✅ |
 | Outfit | `/api/v1/admin/outfit` | OutfitRecommendation | ✅ |
+| Blog | `/api/v1/admin/blog` | BlogPost, PostTag | ✅ |
 
 ### 前端页面汇总
 
@@ -37,6 +39,8 @@
 | Life Agent | `/agents/life` | use-life | ✅ 新建 |
 | Review Agent | `/agents/review` | use-review | ✅ 新建 |
 | Outfit Agent | `/agents/outfit` | use-outfit | ✅ 新建 |
+| Blog 列表 (公共) | `/blog` | - | ✅ 美化完成 |
+| Blog 管理 | `/admin/blog` | - | ✅ 修复 + 视图切换 |
 
 ### 技术架构
 - **后端**: FastAPI + APScheduler + SQLite + Ollama
@@ -104,3 +108,34 @@ c860007 fix(sprint-6): fix router registration in main.py
 - 开始时间：2026-03-06T10:00:00Z
 - 最后活动：2026-03-06 Admin UI 优化完成
 - 归档状态：✅ 已归档至 `docs/admin/ui-optimization.md`
+
+---
+
+## 最新会话摘要 (2026-03-06)
+
+### 完成的工作
+
+| 任务 | 状态 | 提交 |
+|------|------|------|
+| Blog 公共页面美化 | ✅ | Genesis 风格 + 动画效果 |
+| Blog 管理后台字段修复 | ✅ | `1a70a68` |
+| Table/Grid 视图切换 | ✅ | `fa3d89e` |
+
+### 技术细节
+
+**Blog API 类型修复:**
+- `summary` → `excerpt`
+- `publish_date` → `published_at`
+- `tags` → `{ tag_name: string }[]`
+
+**视图切换功能:**
+- Table 视图：原有表格布局，支持行选择、批量操作
+- Grid 视图：卡片布局，4 列响应式 (1/2/3/4 列)
+- 共享筛选器：状态、搜索、排序
+- 骨架屏加载状态
+
+### 设计系统
+- Genesis Design System (Duralux)
+- Framer Motion 动画
+- Ant Design 组件库
+- Tailwind CSS 工具类
