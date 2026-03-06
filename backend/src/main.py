@@ -87,12 +87,13 @@ app.include_router(news_api.router, prefix="/api/v1", tags=["news"])
 app.include_router(task_agent.router, prefix="/api/v1/admin", tags=["task"])
 
 # Life Agent API 路由
+app.include_router(life_agent.router, prefix="/api/v1/admin", tags=["life"])
 
 # Review Agent API 路由
+app.include_router(review_agent.router, prefix="/api/v1/admin", tags=["review"])
 
 # Outfit Agent API 路由
 app.include_router(outfit_agent.router, prefix="/api/v1/admin", tags=["outfit"])
-app.include_router(life_agent.router, prefix="/api/v1/admin", tags=["life"])
 
 # WebSocket 路由
 app.include_router(ws_handlers.router, tags=["websocket"])
