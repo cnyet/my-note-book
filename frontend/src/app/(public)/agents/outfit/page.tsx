@@ -119,10 +119,10 @@ export default function OutfitAgentPage() {
                   {/* Weather Info */}
                   {todayOutfit.weather_data && (
                     <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
-                      {getWeatherIcon(todayOutfit.weather_data.condition)}
+                      {getWeatherIcon(todayOutfit.weather_data.condition || undefined)}
                       <div>
                         <p className="text-white font-bold">
-                          {todayOutfit.weather_data.temperature}°C
+                          {todayOutfit.weather_data.temperature || 0}°C
                         </p>
                         <p className="text-sm text-slate-400">
                           {todayOutfit.weather_data.condition || "晴朗"}

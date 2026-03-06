@@ -8,7 +8,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export interface OutfitRecommendation {
   id: string;
   recommend_date: string;
-  weather_data: Record<string, unknown> | null;
+  weather_data: {
+    temperature?: number;
+    humidity?: number;
+    condition?: string;
+  } | null;
   schedule_input: string | null;
   outfit_description: string;
   outfit_image_path: string | null;
@@ -55,7 +59,11 @@ async function fetchOutfitRecommendation(
 async function createOutfitRecommendation(data: {
   recommend_date: string;
   outfit_description: string;
-  weather_data?: Record<string, unknown>;
+  weather_data?: {
+    temperature?: number;
+    humidity?: number;
+    condition?: string;
+  };
   schedule_input?: string;
   outfit_image_path?: string;
   outfit_image_url?: string;
@@ -94,7 +102,11 @@ async function deleteOutfitRecommendation(id: string): Promise<void> {
 async function generateOutfitRecommendation(data: {
   recommend_date: string;
   schedule_input?: string;
-  weather_data?: Record<string, unknown>;
+  weather_data?: {
+    temperature?: number;
+    humidity?: number;
+    condition?: string;
+  };
 }): Promise<OutfitRecommendation> {
   const res = await fetch(`${API_BASE}/outfit/generate`, {
     method: "POST",
