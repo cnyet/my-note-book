@@ -9,11 +9,12 @@ import {
   SearchOutlined,
   ThunderboltOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Input, message, Modal, Select, Space, Table, Tag, Tooltip } from "antd";
+import { Button, Card, Input, message, Modal, Radio, Select, Space, Table, Tag, Tooltip } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { exportToCSV } from "@/lib/table-utils";
 import { TableToolbar } from "@/components/admin/shared/TableToolbar";
 import { motion } from "framer-motion";
+import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
 
 type SorterType<T> = {
   column?: ColumnsType<T>[number];
@@ -68,6 +69,110 @@ function StatWidget({
         </div>
       </div>
     </Card>
+  );
+}
+
+/** Grid 视图卡片组件 */
+function BlogPostCard({ post, onEdit, onDelete, onToggleStatus }: {
+  post: BlogPost;
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
+  onToggleStatus: (id: number) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="group"
+    >
+      <Card
+        className="rounded-2xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-1 overflow-hidden"
+        cover={
+          <div className="relative h-48 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center">
+            {post.cover_image ? (
+              <img
+                src={post.cover_image}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <FileTextOutlined className="text-6xl text-duralux-text-muted opacity-30" />
+            )}
+            <div className="absolute top-3 left-3">
+              <Tag
+                color={post.status === "published" ? "success" : "default"}
+                className="!rounded-full text-xs font-medium px-3 py-0.5 border-0"
+                style={{
+                  backgroundColor: post.status === "published"
+                    ? "var(--duralux-success-transparent)"
+                    : "var(--duralux-bg-page)",
+                  color: post.status === "published"
+                    ? "var(--duralux-success)"
+                    : "var(--duralux-text-muted)",
+                }}
+              >
+                {post.status === "published" ? "Published" : "Draft"}
+              </Tag>
+            </div>
+          </div>
+        }
+        actions={[
+          <Tooltip key="view" title="View">
+            <EyeOutlined
+              className="cursor-pointer text-duralux-text-secondary hover:text-duralux-primary transition-colors"
+              onClick={() => message.info(`View post: ${post.title}`)}
+            />
+          </Tooltip>,
+          <Tooltip key="edit" title="Edit">
+            <EditOutlined
+              className="cursor-pointer text-duralux-text-secondary hover:text-duralux-primary transition-colors"
+              onClick={() => onEdit(post.id)}
+            />
+          </Tooltip>,
+          <Tooltip key="toggle" title={post.status === "published" ? "Unpublish" : "Publish"}>
+            <ThunderboltOutlined
+              className={`cursor-pointer transition-colors ${
+                post.status === "published"
+                  ? "text-duralux-success hover:text-duralux-success-dark"
+                  : "text-duralux-warning hover:text-duralux-warning-dark"
+              }`}
+              onClick={() => onToggleStatus(post.id)}
+            />
+          </Tooltip>,
+          <Tooltip key="delete" title="Delete">
+            <DeleteOutlined
+              className="cursor-pointer text-duralux-text-secondary hover:text-duralux-danger transition-colors"
+              onClick={() => onDelete(post.id)}
+            />
+          </Tooltip>,
+        ]}
+      >
+        <Card.Meta
+          title={
+            <h3 className="text-base font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary line-clamp-2 min-h-[3rem]">
+              {post.title}
+            </h3>
+          }
+          description={
+            <div className="space-y-2 pt-2">
+              <p className="text-sm text-duralux-text-muted line-clamp-2">
+                {post.excerpt || "No description"}
+              </p>
+              <div className="flex items-center justify-between text-xs text-duralux-text-secondary">
+                <span>{post.author}</span>
+                <span>
+                  {new Date(post.published_at || post.created_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            </div>
+          }
+        />
+      </Card>
+    </motion.div>
   );
 }
 
@@ -518,7 +623,8 @@ export default function BlogListPage() {
       >
         <div className="flex flex-col gap-4">
           {/* Table Toolbar */}
-          <TableToolbar
+          <div className="flex items-center justify-between mb-4">
+            <TableToolbar
             showDensity
             showColumnToggle
             showExport
@@ -542,7 +648,24 @@ export default function BlogListPage() {
               views: post.views || 0,
             }))}
             exportColumns={["title", "author", "published_at", "status", "views"]}
-          />
+            />
+            
+            {/* View Mode Toggle */}
+            <Radio.Group
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value)}
+              size="large"
+            >
+              <Radio.Button value="table">
+                <BarsOutlined className="mr-1" />
+                Table
+              </Radio.Button>
+              <Radio.Button value="grid">
+                <AppstoreOutlined className="mr-1" />
+                Grid
+              </Radio.Button>
+            </Radio.Group>
+          </div>
 
           {/* Search and Filters */}
           <div className="flex flex-wrap items-center gap-4">
@@ -617,32 +740,58 @@ export default function BlogListPage() {
         </div>
       </Card>
 
-      {/* Table - Duralux Style */}
+      {/* Content Area - Duralux Style */}
       <Card
         className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark"
         styles={{ body: { padding: "0" } }}
       >
-        <Table
-          rowSelection={rowSelection}
-          columns={columns.filter(col => {
-            const key = col.key as string;
-            return visibleColumns[key] !== false;
-          })}
-          dataSource={paginatedPosts}
-          rowKey="id"
-          pagination={{
-            ...pagination,
-            total: filteredPosts.length,
-            showSizeChanger: true,
-            pageSizeOptions: [...BLOG_CONSTANTS.PAGINATION.PAGE_SIZE_OPTIONS],
-            showTotal: (total: number) => `Total ${total} posts`,
-            className: "text-duralux-text-secondary",
-          } as Record<string, unknown>}
-          onChange={onTableChange as unknown as (pagination: TablePaginationConfig, filters: unknown, sorter: unknown) => void}
-          className="duralux-table"
-          scroll={{ x: BLOG_CONSTANTS.TABLE_SCROLL_X }}
-          size={density === "compact" ? "small" : density === "spacious" ? "large" : "middle"}
-        />
+        {viewMode === "table" ? (
+          /* Table View */
+          <Table
+            rowSelection={rowSelection}
+            columns={columns.filter(col => {
+              const key = col.key as string;
+              return visibleColumns[key] !== false;
+            })}
+            dataSource={paginatedPosts}
+            rowKey="id"
+            pagination={{
+              ...pagination,
+              total: filteredPosts.length,
+              showSizeChanger: true,
+              pageSizeOptions: [...BLOG_CONSTANTS.PAGINATION.PAGE_SIZE_OPTIONS],
+              showTotal: (total: number) => `Total ${total} posts`,
+              className: "text-duralux-text-secondary",
+            } as Record<string, unknown>}
+            onChange={onTableChange as unknown as (pagination: TablePaginationConfig, filters: unknown, sorter: unknown) => void}
+            className="duralux-table"
+            scroll={{ x: BLOG_CONSTANTS.TABLE_SCROLL_X }}
+            size={density === "compact" ? "small" : density === "spacious" ? "large" : "middle"}
+          />
+        ) : (
+          /* Grid View */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+            {isLoading ? (
+              Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="h-48 skeleton rounded-t-2xl" />
+                  <div className="h-4 w-3/4 skeleton rounded" />
+                  <div className="h-4 w-full skeleton rounded" />
+                </div>
+              ))
+            ) : (
+              paginatedPosts.map((post) => (
+                <BlogPostCard
+                  key={post.id}
+                  post={post}
+                  onEdit={(id) => router.push(`/admin/blog/${id}`)}
+                  onDelete={handleDelete}
+                  onToggleStatus={handleStatusToggle}
+                />
+              ))
+            )}
+          </div>
+        )}
       </Card>
 
       {/* Custom Styles for Table */}
