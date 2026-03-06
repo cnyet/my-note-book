@@ -1,9 +1,10 @@
 "use client";
 
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt } from "lucide-react";
 import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
 import Link from "next/link";
+import { useAgents } from "@/hooks/use-agents";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2 } from "lucide-react";
 
 const AgentsFooter = () => (
   <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
@@ -28,54 +29,42 @@ const AgentsFooter = () => (
   </footer>
 );
 
+// Agent slug to icon and color mapping
+const agentConfig: Record<string, { icon: React.ReactNode; color: string; role: string; capabilities: string[] }> = {
+  news: {
+    icon: <Newspaper className="text-blue-400" />,
+    color: "blue",
+    role: "AI 资讯聚合",
+    capabilities: ["自动爬取", "AI 摘要", "每日更新"],
+  },
+  task: {
+    icon: <CheckSquare className="text-emerald-400" />,
+    color: "emerald",
+    role: "任务管理",
+    capabilities: ["智能生成", "优先级管理", "进度追踪"],
+  },
+  life: {
+    icon: <Heart className="text-red-400" />,
+    color: "red",
+    role: "健康管理",
+    capabilities: ["健康记录", "AI 建议", "数据分析"],
+  },
+  review: {
+    icon: <BookOpen className="text-purple-400" />,
+    color: "purple",
+    role: "每日复盘",
+    capabilities: ["自动汇总", "偏好提取", "成长追踪"],
+  },
+  outfit: {
+    icon: <Shirt className="text-orange-400" />,
+    color: "orange",
+    role: "穿搭推荐",
+    capabilities: ["天气适配", "日程搭配", "AI 生成"],
+  },
+};
+
 export default function AgentsPage() {
-  const agents = [
-    {
-      name: "News Hub",
-      role: "AI 资讯聚合",
-      icon: <Newspaper className="text-blue-400" />,
-      status: "Online",
-      capabilities: ["自动爬取", "AI 摘要", "每日更新"],
-      link: "/agents/news",
-      color: "blue",
-    },
-    {
-      name: "Task Flow",
-      role: "任务管理",
-      icon: <CheckSquare className="text-emerald-400" />,
-      status: "Online",
-      capabilities: ["智能生成", "优先级管理", "进度追踪"],
-      link: "/agents/task",
-      color: "emerald",
-    },
-    {
-      name: "Life Vital",
-      role: "健康管理",
-      icon: <Heart className="text-red-400" />,
-      status: "Online",
-      capabilities: ["健康记录", "AI 建议", "数据分析"],
-      link: "/agents/life",
-      color: "red",
-    },
-    {
-      name: "Review Mate",
-      role: "每日复盘",
-      icon: <BookOpen className="text-purple-400" />,
-      status: "Online",
-      capabilities: ["自动汇总", "偏好提取", "成长追踪"],
-      link: "/agents/review",
-      color: "purple",
-    },
-    {
-      name: "Outfit AI",
-      role: "穿搭推荐",
-      icon: <Shirt className="text-orange-400" />,
-      status: "Online",
-      capabilities: ["天气适配", "日程搭配", "AI 生成"],
-      link: "/agents/outfit",
-      color: "orange",
-    },
-  ];
+  const { data: agents, isLoading, error } = useAgents();
 
   const statusColorMap: Record<string, string> = {
     Online: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
@@ -97,6 +86,28 @@ export default function AgentsPage() {
     orange: "group-hover:text-orange-400",
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-32 px-6 pb-0 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 animate-spin text-indigo-400" />
+          <p className="text-slate-400">Loading agents...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen pt-32 px-6 pb-0">
+        <div className="max-w-2xl mx-auto text-center py-20">
+          <h2 className="text-2xl font-bold text-red-400 mb-2">Error Loading Agents</h2>
+          <p className="text-slate-400">Failed to load agents. Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pt-32 px-6 pb-0">
       <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-[1600px] mx-auto">
@@ -112,53 +123,61 @@ export default function AgentsPage() {
           {/* Left: Agent Grid */}
           <div className="lg:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agents.map((agent) => (
-                <div
-                  key={agent.name}
-                  className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg ${
-                    colorMap[agent.color] || ""
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-8">
-                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all ${
-                      iconColorMap[agent.color] || ""
-                    }`}>
-                      {agent.icon}
-                    </div>
-                    <div
-                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                        statusColorMap[agent.status] || ""
-                      }`}
-                    >
-                      {agent.status}
-                    </div>
-                  </div>
-                  <h3 className="text-3xl font-black text-white mb-1">
-                    {agent.name}
-                  </h3>
-                  <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
-                    {agent.role}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {agent.capabilities.map((cap) => (
-                      <span
-                        key={cap}
-                        className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
+              {agents?.map((agent) => {
+                const config = agentConfig[agent.slug] || {
+                  icon: <Newspaper className="text-slate-400" />,
+                  color: "blue",
+                  role: agent.category,
+                  capabilities: [],
+                };
+                return (
+                  <div
+                    key={agent.id}
+                    className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg ${
+                      colorMap[config.color] || ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-8">
+                      <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all ${
+                        iconColorMap[config.color] || ""
+                      }`}>
+                        {config.icon}
+                      </div>
+                      <div
+                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                          statusColorMap[agent.is_active ? "Online" : "Offline"] || ""
+                        }`}
                       >
-                        {cap}
-                      </span>
-                    ))}
+                        {agent.is_active ? "Online" : "Offline"}
+                      </div>
+                    </div>
+                    <h3 className="text-3xl font-black text-white mb-1">
+                      {agent.name}
+                    </h3>
+                    <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
+                      {config.role}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {config.capabilities.map((cap) => (
+                        <span
+                          key={cap}
+                          className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
+                        >
+                          {cap}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-auto">
+                      <Link
+                        href={agent.link}
+                        className="block w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm text-center hover:bg-white hover:text-slate-950 transition-all"
+                      >
+                        Use Agent
+                      </Link>
+                    </div>
                   </div>
-                  <div className="mt-auto">
-                    <Link
-                      href={agent.link}
-                      className="block w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm text-center hover:bg-white hover:text-slate-950 transition-all"
-                    >
-                      Use Agent
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
