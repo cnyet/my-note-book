@@ -32,6 +32,7 @@ import Image from "@tiptap/extension-image";
 
 import { cn } from "@/lib/utils";
 import { BLOG_EDITOR_CONSTANTS } from "./blog/constants";
+import MarkdownEditor from "./MarkdownEditor";
 
 // Zod schema for form validation
 export const blogPostSchema = z.object({
@@ -506,15 +507,11 @@ export default function BlogEditor({
                 <EditorContent editor={editor} />
               </div>
             ) : (
-              <TextArea
+              <MarkdownEditor
                 value={markdownContent}
-                onChange={(e) => setMarkdownContent(e.target.value)}
+                onChange={setMarkdownContent}
+                height={BLOG_EDITOR_CONSTANTS.MIN_EDITOR_HEIGHT}
                 placeholder="Write your content in Markdown..."
-                rows={BLOG_EDITOR_CONSTANTS.TEXTAREA_ROWS}
-                className={cn(
-                  "font-mono text-sm",
-                  isDark ? "bg-[#2b2c40]" : "bg-[#f8f7fa]"
-                )}
               />
             )}
           </Card>
