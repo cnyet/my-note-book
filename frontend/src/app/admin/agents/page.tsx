@@ -20,10 +20,12 @@ import {
   Typography,
   Row,
   Col,
+  Dropdown,
+  type MenuProps,
 } from "antd";
 import { ChangeEvent, useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Bot, Activity, Clock, Server } from "lucide-react";
+import { Bot, MoreVertical, Activity, Clock, Server } from "lucide-react";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
@@ -410,6 +412,38 @@ export default function AgentsPage() {
     });
   };
 
+  // Action menu for each row
+  const getMenuItems = (agent: Agent): MenuProps["items"] => [
+    {
+      key: "edit",
+      label: "Edit",
+      icon: <EditOutlined />,
+      onClick: () => handleEdit(agent),
+    },
+    {
+      key: "spawn",
+      label: agent.status !== "offline" ? "Restart" : "Start",
+      icon: <PlayCircleOutlined />,
+      onClick: () => handleSpawn(agent),
+    },
+    {
+      key: "terminate",
+      label: "Stop",
+      icon: <StopOutlined />,
+      onClick: () => handleTerminate(agent),
+      disabled: agent.status === "offline",
+      danger: true,
+    },
+    { type: "divider" },
+    {
+      key: "delete",
+      label: "Delete",
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: () => handleDelete(agent),
+    },
+  ];
+
   // Table columns
   const columns: ColumnsType<Agent> = [
     {
@@ -455,52 +489,19 @@ export default function AgentsPage() {
     {
       title: "Actions",
       key: "actions",
-      width: 320,
+      width: 100,
       render: (_, agent) => (
-        <Space size="small">
+        <Dropdown
+          menu={{ items: getMenuItems(agent) }}
+          trigger={["click"]}
+          placement="bottomRight"
+        >
           <Button
+            icon={<MoreVertical size={16} />}
             size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(agent)}
-          >
-            Edit
-          </Button>
-          {agent.status !== "offline" ? (
-            <Button
-              size="small"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleSpawn(agent)}
-            >
-              Restart
-            </Button>
-          ) : (
-            <Button
-              size="small"
-              type="primary"
-              icon={<PlayCircleOutlined />}
-              onClick={() => handleSpawn(agent)}
-            >
-              Start
-            </Button>
-          )}
-          <Button
-            size="small"
-            danger
-            icon={<StopOutlined />}
-            onClick={() => handleTerminate(agent)}
-            disabled={agent.status === "offline"}
-          >
-            Stop
-          </Button>
-          <Button
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(agent)}
-          >
-            Delete
-          </Button>
-        </Space>
+            className="border-0 shadow-none"
+          />
+        </Dropdown>
       ),
     },
   ];
