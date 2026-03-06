@@ -19,14 +19,17 @@ import {
   message,
   Typography,
   Dropdown,
+  Row,
+  Col,
   type MenuProps,
 } from "antd";
 import { ChangeEvent, useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Bot, MoreVertical } from "lucide-react";
+import { Bot, MoreVertical, Activity, Clock, Server } from "lucide-react";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
+import { StatCard } from "@/components/ui/Card/StatCard";
 
 const { Text } = Typography;
 
@@ -505,6 +508,7 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -552,10 +556,54 @@ export default function AgentsPage() {
         </div>
       </motion.div>
 
+      {/* Stats Row - 4 Status Cards */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
+        className="mb-6"
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
+              icon={<Bot size={20} />}
+              label="Total Agents"
+              value={agents.length || 0}
+              gradient="blue"
+            />
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
+              icon={<Activity size={20} />}
+              label="Online"
+              value={agents.filter((a) => a.status === "spawned").length}
+              gradient="green"
+            />
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
+              icon={<Clock size={20} />}
+              label="Idle"
+              value={agents.filter((a) => a.status === "idle").length}
+              gradient="orange"
+            />
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <StatCard
+              icon={<Server size={20} />}
+              label="Offline"
+              value={agents.filter((a) => a.status === "offline").length}
+              gradient="gray"
+            />
+          </Col>
+        </Row>
+      </motion.div>
+
+      {/* Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
       >
         <Table<Agent>
           columns={columns}
