@@ -107,10 +107,11 @@ export default function BlogListPage() {
     pageSize: BLOG_CONSTANTS.PAGINATION.DEFAULT_PAGE_SIZE as number,
   });
   const [density, setDensity] = useState<"compact" | "normal" | "spacious">("normal");
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
     title: true,
     author: true,
-    publishDate: true,
+    published_at: true,
     views: true,
     status: true,
     actions: true,
@@ -321,8 +322,8 @@ export default function BlogListPage() {
     },
     {
       title: "Publish Date",
-      dataIndex: "publishDate",
-      key: "publishDate",
+      dataIndex: "published_at",
+      key: "published_at",
       width: BLOG_CONSTANTS.COLUMN_WIDTHS.PUBLISH_DATE,
       sorter: true,
       render: (date: string) => (
@@ -526,7 +527,7 @@ export default function BlogListPage() {
             columns={[
               { key: "title", title: "Title", visible: visibleColumns.title },
               { key: "author", title: "Author", visible: visibleColumns.author },
-              { key: "publishDate", title: "Publish Date", visible: visibleColumns.publishDate },
+              { key: "published_at", title: "Publish Date", visible: visibleColumns.published_at },
               { key: "views", title: "Views", visible: visibleColumns.views },
               { key: "status", title: "Status", visible: visibleColumns.status },
               { key: "actions", title: "Actions", visible: visibleColumns.actions },
