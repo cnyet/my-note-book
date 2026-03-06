@@ -190,7 +190,7 @@ function EditAgentModal({
     >
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
             Name <span className="text-red-500">*</span>
           </label>
           <Input
@@ -202,7 +202,7 @@ function EditAgentModal({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
             Slug <span className="text-red-500">*</span>
           </label>
           <Input
@@ -210,12 +210,12 @@ function EditAgentModal({
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
             placeholder="agent-slug"
             className="h-10 rounded-lg"
-            prefix={<span className="text-gray-400 text-sm">/</span>}
+            prefix={<span className="text-duralux-text-muted text-sm">/</span>}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
             Description
           </label>
           <Input.TextArea
@@ -228,7 +228,7 @@ function EditAgentModal({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
             Model
           </label>
           <Select
@@ -250,7 +250,7 @@ function EditAgentModal({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-duralux-text-secondary dark:text-duralux-text-dark-secondary mb-2">
             LobeChat URL
           </label>
           <Input
@@ -423,8 +423,8 @@ export default function AgentsPage() {
             <Bot className="text-white" size={20} />
           </div>
           <div>
-            <div className="font-semibold">{agent.name}</div>
-            <div className="text-xs text-gray-500">{agent.slug}</div>
+            <div className="font-semibold text-duralux-text-primary">{agent.name}</div>
+            <div className="text-xs text-duralux-text-muted">{agent.slug}</div>
           </div>
         </div>
       ),
@@ -434,7 +434,7 @@ export default function AgentsPage() {
       dataIndex: "description",
       key: "description",
       ellipsis: true,
-      render: (text) => <Text className="text-gray-600 dark:text-gray-400">{text}</Text>,
+      render: (text) => <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">{text}</Text>,
     },
     {
       title: "Model",
@@ -506,7 +506,7 @@ export default function AgentsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+    <div className="min-h-screen bg-duralux-bg-page dark:bg-duralux-bg-dark-page px-6 py-6">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -519,18 +519,18 @@ export default function AgentsPage() {
               <Bot className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Agents Management</h1>
-              <p className="text-sm text-gray-500">Configure and manage AI agents</p>
+              <h1 className="text-xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">Agents Management</h1>
+              <p className="text-sm text-duralux-text-muted mt-0.5">Configure and manage AI agents</p>
             </div>
           </div>
 
           <Space size="middle">
             <Input
               placeholder="Search agents..."
-              prefix={<SearchOutlined className="text-gray-400" />}
+              prefix={<SearchOutlined className="text-duralux-text-muted" />}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-64 h-10 rounded-lg"
+              className="w-64 h-10 rounded-lg border-duralux-border-light dark:border-duralux-border-dark bg-white dark:bg-duralux-bg-dark-card"
             />
             <Select
               value={statusFilter}
@@ -613,7 +613,7 @@ export default function AgentsPage() {
             pageSize: 10,
             showSizeChanger: false,
           }}
-          className="dark:bg-gray-800 rounded-lg overflow-hidden"
+          className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
         />
       </motion.div>
 
