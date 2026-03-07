@@ -1,89 +1,86 @@
 "use client";
 
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { LobeChatPanel } from "@/components/features/agents/LobeChatPanel";
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2 } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-const AgentsFooter = () => (
-  <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px]">
-    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
-      <div className="text-left">
-        <h3 className="text-2xl font-black text-white mb-2 tracking-tight">
-          AI Personal Assistants
-        </h3>
-        <p className="text-slate-500 font-medium">
-          Your daily workflow automation powered by AI.
-        </p>
-      </div>
-      <div className="flex gap-4">
-        <button className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-all">
-          Learn More
-        </button>
-        <button className="px-8 py-4 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all">
-          API Docs
-        </button>
-      </div>
-    </div>
-  </footer>
-);
+interface AgentConfig {
+  icon: React.ReactNode;
+  color: string;
+  borderColor: string;
+  iconColor: string;
+  role: string;
+  description: string;
+}
 
 // Agent slug to icon and color mapping
-const agentConfig: Record<string, { icon: React.ReactNode; color: string; role: string; capabilities: string[] }> = {
+const agentConfig: Record<string, AgentConfig> = {
   news: {
-    icon: <Newspaper className="text-blue-400" />,
-    color: "blue",
+    icon: <Newspaper className="w-6 h-6" />,
+    color: "from-blue-500/20 to-blue-600/10",
+    borderColor: "group-hover:border-blue-500/40",
+    iconColor: "group-hover:text-blue-400",
     role: "AI 资讯聚合",
-    capabilities: ["自动爬取", "AI 摘要", "每日更新"],
+    description: "自动爬取科技新闻，AI 生成摘要",
   },
   task: {
-    icon: <CheckSquare className="text-emerald-400" />,
-    color: "emerald",
+    icon: <CheckSquare className="w-6 h-6" />,
+    color: "from-emerald-500/20 to-emerald-600/10",
+    borderColor: "group-hover:border-emerald-500/40",
+    iconColor: "group-hover:text-emerald-400",
     role: "任务管理",
-    capabilities: ["智能生成", "优先级管理", "进度追踪"],
+    description: "智能生成任务，优先级管理",
   },
   life: {
-    icon: <Heart className="text-red-400" />,
-    color: "red",
+    icon: <Heart className="w-6 h-6" />,
+    color: "from-red-500/20 to-red-600/10",
+    borderColor: "group-hover:border-red-500/40",
+    iconColor: "group-hover:text-red-400",
     role: "健康管理",
-    capabilities: ["健康记录", "AI 建议", "数据分析"],
+    description: "健康数据记录，AI 建议",
   },
   review: {
-    icon: <BookOpen className="text-purple-400" />,
-    color: "purple",
+    icon: <BookOpen className="w-6 h-6" />,
+    color: "from-purple-500/20 to-purple-600/10",
+    borderColor: "group-hover:border-purple-500/40",
+    iconColor: "group-hover:text-purple-400",
     role: "每日复盘",
-    capabilities: ["自动汇总", "偏好提取", "成长追踪"],
+    description: "自动汇总日报，成长追踪",
   },
   outfit: {
-    icon: <Shirt className="text-orange-400" />,
-    color: "orange",
+    icon: <Shirt className="w-6 h-6" />,
+    color: "from-orange-500/20 to-orange-600/10",
+    borderColor: "group-hover:border-orange-500/40",
+    iconColor: "group-hover:text-orange-400",
     role: "穿搭推荐",
-    capabilities: ["天气适配", "日程搭配", "AI 生成"],
+    description: "天气适配，AI 穿搭建议",
   },
 };
 
 export default function AgentsPage() {
   const { data: agents, isLoading, error } = useAgents();
 
-  const statusColorMap: Record<string, string> = {
-    Online: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
   };
 
-  const colorMap: Record<string, string> = {
-    blue: "hover:border-blue-500/40 hover:shadow-blue-500/10 group-hover:bg-blue-500/10",
-    emerald: "hover:border-emerald-500/40 hover:shadow-emerald-500/10 group-hover:bg-emerald-500/10",
-    red: "hover:border-red-500/40 hover:shadow-red-500/10 group-hover:bg-red-500/10",
-    purple: "hover:border-purple-500/40 hover:shadow-purple-500/10 group-hover:bg-purple-500/10",
-    orange: "hover:border-orange-500/40 hover:shadow-orange-500/10 group-hover:bg-orange-500/10",
-  };
-
-  const iconColorMap: Record<string, string> = {
-    blue: "group-hover:text-blue-400",
-    emerald: "group-hover:text-emerald-400",
-    red: "group-hover:text-red-400",
-    purple: "group-hover:text-purple-400",
-    orange: "group-hover:text-orange-400",
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+      },
+    },
   };
 
   if (isLoading) {
@@ -109,86 +106,99 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 px-6 pb-0">
-      <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-[1600px] mx-auto">
-        <SectionHeader
-          centered
-          title="AI Personal <br/>Assistants."
-          subtitle="Five intelligent agents to automate your daily workflow. From news curation to health tracking, we've got you covered."
-        />
+    <div className="min-h-screen pt-24 pb-0">
+      <div className="max-w-[1400px] mx-auto px-6">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+            AI Personal <br />
+            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Assistants
+            </span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+            Five intelligent agents to automate your daily workflow
+          </p>
+        </motion.div>
 
-        {/* Split-screen layout: Agent Grid (left) + LobeChat Panel (right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-          {/* Left: Agent Grid */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agents?.map((agent) => {
-                const config = agentConfig[agent.slug] || {
-                  icon: <Newspaper className="text-slate-400" />,
-                  color: "blue",
-                  role: agent.category,
-                  capabilities: [],
-                };
-                return (
+        {/* Agent Grid - 5 columns on desktop, compact cards */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-20"
+        >
+          {agents?.map((agent, index) => {
+            const config = agentConfig[agent.slug] || {
+              icon: <Newspaper className="w-6 h-6" />,
+              color: "from-slate-500/20 to-slate-600/10",
+              borderColor: "group-hover:border-slate-500/40",
+              iconColor: "group-hover:text-slate-400",
+              role: agent.category,
+              description: "AI-powered assistant",
+            };
+            return (
+              <motion.div key={agent.id} variants={itemVariants}>
+                <Link href={agent.link}>
                   <div
-                    key={agent.id}
-                    className={`backdrop-blur-md bg-white/5 p-8 rounded-[40px] border border-white/5 group hover:border-indigo-500/40 transition-all duration-500 flex flex-col h-full shadow-lg ${
-                      colorMap[config.color] || ""
-                    }`}
+                    className={`group relative backdrop-blur-md bg-gradient-to-br ${config.color}
+                      p-5 rounded-2xl border border-white/5 ${config.borderColor}
+                      transition-all duration-300 hover:shadow-lg overflow-hidden`}
                   >
-                    <div className="flex items-center justify-between mb-8">
-                      <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-indigo-500 transition-all ${
-                        iconColorMap[config.color] || ""
-                      }`}>
-                        {config.icon}
-                      </div>
-                      <div
-                        className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                          statusColorMap[agent.is_active ? "Online" : "Offline"] || ""
-                        }`}
-                      >
-                        {agent.is_active ? "Online" : "Offline"}
-                      </div>
+                    {/* Status indicator */}
+                    <div className="absolute top-4 right-4 flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${agent.is_active ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
                     </div>
-                    <h3 className="text-3xl font-black text-white mb-1">
-                      {agent.name}
-                    </h3>
-                    <p className="text-indigo-400 font-bold text-sm mb-6 uppercase tracking-wider">
-                      {config.role}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {config.capabilities.map((cap) => (
-                        <span
-                          key={cap}
-                          className="text-[10px] font-bold text-slate-500 border border-white/10 px-2 py-1 rounded-lg"
-                        >
-                          {cap}
-                        </span>
-                      ))}
+
+                    {/* Icon */}
+                    <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
+                      flex items-center justify-center mb-4 ${config.iconColor} transition-colors`}>
+                      {config.icon}
                     </div>
-                    <div className="mt-auto">
-                      <Link
-                        href={agent.link}
-                        className="block w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-sm text-center hover:bg-white hover:text-slate-950 transition-all"
-                      >
-                        Use Agent
-                      </Link>
+
+                    {/* Content */}
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                        {agent.name}
+                      </h3>
+                      <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+                        {config.role}
+                      </p>
+                      <p className="text-slate-400 text-xs leading-relaxed">
+                        {config.description}
+                      </p>
+                    </div>
+
+                    {/* Arrow indicator */}
+                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight className="w-4 h-4 text-indigo-400" />
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </Link>
+              </motion.div>
+            );
+          })}
+        </motion.div>
 
-          {/* Right: LobeChat Panel - Sticky sidebar */}
-          <div className="hidden lg:block lg:col-span-1">
-            <div className="sticky top-32 h-[calc(100vh-8rem)]">
-              <LobeChatPanel />
+        {/* Empty State */}
+        {!isLoading && agents?.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-32"
+          >
+            <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
+              <Newspaper className="w-10 h-10 text-slate-500" />
             </div>
-          </div>
-        </div>
-
-        <AgentsFooter />
+            <h3 className="text-2xl font-bold text-white mb-3">No agents available</h3>
+            <p className="text-slate-400 font-medium">Check back later for new agents</p>
+          </motion.div>
+        )}
       </div>
     </div>
   );
