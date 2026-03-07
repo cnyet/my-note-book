@@ -10,126 +10,150 @@ import {
   Terminal,
   Wand2,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
-const ToolsFooter = () => (
-  <footer className="mt-20 border-t border-white/10 py-12 backdrop-blur-md bg-white/5 rounded-t-[60px]">
-    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-sm">
-      <div className="space-y-4">
-        <h4 className="font-bold text-indigo-400 uppercase tracking-widest text-[10px]">
-          Development
-        </h4>
-        <ul className="space-y-2 text-slate-500 font-medium">
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            CLI Documentation
-          </li>
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            SDK Reference
-          </li>
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            GitHub Repository
-          </li>
-        </ul>
-      </div>
-      <div className="space-y-4">
-        <h4 className="font-bold text-purple-400 uppercase tracking-widest text-[10px]">
-          Tokens
-        </h4>
-        <ul className="space-y-2 text-slate-500 font-medium">
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            Tailwind Config
-          </li>
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            Figma Plugin
-          </li>
-          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
-            Asset Manager
-          </li>
-        </ul>
-      </div>
-      <div className="col-span-2 flex justify-end items-center gap-4">
-        <span className="text-slate-500 font-bold">Latest v2.4.12:</span>
-        <code className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-lg text-xs border border-emerald-500/20">
-          Stable Build
-        </code>
-      </div>
-    </div>
-  </footer>
-);
+interface ToolCard {
+  name: string;
+  icon: React.ReactNode;
+  desc: string;
+  color: string;
+  borderColor: string;
+  iconColor: string;
+}
+
+const tools: ToolCard[] = [
+  {
+    name: "MyNoteBook CLI",
+    icon: <Terminal className="w-6 h-6" />,
+    desc: "设计系统即代码，一键同步 tokens 和组件",
+    color: "from-indigo-500/20 to-indigo-600/10",
+    borderColor: "group-hover:border-indigo-500/40",
+    iconColor: "group-hover:text-indigo-400",
+  },
+  {
+    name: "Component Studio",
+    icon: <Layers className="w-6 h-6" />,
+    desc: "可视化 React 组件构建器，AI 辅助布局",
+    color: "from-purple-500/20 to-purple-600/10",
+    borderColor: "group-hover:border-purple-500/40",
+    iconColor: "group-hover:text-purple-400",
+  },
+  {
+    name: "Visual Diff",
+    icon: <Layout className="w-6 h-6" />,
+    desc: "发现布局回归，自动对比差异",
+    color: "from-blue-500/20 to-blue-600/10",
+    borderColor: "group-hover:border-blue-500/40",
+    iconColor: "group-hover:text-blue-400",
+  },
+  {
+    name: "Flow Audit",
+    icon: <Activity className="w-6 h-6" />,
+    desc: "映射用户旅程，优化交互流程",
+    color: "from-emerald-500/20 to-emerald-600/10",
+    borderColor: "group-hover:border-emerald-500/40",
+    iconColor: "group-hover:text-emerald-400",
+  },
+  {
+    name: "Asset Baker",
+    icon: <Cpu className="w-6 h-6" />,
+    desc: "智能图像优化，WebP 自动转换",
+    color: "from-orange-500/20 to-orange-600/10",
+    borderColor: "group-hover:border-orange-500/40",
+    iconColor: "group-hover:text-orange-400",
+  },
+  {
+    name: "Type Genius",
+    icon: <Wand2 className="w-6 h-6" />,
+    desc: "AI 字体推荐，排版智能匹配",
+    color: "from-pink-500/20 to-pink-600/10",
+    borderColor: "group-hover:border-pink-500/40",
+    iconColor: "group-hover:text-pink-400",
+  },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
 
 export default function ToolsPage() {
-  const secondaryTools = [
-    { name: "Visual Diff", icon: <Layout />, desc: "Find layout regressions" },
-    { name: "Flow Audit", icon: <Activity />, desc: "Map user journeys" },
-    { name: "Asset Baker", icon: <Cpu />, desc: "Optimize images" },
-    { name: "Type Genius", icon: <Wand2 />, desc: "AI typography" },
-  ];
-
   return (
-    <div className="min-h-screen pt-32 pb-0">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <SectionHeader
-            centered
-            title="The Pro-Grade <br/>Utility Stack."
-            subtitle="Powerful modules designed to integrate seamlessly into your design environment."
-          />
+    <div className="min-h-screen pt-24 pb-0">
+      <div className="max-w-[1400px] mx-auto px-6">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+            Pro-Grade <br />
+            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Utility Stack
+            </span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+            Powerful modules designed to integrate seamlessly into your design environment
+          </p>
+        </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-            <div className="backdrop-blur-md bg-white/5 p-12 rounded-[50px] border border-white/5 group hover:border-indigo-500/30 transition-all relative overflow-hidden">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-8 border border-indigo-500/30">
-                <Terminal size={32} />
-              </div>
-              <h3 className="text-4xl font-black text-white mb-6">
-                MyNoteBook CLI
-              </h3>
-              <p className="text-slate-400 text-lg leading-relaxed mb-8">
-                The industry&apos;s first design-system-as-code CLI. Sync tokens,
-                components, and assets across your entire repo with a single
-                command.
-              </p>
-              <div className="bg-black/50 p-6 rounded-2xl font-mono text-sm text-indigo-300 border border-white/5 mb-8">
-                <span className="text-slate-500">$</span> mynotebook sync --all
-                --force
-              </div>
-              <button className="flex items-center gap-3 text-indigo-400 font-bold hover:text-white transition-colors">
-                View Documentation <ArrowRight size={18} />
-              </button>
-            </div>
-
-            <div className="backdrop-blur-md bg-white/5 p-12 rounded-[50px] border border-white/5 group hover:border-purple-500/30 transition-all">
-              <div className="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-400 mb-8 border border-purple-500/30">
-                <Layers size={32} />
-              </div>
-              <h3 className="text-4xl font-black text-white mb-6">
-                Component Studio
-              </h3>
-              <p className="text-slate-400 text-lg leading-relaxed mb-8">
-                A visual playground to build high-fidelity React components using
-                AI-assisted layout and styling. Real-time code output.
-              </p>
-              <button className="px-8 py-4 rounded-2xl bg-purple-600 text-white font-bold shadow-lg shadow-purple-600/20 hover:bg-purple-500 transition-all">
-                Open Studio
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {secondaryTools.map((tool, i) => (
+        {/* Tools Grid - 3 columns on desktop, compact cards */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20"
+        >
+          {tools.map((tool, index) => (
+            <motion.div key={tool.name} variants={itemVariants}>
               <div
-                key={i}
-                className="backdrop-blur-md bg-white/5 p-8 rounded-[32px] border border-white/5 hover:bg-white/5 transition-all cursor-pointer group"
+                className={`group relative backdrop-blur-md bg-gradient-to-br ${tool.color}
+                  p-6 rounded-2xl border border-white/5 ${tool.borderColor}
+                  transition-all duration-300 hover:shadow-lg overflow-hidden cursor-pointer`}
               >
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-300 mb-6 group-hover:text-white transition-colors">
+                {/* Icon */}
+                <div className={`w-14 h-14 rounded-xl bg-white/5 border border-white/10
+                  flex items-center justify-center mb-5 ${tool.iconColor} transition-colors`}>
                   {tool.icon}
                 </div>
-                <h4 className="font-bold text-white mb-2">{tool.name}</h4>
-                <p className="text-slate-500 text-xs">{tool.desc}</p>
+
+                {/* Content */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">
+                    {tool.name}
+                  </h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    {tool.desc}
+                  </p>
+                </div>
+
+                {/* Arrow indicator */}
+                <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <ArrowRight className="w-4 h-4 text-indigo-400" />
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-      <ToolsFooter />
     </div>
   );
 }
