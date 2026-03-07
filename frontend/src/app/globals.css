@@ -179,6 +179,16 @@
     text-shadow: 0 0 10px rgba(188, 19, 254, 0.5);
   }
 
+  /* Gradient animation for CTAs and Hero */
+  @keyframes gradient {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
   /* Updated Sneat Card Shadow - Duralux style */
   .sneat-card-shadow {
     box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
