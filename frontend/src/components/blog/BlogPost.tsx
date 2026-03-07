@@ -68,11 +68,6 @@ export default function BlogPost({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            {/* Category Tag */}
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-duralux-primary-transparent text-duralux-primary mb-4">
-              Technology
-            </span>
-
             {/* Title */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-4 leading-tight">
               {title}

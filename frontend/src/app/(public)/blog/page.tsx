@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, Clock, User, ArrowRight, Eye } from "lucide-react";
+import { User, ArrowRight, Eye } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/admin-api";
@@ -57,27 +57,14 @@ export default function BlogListPage() {
       <div className="fixed inset-0 bg-[linear-gradient(rgba(99,102,241,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,black,transparent)] pointer-events-none" />
 
       {/* Hero Section */}
-      <div className="relative pt-32 pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="relative pt-32 pb-20">
+        <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             className="text-center space-y-6"
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-medium"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              Editorial
-            </motion.div>
-
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight">
               Insights &
               <br />
@@ -87,7 +74,7 @@ export default function BlogListPage() {
               .
             </h1>
 
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto font-medium">
+            <p className="text-lg text-slate-400 max-w-3xl mx-auto font-medium">
               The latest thoughts from our design leads on AI, creativity, and the
               future of engineering.
             </p>
@@ -96,8 +83,8 @@ export default function BlogListPage() {
       </div>
 
       {/* Blog Posts Grid */}
-      <div className="relative px-6 pb-32">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative pb-32">
+        <div className="max-w-7xl mx-auto px-6">
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -201,30 +188,67 @@ export default function BlogListPage() {
         </div>
       </div>
 
-      {/* Newsletter Section */}
+      {/* Footer Section */}
       <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.7 }}
-        className="relative border-t border-white/10 py-20 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px] mb-10"
+        className="relative border-t border-white/10 py-12 backdrop-blur-md bg-white/5 rounded-t-[60px]"
       >
-        <div className="max-w-4xl mx-auto text-center space-y-10">
-          <h2 className="text-4xl md:text-6xl font-black text-white leading-none">
-            The Morning Brief.
-          </h2>
-          <p className="text-slate-400 text-lg font-medium">
-            Join 25,000+ design engineers who receive our bi-weekly breakdown of the
-            AI landscape.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <input
-              type="email"
-              placeholder="email@address.com"
-              className="bg-white/5 border border-white/10 rounded-2xl px-8 py-5 text-white w-full sm:max-w-xs focus:outline-none focus:border-indigo-500/50 transition-colors"
-            />
-            <button className="px-10 py-5 rounded-2xl bg-white text-black font-black hover:bg-indigo-50 transition-all">
-              Subscribe Now
-            </button>
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-sm">
+          <div className="space-y-4">
+            <h4 className="font-bold text-indigo-400 uppercase tracking-widest text-[10px]">
+              Content
+            </h4>
+            <ul className="space-y-2 text-slate-500 font-medium">
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Articles
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Tutorials
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Case Studies
+              </li>
+            </ul>
+          </div>
+          <div className="space-y-4">
+            <h4 className="font-bold text-purple-400 uppercase tracking-widest text-[10px]">
+              Topics
+            </h4>
+            <ul className="space-y-2 text-slate-500 font-medium">
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                AI & ML
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Design Systems
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Engineering
+              </li>
+            </ul>
+          </div>
+          <div className="space-y-4">
+            <h4 className="font-bold text-pink-400 uppercase tracking-widest text-[10px]">
+              Connect
+            </h4>
+            <ul className="space-y-2 text-slate-500 font-medium">
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Newsletter
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                Twitter / X
+              </li>
+              <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+                RSS Feed
+              </li>
+            </ul>
+          </div>
+          <div className="col-span-2 md:col-span-1 flex justify-end items-center gap-4">
+            <span className="text-slate-500 font-bold text-xs">Latest:</span>
+            <code className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-lg text-xs border border-emerald-500/20">
+              v2.4.12
+            </code>
           </div>
         </div>
       </motion.footer>

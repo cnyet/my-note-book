@@ -8,7 +8,6 @@ export const MethodologySection = () => {
     <section className="py-12 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <SectionHeader
         centered
-        tag="Methodology"
         title="Designed to <br/>Evolve."
         subtitle="A cycle of continuous improvement driven by feedback and autonomous learning."
       />

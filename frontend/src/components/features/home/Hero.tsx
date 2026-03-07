@@ -5,10 +5,6 @@ import { MousePointer2, Zap } from "lucide-react";
 export const Hero = () => {
   return (
     <section className="text-center relative pt-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[11px] font-bold uppercase tracking-[0.2em] text-indigo-300 mb-10 backdrop-blur-md animate-in fade-in duration-1000 delay-100">
-        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-        Intelligent Workflow Suite
-      </div>
       <h1 className="text-7xl md:text-9xl font-black mb-10 tracking-tighter leading-[0.85] text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
         Build Beyond <br />
         <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">

@@ -2,7 +2,44 @@
 
 > 上次会话：2026-03-03T10:00:00Z - 管理页面 UI 美化
 > 本次会话：2026-03-05T15:30:00Z - Sprint 6 规划完成
-> 下次会话：等待 Sprint 6 开发执行
+> 续接会话①：2026-03-07T09:00:00Z - Sprint 6 完成 + 标签清理
+> 续接会话②：2026-03-07 - 历史会话记忆保存
+> 下次会话：等待 Sprint 7 规划或 P2 待办执行
+
+---
+
+## 本次会话完成的工作 (2026-03-07 续接)
+
+### 删除所有 Tag/Badge 标签元素 ✅
+
+**任务**: 清理项目中装饰性的 Tag/Badge 标签元素，简化 UI 设计
+
+**完成的任务**:
+- [x] Grep 搜索所有使用 `tag=`、`<Badge`、`<Tag` 的文件
+- [x] 删除 `SectionHeader.tsx` - tag prop 和标签渲染逻辑
+- [x] 删除 `WelcomeBanner.tsx` - "Admin Dashboard" 徽章
+- [x] 删除 `Hero.tsx` - "Intelligent Workflow Suite" 标签
+- [x] 删除 `blog/page.tsx` - "Editorial" 脉冲动画标签
+- [x] 删除 `NewsList.tsx` - 来源徽章和标签列表
+- [x] 删除 `BlogPost.tsx` - "Technology" 分类标签
+- [x] 删除 `badge.tsx` - 未使用的 shadcn/ui 组件文件
+- [x] 验证 TypeScript 编译通过
+- [x] 验证构建成功
+
+**保留的功能性 Tag 组件** (非装饰性，不应删除):
+- `admin/agents/page.tsx` - 状态标签 (Online/Offline/Idle)、模型标签
+- `admin/tools/page.tsx` - 类别标签 (Dev/Auto/Intel)、状态标签
+- `admin/blog/page.tsx` - 发布状态标签 (Published/Draft)
+- `admin/agents/news/page.tsx` - 新闻源类型、分类、状态标签
+- `NewsCard.tsx` - 文章 tags 展示
+- `ModelSelector.tsx` - 模型提供商标签
+- `ProjectReminders.tsx` - 团队角色标签
+- `assistant/chat/page.tsx` - 模型名称 Ribbon
+
+**验证结果**:
+- TypeScript 编译 ✅ 通过
+- 构建 ✅ 成功
+- 无类型错误
 
 ---
 

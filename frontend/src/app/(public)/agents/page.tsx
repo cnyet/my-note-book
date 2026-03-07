@@ -113,7 +113,6 @@ export default function AgentsPage() {
       <div className="animate-in fade-in slide-in-from-right-8 duration-700 max-w-[1600px] mx-auto">
         <SectionHeader
           centered
-          tag="Sprint 6"
           title="AI Personal <br/>Assistants."
           subtitle="Five intelligent agents to automate your daily workflow. From news curation to health tracking, we've got you covered."
         />

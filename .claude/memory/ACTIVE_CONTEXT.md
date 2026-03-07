@@ -1,6 +1,6 @@
 # Active Context
 
-> 最后更新：2026-03-06T11:00:00Z
+> 最后更新：2026-03-07T10:00:00Z
 
 ## ✅ Sprint 6: 5 个 Agent 功能实现 - 全部完成并上线
 
@@ -39,7 +39,7 @@
 | Life Agent | `/agents/life` | use-life | ✅ 新建 |
 | Review Agent | `/agents/review` | use-review | ✅ 新建 |
 | Outfit Agent | `/agents/outfit` | use-outfit | ✅ 新建 |
-| Blog 列表 (公共) | `/blog` | - | ✅ 美化完成 |
+| Blog 列表 (公共) | `/blog` | - | ✅ 美化完成 + 排版统一 |
 | Blog 管理 | `/admin/blog` | - | ✅ 修复 + 视图切换 |
 
 ### 技术架构
@@ -92,6 +92,8 @@ c860007 fix(sprint-6): fix router registration in main.py
 5. ✅ 本地服务启动验证 (前端 3001, 后端 8001)
 6. ✅ 管理后台 padding 统一调整完成
 7. ✅ Admin UI 优化（Dashboard/Header/Sidebar/Tools）
+8. ✅ Public 页面 Main/Footer 排版统一（浏览器验证通过）
+9. ✅ 删除所有 Tag/Badge 标签元素
 
 ---
 
@@ -104,35 +106,50 @@ c860007 fix(sprint-6): fix router registration in main.py
 ---
 
 ## 会话状态
-- 会话 ID: 2026-03-06-02 (上下文恢复)
-- 开始时间：2026-03-06T10:00:00Z
-- 最后活动：2026-03-06 Admin UI 优化完成
-- 归档状态：✅ 已归档至 `docs/admin/ui-optimization.md`
+- 会话 ID: 2026-03-07-02 (续接)
+- 开始时间：2026-03-07T09:00:00Z
+- 最后活动：2026-03-07 历史会话记忆保存完成
 
 ---
 
-## 最新会话摘要 (2026-03-06)
+## 最新会话摘要 (2026-03-07 续接)
 
 ### 完成的工作
 
-| 任务 | 状态 | 提交 |
-|------|------|------|
-| Blog 公共页面美化 | ✅ | Genesis 风格 + 动画效果 |
-| Blog 管理后台字段修复 | ✅ | `1a70a68` |
-| Table/Grid 视图切换 | ✅ | `fa3d89e` |
+| 任务 | 状态 |
+|------|------|
+| Public 页面 Main/Footer 排版统一 | ✅ 浏览器验证通过 |
+| 删除所有 Tag/Badge 标签元素 | ✅ 完成 |
+| 删除未使用的 badge.tsx 组件 | ✅ 完成 |
 
 ### 技术细节
 
-**Blog API 类型修复:**
-- `summary` → `excerpt`
-- `publish_date` → `published_at`
-- `tags` → `{ tag_name: string }[]`
+**Main/Footer 排版统一 (浏览器验证):**
+- 统一结构：`<div className="max-w-7xl mx-auto px-6">` (Main), `<footer className="..."><div className="max-w-7xl mx-auto px-6">` (Footer)
+- /tools: Main 998px, Footer 998px ✅
+- /labs: Main 998px, Footer 998px ✅
+- /blog: Hero 998px, Grid 998px, Footer 998px ✅
 
-**视图切换功能:**
-- Table 视图：原有表格布局，支持行选择、批量操作
-- Grid 视图：卡片布局，4 列响应式 (1/2/3/4 列)
-- 共享筛选器：状态、搜索、排序
-- 骨架屏加载状态
+**删除的标签元素:**
+1. `SectionHeader.tsx` - 删除 tag prop 和标签渲染逻辑
+2. `WelcomeBanner.tsx` - 删除 "Admin Dashboard" 徽章
+3. `Hero.tsx` - 删除 "Intelligent Workflow Suite" 标签
+4. `blog/page.tsx` - 删除 "Editorial" 脉冲动画标签
+5. `NewsList.tsx` - 删除来源徽章和标签列表
+6. `BlogPost.tsx` - 删除 "Technology" 分类标签
+
+**更新的文件:**
+- `src/components/common/SectionHeader.tsx`
+- `src/components/admin/WelcomeBanner.tsx`
+- `src/components/features/home/Hero.tsx`
+- `src/components/features/home/MethodologySection.tsx`
+- `src/app/(public)/blog/page.tsx`
+- `src/app/(public)/tools/page.tsx`
+- `src/app/(public)/labs/page.tsx`
+- `src/app/(public)/agents/page.tsx`
+- `src/components/news/NewsList.tsx`
+- `src/components/blog/BlogPost.tsx`
+- `src/components/ui/badge.tsx` (已删除)
 
 ### 设计系统
 - Genesis Design System (Duralux)

@@ -8,7 +8,7 @@
 "use client";
 
 import { useNewsList } from "@/hooks/use-news";
-import { Newspaper, ExternalLink, Clock, User, Tag } from "lucide-react";
+import { Newspaper, ExternalLink, Clock, User } from "lucide-react";
 
 export function NewsList() {
   const { data, isLoading, error } = useNewsList(1, 20);
@@ -99,7 +99,7 @@ export function NewsList() {
               <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
                 {/* 来源 */}
                 {article.source_name && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                  <span className="inline-flex items-center gap-1.5">
                     <Newspaper size={12} />
                     {article.source_name}
                   </span>
@@ -119,21 +119,6 @@ export function NewsList() {
                     <Clock size={12} />
                     {formatDate(article.published_at)}
                   </span>
-                )}
-
-                {/* 标签 */}
-                {article.tags && article.tags.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Tag size={12} />
-                    {article.tags.slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-xs"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 )}
               </div>
             </div>

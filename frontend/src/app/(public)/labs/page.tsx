@@ -1,34 +1,76 @@
 "use client";
 
 import { SectionHeader } from "@/components/common/SectionHeader";
-import { ArrowRight, BrainCircuit, FlaskConical, Radio } from "lucide-react";
+import { ArrowRight, BrainCircuit, Radio } from "lucide-react";
 
 const LabsFooter = () => (
-  <footer className="mt-20 border-t border-white/10 py-12 px-6 backdrop-blur-md bg-white/5 rounded-t-[60px] flex flex-col items-center text-center">
-    <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-8 animate-pulse">
-      <FlaskConical size={20} className="text-white/40" />
-    </div>
-    <h2 className="text-5xl md:text-8xl font-black text-white mb-10 tracking-tighter">
-      STAY CURIOUS
-    </h2>
-    <p className="text-slate-500 font-medium max-w-sm mb-12">
-      Labs projects are experimental. Users assume all responsibility for
-      implementation in production.
-    </p>
-    <div className="mt-12 text-[10px] font-black text-slate-800 uppercase tracking-[0.4em]">
-      Proprietary Research Unit
+  <footer className="mt-20 border-t border-white/10 py-12 backdrop-blur-md bg-white/5 rounded-t-[60px]">
+    <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-12 text-sm">
+      <div className="space-y-4">
+        <h4 className="font-bold text-cyan-400 uppercase tracking-widest text-[10px]">
+          Research
+        </h4>
+        <ul className="space-y-2 text-slate-500 font-medium">
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Project Synapse
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Ambient Layouts
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Neural Interfaces
+          </li>
+        </ul>
+      </div>
+      <div className="space-y-4">
+        <h4 className="font-bold text-pink-400 uppercase tracking-widest text-[10px]">
+          Publications
+        </h4>
+        <ul className="space-y-2 text-slate-500 font-medium">
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Whitepapers
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Case Studies
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Technical Docs
+          </li>
+        </ul>
+      </div>
+      <div className="space-y-4">
+        <h4 className="font-bold text-purple-400 uppercase tracking-widest text-[10px]">
+          Resources
+        </h4>
+        <ul className="space-y-2 text-slate-500 font-medium">
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            API Reference
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            SDK Downloads
+          </li>
+          <li className="hover:text-white cursor-pointer transition-colors text-white/60">
+            Community
+          </li>
+        </ul>
+      </div>
+      <div className="col-span-2 md:col-span-1 flex justify-end items-center gap-4">
+        <span className="text-slate-500 font-bold text-xs">Status:</span>
+        <code className="bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-lg text-xs border border-cyan-500/20">
+          Experimental
+        </code>
+      </div>
     </div>
   </footer>
 );
 
 export default function LabsPage() {
   return (
-    <div className="min-h-screen pt-32 px-6 pb-0 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen pt-32 pb-0 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="animate-in fade-in slide-in-from-top-8 duration-700 py-10 min-h-[60vh]">
           <SectionHeader
             centered
-            tag="Experimental"
             title="The Future <br />Canvas."
             subtitle="Where we break boundaries. MyNoteBook Labs is our research wing for emerging interfaces."
           />

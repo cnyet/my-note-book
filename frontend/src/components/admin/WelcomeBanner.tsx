@@ -21,14 +21,6 @@ export function WelcomeBanner() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {/* Icon Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-duralux-primary/10 to-duralux-primary-dark/10 border border-duralux-primary/20 mb-4">
-                <Sparkles className="w-4 h-4 text-duralux-primary" />
-                <span className="text-sm font-medium text-duralux-primary">
-                  Admin Dashboard
-                </span>
-              </div>
-
               {/* Title */}
               <h1 className="text-3xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-3">
                 Welcome back, Admin
