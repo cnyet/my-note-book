@@ -1,6 +1,26 @@
 # Active Context
 
-> 最后更新：2026-03-07T12:00:00Z
+> 最后更新：2026-03-10T09:45:00Z
+
+## ✅ Sprint 6.2: Agents/Tools 页面横向列表布局改造 - 已完成
+
+### 完成的工作
+
+| 页面 | 优化内容 | 提交 |
+|------|---------|------|
+| **Agents** | 横向列表布局，统一浅色背景，图标在左 | `af4376a` + `1e581fa` |
+| **Tools** | 横向列表布局，统一浅色背景，图标在左 | `af4376a` + `1e581fa` |
+
+### 改动详情
+
+- 卡片布局从纵向改为横向（图标在左，内容在右）
+- 统一浅色背景 (`bg-white/5`) 替代渐变色
+- 简化内容层次：只保留图标 + 标题 + 描述
+- 移除状态指示器和角色标签
+- 添加悬停效果：边框高亮 + 箭头淡入
+- 清理未使用的 `SectionHeader` 导入
+
+---
 
 ## ✅ Sprint 6.1: 前端页面优化 - 已完成并合并
 
@@ -63,26 +83,22 @@
 
 ## Git 状态
 - **当前分支**: `main`
-- **最新提交**: `f0ff0ef docs: 添加 Sprint 6.1 前端页面优化规划文档`
-- **提交总数**: 14 个 (Sprint 6 + Sprint 6.1 新增)
-- **状态**: ✅ 已推送到远程仓库
+- **最新提交**: `1e581fa refactor: 清理未使用的 SectionHeader 导入`
+- **提交总数**: 16 个 (Sprint 6 + Sprint 6.1 + Sprint 6.2 新增)
+- **状态**: 本地提交，待推送
 
 ### 提交历史
 ```
+1e581fa refactor: 清理未使用的 SectionHeader 导入
+af4376a feat: 改造 Agents 和 Tools 页面为横向列表布局
+f495d19 docs: 添加 Agents/Tools 列表页面实现计划
+625ea35 docs: 添加 Agents/Tools 列表页面重新设计文档
 f0ff0ef docs: 添加 Sprint 6.1 前端页面优化规划文档
 9351679 feat(blog): 添加布局切换器（卡片/列表）和标签筛选功能
 8e7d1cb feat(labs): 改造为 3 列正方形卡片网格布局 (1:1 宽高比)
 adef74e feat(tools): 改造为统一的小长方形卡片式 3 列网格布局
 bb0d63b feat(agents): 改造为小长方形卡片式 5 列网格布局
 9d0bc41 feat(home): 优化 Home 页面 - 间距优化、Hero 视觉增强、CTA 动画
-c860007 fix(sprint-6): fix router registration in main.py
-32483b5 fix(sprint-6): fix TypeScript type errors in outfit hooks and page
-569598e feat(sprint-6): implement all frontend pages for 5 agents
-8044df5 feat(sprint-6): implement Outfit Agent backend
-4590827 feat(sprint-6): implement Review Agent backend
-8c3ec25 feat(sprint-6): implement Life Agent backend
-5c1a958 feat(sprint-6): implement Task Agent backend
-066f6df docs: Sprint 6 规划文档和记忆更新
 ```
 
 ---
@@ -98,6 +114,7 @@ c860007 fix(sprint-6): fix router registration in main.py
 | Sprint 5 | ✅ | 管理后台 UI 升级 (Duralux Design System) |
 | Sprint 6 | ✅ | 5 个 Agent 功能实现 (全部完成并上线) |
 | Sprint 6.1 | ✅ | 前端页面优化 (Home/Agents/Tools/Labs/Blog) |
+| Sprint 6.2 | ✅ | Agents/Tools 页面横向列表布局改造 |
 
 ---
 
@@ -113,6 +130,7 @@ c860007 fix(sprint-6): fix router registration in main.py
 8. ✅ Public 页面 Main/Footer 排版统一（浏览器验证通过）
 9. ✅ 删除所有 Tag/Badge 标签元素
 10. ✅ Sprint 6.1 前端页面优化完成并合并
+11. ✅ Sprint 6.2 Agents/Tools 页面横向列表布局改造完成
 
 ---
 
@@ -125,9 +143,9 @@ c860007 fix(sprint-6): fix router registration in main.py
 ---
 
 ## 会话状态
-- 会话 ID: 2026-03-07-03 (Sprint 6.1 完成)
-- 开始时间：2026-03-07T09:00:00Z
-- 最后活动：2026-03-07 Sprint 6.1 合并到 main
+- 会话 ID: 2026-03-10-01 (Sprint 6.2 完成)
+- 开始时间：2026-03-10T09:00:00Z
+- 最后活动：2026-03-10 Sprint 6.2 完成
 
 ---
 
