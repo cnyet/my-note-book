@@ -1,6 +1,5 @@
 "use client";
 
-import { SectionHeader } from "@/components/common/SectionHeader";
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
 import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
