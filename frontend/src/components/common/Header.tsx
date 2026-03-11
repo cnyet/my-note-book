@@ -4,6 +4,7 @@ import { clearAuth, getAdminUser, isAuthenticated } from "@/lib/admin-auth";
 import LinkNext from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MobileNav } from "@/components/common/MobileNav";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <LinkNext
@@ -75,6 +76,11 @@ export function Header() {
           >
             Dashboard
           </LinkNext>
+        </div>
+
+        {/* Mobile Nav */}
+        <div className="lg:hidden">
+          <MobileNav />
         </div>
       </div>
     </nav>

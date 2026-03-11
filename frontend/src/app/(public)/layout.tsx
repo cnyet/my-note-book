@@ -1,6 +1,6 @@
 import { Header } from "@/components/common/Header";
 import { PublicFooter } from "@/components/common/PublicFooter";
-import { ParticleBg } from "@/components/v-ui/ParticleBg";
+import { CyberBackground } from "@/components/ui/CyberBackground";
 
 export default function FrontendLayout({
   children,
@@ -9,7 +9,7 @@ export default function FrontendLayout({
 }) {
   return (
     <>
-      <ParticleBg />
+      <CyberBackground />
       <Header />
       <main className="flex-grow">{children}</main>
       <PublicFooter />
