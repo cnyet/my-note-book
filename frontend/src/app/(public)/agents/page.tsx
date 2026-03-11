@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
 import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { CyberBackground } from "@/components/ui/CyberBackground";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
@@ -70,7 +69,6 @@ if (isLoading) {
 
   return (
     <div className="min-h-screen pt-24 pb-0">
-      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">

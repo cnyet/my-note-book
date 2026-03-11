@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/admin-api";
 import { useState, useMemo } from "react";
-import { CyberBackground } from "@/components/ui/CyberBackground";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
 interface BlogPost {
@@ -59,7 +58,6 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-0">
-      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">

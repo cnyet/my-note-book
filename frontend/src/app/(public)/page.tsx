@@ -6,14 +6,11 @@ import { IQAssistantSection } from "@/components/features/home/IQAssistantSectio
 import { MethodologySection } from "@/components/features/home/MethodologySection";
 import { PerformanceSection } from "@/components/features/home/PerformanceSection";
 import { SecuritySection } from "@/components/features/home/SecuritySection";
-import { CyberBackground } from "@/components/ui/CyberBackground";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function Home() {
   return (
     <div className="min-h-screen pt-20 px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
-      <CyberBackground />
-
       <div className="max-w-7xl mx-auto">
         <div className="space-y-16 lg:space-y-24">
           <ScrollReveal direction="up">
