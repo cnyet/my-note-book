@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
 import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { CyberBackground } from "@/components/ui/CyberBackground";
+import { FlatCard } from "@/components/ui/FlatCard";
+import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
 interface AgentConfig {
   icon: React.ReactNode;
@@ -43,28 +46,7 @@ const agentConfig: Record<string, AgentConfig> = {
 export default function AgentsPage() {
   const { data: agents, isLoading, error } = useAgents();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-      },
-    },
-  };
-
-  if (isLoading) {
+if (isLoading) {
     return (
       <div className="min-h-screen pt-32 px-6 pb-0 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -88,47 +70,41 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-0">
+      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-            AI Personal <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Assistants
-            </span>
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
-            Five intelligent agents to automate your daily workflow
-          </p>
-        </motion.div>
+        <ScrollReveal direction="up">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+              AI Personal <br />
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Assistants
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+              Five intelligent agents to automate your daily workflow
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Agent Grid - 5 columns on desktop, compact cards */}
         <motion.div
-          variants={containerVariants}
+          variants={createStaggerAnimation(0.1).container}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-20"
         >
-          {agents?.map((agent, index) => {
+          {agents?.map((agent) => {
             const config = agentConfig[agent.slug] || {
               icon: <Newspaper className="w-6 h-6" />,
               iconColor: "group-hover:text-slate-400",
               description: "AI-powered assistant",
             };
             return (
-              <motion.div key={agent.id} variants={itemVariants}>
+              <motion.div key={agent.id} variants={createStaggerAnimation(0.1).item}>
                 <Link href={agent.link}>
-                  <div
-                    className={`group relative backdrop-blur-md bg-white/5
-                      p-4 rounded-xl border border-white/10
-                      transition-all duration-300 hover:shadow-lg hover:border-indigo-500/40
-                      overflow-hidden flex items-center gap-4`}
-                  >
+                  <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                       flex items-center justify-center flex-shrink-0 ${config.iconColor} transition-colors`}>
@@ -149,7 +125,7 @@ export default function AgentsPage() {
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <ArrowRight className="w-5 h-5 text-indigo-400" />
                     </div>
-                  </div>
+                  </FlatCard>
                 </Link>
               </motion.div>
             );
@@ -158,17 +134,15 @@ export default function AgentsPage() {
 
         {/* Empty State */}
         {!isLoading && agents?.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-32"
-          >
-            <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
-              <Newspaper className="w-10 h-10 text-slate-500" />
+          <ScrollReveal direction="up">
+            <div className="text-center py-32">
+              <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
+                <Newspaper className="w-10 h-10 text-slate-500" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">No agents available</h3>
+              <p className="text-slate-400 font-medium">Check back later for new agents</p>
             </div>
-            <h3 className="text-2xl font-bold text-white mb-3">No agents available</h3>
-            <p className="text-slate-400 font-medium">Check back later for new agents</p>
-          </motion.div>
+          </ScrollReveal>
         )}
       </div>
     </div>
