@@ -3,6 +3,8 @@
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { ArrowRight, BrainCircuit, Radio, FlaskConical, Telescope, Sparkles, Atom } from "lucide-react";
 import { motion } from "framer-motion";
+import { CyberBackground } from "@/components/ui/CyberBackground";
+import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
 interface LabProject {
   name: string;
@@ -85,58 +87,36 @@ const statusColorMap: Record<string, string> = {
   Concept: "bg-slate-500/20 text-slate-400 border-slate-500/30",
 };
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.4,
-    },
-  },
-};
-
 export default function LabsPage() {
   return (
     <div className="min-h-screen pt-24 pb-0">
+      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-            The Future <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Canvas
-            </span>
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
-            Where we break boundaries. MyNoteBook Labs is our research wing for emerging interfaces.
-          </p>
-        </motion.div>
+        <ScrollReveal direction="up">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+              The Future <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Canvas
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+              Where we break boundaries. MyNoteBook Labs is our research wing for emerging interfaces.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Projects Grid - 3 columns on desktop, square cards */}
         <motion.div
-          variants={containerVariants}
+          variants={createStaggerAnimation(0.08).container}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20"
         >
           {projects.map((project) => (
-            <motion.div key={project.name} variants={itemVariants}>
+            <motion.div key={project.name} variants={createStaggerAnimation(0.08).item}>
               <div
                 className={`group relative backdrop-blur-md bg-gradient-to-br ${project.color}
                   p-6 rounded-3xl border border-white/5 ${project.borderColor}
