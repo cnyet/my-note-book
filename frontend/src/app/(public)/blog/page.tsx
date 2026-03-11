@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/admin-api";
 import { useState, useMemo } from "react";
+import { CyberBackground } from "@/components/ui/CyberBackground";
+import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
 interface BlogPost {
   id: number;
@@ -78,32 +80,26 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-24 pb-0">
+      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-            Insights & <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Breakthroughs
-            </span>
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
-            The latest thoughts from our design leads on AI, creativity, and the future of engineering.
-          </p>
-        </motion.div>
+        <ScrollReveal direction="up">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+              Insights & <br />
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Breakthroughs
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+              The latest thoughts from our design leads on AI, creativity, and the future of engineering.
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Controls Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md"
-        >
+        <ScrollReveal direction="up" delay={0.1}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
           {/* Tag Filter */}
           <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
             <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
@@ -149,15 +145,16 @@ export default function BlogListPage() {
               <List className="w-4 h-4" />
             </button>
           </div>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Posts Content */}
         <div className="relative pb-32">
           {isLoading ? (
             <motion.div
-              variants={containerVariants}
+              variants={createStaggerAnimation(0.08).container}
               initial="hidden"
-              animate="visible"
+              whileInView="visible"
+              viewport={{ once: true }}
               className={viewMode === "grid"
                 ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 : "space-y-4"
@@ -166,20 +163,18 @@ export default function BlogListPage() {
               {Array.from({ length: 6 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  variants={itemVariants}
+                  variants={createStaggerAnimation(0.08).item}
                   className={viewMode === "grid"
                     ? "rounded-2xl aspect-video bg-slate-800/50"
                     : "rounded-2xl h-32 bg-slate-800/50"
                   }
                 />
               ))}
-            </motion.div>
+              </div>
+            </ScrollReveal>
           ) : filteredPosts.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-32"
-            >
+            <ScrollReveal direction="up">
+              <div className="text-center py-32">
               <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
                 <User className="w-10 h-10 text-slate-500" />
               </div>
@@ -187,12 +182,14 @@ export default function BlogListPage() {
               <p className="text-slate-400 font-medium">
                 Try selecting a different tag
               </p>
-            </motion.div>
+              </div>
+            </ScrollReveal>
           ) : (
             <motion.div
-              variants={containerVariants}
+              variants={createStaggerAnimation(0.08).container}
               initial="hidden"
-              animate="visible"
+              whileInView="visible"
+              viewport={{ once: true }}
               className={viewMode === "grid"
                 ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 : "space-y-4"
@@ -201,7 +198,7 @@ export default function BlogListPage() {
               {filteredPosts.map((post) => (
                 <motion.article
                   key={post.id}
-                  variants={itemVariants}
+                  variants={createStaggerAnimation(0.08).item}
                   className={`group cursor-pointer ${
                     viewMode === "list"
                       ? "flex gap-6 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
@@ -294,7 +291,8 @@ export default function BlogListPage() {
                   </Link>
                 </motion.article>
               ))}
-            </motion.div>
+              </div>
+            </ScrollReveal>
           )}
         </div>
       </div>
