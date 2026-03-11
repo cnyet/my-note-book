@@ -48,6 +48,20 @@
     --font-mono: "Fira Code", monospace;
 
     /* =====================================================
+       SPRINT 6.3 - CYBERPUNK THEME COLORS
+       ===================================================== */
+    /* Base Colors */
+    --bg-abyss: #05050a;
+    --text-primary: #f8f8f8;
+    --text-secondary: #94a3b8;
+
+    /* Neon Colors */
+    --neon-primary: #00f2ff;
+    --neon-accent: #bc13fe;
+    --neon-warning: #ffe600;
+    --neon-danger: #ff6b6b;
+
+    /* =====================================================
        DURALUX ADMIN - CSS VARIABLES (for inline styles)
        ===================================================== */
     /* Main Colors */
@@ -99,6 +113,12 @@
     /* Genesis Dark Theme */
     --background: 240 10% 4%; /* #0a0a0f */
     --foreground: 0 0% 98%;
+
+    /* Sprint 6.3 Neon Colors (Dark Mode Overrides) */
+    --neon-primary: #00f2ff;
+    --neon-accent: #bc13fe;
+    --neon-warning: #ffe600;
+    --neon-danger: #ff6b6b;
 
     --card: 240 10% 6%; /* #1a1a24 */
     --card-foreground: 0 0% 98%;
