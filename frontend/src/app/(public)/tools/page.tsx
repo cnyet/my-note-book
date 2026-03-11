@@ -10,6 +10,9 @@ import {
   Wand2,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { CyberBackground } from "@/components/ui/CyberBackground";
+import { FlatCard } from "@/components/ui/FlatCard";
+import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 
 interface ToolCard {
   name: string;
@@ -57,64 +60,37 @@ const tools: ToolCard[] = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-    },
-  },
-};
-
 export default function ToolsPage() {
   return (
     <div className="min-h-screen pt-24 pb-0">
+      <CyberBackground />
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-            Pro-Grade <br />
-            <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Utility Stack
-            </span>
-          </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
-            Powerful modules designed to integrate seamlessly into your design environment
-          </p>
-        </motion.div>
+        <ScrollReveal direction="up">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+              Pro-Grade <br />
+              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Utility Stack
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
+              Powerful modules designed to integrate seamlessly into your design environment
+            </p>
+          </div>
+        </ScrollReveal>
 
         {/* Tools Grid - 3 columns on desktop, compact cards */}
         <motion.div
-          variants={containerVariants}
+          variants={createStaggerAnimation(0.1).container}
           initial="hidden"
-          animate="visible"
+          whileInView="visible"
+          viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20"
         >
-          {tools.map((tool, index) => (
-            <motion.div key={tool.name} variants={itemVariants}>
-              <div
-                className={`group relative backdrop-blur-md bg-white/5
-                  p-4 rounded-xl border border-white/10
-                  transition-all duration-300 hover:shadow-lg hover:border-indigo-500/40
-                  overflow-hidden flex items-center gap-4 cursor-pointer`}
-              >
+          {tools.map((tool) => (
+            <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
+              <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                 {/* Icon */}
                 <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                   flex items-center justify-center flex-shrink-0 ${tool.iconColor} transition-colors`}>
@@ -135,7 +111,7 @@ export default function ToolsPage() {
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <ArrowRight className="w-5 h-5 text-indigo-400" />
                 </div>
-              </div>
+              </FlatCard>
             </motion.div>
           ))}
         </motion.div>
