@@ -35,17 +35,17 @@ export function CyberBackground() {
       return () => window.removeEventListener("resize", resize);
     }
 
-    // 创建粒子 - 减少密度
+    // 创建粒子
     const particles: Particle[] = [];
-    const particleCount = Math.min(30, Math.floor((canvas.width * canvas.height) / 30000));
+    const particleCount = Math.min(50, Math.floor((canvas.width * canvas.height) / 20000));
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1,
       });
     }
 
@@ -56,7 +56,7 @@ export function CyberBackground() {
 
       // 绘制和更新粒子
       particles.forEach((particle) => {
-        ctx.fillStyle = "rgba(99, 102, 241, 0.4)";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
@@ -83,9 +83,9 @@ export function CyberBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       {/* Layer 1: Base - Deep abyss black */}
-      <div className="absolute inset-0 bg-[#030308]" />
+      <div className="absolute inset-0 bg-[#05050a]" />
 
-      {/* Layer 2: Aurora Gradient Mesh - Subtle flowing colors */}
+      {/* Layer 2: Aurora Gradient Mesh - Subtle flowing colors (no grid) */}
       <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-indigo-500/8 rounded-full blur-[180px] animate-pulse" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-purple-500/6 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: "2s" }} />
       <div className="absolute top-[30%] left-[30%] w-[50%] h-[50%] bg-cyan-500/5 rounded-full blur-[160px] animate-pulse" style={{ animationDelay: "4s" }} />
@@ -99,7 +99,7 @@ export function CyberBackground() {
         }}
       />
 
-      {/* Layer 4: Particles (Canvas) - Reduced density */}
+      {/* Layer 4: Dynamic Particles (Canvas) */}
       <canvas ref={canvasRef} className="absolute inset-0" />
     </div>
   );
