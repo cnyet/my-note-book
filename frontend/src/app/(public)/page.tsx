@@ -6,27 +6,41 @@ import { IQAssistantSection } from "@/components/features/home/IQAssistantSectio
 import { MethodologySection } from "@/components/features/home/MethodologySection";
 import { PerformanceSection } from "@/components/features/home/PerformanceSection";
 import { SecuritySection } from "@/components/features/home/SecuritySection";
+import { CyberBackground } from "@/components/ui/CyberBackground";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function Home() {
   return (
     <div className="min-h-screen pt-20 px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
-      {/* Background Blobs - subtle gradient without animation to prevent flicker */}
-      <div className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/10 rounded-full blur-[140px]"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/10 rounded-full blur-[140px]"></div>
-      </div>
+      <CyberBackground />
 
-      <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-7xl mx-auto">
-        <div className="space-y-24 lg:space-y-32">
-          <Hero />
-          <PerformanceSection />
-          <SecuritySection />
-          <MethodologySection />
-          <IQAssistantSection />
+      <div className="max-w-7xl mx-auto">
+        <div className="space-y-16 lg:space-y-24">
+          <ScrollReveal direction="up">
+            <Hero />
+          </ScrollReveal>
 
-          <footer className="mt-16 lg:mt-24">
-            <CTABanner />
-          </footer>
+          <ScrollReveal direction="up" delay={0.1}>
+            <PerformanceSection />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={0.2}>
+            <SecuritySection />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={0.3}>
+            <MethodologySection />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={0.4}>
+            <IQAssistantSection />
+          </ScrollReveal>
+
+          <ScrollReveal direction="up" delay={0.5}>
+            <footer className="mt-16 lg:mt-24">
+              <CTABanner />
+            </footer>
+          </ScrollReveal>
         </div>
       </div>
     </div>
