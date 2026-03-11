@@ -8,6 +8,7 @@ interface Particle {
   vx: number;
   vy: number;
   size: number;
+  color: string;
 }
 
 export function CyberBackground() {
@@ -35,6 +36,15 @@ export function CyberBackground() {
       return () => window.removeEventListener("resize", resize);
     }
 
+    // 彩色粒子配置
+    const colors = [
+      "rgba(0, 242, 255, 0.6)",   // cyan neon
+      "rgba(188, 19, 254, 0.6)",  // purple neon
+      "rgba(255, 230, 0, 0.6)",   // yellow neon
+      "rgba(99, 102, 241, 0.6)",  // indigo
+      "rgba(236, 72, 153, 0.6)",  // pink
+    ];
+
     // 创建粒子
     const particles: Particle[] = [];
     const particleCount = Math.min(50, Math.floor((canvas.width * canvas.height) / 20000));
@@ -46,6 +56,7 @@ export function CyberBackground() {
         vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         size: Math.random() * 2 + 1,
+        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
 
@@ -54,20 +65,42 @@ export function CyberBackground() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // 绘制和更新粒子
+      // 更新粒子位置
       particles.forEach((particle) => {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 更新位置
         particle.x += particle.vx;
         particle.y += particle.vy;
 
         // 边界检测
         if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
         if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+      });
+
+      // 绘制粒子连线（当粒子距离较近时）
+      const connectionDistance = 150;
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < connectionDistance) {
+            const opacity = 1 - distance / connectionDistance;
+            ctx.strokeStyle = `rgba(99, 102, 241, ${opacity * 0.3})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 绘制粒子
+      particles.forEach((particle) => {
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
       });
 
       animationId = requestAnimationFrame(animate);
@@ -85,21 +118,12 @@ export function CyberBackground() {
       {/* Layer 1: Base - Deep abyss black */}
       <div className="absolute inset-0 bg-[#05050a]" />
 
-      {/* Layer 2: Aurora Gradient Mesh - Subtle flowing colors (no grid) */}
-      <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-indigo-500/8 rounded-full blur-[180px] animate-pulse" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-purple-500/6 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: "2s" }} />
-      <div className="absolute top-[30%] left-[30%] w-[50%] h-[50%] bg-cyan-500/5 rounded-full blur-[160px] animate-pulse" style={{ animationDelay: "4s" }} />
-      <div className="absolute top-[60%] left-[60%] w-[40%] h-[40%] bg-pink-500/4 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: "1s" }} />
+      {/* Layer 2: Neon Glows (original cyan/purple/yellow) */}
+      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-cyan-400/10 rounded-full blur-[140px]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-500/10 rounded-full blur-[140px]" />
+      <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] bg-yellow-400/5 rounded-full blur-[120px]" />
 
-      {/* Layer 3: Subtle radial glow from center */}
-      <div
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: "radial-gradient(ellipse at center, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
-        }}
-      />
-
-      {/* Layer 4: Dynamic Particles (Canvas) */}
+      {/* Layer 3: Particles with connections (Canvas) */}
       <canvas ref={canvasRef} className="absolute inset-0" />
     </div>
   );
