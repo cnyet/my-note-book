@@ -57,27 +57,6 @@ export default function BlogListPage() {
     );
   }, [posts, selectedTag]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-      },
-    },
-  };
-
   return (
     <div className="min-h-screen pt-24 pb-0">
       <CyberBackground />
@@ -100,50 +79,51 @@ export default function BlogListPage() {
         {/* Controls Bar */}
         <ScrollReveal direction="up" delay={0.1}>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-          {/* Tag Filter */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
-            <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
-            <div className="flex gap-2">
-              {allTags.slice(0, 6).map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setSelectedTag(tag)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedTag === tag
-                      ? "bg-indigo-500 text-white"
-                      : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  {tag === "all" ? "全部" : tag}
-                </button>
-              ))}
+            {/* Tag Filter */}
+            <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
+              <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+              <div className="flex gap-2">
+                {allTags.slice(0, 6).map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => setSelectedTag(tag)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+                      selectedTag === tag
+                        ? "bg-indigo-500 text-white"
+                        : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {tag === "all" ? "全部" : tag}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-2 bg-white/5 rounded-xl p-1">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-lg transition-all ${
-                viewMode === "grid"
-                  ? "bg-indigo-500 text-white"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              aria-label="Grid view"
-            >
-              <Grid3x3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-lg transition-all ${
-                viewMode === "list"
-                  ? "bg-indigo-500 text-white"
-                  : "text-slate-400 hover:text-white"
-              }`}
-              aria-label="List view"
-            >
-              <List className="w-4 h-4" />
-            </button>
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-2 bg-white/5 rounded-xl p-1">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-2 rounded-lg transition-all ${
+                  viewMode === "grid"
+                    ? "bg-indigo-500 text-white"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                aria-label="Grid view"
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded-lg transition-all ${
+                  viewMode === "list"
+                    ? "bg-indigo-500 text-white"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                aria-label="List view"
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </ScrollReveal>
 
@@ -170,18 +150,17 @@ export default function BlogListPage() {
                   }
                 />
               ))}
-              </div>
-            </ScrollReveal>
+            </motion.div>
           ) : filteredPosts.length === 0 ? (
             <ScrollReveal direction="up">
               <div className="text-center py-32">
-              <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
-                <User className="w-10 h-10 text-slate-500" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">No articles found</h3>
-              <p className="text-slate-400 font-medium">
-                Try selecting a different tag
-              </p>
+                <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
+                  <User className="w-10 h-10 text-slate-500" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">No articles found</h3>
+                <p className="text-slate-400 font-medium">
+                  Try selecting a different tag
+                </p>
               </div>
             </ScrollReveal>
           ) : (
@@ -291,8 +270,7 @@ export default function BlogListPage() {
                   </Link>
                 </motion.article>
               ))}
-              </div>
-            </ScrollReveal>
+            </motion.div>
           )}
         </div>
       </div>
