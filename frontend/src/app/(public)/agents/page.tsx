@@ -26,27 +26,27 @@ interface AgentConfig {
 const agentConfig: Record<string, AgentConfig> = {
   news: {
     icon: <Newspaper className="w-6 h-6" />,
-    iconColor: "group-hover:text-blue-400",
+    iconColor: "text-blue-400",
     description: "自动爬取科技新闻，AI 生成摘要",
   },
   task: {
     icon: <CheckSquare className="w-6 h-6" />,
-    iconColor: "group-hover:text-emerald-400",
+    iconColor: "text-emerald-400",
     description: "智能生成任务，优先级管理",
   },
   life: {
     icon: <Heart className="w-6 h-6" />,
-    iconColor: "group-hover:text-red-400",
+    iconColor: "text-red-400",
     description: "健康数据记录，AI 建议",
   },
   review: {
     icon: <BookOpen className="w-6 h-6" />,
-    iconColor: "group-hover:text-purple-400",
+    iconColor: "text-purple-400",
     description: "自动汇总日报，成长追踪",
   },
   outfit: {
     icon: <Shirt className="w-6 h-6" />,
-    iconColor: "group-hover:text-orange-400",
+    iconColor: "text-orange-400",
     description: "天气适配，AI 穿搭建议",
   },
 };
@@ -132,7 +132,7 @@ export default function AgentsPage() {
           {agents?.map((agent) => {
             const config = agentConfig[agent.slug] || {
               icon: <Newspaper className="w-6 h-6" />,
-              iconColor: "group-hover:text-slate-400",
+              iconColor: "text-slate-400",
               description: "AI-powered assistant",
             };
             return (
@@ -141,7 +141,7 @@ export default function AgentsPage() {
                   <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
-                      flex items-center justify-center flex-shrink-0 ${config.iconColor} transition-colors`}>
+                      flex items-center justify-center flex-shrink-0 ${config.iconColor}`}>
                       {config.icon}
                     </div>
 

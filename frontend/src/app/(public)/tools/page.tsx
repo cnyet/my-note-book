@@ -30,42 +30,42 @@ const tools: ToolCard[] = [
     name: "MyNoteBook CLI",
     icon: <Terminal className="w-6 h-6" />,
     desc: "设计系统即代码，一键同步 tokens 和组件",
-    iconColor: "group-hover:text-indigo-400",
+    iconColor: "text-indigo-400",
     category: "cli",
   },
   {
     name: "Component Studio",
     icon: <Layers className="w-6 h-6" />,
     desc: "可视化 React 组件构建器，AI 辅助布局",
-    iconColor: "group-hover:text-purple-400",
+    iconColor: "text-purple-400",
     category: "design",
   },
   {
     name: "Visual Diff",
     icon: <Layout className="w-6 h-6" />,
     desc: "发现布局回归，自动对比差异",
-    iconColor: "group-hover:text-blue-400",
+    iconColor: "text-blue-400",
     category: "analytics",
   },
   {
     name: "Flow Audit",
     icon: <Activity className="w-6 h-6" />,
     desc: "映射用户旅程，优化交互流程",
-    iconColor: "group-hover:text-emerald-400",
+    iconColor: "text-emerald-400",
     category: "analytics",
   },
   {
     name: "Asset Baker",
     icon: <Cpu className="w-6 h-6" />,
     desc: "智能图像优化，WebP 自动转换",
-    iconColor: "group-hover:text-orange-400",
+    iconColor: "text-orange-400",
     category: "design",
   },
   {
     name: "Type Genius",
     icon: <Wand2 className="w-6 h-6" />,
     desc: "AI 字体推荐，排版智能匹配",
-    iconColor: "group-hover:text-pink-400",
+    iconColor: "text-pink-400",
     category: "design",
   },
 ];
@@ -137,7 +137,7 @@ export default function ToolsPage() {
               <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
                 <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                   <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
-                    flex items-center justify-center flex-shrink-0 ${tool.iconColor} transition-colors`}>
+                    flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                     {tool.icon}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -182,7 +182,7 @@ export default function ToolsPage() {
                       <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
                         <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                           <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
-                            flex items-center justify-center flex-shrink-0 ${tool.iconColor} transition-colors`}>
+                            flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                             {tool.icon}
                           </div>
                           <div className="flex-1 min-w-0">
