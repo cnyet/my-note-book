@@ -1,3 +1,48 @@
+# Active Context - Sprint 6.4 UI Enhancement 完成
+
+**状态**: ✅ 已完成
+
+**完成日期**: 2026-03-12
+
+## Sprint 6.4 修复 (2026-03-12)
+
+| 问题 | 修复方案 | 提交 |
+|------|----------|------|
+| 首页排版间距不足 | pt-20 → pt-32 lg:pt-40, py-8 → py-20 | 59e9c66 |
+| 首页标题字体过小 | text-5/6/7xl → text-6/7/8xl | 59e9c66 |
+| 内页顶部 padding 不足 | agents/tools/labs/blog 全部 pt-24 → pt-32 lg:pt-40 | 373602e |
+| Footer 链接卡片样式多余 | 改为 n8n.io 风格纯文本多列布局 | 373602e |
+| Tools/Labs/Blog 统计数字多余 | 删除 Dynamic Stats Banner | eeb3f31 |
+| Agents/Tools 页面 ICON 仅 hover 高亮 | 改为默认高亮 (text-* 代替 group-hover:text-*) | de81103 |
+| Agents/Blog 空状态简陋 | 添加渐变光晕背景 + 大图标 + 动画效果 | 3792cbc |
+
+## 修改文件
+
+| 文件 | 修改内容 |
+|------|----------|
+| `frontend/src/app/(public)/page.tsx` | Hero padding, Section spacing, 标题字体 |
+| `frontend/src/components/features/home/Hero.tsx` | 标题字体升级 |
+| `frontend/src/app/(public)/agents/page.tsx` | 顶部 padding, ICON 高亮，空状态 |
+| `frontend/src/app/(public)/tools/page.tsx` | 顶部 padding, 删除 stats, ICON 高亮 |
+| `frontend/src/app/(public)/labs/page.tsx` | 顶部 padding, 删除 stats |
+| `frontend/src/app/(public)/blog/page.tsx` | 顶部 padding, 删除 stats, 空状态 |
+| `frontend/src/components/ui/FooterLinks.tsx` | n8n.io 风格重构 |
+
+## 提交历史
+
+- `cfb10ae` fix(blog): fix syntax error in empty state condition
+- `3792cbc` feat(pages): enhance empty states for Agents and Blog
+- `de81103` feat(pages): icon default highlight style for Agents and Tools
+- `eeb3f31` feat(pages): remove stats banners from Tools/Labs/Blog pages
+- `373602e` feat(pages): increase top padding and redesign FooterLinks with n8n.io style
+- `59e9c66` feat(home): enhance typography and spacing
+
+## 分支状态
+
+- 功能分支：`feature/sprint-6.4-ui-enhancement` ✅ 已推送
+
+---
+
 # Active Context - Sprint 6.3 前端页面优化完成
 
 **状态**: ✅ 已完成
