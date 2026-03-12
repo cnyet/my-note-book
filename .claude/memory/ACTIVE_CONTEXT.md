@@ -22,15 +22,16 @@
 | Agents 页面需要参考图片 | 添加 reference-image.png 显示工作流程图 | dcbaaf0 |
 | Agents 页面参考图片过大 | 添加 max-w-3xl 限制图片宽度 | 9ca19f2 |
 | 各页面底部 Footer 显示 Product/Ecosystem/Studio 分类 | 移除 layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件 | fd434a8 |
-| Agents 页面顶部静态图片 | 替换为动态 workflow 展示和分类标签（类似 tools 页面） | c0aa31f |
+| Agents 页面顶部静态图片 | 替换为动态 workflow 展示和分类标签 | c0aa31f |
+| Agents, Tools 页面 workflow 展示内容多余 | 删除分类标签上方的 workflow 展示，保留统计数据和分类标签 | 1806514 |
 
 ## 完成摘要
 
 | 页面 | 优化内容 |
 |------|----------|
 | Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 |
-| Agents | Title 单行 + 动态 Workflow 展示 + 分类筛选 + Footer Links |
-| Tools | Title 单行 + 动态工具流程 + 分类筛选 + Footer Links |
+| Agents | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
+| Tools | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
 | Labs | Title 单行 + 动态 Banner + Footer Links |
 | Blog | Title 单行 + 动态 Banner + Footer Links |
 
@@ -42,9 +43,9 @@
 
 ## 最新提交
 
+- `1806514` feat(pages): 删除 agents 和 tools 页面分类标签上方的 workflow 展示内容
 - `c0aa31f` feat(agents): 替换静态图片为动态 workflow 展示和分类标签
 - `fd434a8` feat(layout): 移除 public layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件
-- `9ca19f2` feat(agents): 缩小参考图片尺寸至 max-w-3xl
 
 ## 下一步
 
