@@ -93,9 +93,8 @@ export default function LabsPage() {
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-24">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-              The Future <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-6">
+              The Future <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Canvas
               </span>
             </h1>

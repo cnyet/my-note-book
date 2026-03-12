@@ -74,9 +74,8 @@ if (isLoading) {
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-8">
-              AI Personal <br />
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-8">
+              AI Personal <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Assistants
               </span>
             </h1>

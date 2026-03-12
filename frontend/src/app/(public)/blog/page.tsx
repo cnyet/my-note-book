@@ -63,9 +63,8 @@ export default function BlogListPage() {
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-24">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
-              Insights & <br />
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-6">
+              Insights & <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Breakthroughs
               </span>
             </h1>
