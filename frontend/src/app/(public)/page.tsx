@@ -9,7 +9,7 @@ import { SecuritySection } from "@/components/features/home/SecuritySection";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { StatCard } from "@/components/ui/StatCard";
 import { FeatureCard } from "@/components/ui/FeatureCard";
-import { Users, Activity, Zap, Cpu, Brain, Shield, Lightning } from "lucide-react";
+import { Users, Activity, Zap, Cpu, Brain, Shield, Flashlight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -39,7 +39,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FeatureCard icon={Brain} title="AI-Powered" description="Intelligent automation powered by advanced AI models" />
               <FeatureCard icon={Shield} title="Secure" description="Enterprise-grade security with end-to-end encryption" />
-              <FeatureCard icon={Lightning} title="Fast" description="Lightning-fast processing with optimized infrastructure" />
+              <FeatureCard icon={Flashlight} title="Fast" description="Lightning-fast processing with optimized infrastructure" />
             </div>
           </section>
 
