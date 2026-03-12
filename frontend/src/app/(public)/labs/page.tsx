@@ -19,7 +19,7 @@ interface LabProject {
 const projects: LabProject[] = [
   {
     name: "Project Synapse",
-    icon: <BrainCircuit className="w-8 h-8" />,
+    icon: <BrainCircuit className="w-6 h-6" />,
     desc: "脑机接口设计工具，将思维模式直接转换为布局 tokens",
     status: "Alpha",
     color: "from-cyan-500/20 to-cyan-600/10",
@@ -29,7 +29,7 @@ const projects: LabProject[] = [
   },
   {
     name: "Ambient Layouts",
-    icon: <Radio className="w-8 h-8" />,
+    icon: <Radio className="w-6 h-6" />,
     desc: "界面自适应用户周围环境和情绪状态的实时响应系统",
     status: "Beta",
     color: "from-pink-500/20 to-pink-600/10",
@@ -39,7 +39,7 @@ const projects: LabProject[] = [
   },
   {
     name: "Neural Interfaces",
-    icon: <FlaskConical className="w-8 h-8" />,
+    icon: <FlaskConical className="w-6 h-6" />,
     desc: "探索下一代人机交互范式的神经接口技术",
     status: "Research",
     color: "from-purple-500/20 to-purple-600/10",
@@ -49,7 +49,7 @@ const projects: LabProject[] = [
   },
   {
     name: "Quantum UI",
-    icon: <Atom className="w-8 h-8" />,
+    icon: <Atom className="w-6 h-6" />,
     desc: "基于量子计算概念的并行状态界面设计",
     status: "Concept",
     color: "from-indigo-500/20 to-indigo-600/10",
@@ -59,7 +59,7 @@ const projects: LabProject[] = [
   },
   {
     name: "Holo Display",
-    icon: <Telescope className="w-8 h-8" />,
+    icon: <Telescope className="w-6 h-6" />,
     desc: "全息显示技术的 Web 界面适配方案",
     status: "Research",
     color: "from-emerald-500/20 to-emerald-600/10",
@@ -69,7 +69,7 @@ const projects: LabProject[] = [
   },
   {
     name: "AI Co-Pilot",
-    icon: <Sparkles className="w-8 h-8" />,
+    icon: <Sparkles className="w-6 h-6" />,
     desc: "AI 辅助设计决策的智能推荐引擎",
     status: "Beta",
     color: "from-orange-500/20 to-orange-600/10",
@@ -104,32 +104,32 @@ export default function LabsPage() {
           </div>
         </ScrollReveal>
 
-        {/* Projects Grid - 3 columns on desktop, square cards */}
+        {/* Projects Grid - 5 columns on desktop, compact cards */}
         <motion.div
           variants={createStaggerAnimation(0.08).container}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-20 min-h-[600px]"
         >
           {projects.map((project) => (
             <motion.div key={project.name} variants={createStaggerAnimation(0.08).item}>
               <div
                 className={`group relative backdrop-blur-md bg-gradient-to-br ${project.color}
-                  p-6 rounded-3xl border border-white/5 ${project.borderColor}
-                  transition-all duration-300 hover:shadow-xl overflow-hidden cursor-pointer
-                  aspect-square flex flex-col`}
+                  p-4 rounded-xl border border-white/5 ${project.borderColor}
+                  transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden cursor-pointer
+                  flex flex-col h-full`}
               >
                 {/* Background Icon */}
-                <div className="absolute -bottom-8 -right-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <div className="w-40 h-40">
+                <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <div className="w-20 h-20">
                     {project.icon}
                   </div>
                 </div>
 
                 {/* Status Badge */}
-                <div className="flex justify-between items-start mb-4">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                <div className="flex justify-between items-start mb-3">
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                     statusColorMap[project.status] || ""
                   }`}>
                     {project.status}
@@ -137,24 +137,19 @@ export default function LabsPage() {
                 </div>
 
                 {/* Icon Container */}
-                <div className={`w-16 h-16 rounded-2xl ${project.bgColor} border border-white/10
-                  flex items-center justify-center mb-5 ${project.iconColor} transition-colors`}>
+                <div className={`w-10 h-10 rounded-lg ${project.bgColor} border border-white/10
+                  flex items-center justify-center mb-3`}>
                   {project.icon}
                 </div>
 
                 {/* Content */}
-                <div className="mt-auto space-y-3">
-                  <h3 className="text-2xl font-black text-white group-hover:text-indigo-400 transition-colors">
+                <div className="mt-auto space-y-2">
+                  <h3 className="text-lg font-black text-white">
                     {project.name}
                   </h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
                     {project.desc}
                   </p>
-                </div>
-
-                {/* Arrow indicator */}
-                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0">
-                  <ArrowRight className="w-5 h-5 text-indigo-400" />
                 </div>
               </div>
             </motion.div>
