@@ -83,3 +83,21 @@
 | 合并到 main 分支 | ✅ | `f0ff0ef` |
 
 ---
+
+---
+
+## Sprint 6.4: UI Enhancement + Footer 修复 (2026-03-12) ✅
+
+| 任务 | 状态 | 提交 |
+|------|------|------|
+| 首页排版间距增强 (pt-20 → pt-32 lg:pt-40) | ✅ | `59e9c66` |
+| 首页标题字体升级 (text-8xl) | ✅ | `59e9c66` |
+| 内页顶部 padding 增强 (pt-32 lg:pt-40) | ✅ | `373602e` |
+| Footer n8n.io 风格重构 (纯文本链接) | ✅ | `373602e` |
+| Tools/Labs/Blog 统计横幅删除 | ✅ | `eeb3f31` |
+| Agents/Tools ICON 默认高亮 | ✅ | `de81103` |
+| Agents/Blog 空状态美化 (渐变光晕) | ✅ | `3792cbc` |
+| Blog 空状态语法错误修复 | ✅ | `cfb10ae` |
+| Sprint 6.4 合并到 main | ✅ | `f693c6a` |
+| Footer 位置修复 (flex 布局) | ✅ | `e9cabc3` |
+| Footer 链接只显示英文 | ✅ | `e9cabc3` |

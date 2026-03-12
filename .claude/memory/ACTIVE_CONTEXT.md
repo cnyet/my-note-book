@@ -109,3 +109,16 @@
 
 - 功能分支已删除 ✅
 - 所有修改已合并到 main 分支 ✅
+
+---
+
+## Sprint 6.4 额外修复 (2026-03-12)
+
+| 问题 | 修复方案 | 提交 |
+|------|----------|------|
+| Footer 未固定在底部 | 页面容器添加 flex flex-col，内容区添加 flex-1 | e9cabc3 |
+| Footer 链接显示中文描述 | 删除 description，只显示 label | e9cabc3 |
+
+## 最新提交
+
+- `e9cabc3` fix(layout): footer at bottom with English-only labels
