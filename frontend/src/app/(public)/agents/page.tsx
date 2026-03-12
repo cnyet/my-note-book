@@ -94,7 +94,7 @@ if (isLoading) {
                 <img
                   src="/reference-image.png"
                   alt="Agent Workflow Diagram"
-                  className="w-full h-auto rounded-2xl"
+                  className="w-full max-w-3xl mx-auto h-auto rounded-2xl"
                 />
               </div>
             </motion.div>
