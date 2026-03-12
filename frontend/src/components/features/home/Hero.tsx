@@ -126,15 +126,6 @@ export const Hero = () => {
           />
         </motion.div>
         
-        {/* Dynamic glow following mouse */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 rounded-[40px] bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-xl"
-          style={{
-            x: useTransform(mouseX, [-0.5, 0.5], [-30, 30]),
-            y: useTransform(mouseY, [-0.5, 0.5], [-30, 30]),
-            opacity: useTransform(mouseX, (x) => Math.abs(x) > 0.1 ? 0.3 : 0.1),
-          }}
-        />
       </motion.div>
     </section>
   );
