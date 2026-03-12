@@ -2,11 +2,27 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight, Bot, Zap, Brain, MessageSquare, Clock, RefreshCw, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
 import { FooterLinks } from "@/components/ui/FooterLinks";
+import { useState } from "react";
+
+const agentCategories = [
+  { id: "all", label: "全部", icon: Bot },
+  { id: "information", label: "信息处理", icon: Newspaper },
+  { id: "productivity", label: "效率提升", icon: Zap },
+  { id: "lifestyle", label: "生活健康", icon: Heart },
+  { id: "learning", label: "学习成长", icon: Brain },
+];
+
+const agentWorkflowSteps = [
+  { icon: MessageSquare, label: "接收任务", color: "text-blue-400", bg: "from-blue-500/20 to-cyan-500/20", border: "border-blue-400/30" },
+  { icon: Brain, label: "AI 分析", color: "text-purple-400", bg: "from-purple-500/20 to-pink-500/20", border: "border-purple-400/30" },
+  { icon: Zap, label: "自动执行", color: "text-amber-400", bg: "from-amber-500/20 to-orange-500/20", border: "border-amber-400/30" },
+  { icon: Clock, label: "持续优化", color: "text-emerald-400", bg: "from-emerald-500/20 to-teal-500/20", border: "border-emerald-400/30" },
+];
 
 interface AgentConfig {
   icon: React.ReactNode;
@@ -14,7 +30,6 @@ interface AgentConfig {
   description: string;
 }
 
-// Agent slug to icon and color mapping
 const agentConfig: Record<string, AgentConfig> = {
   news: {
     icon: <Newspaper className="w-6 h-6" />,
@@ -45,8 +60,9 @@ const agentConfig: Record<string, AgentConfig> = {
 
 export default function AgentsPage() {
   const { data: agents, isLoading, error } = useAgents();
+  const [activeCategory, setActiveCategory] = useState("all");
 
-if (isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen pt-32 px-6 pb-0 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -83,20 +99,106 @@ if (isLoading) {
               Five intelligent agents to automate your daily workflow
             </p>
 
-            {/* Agent Workflow Reference Image */}
+            {/* Dynamic Agent Workflow Diagram */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="mt-16"
             >
-              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 backdrop-blur-xl p-4">
-                <img
-                  src="/reference-image.png"
-                  alt="Agent Workflow Diagram"
-                  className="w-full max-w-3xl mx-auto h-auto rounded-2xl"
-                />
+              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8 backdrop-blur-xl">
+                {/* Animated background glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_3s_ease_infinite]" />
+                
+                {/* Workflow steps */}
+                <div className="relative z-10 flex items-center justify-center gap-4">
+                  {agentWorkflowSteps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
+                      <div key={step.label} className="flex items-center">
+                        <motion.div
+                          animate={{ 
+                            scale: [1, 1.08, 1],
+                            y: [0, -8, 0]
+                          }}
+                          transition={{ 
+                            duration: 2, 
+                            repeat: Infinity, 
+                            delay: index * 0.3 
+                          }}
+                          className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${step.bg} border ${step.border} flex items-center justify-center`}
+                        >
+                          <Icon className={`w-9 h-9 ${step.color}`} />
+                        </motion.div>
+                        <span className={`absolute mt-24 text-sm font-medium ${step.color} whitespace-nowrap`}>
+                          {step.label}
+                        </span>
+                        {index < agentWorkflowSteps.length - 1 && (
+                          <motion.div
+                            animate={{ opacity: [0.3, 0.8, 0.3] }}
+                            transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.5 }}
+                            className="w-12 h-0.5 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 mx-2"
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Bottom status indicators */}
+                <div className="relative z-10 flex items-center justify-center gap-8 mt-16 pt-8 border-t border-white/5">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    <RefreshCw className="w-5 h-5 text-indigo-400" />
+                  </motion.div>
+                  <span className="text-sm text-slate-400">实时更新</span>
+                  <div className="w-1 h-1 rounded-full bg-slate-600" />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    <Zap className="w-5 h-5 text-amber-400" />
+                  </motion.div>
+                  <span className="text-sm text-slate-400">自动执行</span>
+                  <div className="w-1 h-1 rounded-full bg-slate-600" />
+                  <motion.div
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                  </motion.div>
+                  <span className="text-sm text-slate-400">质量验证</span>
+                </div>
               </div>
+            </motion.div>
+
+            {/* Category Filter Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-12 flex flex-wrap justify-center gap-3"
+            >
+              {agentCategories.map((category) => {
+                const Icon = category.icon;
+                const isActive = activeCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`group px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                      isActive
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+                        : "bg-white/5 border border-white/10 text-slate-400 hover:border-white/20 hover:text-white"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+                    {category.label}
+                  </button>
+                );
+              })}
             </motion.div>
           </div>
         </ScrollReveal>
