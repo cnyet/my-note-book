@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight, Download, BrainCircuit, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
+import { FooterLinks } from "@/components/ui/FooterLinks";
 
 interface AgentConfig {
   icon: React.ReactNode;
@@ -72,7 +73,7 @@ if (isLoading) {
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
-          <div className="text-center mb-16">
+          <div className="text-center mb-24">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
               AI Personal <br />
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -82,6 +83,26 @@ if (isLoading) {
             <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
               Five intelligent agents to automate your daily workflow
             </p>
+
+            {/* Workflow Diagram */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-12 flex items-center justify-center gap-4 text-sm text-slate-500"
+            >
+              <span className="flex items-center gap-2">
+                <Download className="w-4 h-4" /> 数据输入
+              </span>
+              <ArrowRight className="w-4 h-4 text-indigo-400" />
+              <span className="flex items-center gap-2">
+                <BrainCircuit className="w-4 h-4" /> AI 处理
+              </span>
+              <ArrowRight className="w-4 h-4 text-indigo-400" />
+              <span className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" /> 智能输出
+              </span>
+            </motion.div>
           </div>
         </ScrollReveal>
 
@@ -142,6 +163,19 @@ if (isLoading) {
             </div>
           </ScrollReveal>
         )}
+
+        {/* Footer Links */}
+        <FooterLinks
+          title="Related AI Tools & Resources"
+          links={[
+            { href: "https://n8n.io", label: "n8n", description: "工作流自动化" },
+            { href: "https://zapier.com", label: "Zapier", description: "应用集成" },
+            { href: "https://make.com", label: "Make", description: "可视化自动化" },
+            { href: "https://langchain.com", label: "LangChain", description: "AI 应用框架" },
+            { href: "https://openai.com", label: "OpenAI", description: "AI 模型" },
+            { href: "https://anthropic.com", label: "Anthropic", description: "AI 安全研究" },
+          ]}
+        />
       </div>
     </div>
   );
