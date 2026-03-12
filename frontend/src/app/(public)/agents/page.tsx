@@ -121,13 +121,13 @@ export default function AgentsPage() {
           </div>
         </ScrollReveal>
 
-        {/* Agent Grid - 5 columns on desktop, compact cards */}
+        {/* Agent Grid - 6 columns on desktop, compact cards */}
         <motion.div
           variants={createStaggerAnimation(0.1).container}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-20"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-20 min-h-[600px]"
         >
           {agents?.map((agent) => {
             const config = agentConfig[agent.slug] || {
