@@ -24,12 +24,23 @@
 | 各页面底部 Footer 显示 Product/Ecosystem/Studio 分类 | 移除 layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件 | fd434a8 |
 | Agents 页面顶部静态图片 | 替换为动态 workflow 展示和分类标签 | c0aa31f |
 | Agents, Tools 页面 workflow 展示内容多余 | 删除分类标签上方的 workflow 展示，保留统计数据和分类标签 | 1806514 |
+| 首页底部 footer 被删除 | 恢复首页底部 Product/Ecosystem/Studio 分类 footer（直接在 page.tsx 中实现） | 232bcde |
+
+## Footer 架构
+
+| 页面 | Footer 实现 |
+|------|----------|
+| Home | 独立 footer 组件（Product/Ecosystem/Studio 分类 + 社交链接） |
+| Agents | FooterLinks 组件（Related AI Tools & Resources） |
+| Tools | FooterLinks 组件（Related Tools & Resources） |
+| Labs | FooterLinks 组件（Related Research & Resources） |
+| Blog | FooterLinks 组件（Related Blogs & Resources） |
 
 ## 完成摘要
 
 | 页面 | 优化内容 |
 |------|----------|
-| Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 |
+| Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 + 完整 Footer |
 | Agents | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
 | Tools | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
 | Labs | Title 单行 + 动态 Banner + Footer Links |
@@ -43,9 +54,9 @@
 
 ## 最新提交
 
+- `232bcde` feat(home): 恢复首页底部 Product/Ecosystem/Studio 分类 footer
 - `1806514` feat(pages): 删除 agents 和 tools 页面分类标签上方的 workflow 展示内容
 - `c0aa31f` feat(agents): 替换静态图片为动态 workflow 展示和分类标签
-- `fd434a8` feat(layout): 移除 public layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件
 
 ## 下一步
 
