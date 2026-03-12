@@ -170,11 +170,16 @@ export default function AgentsPage() {
         {!isLoading && agents?.length === 0 && (
           <ScrollReveal direction="up">
             <div className="text-center py-32">
-              <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-8">
-                <Newspaper className="w-10 h-10 text-slate-500" />
+              <div className="relative inline-block mb-8">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-2xl animate-pulse" />
+                <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 flex items-center justify-center mx-auto">
+                  <Newspaper className="w-12 h-12 text-indigo-400" />
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">No agents available</h3>
-              <p className="text-slate-400 font-medium">Check back later for new agents</p>
+              <h3 className="text-3xl font-black text-white mb-3">No agents available</h3>
+              <p className="text-slate-400 text-lg font-medium max-w-md mx-auto">
+                Check back later for new agents
+              </p>
             </div>
           </ScrollReveal>
         )}
