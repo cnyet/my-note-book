@@ -88,8 +88,8 @@ const statusColorMap: Record<string, string> = {
 
 export default function LabsPage() {
   return (
-    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
-      <div className="max-w-[1400px] mx-auto px-6">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -165,12 +165,12 @@ export default function LabsPage() {
         <FooterLinks
           title="Related Research & Resources"
           links={[
-            { href: "https://openai.com/research", label: "OpenAI Research", description: "AI 研究" },
-            { href: "https://deepmind.google/", label: "DeepMind", description: "AI 研究实验室" },
-            { href: "https://www.microsoft.com/en-us/research/", label: "Microsoft Research", description: "微软研究院" },
-            { href: "https://research.google/", label: "Google Research", description: "谷歌研究" },
-            { href: "https://www.nature.com/", label: "Nature", description: "科学期刊" },
-            { href: "https://arxiv.org/", label: "arXiv", description: "论文预印本" },
+            { href: "https://openai.com/research", label: "OpenAI Research" },
+            { href: "https://deepmind.google/", label: "DeepMind" },
+            { href: "https://www.microsoft.com/en-us/research/", label: "Microsoft Research" },
+            { href: "https://research.google/", label: "Google Research" },
+            { href: "https://www.nature.com/", label: "Nature" },
+            { href: "https://arxiv.org/", label: "arXiv" },
           ]}
         />
       </div>

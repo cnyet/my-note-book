@@ -81,8 +81,8 @@ export default function ToolsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
 
   return (
-    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
-      <div className="max-w-[1400px] mx-auto px-6">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -210,12 +210,12 @@ export default function ToolsPage() {
         <FooterLinks
           title="Related Tools & Resources"
           links={[
-            { href: "https://www.jyshare.com/", label: "JyShare", description: "在线工具集合" },
-            { href: "https://tool.lu/", label: "Tool.lu", description: "在线工具大全" },
-            { href: "https://123.juzi.cn/", label: "123 工具集", description: "实用工具导航" },
-            { href: "https://cli.dev", label: "CLI Tools", description: "命令行工具" },
-            { href: "https://figma.com", label: "Figma", description: "设计协作" },
-            { href: "https://vercel.com", label: "Vercel", description: "前端部署" },
+            { href: "https://www.jyshare.com/", label: "JyShare" },
+            { href: "https://tool.lu/", label: "Tool.lu" },
+            { href: "https://123.juzi.cn/", label: "123 工具集" },
+            { href: "https://cli.dev", label: "CLI Tools" },
+            { href: "https://figma.com", label: "Figma" },
+            { href: "https://vercel.com", label: "Vercel" },
           ]}
         />
       </div>

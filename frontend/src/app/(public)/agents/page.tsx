@@ -78,8 +78,8 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
-      <div className="max-w-[1400px] mx-auto px-6">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -188,12 +188,12 @@ export default function AgentsPage() {
         <FooterLinks
           title="Related AI Tools & Resources"
           links={[
-            { href: "https://n8n.io", label: "n8n", description: "工作流自动化" },
-            { href: "https://zapier.com", label: "Zapier", description: "应用集成" },
-            { href: "https://make.com", label: "Make", description: "可视化自动化" },
-            { href: "https://langchain.com", label: "LangChain", description: "AI 应用框架" },
-            { href: "https://openai.com", label: "OpenAI", description: "AI 模型" },
-            { href: "https://anthropic.com", label: "Anthropic", description: "AI 安全研究" },
+            { href: "https://n8n.io", label: "n8n" },
+            { href: "https://zapier.com", label: "Zapier" },
+            { href: "https://make.com", label: "Make" },
+            { href: "https://langchain.com", label: "LangChain" },
+            { href: "https://openai.com", label: "OpenAI" },
+            { href: "https://anthropic.com", label: "Anthropic" },
           ]}
         />
       </div>

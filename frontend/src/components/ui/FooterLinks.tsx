@@ -5,8 +5,8 @@ import Link from "next/link";
 interface FooterLinkProps {
   href: string;
   label: string;
-  description?: string;
 }
+
 
 interface FooterLinksProps {
   title: string;
@@ -30,9 +30,6 @@ export function FooterLinks({ title, links }: FooterLinksProps) {
               <div className="text-sm font-medium text-slate-400 group-hover:text-indigo-400 transition-colors">
                 {link.label}
               </div>
-              {link.description && (
-                <div className="text-xs text-slate-500 mt-1">{link.description}</div>
-              )}
             </Link>
           ))}
         </div>

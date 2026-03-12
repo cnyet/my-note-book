@@ -58,8 +58,8 @@ export default function BlogListPage() {
   }, [posts, selectedTag]);
 
   return (
-    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
-      <div className="max-w-[1400px] mx-auto px-6">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -279,12 +279,12 @@ export default function BlogListPage() {
         <FooterLinks
           title="Related Blogs & Resources"
           links={[
-            { href: "https://vercel.com/blog", label: "Vercel Blog", description: "前端开发" },
-            { href: "https://nextjs.org/blog", label: "Next.js Blog", description: "框架更新" },
-            { href: "https://react.dev/blog", label: "React Blog", description: "React 动态" },
-            { href: "https://tailwindcss.com/blog", label: "Tailwind CSS", description: "CSS 框架" },
-            { href: "https://ui.shadcn.com", label: "shadcn/ui", description: "UI 组件库" },
-            { href: "https://www.framer.com/blog", label: "Framer", description: "设计工具" },
+            { href: "https://vercel.com/blog", label: "Vercel Blog" },
+            { href: "https://nextjs.org/blog", label: "Next.js Blog" },
+            { href: "https://react.dev/blog", label: "React Blog" },
+            { href: "https://tailwindcss.com/blog", label: "Tailwind CSS" },
+            { href: "https://ui.shadcn.com", label: "shadcn/ui" },
+            { href: "https://www.framer.com/blog", label: "Framer" },
           ]}
         />
       </div>
