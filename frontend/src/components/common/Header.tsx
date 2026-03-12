@@ -54,9 +54,11 @@ export function Header() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-center">
-      <div className="w-full max-w-6xl backdrop-blur-md bg-white/5 rounded-full px-8 py-3 flex items-center justify-between border border-white/10 shadow-2xl">
+      <div className="w-full max-w-7xl backdrop-blur-md bg-white/5 rounded-full px-8 py-3 flex items-center justify-between border border-white/10 shadow-2xl">
+        {/* Logo - Left */}
         <Logo />
 
+        {/* Navigation - Right */}
         <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide">
           {navLinks.map((link) => (
             <LinkNext
@@ -67,15 +69,6 @@ export function Header() {
               {link.name}
             </LinkNext>
           ))}
-        </div>
-
-        <div className="hidden md:flex items-center">
-          <LinkNext
-            href="/admin"
-            className="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 border-2 border-white/20 hover:border-white/40 rounded-full text-[11px] font-black uppercase tracking-[0.15em] text-white transition-all shadow-lg shadow-indigo-500/20 active:scale-95"
-          >
-            Dashboard
-          </LinkNext>
         </div>
 
         {/* Mobile Nav */}
