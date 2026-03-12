@@ -1,9 +1,9 @@
 "use client";
 
-import { SectionHeader } from "@/components/common/SectionHeader";
 import { ArrowRight, BrainCircuit, Radio, FlaskConical, Telescope, Sparkles, Atom } from "lucide-react";
 import { motion } from "framer-motion";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
+import { FooterLinks } from "@/components/ui/FooterLinks";
 
 interface LabProject {
   name: string;
@@ -92,7 +92,7 @@ export default function LabsPage() {
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
-          <div className="text-center mb-16">
+          <div className="text-center mb-24">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
               The Future <br />
               <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -102,6 +102,29 @@ export default function LabsPage() {
             <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
               Where we break boundaries. MyNoteBook Labs is our research wing for emerging interfaces.
             </p>
+
+            {/* Dynamic Stats Banner */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-12 relative rounded-2xl overflow-hidden bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
+            >
+              <div className="grid grid-cols-3 gap-8 text-center">
+                <div>
+                  <div className="text-4xl font-black text-cyan-400">6+</div>
+                  <div className="text-sm text-slate-400 mt-1">实验项目</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-black text-purple-400">4</div>
+                  <div className="text-sm text-slate-400 mt-1">研究领域</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-black text-pink-400">24/7</div>
+                  <div className="text-sm text-slate-400 mt-1">持续探索</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </ScrollReveal>
 
@@ -161,6 +184,19 @@ export default function LabsPage() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Footer Links */}
+        <FooterLinks
+          title="Related Research & Resources"
+          links={[
+            { href: "https://openai.com/research", label: "OpenAI Research", description: "AI 研究" },
+            { href: "https://deepmind.google/", label: "DeepMind", description: "AI 研究实验室" },
+            { href: "https://www.microsoft.com/en-us/research/", label: "Microsoft Research", description: "微软研究院" },
+            { href: "https://research.google/", label: "Google Research", description: "谷歌研究" },
+            { href: "https://www.nature.com/", label: "Nature", description: "科学期刊" },
+            { href: "https://arxiv.org/", label: "arXiv", description: "论文预印本" },
+          ]}
+        />
       </div>
     </div>
   );

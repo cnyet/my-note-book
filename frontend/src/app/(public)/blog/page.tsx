@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/admin-api";
 import { useState, useMemo } from "react";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
+import { FooterLinks } from "@/components/ui/FooterLinks";
 
 interface BlogPost {
   id: number;
@@ -61,7 +62,7 @@ export default function BlogListPage() {
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
-          <div className="text-center mb-12">
+          <div className="text-center mb-24">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
               Insights & <br />
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -71,6 +72,29 @@ export default function BlogListPage() {
             <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
               The latest thoughts from our design leads on AI, creativity, and the future of engineering.
             </p>
+
+            {/* Dynamic Stats Banner */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mt-12 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
+            >
+              <div className="grid grid-cols-3 gap-8 text-center">
+                <div>
+                  <div className="text-4xl font-black text-indigo-400">{posts?.length || 0}</div>
+                  <div className="text-sm text-slate-400 mt-1">已发布文章</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-black text-purple-400">{allTags.length - 1}</div>
+                  <div className="text-sm text-slate-400 mt-1">主题标签</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-black text-pink-400">24/7</div>
+                  <div className="text-sm text-slate-400 mt-1">持续更新</div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </ScrollReveal>
 
@@ -271,6 +295,19 @@ export default function BlogListPage() {
             </motion.div>
           )}
         </div>
+
+        {/* Footer Links */}
+        <FooterLinks
+          title="Related Blogs & Resources"
+          links={[
+            { href: "https://vercel.com/blog", label: "Vercel Blog", description: "前端开发" },
+            { href: "https://nextjs.org/blog", label: "Next.js Blog", description: "框架更新" },
+            { href: "https://react.dev/blog", label: "React Blog", description: "React 动态" },
+            { href: "https://tailwindcss.com/blog", label: "Tailwind CSS", description: "CSS 框架" },
+            { href: "https://ui.shadcn.com", label: "shadcn/ui", description: "UI 组件库" },
+            { href: "https://www.framer.com/blog", label: "Framer", description: "设计工具" },
+          ]}
+        />
       </div>
     </div>
   );
