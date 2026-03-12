@@ -10,8 +10,6 @@ import {
   Wand2,
   Palette,
   BarChart3,
-  RefreshCw,
-  CheckCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
@@ -97,34 +95,11 @@ export default function ToolsPage() {
               Powerful modules designed to integrate seamlessly into your design environment
             </p>
 
-            {/* Dynamic Stats Banner */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="mt-16 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
-            >
-              <div className="grid grid-cols-3 gap-8 text-center">
-                <div>
-                  <div className="text-4xl font-black text-indigo-400">6+</div>
-                  <div className="text-sm text-slate-400 mt-1">专业工具</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-purple-400">100%</div>
-                  <div className="text-sm text-slate-400 mt-1">自动化</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-pink-400">24/7</div>
-                  <div className="text-sm text-slate-400 mt-1">持续运行</div>
-                </div>
-              </div>
-            </motion.div>
-
             {/* Category Filter */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3 }}
               className="mt-12 flex flex-wrap justify-center gap-3"
             >
               {categories.map((category) => {

@@ -71,29 +71,6 @@ export default function BlogListPage() {
             <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
               The latest thoughts from our design leads on AI, creativity, and the future of engineering.
             </p>
-
-            {/* Dynamic Stats Banner */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mt-16 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
-            >
-              <div className="grid grid-cols-3 gap-8 text-center">
-                <div>
-                  <div className="text-4xl font-black text-indigo-400">{posts?.length || 0}</div>
-                  <div className="text-sm text-slate-400 mt-1">已发布文章</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-purple-400">{allTags.length - 1}</div>
-                  <div className="text-sm text-slate-400 mt-1">主题标签</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-pink-400">24/7</div>
-                  <div className="text-sm text-slate-400 mt-1">持续更新</div>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </ScrollReveal>
 

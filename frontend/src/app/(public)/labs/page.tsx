@@ -101,29 +101,6 @@ export default function LabsPage() {
             <p className="text-slate-400 text-lg max-w-2xl mx-auto font-medium">
               Where we break boundaries. MyNoteBook Labs is our research wing for emerging interfaces.
             </p>
-
-            {/* Dynamic Stats Banner */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="mt-16 relative rounded-2xl overflow-hidden bg-gradient-to-r from-cyan-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
-            >
-              <div className="grid grid-cols-3 gap-8 text-center">
-                <div>
-                  <div className="text-4xl font-black text-cyan-400">6+</div>
-                  <div className="text-sm text-slate-400 mt-1">实验项目</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-purple-400">4</div>
-                  <div className="text-sm text-slate-400 mt-1">研究领域</div>
-                </div>
-                <div>
-                  <div className="text-4xl font-black text-pink-400">24/7</div>
-                  <div className="text-sm text-slate-400 mt-1">持续探索</div>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </ScrollReveal>
 
