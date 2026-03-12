@@ -1,5 +1,4 @@
 import { Header } from "@/components/common/Header";
-import { PublicFooter } from "@/components/common/PublicFooter";
 import { CyberBackground } from "@/components/ui/CyberBackground";
 
 export default function FrontendLayout({
@@ -12,7 +11,6 @@ export default function FrontendLayout({
       <CyberBackground />
       <Header />
       <main className="flex-grow">{children}</main>
-      <PublicFooter />
     </>
   );
 }
