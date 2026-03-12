@@ -564,3 +564,26 @@
     @apply text-duralux-text-dark-secondary hover:bg-duralux-bg-dark-hover;
   }
 }
+
+/* =====================================================
+   FRONTEND OPTIMIZATION - Gradient & Shimmer Animations
+   ===================================================== */
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
