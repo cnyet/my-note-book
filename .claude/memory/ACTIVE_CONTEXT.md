@@ -20,6 +20,8 @@
 | 所有页面标题换行 | agents/tools/blog/labs 全部改为单行 | 3e77cbd |
 | Hero 预览卡片动态光晕多余 | 删除 mouse-following glow 效果 | 604d7d1 |
 | Agents 页面需要参考图片 | 添加 reference-image.png 显示工作流程图 | dcbaaf0 |
+| Agents 页面参考图片过大 | 添加 max-w-3xl 限制图片宽度 | 9ca19f2 |
+| 各页面底部 Footer 显示 Product/Ecosystem/Studio 分类 | 移除 layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件 | fd434a8 |
 
 ## 完成摘要
 
@@ -39,10 +41,12 @@
 
 ## 最新提交
 
+- `fd434a8` feat(layout): 移除 public layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件
+- `9ca19f2` feat(agents): 缩小参考图片尺寸至 max-w-3xl
 - `dcbaaf0` feat(agents): add workflow reference image to Hero section
 - `604d7d1` feat(home): remove dynamic glow effect from Hero preview card
 - `3e77cbd` fix(pages): display all page titles on single line
 
 ## 下一步
 
-- 推送到远程仓库（本地领先 24 个提交）
+- 所有修改已推送到远程仓库 ✅
