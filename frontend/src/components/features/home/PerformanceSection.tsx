@@ -14,9 +14,8 @@ export const PerformanceSection = () => {
           <div className="inline-block px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
             Engineered for Speed
           </div>
-          <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter whitespace-nowrap">
-            Zero Lag. 
-            Infinite Flow.
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter">
+            Zero Lag. Infinite Flow.
           </h2>
           <p className="text-slate-400 text-xl leading-relaxed font-medium max-w-lg">
             Our proprietary rendering engine processes billions of design tokens

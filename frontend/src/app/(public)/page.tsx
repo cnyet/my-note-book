@@ -10,7 +10,7 @@ import { SecuritySection } from "@/components/features/home/SecuritySection";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { StatCard } from "@/components/ui/StatCard";
 import { FeatureCard } from "@/components/ui/FeatureCard";
-import { Users, Activity, Zap, Cpu, Brain, Shield, Flashlight, Rocket, Sparkles, Target } from "lucide-react";
+import { Users, Activity, Zap, Cpu, Brain, Shield, Flashlight, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
@@ -69,45 +69,6 @@ export default function Home() {
               <FeatureCard icon={Flashlight} title="Fast" description="Lightning-fast processing with optimized infrastructure" />
             </div>
           </section>
-
-          {/* Integration Ecosystem Section */}
-          <ScrollReveal direction="up" delay={0.05}>
-            <section className="py-8">
-              <div className="text-center mb-12">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  viewport={{ once: true }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-400/30 mb-6"
-                >
-                  <Rocket className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs font-bold text-purple-300 uppercase tracking-widest">Ecosystem</span>
-                </motion.div>
-                <h2 className="text-3xl font-black text-white mb-4">Seamless Integration</h2>
-                <p className="text-slate-400">Connect with your favorite tools and services</p>
-              </div>
-              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 border border-white/10 p-8 backdrop-blur-xl">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                  {["Next.js", "React", "TypeScript", "Tailwind", "Framer", "Vercel"].map((tech, i) => (
-                    <motion.div
-                      key={tech}
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: i * 0.1 }}
-                      viewport={{ once: true }}
-                      className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
-                        <span className="text-xs font-bold text-white">{tech[0]}</span>
-                      </div>
-                      <span className="text-xs font-medium text-slate-400">{tech}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.1}>
             <PerformanceSection />
