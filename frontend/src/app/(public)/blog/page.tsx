@@ -59,7 +59,7 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      <div className="max-w-[1400px] mx-auto px-6 flex-1">
+      <div className="max-w-7xl mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -207,7 +207,7 @@ export default function BlogListPage() {
                     )}
 
                     {viewMode === "list" && (
-                      <div className="w-48 h-32 rounded-xl overflow-hidden flex-shrink-0 glass border border-white/10 relative">
+                      <div className="w-64 h-40 rounded-xl overflow-hidden flex-shrink-0 glass border border-white/10 relative">
                         {post.cover_image ? (
                           <img
                             src={post.cover_image}

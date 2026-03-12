@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight, Bot, Zap, Brain } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
@@ -138,7 +138,7 @@ export default function AgentsPage() {
             return (
               <motion.div key={agent.id} variants={createStaggerAnimation(0.1).item}>
                 <Link href={agent.link}>
-                  <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
+                  <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                       flex items-center justify-center flex-shrink-0 ${config.iconColor}`}>
@@ -153,11 +153,6 @@ export default function AgentsPage() {
                       <p className="text-slate-400 text-sm leading-relaxed truncate">
                         {config.description}
                       </p>
-                    </div>
-
-                    {/* Arrow indicator */}
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                      <ArrowRight className="w-5 h-5 text-indigo-400" />
                     </div>
                   </FlatCard>
                 </Link>
@@ -186,7 +181,6 @@ export default function AgentsPage() {
 
         {/* Footer Links */}
         <FooterLinks
-          title="Related AI Tools & Resources"
           links={[
             { href: "https://n8n.io", label: "n8n" },
             { href: "https://zapier.com", label: "Zapier" },

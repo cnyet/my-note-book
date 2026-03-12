@@ -2,7 +2,6 @@
 
 import {
   Activity,
-  ArrowRight,
   Cpu,
   Layers,
   Layout,
@@ -135,7 +134,7 @@ export default function ToolsPage() {
           >
             {tools.map((tool) => (
               <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
-                <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
+                <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
                   <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                     flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                     {tool.icon}
@@ -147,9 +146,6 @@ export default function ToolsPage() {
                     <p className="text-slate-400 text-sm leading-relaxed truncate">
                       {tool.desc}
                     </p>
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                    <ArrowRight className="w-5 h-5 text-indigo-400" />
                   </div>
                 </FlatCard>
               </motion.div>
@@ -180,7 +176,7 @@ export default function ToolsPage() {
                   >
                     {categoryTools.map((tool) => (
                       <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
-                        <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
+                        <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
                           <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                             flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                             {tool.icon}
@@ -192,9 +188,6 @@ export default function ToolsPage() {
                             <p className="text-slate-400 text-sm leading-relaxed truncate">
                               {tool.desc}
                             </p>
-                          </div>
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                            <ArrowRight className="w-5 h-5 text-indigo-400" />
                           </div>
                         </FlatCard>
                       </motion.div>
@@ -208,7 +201,6 @@ export default function ToolsPage() {
 
         {/* Footer Links - Extended tool resources */}
         <FooterLinks
-          title="Related Tools & Resources"
           links={[
             { href: "https://www.jyshare.com/", label: "JyShare" },
             { href: "https://tool.lu/", label: "Tool.lu" },

@@ -19,62 +19,62 @@ interface LabProject {
 const projects: LabProject[] = [
   {
     name: "Project Synapse",
-    icon: <BrainCircuit className="w-6 h-6" />,
+    icon: <BrainCircuit className="w-8 h-8 text-cyan-400" />,
     desc: "脑机接口设计工具，将思维模式直接转换为布局 tokens",
     status: "Alpha",
     color: "from-cyan-500/20 to-cyan-600/10",
     borderColor: "group-hover:border-cyan-500/40",
-    iconColor: "group-hover:text-cyan-400",
+    iconColor: "text-cyan-400",
     bgColor: "bg-cyan-500/10",
   },
   {
     name: "Ambient Layouts",
-    icon: <Radio className="w-6 h-6" />,
+    icon: <Radio className="w-8 h-8 text-pink-400" />,
     desc: "界面自适应用户周围环境和情绪状态的实时响应系统",
     status: "Beta",
     color: "from-pink-500/20 to-pink-600/10",
     borderColor: "group-hover:border-pink-500/40",
-    iconColor: "group-hover:text-pink-400",
+    iconColor: "text-pink-400",
     bgColor: "bg-pink-500/10",
   },
   {
     name: "Neural Interfaces",
-    icon: <FlaskConical className="w-6 h-6" />,
+    icon: <FlaskConical className="w-8 h-8 text-purple-400" />,
     desc: "探索下一代人机交互范式的神经接口技术",
     status: "Research",
     color: "from-purple-500/20 to-purple-600/10",
     borderColor: "group-hover:border-purple-500/40",
-    iconColor: "group-hover:text-purple-400",
+    iconColor: "text-purple-400",
     bgColor: "bg-purple-500/10",
   },
   {
     name: "Quantum UI",
-    icon: <Atom className="w-6 h-6" />,
+    icon: <Atom className="w-8 h-8 text-indigo-400" />,
     desc: "基于量子计算概念的并行状态界面设计",
     status: "Concept",
     color: "from-indigo-500/20 to-indigo-600/10",
     borderColor: "group-hover:border-indigo-500/40",
-    iconColor: "group-hover:text-indigo-400",
+    iconColor: "text-indigo-400",
     bgColor: "bg-indigo-500/10",
   },
   {
     name: "Holo Display",
-    icon: <Telescope className="w-6 h-6" />,
+    icon: <Telescope className="w-8 h-8 text-emerald-400" />,
     desc: "全息显示技术的 Web 界面适配方案",
     status: "Research",
     color: "from-emerald-500/20 to-emerald-600/10",
     borderColor: "group-hover:border-emerald-500/40",
-    iconColor: "group-hover:text-emerald-400",
+    iconColor: "text-emerald-400",
     bgColor: "bg-emerald-500/10",
   },
   {
     name: "AI Co-Pilot",
-    icon: <Sparkles className="w-6 h-6" />,
+    icon: <Sparkles className="w-8 h-8 text-orange-400" />,
     desc: "AI 辅助设计决策的智能推荐引擎",
     status: "Beta",
     color: "from-orange-500/20 to-orange-600/10",
     borderColor: "group-hover:border-orange-500/40",
-    iconColor: "group-hover:text-orange-400",
+    iconColor: "text-orange-400",
     bgColor: "bg-orange-500/10",
   },
 ];
@@ -104,7 +104,7 @@ export default function LabsPage() {
           </div>
         </ScrollReveal>
 
-        {/* Projects Grid - 5 columns on desktop, compact cards */}
+        {/* Projects Grid - 5 columns on desktop, square cards */}
         <motion.div
           variants={createStaggerAnimation(0.08).container}
           initial="hidden"
@@ -118,17 +118,17 @@ export default function LabsPage() {
                 className={`group relative backdrop-blur-md bg-gradient-to-br ${project.color}
                   p-4 rounded-xl border border-white/5 ${project.borderColor}
                   transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden cursor-pointer
-                  flex flex-col h-full`}
+                  aspect-square flex flex-col`}
               >
                 {/* Background Icon */}
-                <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <div className="w-20 h-20">
+                <div className="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <div className="w-24 h-24">
                     {project.icon}
                   </div>
                 </div>
 
                 {/* Status Badge */}
-                <div className="flex justify-between items-start mb-3">
+                <div className="flex justify-between items-start mb-4">
                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                     statusColorMap[project.status] || ""
                   }`}>
@@ -137,14 +137,14 @@ export default function LabsPage() {
                 </div>
 
                 {/* Icon Container */}
-                <div className={`w-10 h-10 rounded-lg ${project.bgColor} border border-white/10
-                  flex items-center justify-center mb-3`}>
+                <div className={`w-12 h-12 rounded-lg ${project.bgColor} border border-white/10
+                  flex items-center justify-center mb-4`}>
                   {project.icon}
                 </div>
 
                 {/* Content */}
                 <div className="mt-auto space-y-2">
-                  <h3 className="text-lg font-black text-white">
+                  <h3 className="text-base font-black text-white">
                     {project.name}
                   </h3>
                   <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
@@ -158,7 +158,6 @@ export default function LabsPage() {
 
         {/* Footer Links */}
         <FooterLinks
-          title="Related Research & Resources"
           links={[
             { href: "https://openai.com/research", label: "OpenAI Research" },
             { href: "https://deepmind.google/", label: "DeepMind" },
