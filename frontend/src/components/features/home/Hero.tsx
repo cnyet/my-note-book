@@ -5,10 +5,20 @@ import { motion } from "framer-motion";
 
 export const Hero = () => {
   return (
-    <section className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+    <section className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
+      {/* Flowing gradient background - n8n style */}
+      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 animate-gradient pointer-events-none" />
+
       {/* Animated background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-[120px] animate-pulse" />
+      </div>
+
+      {/* Floating particles effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-indigo-400/30 rounded-full animate-pulse" />
+        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-purple-400/20 rounded-full animate-pulse delay-700" />
+        <div className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-pink-400/40 rounded-full animate-pulse delay-300" />
       </div>
 
       {/* Badge */}
@@ -64,16 +74,19 @@ export const Hero = () => {
         </motion.button>
       </motion.div>
 
-      {/* Main interface preview */}
+      {/* Main interface preview - paico style card */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.5 }}
         className="mt-16 lg:mt-24 relative px-4"
       >
-        <div className="max-w-5xl mx-auto backdrop-blur-md bg-white/5 rounded-[40px] p-2 border border-white/10 shadow-2xl group relative overflow-hidden">
-          {/* Glow effect */}
-          <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-[40px] blur opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="max-w-5xl mx-auto backdrop-blur-md bg-white/5 rounded-[40px] p-2 border border-white/10 shadow-2xl group relative overflow-hidden hover:border-indigo-500/30 transition-colors duration-500">
+          {/* Shimmer effect on hover - paico style */}
+          <div className="absolute inset-0 rounded-[40px] bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+
+          {/* Border glow on hover */}
+          <div className="absolute -inset-px bg-gradient-to-r from-indigo-500/40 via-purple-500/40 to-pink-500/40 rounded-[40px] blur opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
           <img
             src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000"
