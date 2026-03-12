@@ -76,13 +76,13 @@ export function HomeFooter() {
             © {new Date().getFullYear()} MyNoteBook. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
               Privacy
             </Link>
-            <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
               Terms
             </Link>
-            <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">
+            <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
               Cookies
             </Link>
             <div className="flex items-center gap-4 ml-4">
