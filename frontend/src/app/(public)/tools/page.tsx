@@ -80,9 +80,6 @@ const categories = [
 export default function ToolsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const filteredTools = activeCategory === "all"
-    ? tools
-    : tools.filter(tool => tool.category === activeCategory);
 
   return (
     <div className="min-h-screen pt-24 pb-0">
