@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, ArrowRight, Eye, Calendar, Grid3x3, List, Filter } from "lucide-react";
+import { User, ArrowRight, Eye, Calendar, Grid3x3, List, Filter, FileText } from "lucide-react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/admin-api";
@@ -125,8 +125,8 @@ export default function BlogListPage() {
           </div>
         </ScrollReveal>
 
-        {/* Posts Content */}
-        <div className="relative pb-32">
+        {/* Posts Content - min-height 600px */}
+        <div className="min-h-[600px] relative pb-32">
           {isLoading ? (
             <motion.div
               variants={createStaggerAnimation(0.08).container}
@@ -151,16 +151,16 @@ export default function BlogListPage() {
             </motion.div>
           ) : filteredPosts.length === 0 ? (
             <ScrollReveal direction="up">
-              <div className="text-center py-32">
-                <div className="relative inline-block mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-full blur-2xl animate-pulse" />
-                  <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 flex items-center justify-center mx-auto">
-                    <User className="w-12 h-12 text-indigo-400" />
-                  </div>
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/10 to-accent/10
+                                flex items-center justify-center">
+                  <FileText className="w-12 h-12 text-gray-400" />
                 </div>
-                <h3 className="text-3xl font-black text-white mb-3">No articles found</h3>
-                <p className="text-slate-400 text-lg font-medium max-w-md mx-auto">
-                  Try selecting a different tag
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  No articles found
+                </h2>
+                <p className="text-slate-400">
+                  Check back soon for new content
                 </p>
               </div>
             </ScrollReveal>
