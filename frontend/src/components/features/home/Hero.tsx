@@ -6,8 +6,6 @@ import { motion } from "framer-motion";
 export const Hero = () => {
   return (
     <section className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
-      {/* Flowing gradient background - n8n style */}
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 animate-gradient pointer-events-none" />
 
       {/* Animated background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30 pointer-events-none">
