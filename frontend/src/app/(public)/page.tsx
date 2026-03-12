@@ -30,7 +30,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* Stats Section with enhanced visual */}
-          <section className="py-20">
+          <section className="py-32 lg:py-40">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -49,7 +49,7 @@ export default function Home() {
           </section>
 
           {/* Features Section with enhanced header */}
-          <section className="py-20">
+          <section className="py-32 lg:py-40">
             <div className="text-center mb-12">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
