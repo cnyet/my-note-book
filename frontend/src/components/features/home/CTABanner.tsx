@@ -38,9 +38,9 @@ export const CTABanner = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 tracking-tighter text-white leading-[0.9]"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-8 tracking-tighter text-white leading-tight"
         >
-          Ready to <br />
+          Ready to 
           <span className="text-white/90">Transform?</span>
         </motion.h2>
 
