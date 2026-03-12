@@ -60,7 +60,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* Footer - Independent Section */}
-          <footer className="mt-32 lg:mt-40">
+          <footer className="mt-32 lg:mt-40 mb-20 lg:mb-24">
             <CTABanner />
           </footer>
         </div>
