@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight, Download, BrainCircuit, CheckCircle } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, ArrowRight, Download, BrainCircuit, CheckCircle, Database, Cloud, RefreshCw, Bell, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
@@ -73,8 +73,8 @@ if (isLoading) {
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
-          <div className="text-center mb-24">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-6">
+          <div className="text-center mb-32">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-8">
               AI Personal <br />
               <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Assistants
@@ -84,24 +84,97 @@ if (isLoading) {
               Five intelligent agents to automate your daily workflow
             </p>
 
-            {/* Workflow Diagram */}
+            {/* Enhanced Workflow Diagram with animation */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-12 flex items-center justify-center gap-4 text-sm text-slate-500"
+              className="mt-16"
             >
-              <span className="flex items-center gap-2">
-                <Download className="w-4 h-4" /> 数据输入
-              </span>
-              <ArrowRight className="w-4 h-4 text-indigo-400" />
-              <span className="flex items-center gap-2">
-                <BrainCircuit className="w-4 h-4" /> AI 处理
-              </span>
-              <ArrowRight className="w-4 h-4 text-indigo-400" />
-              <span className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" /> 智能输出
-              </span>
+              {/* Main flow chart */}
+              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8 backdrop-blur-xl">
+                {/* Animated connection lines */}
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent" />
+                
+                {/* Stage 1: Data Input */}
+                <div className="relative z-10 flex flex-col items-center">
+                  <div className="flex items-center gap-3 mb-4">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                      className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/30 flex items-center justify-center"
+                    >
+                      <Database className="w-7 h-7 text-blue-400" />
+                    </motion.div>
+                    <ArrowRight className="w-6 h-6 text-indigo-400" />
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                      className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/30 flex items-center justify-center"
+                    >
+                      <Cloud className="w-7 h-7 text-purple-400" />
+                    </motion.div>
+                    <ArrowRight className="w-6 h-6 text-indigo-400" />
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                      className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-blue-500/20 border border-indigo-400/30 flex items-center justify-center"
+                    >
+                      <BrainCircuit className="w-7 h-7 text-indigo-400" />
+                    </motion.div>
+                  </div>
+                  <div className="flex items-center gap-6 text-sm font-medium">
+                    <span className="text-blue-400 flex items-center gap-2">
+                      <Database className="w-4 h-4" /> 数据采集
+                    </span>
+                    <span className="text-slate-600">→</span>
+                    <span className="text-purple-400 flex items-center gap-2">
+                      <Cloud className="w-4 h-4" /> 云端同步
+                    </span>
+                    <span className="text-slate-600">→</span>
+                    <span className="text-indigo-400 flex items-center gap-2">
+                      <BrainCircuit className="w-4 h-4" /> AI 处理
+                    </span>
+                  </div>
+                </div>
+
+                {/* Stage 2: Processing & Output */}
+                <div className="relative z-10 flex items-center justify-center gap-8 mt-8 pt-8 border-t border-white/5">
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className="w-5 h-5 text-emerald-400" />
+                    <span className="text-sm text-emerald-400 font-medium">实时处理</span>
+                  </motion.div>
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Zap className="w-5 h-5 text-amber-400" />
+                    <span className="text-sm text-amber-400 font-medium">智能决策</span>
+                  </motion.div>
+                  <motion.div
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Bell className="w-5 h-5 text-pink-400" />
+                    <span className="text-sm text-pink-400 font-medium">主动通知</span>
+                  </motion.div>
+                  <ArrowRight className="w-5 h-5 text-indigo-400" />
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px rgba(99,102,241,0.3)", "0 0 20px rgba(99,102,241,0.6)", "0 0 0px rgba(99,102,241,0.3)"] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-400/30"
+                  >
+                    <CheckCircle className="w-5 h-5 text-indigo-400" />
+                    <span className="text-sm text-indigo-400 font-bold">智能输出</span>
+                  </motion.div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </ScrollReveal>

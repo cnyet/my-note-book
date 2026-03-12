@@ -1,11 +1,36 @@
 "use client";
 
 import { MousePointer2, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export const Hero = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Mouse position for parallax effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], [3, -3]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-3, 3]);
+  
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    const container = containerRef.current;
+    container?.addEventListener("mousemove", handleMouseMove);
+    return () => container?.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
   return (
-    <section className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
+    <section ref={containerRef} className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
 
       {/* Animated background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30 pointer-events-none">
@@ -72,14 +97,21 @@ export const Hero = () => {
         </motion.button>
       </motion.div>
 
-      {/* Main interface preview - paico style card */}
+      {/* Main interface preview - dynamic 3D card with mouse parallax */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className="mt-16 lg:mt-24 relative px-4"
+        className="mt-16 lg:mt-24 relative px-4 perspective-1000"
       >
-        <div className="max-w-5xl mx-auto backdrop-blur-md bg-white/5 rounded-[40px] p-2 border border-white/10 shadow-2xl group relative overflow-hidden hover:border-indigo-500/30 transition-colors duration-500">
+        <motion.div
+          style={{
+            rotateX,
+            rotateY,
+            transformStyle: "preserve-3d",
+          }}
+          className="max-w-5xl mx-auto backdrop-blur-md bg-white/5 rounded-[40px] p-2 border border-white/10 shadow-2xl group relative overflow-hidden hover:border-indigo-500/30 transition-colors duration-500"
+        >
           {/* Shimmer effect on hover - paico style */}
           <div className="absolute inset-0 rounded-[40px] bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
 
@@ -89,9 +121,20 @@ export const Hero = () => {
           <img
             src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2000"
             alt="App Interface"
-            className="rounded-[36px] w-full h-auto object-cover opacity-80 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-1000"
+            className="rounded-[36px] w-full h-auto object-cover opacity-80 group-hover:opacity-100 transition-all duration-1000"
+            style={{ transform: "translateZ(20px)" }}
           />
-        </div>
+        </motion.div>
+        
+        {/* Dynamic glow following mouse */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 rounded-[40px] bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 blur-xl"
+          style={{
+            x: useTransform(mouseX, [-0.5, 0.5], [-30, 30]),
+            y: useTransform(mouseY, [-0.5, 0.5], [-30, 30]),
+            opacity: useTransform(mouseX, (x) => Math.abs(x) > 0.1 ? 0.3 : 0.1),
+          }}
+        />
       </motion.div>
     </section>
   );
