@@ -10,11 +10,7 @@ import {
   Wand2,
   Palette,
   BarChart3,
-  Code,
-  Image,
-  Type,
-  Zap,
-  Settings,
+  RefreshCw,
   CheckCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -83,17 +79,8 @@ const categories = [
   { id: "analytics", label: "分析工具", icon: BarChart3 },
 ];
 
-// Tool workflow steps
-const workflowSteps = [
-  { icon: Code, label: "代码集成", color: "text-blue-400", bg: "from-blue-500/20 to-cyan-500/20", border: "border-blue-400/30" },
-  { icon: Settings, label: "配置参数", color: "text-purple-400", bg: "from-purple-500/20 to-pink-500/20", border: "border-purple-400/30" },
-  { icon: Zap, label: "自动处理", color: "text-amber-400", bg: "from-amber-500/20 to-orange-500/20", border: "border-amber-400/30" },
-  { icon: CheckCircle, label: "输出结果", color: "text-emerald-400", bg: "from-emerald-500/20 to-teal-500/20", border: "border-emerald-400/30" },
-];
-
 export default function ToolsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
-
 
   return (
     <div className="min-h-screen pt-24 pb-0">
@@ -110,86 +97,11 @@ export default function ToolsPage() {
               Powerful modules designed to integrate seamlessly into your design environment
             </p>
 
-            {/* Dynamic Tool Workflow Diagram */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-16"
-            >
-              <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8 backdrop-blur-xl">
-                {/* Animated background glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_3s_ease_infinite]" />
-                
-                {/* Workflow steps */}
-                <div className="relative z-10 flex items-center justify-center gap-4">
-                  {workflowSteps.map((step, index) => {
-                    const Icon = step.icon;
-                    return (
-                      <div key={step.label} className="flex items-center">
-                        <motion.div
-                          animate={{ 
-                            scale: [1, 1.08, 1],
-                            y: [0, -8, 0]
-                          }}
-                          transition={{ 
-                            duration: 2, 
-                            repeat: Infinity, 
-                            delay: index * 0.3 
-                          }}
-                          className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${step.bg} border ${step.border} flex items-center justify-center`}
-                        >
-                          <Icon className={`w-9 h-9 ${step.color}`} />
-                        </motion.div>
-                        <span className={`absolute mt-24 text-sm font-medium ${step.color} whitespace-nowrap`}>
-                          {step.label}
-                        </span>
-                        {index < workflowSteps.length - 1 && (
-                          <motion.div
-                            animate={{ opacity: [0.3, 0.8, 0.3] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: index * 0.5 }}
-                            className="w-12 h-0.5 bg-gradient-to-r from-indigo-500/30 to-purple-500/30 mx-2"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Bottom status indicators */}
-                <div className="relative z-10 flex items-center justify-center gap-8 mt-16 pt-8 border-t border-white/5">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  >
-                    <RefreshCw className="w-5 h-5 text-indigo-400" />
-                  </motion.div>
-                  <span className="text-sm text-slate-400">实时同步</span>
-                  <div className="w-1 h-1 rounded-full bg-slate-600" />
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <Zap className="w-5 h-5 text-amber-400" />
-                  </motion.div>
-                  <span className="text-sm text-slate-400">自动执行</span>
-                  <div className="w-1 h-1 rounded-full bg-slate-600" />
-                  <motion.div
-                    animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
-                  </motion.div>
-                  <span className="text-sm text-slate-400">质量验证</span>
-                </div>
-              </div>
-            </motion.div>
-
             {/* Dynamic Stats Banner */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3 }}
               className="mt-12 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
             >
               <div className="grid grid-cols-3 gap-8 text-center">
@@ -207,34 +119,38 @@ export default function ToolsPage() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Category Filter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-12 flex flex-wrap justify-center gap-3"
+            >
+              {categories.map((category) => {
+                const Icon = category.icon;
+                const isActive = activeCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setActiveCategory(category.id)}
+                    className={`group px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
+                      isActive
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-[0_0_30px_rgba(99,102,241,0.4)]"
+                        : "bg-white/5 border border-white/10 text-slate-400 hover:border-white/20 hover:text-white"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-slate-400 group-hover:text-white"}`} />
+                    {category.label}
+                  </button>
+                );
+              })}
+            </motion.div>
           </div>
         </ScrollReveal>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-12 justify-center">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            const isActive = activeCategory === category.id;
-            return (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  isActive
-                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/25"
-                    : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {category.label}
-              </button>
-            );
-          })}
-        </div>
-
         {/* Tools Grid by Category */}
         {activeCategory === "all" ? (
-
           <motion.div
             variants={createStaggerAnimation(0.1).container}
             initial="hidden"
@@ -265,7 +181,6 @@ export default function ToolsPage() {
             ))}
           </motion.div>
         ) : (
-
           <>
             {["cli", "design", "analytics"].map((categoryId) => {
               if (activeCategory !== "all" && activeCategory !== categoryId) return null;
@@ -278,7 +193,7 @@ export default function ToolsPage() {
               return (
                 <section key={categoryId} className="mb-12">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                    <CategoryIcon className="w-6 h-6 text-indigo-400" />
+                    <CategoryIcon className="w-5 h-5 text-indigo-400" />
                     {categoryConfig.label}
                   </h3>
                   <motion.div
@@ -330,28 +245,5 @@ export default function ToolsPage() {
         />
       </div>
     </div>
-  );
-}
-
-// Add RefreshCw icon import
-function RefreshCw(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-      <path d="M16 21h5v-5" />
-    </svg>
   );
 }
