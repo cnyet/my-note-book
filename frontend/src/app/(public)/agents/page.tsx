@@ -78,12 +78,12 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-0">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-8">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-10">
               AI Personal <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Assistants
               </span>
@@ -97,7 +97,7 @@ export default function AgentsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="mt-12 flex flex-wrap justify-center gap-3"
+              className="mt-16 flex flex-wrap justify-center gap-3"
             >
               {agentCategories.map((category) => {
                 const Icon = category.icon;

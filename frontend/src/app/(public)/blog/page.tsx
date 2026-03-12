@@ -58,12 +58,12 @@ export default function BlogListPage() {
   }, [posts, selectedTag]);
 
   return (
-    <div className="min-h-screen pt-24 pb-0">
+    <div className="min-h-screen pt-32 lg:pt-40 pb-0">
       <div className="max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <ScrollReveal direction="up">
-          <div className="text-center mb-24">
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-6">
+          <div className="text-center mb-32">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight whitespace-nowrap mb-10">
               Insights & <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Breakthroughs
               </span>
@@ -77,7 +77,7 @@ export default function BlogListPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="mt-12 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
+              className="mt-16 relative rounded-2xl overflow-hidden bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 p-8"
             >
               <div className="grid grid-cols-3 gap-8 text-center">
                 <div>
