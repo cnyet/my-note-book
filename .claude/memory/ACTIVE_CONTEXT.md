@@ -22,13 +22,14 @@
 | Agents 页面需要参考图片 | 添加 reference-image.png 显示工作流程图 | dcbaaf0 |
 | Agents 页面参考图片过大 | 添加 max-w-3xl 限制图片宽度 | 9ca19f2 |
 | 各页面底部 Footer 显示 Product/Ecosystem/Studio 分类 | 移除 layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件 | fd434a8 |
+| Agents 页面顶部静态图片 | 替换为动态 workflow 展示和分类标签（类似 tools 页面） | c0aa31f |
 
 ## 完成摘要
 
 | 页面 | 优化内容 |
 |------|----------|
 | Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 |
-| Agents | Title 单行 + 工作流程参考图片 + Footer Links |
+| Agents | Title 单行 + 动态 Workflow 展示 + 分类筛选 + Footer Links |
 | Tools | Title 单行 + 动态工具流程 + 分类筛选 + Footer Links |
 | Labs | Title 单行 + 动态 Banner + Footer Links |
 | Blog | Title 单行 + 动态 Banner + Footer Links |
@@ -41,11 +42,9 @@
 
 ## 最新提交
 
+- `c0aa31f` feat(agents): 替换静态图片为动态 workflow 展示和分类标签
 - `fd434a8` feat(layout): 移除 public layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件
 - `9ca19f2` feat(agents): 缩小参考图片尺寸至 max-w-3xl
-- `dcbaaf0` feat(agents): add workflow reference image to Hero section
-- `604d7d1` feat(home): remove dynamic glow effect from Hero preview card
-- `3e77cbd` fix(pages): display all page titles on single line
 
 ## 下一步
 
