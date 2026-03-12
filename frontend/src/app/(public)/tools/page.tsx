@@ -131,7 +131,7 @@ export default function ToolsPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-20 min-h-[600px]"
           >
             {tools.map((tool) => (
               <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
@@ -176,7 +176,7 @@ export default function ToolsPage() {
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4"
                   >
                     {categoryTools.map((tool) => (
                       <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
