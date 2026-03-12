@@ -1,6 +1,6 @@
 # Active Context - Sprint 6.3 前端页面优化完成
 
-**状态**: ✅ 已完成 - 所有优化已完成
+**状态**: ✅ 已完成
 
 **完成日期**: 2026-03-12
 
@@ -15,16 +15,21 @@
 | 所有 Section 标题换行 | 全部改为单行显示 | 641d8b3 |
 | Zero Lag 标题被遮挡/字体过大 | 从 text-6xl/8xl 减小到 text-4xl/5xl/6xl | d23ea77 |
 | Seamless Integration 内容多余 | 删除该章节 | d23ea77 |
+| Your Data. Isolated. 字体过大 | 从 text-5xl/7xl 减小到 text-3xl/4xl/5xl | a6b88a0 |
+| Designed to Evolve. 换行 | 移除 <br/> 改为单行 | a6b88a0 |
+| 所有页面标题换行 | agents/tools/blog/labs 全部改为单行 | 3e77cbd |
+| Hero 预览卡片动态光晕多余 | 删除 mouse-following glow 效果 | 604d7d1 |
+| Agents 页面需要参考图片 | 添加 reference-image.png 显示工作流程图 | dcbaaf0 |
 
 ## 完成摘要
 
 | 页面 | 优化内容 |
 |------|----------|
-| Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 |
-| Agents | Title 间距 + 增强流程图 + Footer Links |
-| Tools | Title 间距 + 动态工具流程 + 分类筛选 + Footer Links |
-| Labs | Title 间距 + 动态 Banner + Footer Links |
-| Blog | Title 间距 + 动态 Banner + Footer Links |
+| Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 |
+| Agents | Title 单行 + 工作流程参考图片 + Footer Links |
+| Tools | Title 单行 + 动态工具流程 + 分类筛选 + Footer Links |
+| Labs | Title 单行 + 动态 Banner + Footer Links |
+| Blog | Title 单行 + 动态 Banner + Footer Links |
 
 ## 新增组件
 
@@ -34,11 +39,10 @@
 
 ## 最新提交
 
-- `d23ea77` fix(home): reduce Zero Lag title font size and remove redundant Integration section
-- `ba07b71` feat(home/agents/tools): optimize page visuals and interactions
-- `641d8b3` feat(home): display all section titles on single line
-- `1db10ee` docs(memory): update active context with Sprint 6.3 completion
+- `dcbaaf0` feat(agents): add workflow reference image to Hero section
+- `604d7d1` feat(home): remove dynamic glow effect from Hero preview card
+- `3e77cbd` fix(pages): display all page titles on single line
 
 ## 下一步
 
-- 推送到远程仓库
+- 推送到远程仓库（本地领先 24 个提交）
