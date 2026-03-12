@@ -15,7 +15,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen pt-20 px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen pt-32 lg:pt-40 px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
       {/* Background gradient orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px]" />
@@ -30,7 +30,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* Stats Section with enhanced visual */}
-          <section className="py-8">
+          <section className="py-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -49,7 +49,7 @@ export default function Home() {
           </section>
 
           {/* Features Section with enhanced header */}
-          <section className="py-8">
+          <section className="py-20">
             <div className="text-center mb-12">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -61,8 +61,8 @@ export default function Home() {
                 <Sparkles className="w-4 h-4 text-indigo-400" />
                 <span className="text-xs font-bold text-indigo-300 uppercase tracking-widest">Feature Highlights</span>
               </motion.div>
-              <h2 className="text-4xl font-black text-white mb-4">Powerful Features</h2>
-              <p className="text-slate-400">Everything you need to automate your workflow</p>
+              <h2 className="text-5xl font-black text-white mb-4 whitespace-nowrap">Powerful Features</h2>
+              <p className="text-slate-400 leading-relaxed">Everything you need to automate your workflow</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FeatureCard icon={Brain} title="AI-Powered" description="Intelligent automation powered by advanced AI models" />
