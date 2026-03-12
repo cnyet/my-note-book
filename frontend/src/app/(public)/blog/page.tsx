@@ -164,6 +164,7 @@ export default function BlogListPage() {
                 </p>
               </div>
             </ScrollReveal>
+          ) : (
             <motion.div
               variants={createStaggerAnimation(0.08).container}
               initial="hidden"
