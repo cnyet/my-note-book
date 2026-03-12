@@ -11,9 +11,8 @@ export const SecuritySection = () => {
           <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 animate-in fade-in zoom-in duration-700">
             <Lock size={28} />
           </div>
-          <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none whitespace-nowrap">
-            Your Data. 
-            Isolated.
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tighter">
+            Your Data. Isolated.
           </h2>
           <p className="text-slate-400 text-xl font-medium leading-relaxed">
             Security isn't a feature; it's our foundation. Every notebook

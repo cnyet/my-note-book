@@ -8,7 +8,7 @@ export const MethodologySection = () => {
     <section className="py-12 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <SectionHeader
         centered
-        title="Designed to <br/>Evolve."
+        title="Designed to Evolve."
         subtitle="A cycle of continuous improvement driven by feedback and autonomous learning."
       />
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 px-6">
