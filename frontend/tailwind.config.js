@@ -128,6 +128,7 @@ module.exports = {
         "duralux": "200ms",
       },
       fontFamily: {
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         heading: ["var(--font-heading)", "Outfit", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "Inter", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "monospace"],
