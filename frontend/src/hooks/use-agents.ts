@@ -3,6 +3,7 @@
  * Hook for fetching agents list from API
  */
 import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/admin-api";
 
 export interface Agent {
   id: number;
@@ -20,11 +21,8 @@ export interface Agent {
 }
 
 async function fetchAgents(): Promise<Agent[]> {
-  const response = await fetch("/api/v1/admin/agents");
-  if (!response.ok) {
-    throw new Error("Failed to fetch agents");
-  }
-  return response.json();
+  const response = await apiClient.get<Agent[]>("/admin/agents");
+  return response.data || [];
 }
 
 export function useAgents() {
