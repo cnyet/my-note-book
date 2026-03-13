@@ -95,14 +95,14 @@ export const Hero = () => {
           whileTap={{ scale: 0.95 }}
           className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:shadow-[0_0_40px_rgba(99,102,241,0.4)] transition-all active:scale-95 flex items-center justify-center gap-2"
         >
-          Launch Notebook <Zap size={20} className="fill-current" />
+          Launch Notebook <Zap size={20} className="fill-current" aria-hidden="true" />
         </motion.button>
         <motion.button
           whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.15)" }}
           whileTap={{ scale: 0.95 }}
           className="w-full sm:w-auto backdrop-blur-md bg-white/5 px-8 py-4 rounded-2xl font-bold text-lg transition-all border border-white/10 flex items-center justify-center gap-2 text-white hover:border-white/20"
         >
-          Explore Ecosystem <MousePointer2 size={20} />
+          Explore Ecosystem <MousePointer2 size={20} aria-hidden="true" />
         </motion.button>
       </motion.div>
 
@@ -218,6 +218,8 @@ export const Hero = () => {
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  aria-current={i === currentIndex ? 'true' : 'false'}
                   className={`w-2 h-2 rounded-full transition-all ${
                     i === currentIndex ? 'w-8 bg-indigo-500' : 'bg-white/30 hover:bg-white/50'
                   }`}

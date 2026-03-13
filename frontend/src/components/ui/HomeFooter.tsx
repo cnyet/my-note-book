@@ -88,9 +88,9 @@ export function HomeFooter() {
                 Cookies
               </Link>
               <div className="flex items-center gap-4 ml-4">
-                <Twitter className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" />
-                <Github className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" />
-                <Linkedin className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" />
+                <Twitter className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="Follow us on Twitter" />
+                <Github className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="View our GitHub" />
+                <Linkedin className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="Connect on LinkedIn" />
               </div>
             </div>
           </div>
