@@ -90,7 +90,7 @@ export default function LabsPage() {
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
       {/* Content Area - Constrained Width */}
-      <div className="max-w-[1400px] mx-auto px-6 flex-1">
+      <div className="max-w-7xl mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
