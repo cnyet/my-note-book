@@ -16,7 +16,7 @@ export function FlatCard({ children, className, hover = true }: FlatCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3 }}
       className={cn(
         "backdrop-blur-md bg-white/5",
         "border border-white/10 rounded-xl",
