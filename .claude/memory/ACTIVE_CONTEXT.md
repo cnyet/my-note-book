@@ -1,3 +1,19 @@
+# Active Context - Sprint 6.6 Agents 页面视觉优化 完成
+
+**状态**: ✅ 已完成并推送
+
+**完成日期**: 2026-03-13
+
+## Sprint 6.6: Agents 页面视觉优化 ✅ 已完成并推送
+
+| 修改 | 详情 | 文件 | 提交 |
+|------|------|------|------|
+| FlatCard hover 效果增强 | `-translate-y-2` + indigo 阴影 + 边框高亮 | FlatCard.tsx | `b510209` |
+| Footer 全宽深色背景 | `w-full bg-[#0A0A0F]`，内容区域受限 | FooterLinks.tsx | `b510209` |
+| Agents Footer AI 导航 | 添加 AI Bot.cn、FutureTools 等外部链接 | agents/page.tsx | `b510209` |
+
+---
+
 # Active Context - Sprint 6.5 前端页面美化 完成
 
 **状态**: ✅ 已完成（待提交）
