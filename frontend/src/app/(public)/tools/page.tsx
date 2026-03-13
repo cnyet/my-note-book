@@ -134,7 +134,7 @@ export default function ToolsPage() {
           >
             {tools.map((tool) => (
               <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
-                <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
+                <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer ">
                   <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                     flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                     {tool.icon}
@@ -176,7 +176,7 @@ export default function ToolsPage() {
                   >
                     {categoryTools.map((tool) => (
                       <motion.div key={tool.name} variants={createStaggerAnimation(0.1).item}>
-                        <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
+                        <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer ">
                           <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                             flex items-center justify-center flex-shrink-0 ${tool.iconColor}`}>
                             {tool.icon}
