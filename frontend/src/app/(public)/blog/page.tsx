@@ -59,7 +59,7 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      {/* Content Area - Constrained Width */}
+      {/* Content Area - Constrained Width (same as Labs) */}
       <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
@@ -126,7 +126,7 @@ export default function BlogListPage() {
           </div>
         </ScrollReveal>
 
-        {/* Posts Content - min-height 600px */}
+        {/* Posts Content - min-height 600px - 5 columns like Labs */}
         <div className="min-h-[600px] relative pb-32">
           {isLoading ? (
             <motion.div
@@ -135,7 +135,7 @@ export default function BlogListPage() {
               whileInView="visible"
               viewport={{ once: true }}
               className={viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"
                 : "space-y-4"
               }
             >
@@ -172,7 +172,7 @@ export default function BlogListPage() {
               whileInView="visible"
               viewport={{ once: true }}
               className={viewMode === "grid"
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4"
                 : "space-y-4"
               }
             >
@@ -189,7 +189,7 @@ export default function BlogListPage() {
                   <Link href={`/blog/${post.slug}`} className={viewMode === "list" ? "flex gap-6" : ""}>
                     {/* Cover Image */}
                     {viewMode === "grid" && (
-                      <div className="overflow-hidden rounded-2xl mb-6 glass border border-white/10 aspect-video relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl">
+                      <div className="overflow-hidden rounded-2xl mb-4 glass border border-white/10 aspect-video relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl">
                         {post.cover_image ? (
                           <img
                             src={post.cover_image}
@@ -224,7 +224,7 @@ export default function BlogListPage() {
                     )}
 
                     {/* Content */}
-                    <div className={`flex-1 ${viewMode === "grid" ? "space-y-4" : "flex flex-col justify-center"}`}>
+                    <div className={`flex-1 ${viewMode === "grid" ? "space-y-3" : "flex flex-col justify-center"}`}>
                       {/* Meta */}
                       <div className="flex items-center gap-4 text-slate-500 text-xs font-bold uppercase tracking-widest">
                         <span className="flex items-center gap-1">
@@ -245,23 +245,23 @@ export default function BlogListPage() {
 
                       {/* Title */}
                       <h3 className={`font-black text-white group-hover:text-indigo-400 transition-colors leading-tight ${
-                        viewMode === "grid" ? "text-2xl line-clamp-2" : "text-3xl line-clamp-2"
+                        viewMode === "grid" ? "text-lg line-clamp-2" : "text-3xl line-clamp-2"
                       }`}>
                         {post.title}
                       </h3>
 
                       {/* Excerpt */}
                       <p className={`text-slate-400 leading-relaxed ${
-                        viewMode === "grid" ? "text-sm line-clamp-3" : "text-base line-clamp-2"
+                        viewMode === "grid" ? "text-xs line-clamp-3" : "text-base line-clamp-2"
                       }`}>
                         {post.excerpt}
                       </p>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-4">
-                        <div className="flex items-center gap-2 text-indigo-400 text-sm font-bold group-hover:gap-3 transition-all">
-                          <span>Read Article</span>
-                          <ArrowRight className="w-4 h-4" />
+                      <div className="flex items-center justify-between pt-2">
+                        <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold group-hover:gap-3 transition-all">
+                          <span>Read</span>
+                          <ArrowRight className="w-3 h-3" />
                         </div>
                         <div className="flex items-center gap-1 text-slate-500 text-xs">
                           <Eye className="w-3 h-3" />
