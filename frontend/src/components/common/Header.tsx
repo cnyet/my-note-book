@@ -52,71 +52,30 @@ export function Header() {
     { name: "Blogs", href: "/blog" },
   ];
 
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <>
-      {/* Reduced motion preference */}
-      <style jsx global>{`
-        @media (prefers-reduced-motion: reduce) {
-          *,
-          *::before,
-          *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
+    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-center">
+      <div className="w-full max-w-7xl backdrop-blur-md bg-white/5 rounded-full px-8 py-3 flex items-center justify-between border border-white/10 shadow-2xl">
+        {/* Logo - Left */}
+        <Logo />
 
-      <nav className="fixed top-4 left-4 right-4 z-50 px-6 py-4 flex justify-center">
-        <div
-          className={`w-full max-w-7xl backdrop-blur-md rounded-full px-8 py-3 flex items-center justify-between border shadow-2xl transition-all duration-500 ${
-            scrolled
-              ? "bg-slate-900/90 border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.5)]"
-              : "bg-white/5 border-white/10 shadow-2xl"
-          }`}
-        >
-          {/* Logo - Left */}
-          <Logo />
-
-          {/* Navigation - Right */}
-          <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide">
-            {navLinks.map((link) => (
-              <LinkNext
-                key={link.href}
-                href={link.href}
-                className={`group relative py-2 px-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:rounded-lg ${
-                  pathname === link.href
-                    ? "text-white font-bold"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {link.name}
-                {/* Animated gradient underline */}
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-300 ${
-                    pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                />
-              </LinkNext>
-            ))}
-          </div>
-
-          {/* Mobile Nav */}
-          <div className="lg:hidden">
-            <MobileNav />
-          </div>
+        {/* Navigation - Right */}
+        <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide">
+          {navLinks.map((link) => (
+            <LinkNext
+              key={link.href}
+              href={link.href}
+              className={`transition-colors duration-300 relative py-1 ${pathname === link.href ? "text-white font-black" : "text-slate-400 hover:text-white"}`}
+            >
+              {link.name}
+            </LinkNext>
+          ))}
         </div>
-      </nav>
-    </>
+
+        {/* Mobile Nav */}
+        <div className="lg:hidden">
+          <MobileNav />
+        </div>
+      </div>
+    </nav>
   );
 }
