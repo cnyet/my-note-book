@@ -9,33 +9,68 @@ interface FooterLinkProps {
   icon?: React.ReactNode;
 }
 
-interface FooterLinksProps {
-  title?: string;
+interface FooterCategory {
+  title: string;
   links: FooterLinkProps[];
 }
 
-export function FooterLinks({ title, links }: FooterLinksProps) {
+interface FooterLinksProps {
+  title?: string;
+  links?: FooterLinkProps[];
+  categories?: FooterCategory[];
+}
+
+export function FooterLinks({ title, links, categories }: FooterLinksProps) {
   return (
     <footer className="w-full bg-[#0A0A0F] border-t border-white/10">
-      {/* AI 导航链接区域 - 内容受限 */}
+      {/* 导航链接区域 - 内容受限 */}
       <div className="max-w-[1400px] mx-auto px-6 py-12">
-        <div className="flex flex-wrap justify-center gap-4">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 border border-gray-800
-                         text-gray-400 text-sm rounded-lg
-                         hover:border-gray-600 hover:text-gray-300
-                         transition-colors duration-200"
-            >
-              {link.icon}
-              <span>{link.label}</span>
-            </Link>
-          ))}
-        </div>
+        {categories ? (
+          // 分类布局：每行一个类别
+          <div className="space-y-8">
+            {categories.map((category) => (
+              <div key={category.title}>
+                <h3 className="text-white font-bold text-base mb-4">{category.title}</h3>
+                <div className="flex flex-wrap gap-3">
+                  {category.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 border border-gray-800
+                                 text-gray-400 text-sm rounded-lg
+                                 hover:border-gray-600 hover:text-gray-300
+                                 transition-colors duration-200"
+                    >
+                      {link.icon}
+                      <span>{link.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          // 扁平布局：所有链接在一起
+          <div className="flex flex-wrap justify-center gap-4">
+            {links?.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 border border-gray-800
+                           text-gray-400 text-sm rounded-lg
+                           hover:border-gray-600 hover:text-gray-300
+                           transition-colors duration-200"
+              >
+                {link.icon}
+                <span>{link.label}</span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 版权条 - 左右布局（与 HomeFooter 一致） */}

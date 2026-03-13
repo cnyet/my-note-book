@@ -181,20 +181,34 @@ export default function AgentsPage() {
         )}
       </div>
 
-      {/* Footer Links - External AI Navigation (全宽背景) */}
+      {/* Footer Links - AI 工具导航（分类布局） */}
       <FooterLinks
-        links={[
-          // AI 工具导航
-          { href: "https://ai-bot.cn/", label: "AI Bot.cn", icon: <Bot className="w-4 h-4" /> },
-          { href: "https://futuretools.io/", label: "FutureTools", icon: <Zap className="w-4 h-4" /> },
-          { href: "https://theresanaiforthat.com/", label: "There's An AI", icon: <Sparkles className="w-4 h-4" /> },
-          { href: "https://huggingface.co/", label: "Hugging Face", icon: <MessageSquare className="w-4 h-4" /> },
-          { href: "https://openai.com/", label: "OpenAI", icon: <Brain className="w-4 h-4" /> },
-          { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
-          { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
-          { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
-          { href: "https://stability.ai/", label: "Stability AI", icon: <Wand2 className="w-4 h-4" /> },
-          { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
+        categories={[
+          {
+            title: "AI 导航",
+            links: [
+              { href: "https://ai-bot.cn/", label: "AI Bot.cn", icon: <Bot className="w-4 h-4" /> },
+              { href: "https://futuretools.io/", label: "FutureTools", icon: <Zap className="w-4 h-4" /> },
+              { href: "https://theresanaiforthat.com/", label: "There's An AI", icon: <Sparkles className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "大模型",
+            links: [
+              { href: "https://openai.com/", label: "OpenAI", icon: <Brain className="w-4 h-4" /> },
+              { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
+              { href: "https://huggingface.co/", label: "Hugging Face", icon: <MessageSquare className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "AI 工具",
+            links: [
+              { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
+              { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
+              { href: "https://stability.ai/", label: "Stability AI", icon: <Wand2 className="w-4 h-4" /> },
+              { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
+            ],
+          },
         ]}
       />
     </div>

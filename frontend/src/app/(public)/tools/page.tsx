@@ -9,7 +9,6 @@ import {
   Wand2,
   Palette,
   BarChart3,
-  Calculator,
   ArrowRightLeft,
   FileText,
   Image as ImageIcon,
@@ -210,29 +209,51 @@ export default function ToolsPage() {
         )}
       </div>
 
-      {/* Footer Links - 在线工具导航 */}
+      {/* Footer Links - 在线工具导航（分类布局） */}
       <FooterLinks
-        links={[
-          { href: "https://www.jyshare.com/", label: "佳佳工具", icon: <Globe className="w-4 h-4" /> },
-          { href: "https://tool.lu/", label: "Tool.lu", icon: <Code className="w-4 h-4" /> },
-          { href: "https://123.juzi.cn/", label: "123 工具集", icon: <Calculator className="w-4 h-4" /> },
-          { href: "https://convertio.co/", label: "Convertio", icon: <ArrowRightLeft className="w-4 h-4" /> },
-          { href: "https://www.ilovepdf.com/", label: "iLovePDF", icon: <FileText className="w-4 h-4" /> },
-          { href: "https://tinypng.com/", label: "TinyPNG", icon: <ImageIcon className="w-4 h-4" /> },
-          { href: "https://carbon.now.sh/", label: "Carbon", icon: <Code className="w-4 h-4" /> },
-          { href: "https://tools.qtool.cn/", label: "青工具", icon: <Globe className="w-4 h-4" /> },
-          { href: "https://toolkit.xinan.me/", label: "前端工具箱", icon: <Code className="w-4 h-4" /> },
-          { href: "https://www.aigei.com/", label: "爱给网", icon: <Type className="w-4 h-4" /> },
-          { href: "https://www.typers.cn/", label: "打字练习", icon: <Keyboard className="w-4 h-4" /> },
-          { href: "https://www.mindmeister.com/", label: "MindMeister", icon: <FileText className="w-4 h-4" /> },
-          { href: "https://cli.dev", label: "CLI Tools", icon: <Terminal className="w-4 h-4" /> },
-          { href: "https://figma.com", label: "Figma", icon: <Palette className="w-4 h-4" /> },
-          { href: "https://vercel.com", label: "Vercel", icon: <Globe className="w-4 h-4" /> },
-          { href: "https://tools.steer.ai/", label: "Steer Tools", icon: <Scan className="w-4 h-4" /> },
-          { href: "https://www.online-convert.com/", label: "Online Convert", icon: <ArrowRightLeft className="w-4 h-4" /> },
-          { href: "https://smallpdf.com/", label: "Smallpdf", icon: <FileText className="w-4 h-4" /> },
-          { href: "https://remove.bg/", label: "Remove.bg", icon: <ImageIcon className="w-4 h-4" /> },
-          { href: "https://fonts.google.com/", label: "Google Fonts", icon: <Type className="w-4 h-4" /> },
+        categories={[
+          {
+            title: "综合工具集",
+            links: [
+              { href: "https://www.jyshare.com/", label: "佳佳工具", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://tool.lu/", label: "Tool.lu", icon: <Code className="w-4 h-4" /> },
+              { href: "https://123.juzi.cn/", label: "123 工具集", icon: <Keyboard className="w-4 h-4" /> },
+              { href: "https://tools.qtool.cn/", label: "青工具", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://toolkit.xinan.me/", label: "前端工具箱", icon: <Code className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "格式转换",
+            links: [
+              { href: "https://convertio.co/", label: "Convertio", icon: <ArrowRightLeft className="w-4 h-4" /> },
+              { href: "https://www.online-convert.com/", label: "Online Convert", icon: <ArrowRightLeft className="w-4 h-4" /> },
+              { href: "https://www.ilovepdf.com/", label: "iLovePDF", icon: <FileText className="w-4 h-4" /> },
+              { href: "https://smallpdf.com/", label: "Smallpdf", icon: <FileText className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "图片工具",
+            links: [
+              { href: "https://tinypng.com/", label: "TinyPNG", icon: <ImageIcon className="w-4 h-4" /> },
+              { href: "https://remove.bg/", label: "Remove.bg", icon: <ImageIcon className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "设计开发",
+            links: [
+              { href: "https://carbon.now.sh/", label: "Carbon", icon: <Code className="w-4 h-4" /> },
+              { href: "https://figma.com", label: "Figma", icon: <Palette className="w-4 h-4" /> },
+              { href: "https://vercel.com", label: "Vercel", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://cli.dev", label: "CLI Tools", icon: <Terminal className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "字体排版",
+            links: [
+              { href: "https://fonts.google.com/", label: "Google Fonts", icon: <Type className="w-4 h-4" /> },
+              { href: "https://www.aigei.com/", label: "爱给网", icon: <Type className="w-4 h-4" /> },
+            ],
+          },
         ]}
       />
     </div>
