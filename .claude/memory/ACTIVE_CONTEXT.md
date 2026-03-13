@@ -1,6 +1,51 @@
+# Active Context - Sprint 6.5 前端页面美化 完成
+
+**状态**: ✅ 已完成（待提交）
+
+**完成日期**: 2026-03-13
+
+## Sprint 6.5: Home 页面优化
+
+| 需求 | 修改内容 | 文件 |
+|------|----------|------|
+| 1. Features Section 间距统一 | PerformanceSection、SecuritySection、MethodologySection 从 `py-12 lg:py-16` 改为 `py-16 lg:py-20` | 3 个文件 |
+| 2. Footer 全宽深色背景 | 已是 `w-full bg-[#0A0A0F]`，边框全宽 | HomeFooter.tsx |
+| 3. 导航栏左中右布局 + 功能图标 | Logo（左）、导航链接（中）、Globe + Sun/Moon（右） | Header.tsx |
+| 4. 英文字体和中文字体配置 | Inter（英文）+ Noto Sans SC（中文），默认 `lang="en"` | layout.tsx |
+| 5. Code Review 修复 | 简化 toggleLocale，移除多余花括号 | Header.tsx |
+
+## Sprint 6.5: 其他页面优化
+
+| 页面 | 修改内容 | 文件 |
+|------|----------|------|
+| **Labs** | 卡片正方形（aspect-square），ICON 亮色 | labs/page.tsx |
+| **Blogs** | 列表宽度 `max-w-7xl` → `max-w-[1600px]` | blog/page.tsx |
+| **Agents/Tools** | FlatCard 添加 `hover:-translate-y-1` 浮动效果 | FlatCard.tsx |
+
+## 修改文件清单
+
+1. `frontend/src/app/layout.tsx` - 字体配置（Inter + Noto Sans SC）
+2. `frontend/src/app/providers.tsx` - I18nProvider 嵌套
+3. `frontend/src/components/common/Header.tsx` - 导航栏布局 + 功能图标
+4. `frontend/src/components/ui/FlatCard.tsx` - 浮动效果
+5. `frontend/src/components/features/home/PerformanceSection.tsx` - 间距统一
+6. `frontend/src/components/features/home/SecuritySection.tsx` - 间距统一
+7. `frontend/src/components/features/home/MethodologySection.tsx` - 间距统一
+8. `frontend/src/app/(public)/blog/page.tsx` - 列表宽度增加
+
+## 待提交
+
+```bash
+cd /Users/yet/ClaudeCode/my-note-book
+git add -A
+git commit -m "feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing"
+```
+
+---
+
 # Active Context - Sprint 6.4 UI Enhancement 完成
 
-**状态**: ✅ 已完成
+**状态**: ✅ 已完成并合并到 main
 
 **完成日期**: 2026-03-12
 
@@ -47,7 +92,7 @@
 
 # Active Context - Sprint 6.3 前端页面优化完成
 
-**状态**: ✅ 已完成
+**状态**: ✅ 已完成并合并到 main
 
 **完成日期**: 2026-03-12
 
@@ -122,54 +167,3 @@
 ## 最新提交
 
 - `e9cabc3` fix(layout): footer at bottom with English-only labels
-
----
-
-## 当前会话 (2026-03-12)
-
-**状态**: 会话记忆已保存，等待用户指令继续执行
-
-**已保存内容**:
-- Sprint 6.4 完整修改记录
-- Sprint 6.3 完整修改记录
-- Footer 架构决策文档
-- 新增组件清单
-
-**待执行**: 等待用户指定下一步任务
-
----
-
-## Sprint 6.5: 前端页面美化 (2026-03-12) ✅
-
-**状态**: ✅ 已完成并合并到 main
-
-**完成日期**: 2026-03-12
-
-| 页面 | 修改内容 | 提交 |
-|------|----------|------|
-| **Home** | 删除 Dashboard 按钮、统一 Section 间距、n8n.io 风格 Footer | 18b8716, f9af677, 14c1456 |
-| **Agents** | 6 列网格、标签样式底部链接 | bd9f019 |
-| **Tools** | 6 列网格、标签样式底部链接 | 5bf7019 |
-| **Labs** | 5 列网格、缩小卡片、向上浮动 hover | 3f8609b |
-| **Blogs** | 最小高度 600px、简化空状态 | 9378bc2 |
-| **修复** | Footer 空链接 preventDefault、移除未使用 title 参数 | 1d0401d |
-
-### 新增组件
-- `frontend/src/components/ui/HomeFooter.tsx` - n8n.io 风格 4 列布局 Footer
-
-### 修改文件
-| 文件 | 修改内容 |
-|------|----------|
-| `frontend/src/components/common/Header.tsx` | 删除 Dashboard 按钮，左右对齐布局 |
-| `frontend/src/components/ui/HomeFooter.tsx` | 新增 4 列布局组件 |
-| `frontend/src/components/ui/FooterLinks.tsx` | 改为标签样式，一行 8 列 |
-| `frontend/src/app/(public)/page.tsx` | 统一 Section 间距，使用新 Footer |
-| `frontend/src/app/(public)/agents/page.tsx` | 6 列网格，标签 Footer |
-| `frontend/src/app/(public)/tools/page.tsx` | 6 列网格 |
-| `frontend/src/app/(public)/labs/page.tsx` | 5 列网格，缩小卡片 |
-| `frontend/src/app/(public)/blog/page.tsx` | min-h-600px，简化空状态 |
-
-### 分支状态
-- 功能分支：`feature/sprint-6.5-frontend-beautification` ✅ 已合并到 main 并删除
-- 合并提交：`1d0401d`
-- 合并日期：2026-03-12

@@ -38,6 +38,8 @@ export default function BlogListPage() {
     },
   });
 
+  // 增加列表最大宽度到 max-w-[1600px]
+
   // Extract all unique tags
   const allTags = useMemo(() => {
     if (!posts) return [];
@@ -59,7 +61,7 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      <div className="max-w-7xl mx-auto px-6 flex-1">
+      <div className="max-w-[1600px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">

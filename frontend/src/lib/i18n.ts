@@ -1,3 +1,4 @@
+import React from 'react';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import enTranslations from '../../locales/en.json';
 import zhTranslations from '../../locales/zh.json';
@@ -12,9 +13,10 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
-const translations: Record<Locale, Record<string, string>> = {
-  en: enTranslations,
-  zh: zhTranslations,
+// Type assertion for nested translation structures
+const translations: Record<Locale, Record<string, unknown>> = {
+  en: enTranslations as unknown as Record<string, unknown>,
+  zh: zhTranslations as unknown as Record<string, unknown>,
 };
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -50,10 +52,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('locale', newLocale);
   };
 
-  return (
-    <I18nContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>
-      {children}
-    </I18nContext.Provider>
+  return React.createElement(
+    I18nContext.Provider,
+    { value: { locale, setLocale: handleSetLocale, t } },
+    children
   );
 }
 

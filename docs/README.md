@@ -30,31 +30,35 @@ docs/
 ## 🚀 快速导航
 
 ### 新手上路
+
 1. **[项目根 README](../README.md)** - 快速开始与环境搭建
 2. **[development/README.md](development/README.md)** - 开发流程指南
 
 ### 了解系统设计
+
 3. **[design/architecture.md](design/architecture.md)** - 系统架构全貌
 4. **[design/api-design.md](design/api-design.md)** - API 设计规范
 5. **[design/database-schema.md](design/database-schema.md)** - 数据模型设计
 6. **[design/frontend-guide.md](design/frontend-guide.md)** - 界面设计规范
 
 ### 开始开发
+
 7. **[development/README.md](development/README.md)** - 开发流程指南
 8. **[development/openspec-guide.md](development/openspec-guide.md)** - OpenSpec 规范驱动开发
 
 ### 了解项目规划
+
 9. **[planning/requirements.md](planning/requirements.md)** - 产品需求
 10. **[planning/roadmap.md](planning/roadmap.md)** - 开发路线图
 
 ## 📚 核心文档速览
 
-| 文档 | 内容 | 适合人群 |
-|------|------|----------|
-| [design/architecture.md](design/architecture.md) | 系统架构、技术栈、数据流 | 架构师、后端开发 |
-| [design/api-design.md](design/api-design.md) | RESTful API 规范、认证机制 | 前后端开发 |
-| [planning/requirements.md](planning/requirements.md) | 功能需求、用户故事 | 产品经理、开发者 |
-| [development/openspec-guide.md](development/openspec-guide.md) | 规范驱动开发流程 | 所有开发者 |
+| 文档                                                           | 内容                       | 适合人群         |
+| -------------------------------------------------------------- | -------------------------- | ---------------- |
+| [design/architecture.md](design/architecture.md)               | 系统架构、技术栈、数据流   | 架构师、后端开发 |
+| [design/api-design.md](design/api-design.md)                   | RESTful API 规范、认证机制 | 前后端开发       |
+| [planning/requirements.md](planning/requirements.md)           | 功能需求、用户故事         | 产品经理、开发者 |
+| [development/openspec-guide.md](development/openspec-guide.md) | 规范驱动开发流程           | 所有开发者       |
 
 ## 🔄 与 OpenSpec 的关系
 
@@ -64,6 +68,7 @@ docs/
 - **docs/** 目录 - 存放设计文档和开发指南
 
 **协作流程**:
+
 1. `planning/requirements.md` 定义 **WHAT** (需求)
 2. `openspec/specs/` 定义 **HOW** (规范) - 单一致真源
 3. `docs/design/` 提供 **CONTEXT** (设计上下文)
@@ -72,12 +77,14 @@ docs/
 ## 📝 文档贡献指南
 
 ### 添加新文档
+
 1. 根据内容选择合适的目录
 2. 使用 kebab-case 命名文件
 3. 在本文档中添加导航链接
 4. 更新目录结构说明
 
 ### 文档更新原则
+
 - **设计变更** → 同步更新 `design/` 和 `openspec/`
 - **流程变更** → 更新 `development/`
 - **需求变更** → 更新 `planning/`

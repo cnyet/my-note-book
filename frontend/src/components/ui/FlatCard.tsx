@@ -20,7 +20,7 @@ export function FlatCard({ children, className, hover = true }: FlatCardProps) {
         "backdrop-blur-md bg-white/5",
         "border border-white/10 rounded-xl",
         hover &&
-          "hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-400/10",
+          "hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-400/10 hover:-translate-y-1",
         "transition-all duration-300",
         className
       )}

@@ -5,7 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 export const MethodologySection = () => {
   return (
-    <section className="py-12 lg:py-16 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+    <section className="py-16 lg:py-20 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <SectionHeader
         centered
         title="Designed to Evolve."

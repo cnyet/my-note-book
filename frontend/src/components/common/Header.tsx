@@ -3,6 +3,10 @@
 import LinkNext from "next/link";
 import { usePathname } from "next/navigation";
 import { MobileNav } from "@/components/common/MobileNav";
+import { Globe, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useI18n } from "@/lib/i18n";
+import { useState, useEffect } from "react";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
   <LinkNext
@@ -25,6 +29,14 @@ const Logo = ({ onClick }: { onClick?: () => void }) => (
 
 export function Header() {
   const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
+  const { locale, setLocale } = useI18n();
+  const [mounted, setMounted] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -34,14 +46,19 @@ export function Header() {
     { name: "Blogs", href: "/blog" },
   ];
 
+  const toggleLocale = () => {
+    setLocale(locale === "en" ? "zh" : "en");
+    setShowLangMenu(false);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-center" aria-label="Main navigation">
       <div className="w-full max-w-7xl backdrop-blur-md bg-white/5 rounded-full px-8 py-3 flex items-center justify-between border border-white/10 shadow-2xl">
-        {/* Logo - Left */}
+        {/* Left - Logo */}
         <Logo />
 
-        {/* Navigation - Right */}
-        <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide">
+        {/* Center - Navigation Links */}
+        <div className="hidden lg:flex items-center gap-8 font-semibold text-[14px] tracking-wide absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <LinkNext
               key={link.href}
@@ -51,6 +68,53 @@ export function Header() {
               {link.name}
             </LinkNext>
           ))}
+        </div>
+
+        {/* Right - Theme & Locale Toggle */}
+        <div className="hidden lg:flex items-center gap-3">
+          {/* Locale Switcher */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLangMenu(!showLangMenu)}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              aria-label="Switch language"
+            >
+              <Globe className="w-5 h-5 text-slate-400 hover:text-white" />
+            </button>
+            {showLangMenu && (
+              <div className="absolute right-0 mt-2 w-32 bg-slate-900 border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+                <button
+                  onClick={toggleLocale}
+                  className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                    locale === "en" ? "bg-indigo-500 text-white" : "text-slate-300 hover:bg-white/10"
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={toggleLocale}
+                  className={`w-full px-4 py-2 text-left text-sm transition-colors ${
+                    locale === "zh" ? "bg-indigo-500 text-white" : "text-slate-300 hover:bg-white/10"
+                  }`}
+                >
+                  中文
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {mounted && theme === "dark" ? (
+              <Sun className="w-5 h-5 text-slate-400 hover:text-white" />
+            ) : (
+              <Moon className="w-5 h-5 text-slate-400 hover:text-white" />
+            )}
+          </button>
         </div>
 
         {/* Mobile Nav */}

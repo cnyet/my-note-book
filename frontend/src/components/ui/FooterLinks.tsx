@@ -9,7 +9,7 @@ interface FooterLinkProps {
 
 
 interface FooterLinksProps {
-  
+  title?: string;
   links: FooterLinkProps[];
 }
 

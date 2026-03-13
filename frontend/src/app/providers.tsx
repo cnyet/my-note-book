@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider, theme } from "antd";
 import { ThemeProvider, useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { I18nProvider } from "@/lib/i18n";
 
 // 创建 QueryClient 实例
 function makeQueryClient() {
@@ -62,6 +63,7 @@ function AntdConfigLayer({ children }: { children: React.ReactNode }) {
  * - QueryClientProvider: React Query 数据获取和缓存
  * - ThemeProvider (next-themes): 管理 dark/light 切换，写入 className 到 <html>
  * - AntdConfigLayer: 根据当前主题配置 AntD
+ * - I18nProvider: 国际化管理
  */
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
@@ -74,7 +76,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem={false}
         disableTransitionOnChange
       >
-        <AntdConfigLayer>{children}</AntdConfigLayer>
+        <I18nProvider>
+          <AntdConfigLayer>{children}</AntdConfigLayer>
+        </I18nProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
