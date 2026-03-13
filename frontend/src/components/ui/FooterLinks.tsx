@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Twitter, Github, Linkedin } from "lucide-react";
 
 interface FooterLinkProps {
   href: string;
@@ -37,7 +38,7 @@ export function FooterLinks({ title, links }: FooterLinksProps) {
         </div>
       </div>
 
-      {/* 版权条 - 左右布局 */}
+      {/* 版权条 - 左右布局（与 HomeFooter 一致） */}
       <div className="w-full border-t border-white/10 pt-8 pb-6">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -45,17 +46,22 @@ export function FooterLinks({ title, links }: FooterLinksProps) {
             <p className="text-slate-500 text-sm">
               &copy; {new Date().getFullYear()} MyNoteBook. All rights reserved.
             </p>
-            {/* 右侧：链接（disabled 状态，路径待实现） */}
+            {/* 右侧：链接 + 社交图标 */}
             <div className="flex items-center gap-6">
-              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Privacy
-              </span>
-              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
+              </Link>
+              <Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Terms
-              </span>
-              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
+              </Link>
+              <Link href="/cookies" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Cookies
-              </span>
+              </Link>
+              <div className="flex items-center gap-4 ml-4">
+                <Twitter className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="Follow us on Twitter" />
+                <Github className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="View our GitHub" />
+                <Linkedin className="w-5 h-5 text-slate-400 hover:text-white cursor-pointer transition-colors" aria-label="Connect on LinkedIn" />
+              </div>
             </div>
           </div>
         </div>
