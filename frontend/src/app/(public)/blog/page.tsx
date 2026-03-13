@@ -59,8 +59,8 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      {/* Content Area - Constrained Width (same as Labs) */}
-      <div className="max-w-7xl mx-auto px-6 flex-1">
+      {/* Content Area - Full Width */}
+      <div className="w-full max-w-7xl mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -127,7 +127,7 @@ export default function BlogListPage() {
         </ScrollReveal>
 
         {/* Posts Content - min-height 600px - 5 columns like Labs */}
-        <div className="min-h-[600px] relative pb-32">
+        <div className="min-h-[600px] w-full relative pb-32">
           {isLoading ? (
             <motion.div
               variants={createStaggerAnimation(0.08).container}
@@ -152,7 +152,7 @@ export default function BlogListPage() {
             </motion.div>
           ) : filteredPosts.length === 0 ? (
             <ScrollReveal direction="up">
-              <div className="flex flex-col items-center justify-center py-20 max-w-2xl mx-auto">
+              <div className="flex flex-col items-center justify-center py-20 w-full">
                 <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/10 to-accent/10
                                 flex items-center justify-center">
                   <FileText className="w-12 h-12 text-gray-400" />
