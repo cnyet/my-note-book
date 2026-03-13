@@ -15,7 +15,7 @@ export const SecuritySection = () => {
             Your Data. Isolated.
           </h2>
           <p className="text-slate-400 text-xl font-medium leading-relaxed">
-            Security isn't a feature; it's our foundation. Every notebook
+            Security isn&apos;t a feature; it&apos;s our foundation. Every notebook
             instance runs in a strictly isolated sandbox with end-to-end
             encryption by default.
           </p>

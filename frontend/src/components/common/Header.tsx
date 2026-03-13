@@ -1,9 +1,7 @@
 "use client";
 
-import { clearAuth, getAdminUser, isAuthenticated } from "@/lib/admin-auth";
 import LinkNext from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { MobileNav } from "@/components/common/MobileNav";
 
 const Logo = ({ onClick }: { onClick?: () => void }) => (
@@ -27,23 +25,6 @@ const Logo = ({ onClick }: { onClick?: () => void }) => (
 
 export function Header() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [authed, setAuthed] = useState(false);
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    setAuthed(isAuthenticated());
-    const user = getAdminUser();
-    if (user) {
-      setUserName(user.username);
-    }
-  }, []);
-
-  const handleLogout = () => {
-    clearAuth();
-    setAuthed(false);
-    setUserName("");
-  };
 
   const navLinks = [
     { name: "Home", href: "/" },

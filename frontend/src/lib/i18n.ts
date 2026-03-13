@@ -29,12 +29,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const t = (key: string): string => {
     if (!loaded) return key;
     const keys = key.split('.');
-    let value: any = translations[locale];
+    let value: unknown = translations[locale];
     for (const k of keys) {
       if (value === undefined) return key;
-      value = value[k];
+      value = (value as Record<string, unknown>)[k];
     }
-    return value || key;
+    return (value as string) || key;
   };
 
   // 从 localStorage 加载保存的语言设置

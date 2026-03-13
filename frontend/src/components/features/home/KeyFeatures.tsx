@@ -109,6 +109,6 @@ export function KeyFeatures() {
 }
 
 // Inline helper for those not using the shared utils yet in this file
-function cn(...inputs: any[]) {
+function cn(...inputs: unknown[]) {
   return inputs.filter(Boolean).join(" ");
 }

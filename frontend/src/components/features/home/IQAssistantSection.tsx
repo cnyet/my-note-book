@@ -23,7 +23,7 @@ export const IQAssistantSection = () => {
           <div className="flex-1 overflow-y-auto p-8 space-y-6">
             <div className="h-full flex flex-col items-center justify-center text-center opacity-30">
               <p className="text-lg font-bold text-slate-400 italic">
-                "How can I improve my typography hierarchy?"
+                &quot;How can I improve my typography hierarchy?&quot;
               </p>
             </div>
           </div>
