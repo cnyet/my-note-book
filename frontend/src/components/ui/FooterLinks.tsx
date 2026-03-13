@@ -15,8 +15,8 @@ interface FooterLinksProps {
 
 export function FooterLinks({ title, links }: FooterLinksProps) {
   return (
-    <footer className="border-t border-white/10 pt-8 pb-12 px-6 mt-auto bg-slate-950/50">
-      <div className="max-w-[1400px] mx-auto">
+    <footer className="border-t border-white/10 pt-8 pb-12 w-full bg-[#0A0A0F]">
+      <div className="max-w-[1400px] mx-auto px-6">
         <div className="flex flex-wrap justify-center gap-3">
           {links.map((link) => (
             <Link

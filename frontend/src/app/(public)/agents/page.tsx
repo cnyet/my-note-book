@@ -138,7 +138,7 @@ export default function AgentsPage() {
             return (
               <motion.div key={agent.id} variants={createStaggerAnimation(0.1).item}>
                 <Link href={agent.link}>
-                  <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer hover:-translate-y-1 transition-transform">
+                  <FlatCard className="group p-4 flex items-center gap-4 cursor-pointer">
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-xl bg-white/5 border border-white/10
                       flex items-center justify-center flex-shrink-0 ${config.iconColor}`}>
@@ -179,15 +179,16 @@ export default function AgentsPage() {
           </ScrollReveal>
         )}
 
-        {/* Footer Links */}
+        {/* Footer Links - External AI Navigation */}
         <FooterLinks
           links={[
-            { href: "https://n8n.io", label: "n8n" },
-            { href: "https://zapier.com", label: "Zapier" },
-            { href: "https://make.com", label: "Make" },
-            { href: "https://langchain.com", label: "LangChain" },
-            { href: "https://openai.com", label: "OpenAI" },
-            { href: "https://anthropic.com", label: "Anthropic" },
+            { href: "https://ai-bot.cn/", label: "AI Bot.cn" },
+            { href: "https://futuretools.io/", label: "FutureTools" },
+            { href: "https://theresanaiforthat.com/", label: "There's An AI" },
+            { href: "https://huggingface.co/", label: "Hugging Face" },
+            { href: "https://langchain.com/", label: "LangChain" },
+            { href: "https://openai.com/", label: "OpenAI" },
+            { href: "https://anthropic.com/", label: "Anthropic" },
           ]}
         />
       </div>
