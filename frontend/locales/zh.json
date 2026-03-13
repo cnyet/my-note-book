@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "首页",
+    "agents": "智能体",
+    "tools": "工具",
+    "labs": "实验室",
+    "blogs": "博客"
+  },
+  "hero": {
+    "badge": "AI 驱动工作流",
+    "title": "构建超越",
+    "titleHighlight": "想象",
+    "subtitle": "AI 时代的终极笔记本。在一个统一的工作空间中编排专用智能体和高性能工具。",
+    "ctaPrimary": "启动笔记本",
+    "ctaSecondary": "探索生态系统"
+  },
+  "socialProof": {
+    "g2Rating": "G2 评分 4.9/5",
+    "activeUsers": "1 万 + 活跃用户",
+    "tasksAutomated": "20 万 + 任务自动化"
+  },
+  "stats": {
+    "activeUsers": "活跃用户",
+    "uptime": "正常运行时间",
+    "efficiencyGain": "效率提升",
+    "aiProcessing": "AI 处理"
+  },
+  "features": {
+    "title": "强大功能",
+    "subtitle": "自动化工作流所需的一切",
+    "aiPowered": "AI 驱动",
+    "aiPoweredDesc": "由先进 AI 模型驱动的智能自动化",
+    "secure": "安全可靠",
+    "secureDesc": "企业级安全，端到端加密",
+    "fast": "快速高效",
+    "fastDesc": "优化基础设施，闪电般处理速度"
+  },
+  "footer": {
+    "product": "产品",
+    "ecosystem": "生态系统",
+    "studio": "工作室",
+    "company": "公司",
+    "features": "功能",
+    "solutions": "解决方案",
+    "pricing": "定价",
+    "enterprise": "企业版",
+    "integrations": "集成",
+    "marketplace": "市场",
+    "apiDocs": "API 文档",
+    "community": "社区",
+    "templates": "模板",
+    "components": "组件",
+    "examples": "示例",
+    "tutorials": "教程",
+    "about": "关于我们",
+    "careers": "加入我们",
+    "contact": "联系我们",
+    "press": "媒体"
+  },
+  "common": {
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "cookies": "Cookie 政策"
+  }
+}
