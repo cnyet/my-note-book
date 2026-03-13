@@ -111,7 +111,7 @@ export default function LabsPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 mb-20 min-h-[600px]"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2 mb-20 "
         >
           {projects.map((project) => (
             <motion.div key={project.name} variants={createStaggerAnimation(0.08).item}>
