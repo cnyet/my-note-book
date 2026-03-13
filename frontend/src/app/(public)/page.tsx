@@ -15,7 +15,7 @@ import { HomeFooter } from "@/components/ui/HomeFooter";
 
 export default function Home() {
   return (
-    <div className="min-h-screen pt-32 lg:pt-40 px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen px-6 pb-0 relative selection:bg-indigo-500 selection:text-white">
       {/* Background gradient orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px]" />
@@ -30,7 +30,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* Stats Section with enhanced visual */}
-          <section className="py-32 lg:py-40">
+          <section className="py-16 lg:py-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -49,7 +49,7 @@ export default function Home() {
           </section>
 
           {/* Features Section with enhanced header */}
-          <section className="py-32 lg:py-40">
+          <section className="py-16 lg:py-20">
             <div className="text-center mb-12">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -88,7 +88,7 @@ export default function Home() {
           </ScrollReveal>
 
           {/* CTA Banner */}
-          <section className="mt-32 lg:mt-40 mb-12 pb-8">
+          <section className="py-16 lg:py-20">
             <CTABanner />
           </section>
 

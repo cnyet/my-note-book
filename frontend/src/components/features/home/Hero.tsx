@@ -30,7 +30,7 @@ export const Hero = () => {
   }, [mouseX, mouseY]);
 
   return (
-    <section ref={containerRef} className="text-center relative pt-16 pb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
+    <section ref={containerRef} className="text-center relative pt-32 pb-16 lg:pt-40 lg:pb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000 overflow-hidden">
 
       {/* Animated background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30 pointer-events-none">

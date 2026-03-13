@@ -4,7 +4,7 @@ import { Box, Zap } from "lucide-react";
 
 export const IQAssistantSection = () => {
   return (
-    <section className="mt-16 backdrop-blur-md bg-white/5 rounded-[60px] p-8 md:p-20 border border-white/10 overflow-hidden relative animate-in fade-in slide-in-from-bottom-12 duration-1000">
+    <section className="py-16 lg:py-20 backdrop-blur-md bg-white/5 rounded-[60px] p-8 md:p-20 border border-white/10 overflow-hidden relative animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div className="text-left animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
           <div className="w-16 h-16 rounded-3xl bg-indigo-500/10 flex items-center justify-center mb-10 text-indigo-400 border border-indigo-500/20 animate-in fade-in zoom-in duration-700">

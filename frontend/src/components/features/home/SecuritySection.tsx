@@ -4,7 +4,7 @@ import { EyeOff, Fingerprint, Lock, ShieldCheck } from "lucide-react";
 
 export const SecuritySection = () => {
   return (
-    <section className="py-12 px-6 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000">
+    <section className="py-12 lg:py-16 px-6 overflow-hidden animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="max-w-7xl mx-auto backdrop-blur-md bg-white/5 rounded-[80px] p-16 md:p-32 border border-white/5 flex flex-col lg:flex-row items-center gap-20 relative">
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px]"></div>
         <div className="lg:w-1/2 space-y-8 relative z-10 animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">

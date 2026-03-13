@@ -8,7 +8,7 @@ export const PerformanceSection = () => {
   useEffect(() => setMounted(true), []);
 
   return (
-    <section className="relative py-12 px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+    <section className="relative py-12 lg:py-16 px-6 animate-in fade-in slide-in-from-bottom-12 duration-1000">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div className="space-y-8 animate-in fade-in slide-in-from-left-12 duration-1000 delay-200">
           <div className="inline-block px-4 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest">
