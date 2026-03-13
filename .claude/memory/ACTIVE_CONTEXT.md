@@ -14,11 +14,14 @@
 | Footer 修复 | 移到容器外部，背景真正全宽 | agents/page.tsx | `3edc090` |
 | FooterLinks 样式优化 | 删除 LOGO，链接添加 icon，版权条左右布局 | FooterLinks.tsx | `a383931` |
 | 代码质量修复 | 删除未使用导入，icon 去重，disabled 链接 | 2 文件 | `a4c34ea` |
+| hover 效果修复 | `whileHover={{ y: -8 }}` 实现卡片浮动 | FlatCard.tsx | `1a16821` |
+| Footer 社交图标 | 添加 Twitter/Github/Linkedin（与 HomeFooter 一致） | FooterLinks.tsx | `1a16821` |
 
 ## 提交历史
 
 | 提交 | 描述 |
 |------|------|
+| `1a16821` | fix(sprint-6.6): hover 效果和 Footer 社交图标 |
 | `a4c34ea` | refactor(sprint-6.6): 代码质量修复 |
 | `a383931` | style(sprint-6.6): FooterLinks 样式优化 |
 | `3edc090` | fix(sprint-6.6): Agents Footer 全宽背景 + LOGO + 版权条 |
