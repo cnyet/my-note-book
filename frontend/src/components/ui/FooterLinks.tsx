@@ -26,12 +26,12 @@ export function FooterLinks({ title, links, categories }: FooterLinksProps) {
       {/* 导航链接区域 - 内容受限 */}
       <div className="max-w-[1400px] mx-auto px-6 py-12">
         {categories ? (
-          // 分类布局：每行一个类别
-          <div className="space-y-8">
+          // 分类布局：每行一个类别（标题 + 链接在同一行）
+          <div className="space-y-4">
             {categories.map((category) => (
-              <div key={category.title}>
-                <h3 className="text-white font-bold text-base mb-4">{category.title}</h3>
-                <div className="flex flex-wrap gap-3">
+              <div key={category.title} className="flex items-center flex-wrap gap-3">
+                <h3 className="text-white font-bold text-base flex-shrink-0 w-24">{category.title}</h3>
+                <div className="flex flex-wrap items-center gap-3">
                   {category.links.map((link) => (
                     <Link
                       key={link.href}
