@@ -11,6 +11,20 @@
 | FlatCard hover 效果增强 | `-translate-y-2` + indigo 阴影 + 边框高亮 | FlatCard.tsx | `b510209` |
 | Footer 全宽深色背景 | `w-full bg-[#0A0A0F]`，内容区域受限 | FooterLinks.tsx | `b510209` |
 | Agents Footer AI 导航 | 添加 AI Bot.cn、FutureTools 等外部链接 | agents/page.tsx | `b510209` |
+| Footer 修复 | 移到容器外部，背景真正全宽 | agents/page.tsx | `3edc090` |
+| Footer LOGO | 添加 MyNoteBook 渐变 LOGO | FooterLinks.tsx | `3edc090` |
+| 版权条 | 添加 © 2026 MyNoteBook. All rights reserved. | FooterLinks.tsx | `3edc090` |
+
+## 提交历史
+
+| 提交 | 描述 |
+|------|------|
+| `3edc090` | fix(sprint-6.6): Agents Footer 全宽背景 + LOGO + 版权条 |
+| `b510209` | feat(sprint-6.6): Agents 页面视觉优化 |
+
+## 推送状态
+
+✅ 已推送到 origin/main - 2026-03-13
 
 ---
 
@@ -21,172 +35,3 @@
 **完成日期**: 2026-03-13
 
 ## Sprint 6.5: Home 页面优化 ✅ 已完成并推送
-
-| 需求 | 修改内容 | 文件 | 提交 |
-|------|----------|------|------|
-| 1. Features Section 间距统一 | PerformanceSection、SecuritySection、MethodologySection 从 `py-12 lg:py-16` 改为 `py-16 lg:py-20` | 3 个文件 | `2a20bd6` |
-| 2. Footer 全宽深色背景 | HomeFooter 移到容器外 + `w-full bg-[#0A0A0F] border-t border-white/10` | HomeFooter.tsx, page.tsx | `cb66517` |
-| 3. 导航栏左中右布局 + 功能图标 | Logo（左）、导航链接（中）、Globe + Sun/Moon（右） | Header.tsx | `2a20bd6` |
-| 4. 英文字体和中文字体配置 | Inter（英文）+ Noto Sans SC（中文），默认 `lang="en"` | layout.tsx | `2a20bd6` |
-| 5. Code Review 修复 | 简化 toggleLocale，移除多余花括号 | Header.tsx | `2a20bd6` |
-| 6. Footer 容器 padding 修复 | px-6 移到内容区，Footer 全宽不受限 | page.tsx | `cb66517` |
-
-## Sprint 6.5: 其他页面优化 ✅ 已完成并推送
-
-| 页面 | 修改内容 | 文件 |
-|------|----------|------|
-| **Labs** | 卡片正方形（aspect-square），ICON 亮色 | labs/page.tsx |
-| **Blogs** | 列表宽度 `max-w-7xl` → `max-w-[1600px]` | blog/page.tsx |
-| **Agents/Tools** | FlatCard 添加 `hover:-translate-y-1` 浮动效果 | FlatCard.tsx |
-
-## 修改文件清单（全部已推送）
-
-1. `frontend/src/app/layout.tsx` - 字体配置（Inter + Noto Sans SC）
-2. `frontend/src/app/providers.tsx` - I18nProvider 嵌套
-3. `frontend/src/components/common/Header.tsx` - 导航栏布局 + 功能图标
-4. `frontend/src/components/ui/FlatCard.tsx` - 浮动效果
-5. `frontend/src/components/features/home/PerformanceSection.tsx` - 间距统一
-6. `frontend/src/components/features/home/SecuritySection.tsx` - 间距统一
-7. `frontend/src/components/features/home/MethodologySection.tsx` - 间距统一
-8. `frontend/src/app/(public)/blog/page.tsx` - 列表宽度增加
-9. `frontend/src/components/ui/HomeFooter.tsx` - Footer 全宽背景和边框
-10. `frontend/src/app/(public)/page.tsx` - Footer 移到容器外部 + px-6 修复
-11. `CLAUDE.md` - 添加 frontend-design 技能指南
-
-## 提交历史
-
-| 提交 | 描述 |
-|------|------|
-| `cb66517` | feat(sprint-6.5): Footer full-width fix - move px-6 to content area |
-| `2a20bd6` | feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing |
-
-## 推送状态
-
-✅ 已推送到 origin/main - 2026-03-13
-
----
-
-# Active Context - Sprint 6.4 UI Enhancement 完成
-
-**状态**: ✅ 已完成并合并到 main
-
-**完成日期**: 2026-03-12
-
-## Sprint 6.4 修复 (2026-03-12)
-
-| 问题 | 修复方案 | 提交 |
-|------|----------|------|
-| 首页排版间距不足 | pt-20 → pt-32 lg:pt-40, py-8 → py-20 | 59e9c66 |
-| 首页标题字体过小 | text-5/6/7xl → text-6/7/8xl | 59e9c66 |
-| 内页顶部 padding 不足 | agents/tools/labs/blog 全部 pt-24 → pt-32 lg:pt-40 | 373602e |
-| Footer 链接卡片样式多余 | 改为 n8n.io 风格纯文本多列布局 | 373602e |
-| Tools/Labs/Blog 统计数字多余 | 删除 Dynamic Stats Banner | eeb3f31 |
-| Agents/Tools 页面 ICON 仅 hover 高亮 | 改为默认高亮 (text-* 代替 group-hover:text-*) | de81103 |
-| Agents/Blog 空状态简陋 | 添加渐变光晕背景 + 大图标 + 动画效果 | 3792cbc |
-
-## 修改文件
-
-| 文件 | 修改内容 |
-|------|----------|
-| `frontend/src/app/(public)/page.tsx` | Hero padding, Section spacing, 标题字体 |
-| `frontend/src/components/features/home/Hero.tsx` | 标题字体升级 |
-| `frontend/src/app/(public)/agents/page.tsx` | 顶部 padding, ICON 高亮，空状态 |
-| `frontend/src/app/(public)/tools/page.tsx` | 顶部 padding, 删除 stats, ICON 高亮 |
-| `frontend/src/app/(public)/labs/page.tsx` | 顶部 padding, 删除 stats |
-| `frontend/src/app/(public)/blog/page.tsx` | 顶部 padding, 删除 stats, 空状态 |
-| `frontend/src/components/ui/FooterLinks.tsx` | n8n.io 风格重构 |
-
-## 提交历史
-
-- `cfb10ae` fix(blog): fix syntax error in empty state condition
-- `3792cbc` feat(pages): enhance empty states for Agents and Blog
-- `de81103` feat(pages): icon default highlight style for Agents and Tools
-- `eeb3f31` feat(pages): remove stats banners from Tools/Labs/Blog pages
-- `373602e` feat(pages): increase top padding and redesign FooterLinks with n8n.io style
-- `59e9c66` feat(home): enhance typography and spacing
-
-## 分支状态
-
-- 功能分支：`feature/sprint-6.4-ui-enhancement` ✅ 已合并到 main
-- 合并提交：`f693c6a`
-- 合并日期：2026-03-12
-
----
-
-# Active Context - Sprint 6.3 前端页面优化完成
-
-**状态**: ✅ 已完成并合并到 main
-
-**完成日期**: 2026-03-12
-
-## 最新修复 (2026-03-12)
-
-| 问题 | 修复方案 | 提交 |
-|------|----------|------|
-| Home 页面 `Lightning` 图标不存在 | 替换为 `Flashlight` 图标 | 6d4b507 |
-| Hero 背景流动渐变多余且难看 | 删除该层，保留光晕 + 粒子效果 | 6737223 |
-| 标题 "Build Beyond Imagination" 换行 | 单行显示，调整字体大小 | d9ac0a5 |
-| Footer margin-bottom 过大 | 调整为 mb-12 (3rem) | 814df31 |
-| 所有 Section 标题换行 | 全部改为单行显示 | 641d8b3 |
-| Zero Lag 标题被遮挡/字体过大 | 从 text-6xl/8xl 减小到 text-4xl/5xl/6xl | d23ea77 |
-| Seamless Integration 内容多余 | 删除该章节 | d23ea77 |
-| Your Data. Isolated. 字体过大 | 从 text-5xl/7xl 减小到 text-3xl/4xl/5xl | a6b88a0 |
-| Designed to Evolve. 换行 | 移除 <br/> 改为单行 | a6b88a0 |
-| 所有页面标题换行 | agents/tools/blog/labs 全部改为单行 | 3e77cbd |
-| Hero 预览卡片动态光晕多余 | 删除 mouse-following glow 效果 | 604d7d1 |
-| Agents 页面需要参考图片 | 添加 reference-image.png 显示工作流程图 | dcbaaf0 |
-| Agents 页面参考图片过大 | 添加 max-w-3xl 限制图片宽度 | 9ca19f2 |
-| 各页面底部 Footer 显示 Product/Ecosystem/Studio 分类 | 移除 layout 中的 PublicFooter，各页面使用独立的 FooterLinks 组件 | fd434a8 |
-| Agents 页面顶部静态图片 | 替换为动态 workflow 展示和分类标签 | c0aa31f |
-| Agents, Tools 页面 workflow 展示内容多余 | 删除分类标签上方的 workflow 展示，保留统计数据和分类标签 | 1806514 |
-| 首页底部 footer 被删除 | 恢复首页底部 Product/Ecosystem/Studio 分类 footer（直接在 page.tsx 中实现） | 232bcde |
-
-## Footer 架构
-
-| 页面 | Footer 实现 |
-|------|----------|
-| Home | 独立 footer 组件（Product/Ecosystem/Studio 分类 + 社交链接） |
-| Agents | FooterLinks 组件（Related AI Tools & Resources） |
-| Tools | FooterLinks 组件（Related Tools & Resources） |
-| Labs | FooterLinks 组件（Related Research & Resources） |
-| Blog | FooterLinks 组件（Related Blogs & Resources） |
-
-## 完成摘要
-
-| 页面 | 优化内容 |
-|------|----------|
-| Home | Footer 间距 + Stats/Features Sections + 动态背景 + 卡片动画 + 标题单行 + 3D 鼠标视差预览 + 删除多余光晕 + 完整 Footer |
-| Agents | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
-| Tools | Title 单行 + 分类筛选 + Stats Banner + Footer Links |
-| Labs | Title 单行 + 动态 Banner + Footer Links |
-| Blog | Title 单行 + 动态 Banner + Footer Links |
-
-## 新增组件
-
-- `src/components/ui/StatCard.tsx` - 数据统计卡片
-- `src/components/ui/FeatureCard.tsx` - 功能特性卡片
-- `src/components/ui/FooterLinks.tsx` - 底部网址链接
-
-## 最新提交
-
-- `232bcde` feat(home): 恢复首页底部 Product/Ecosystem/Studio 分类 footer
-- `1806514` feat(pages): 删除 agents 和 tools 页面分类标签上方的 workflow 展示内容
-- `c0aa31f` feat(agents): 替换静态图片为动态 workflow 展示和分类标签
-
-## 下一步
-
-- 功能分支已删除 ✅
-- 所有修改已合并到 main 分支 ✅
-
----
-
-## Sprint 6.4 额外修复 (2026-03-12)
-
-| 问题 | 修复方案 | 提交 |
-|------|----------|------|
-| Footer 未固定在底部 | 页面容器添加 flex flex-col，内容区添加 flex-1 | e9cabc3 |
-| Footer 链接显示中文描述 | 删除 description，只显示 label | e9cabc3 |
-
-## 最新提交
-
-- `e9cabc3` fix(layout): footer at bottom with English-only labels
