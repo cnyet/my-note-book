@@ -17,6 +17,12 @@ import {
   Type,
   Scan,
   Keyboard,
+  Crop,
+  Video,
+  AudioWaveform,
+  File,
+  Lock,
+  Mail,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
@@ -78,10 +84,10 @@ const tools: ToolCard[] = [
 ];
 
 const categories = [
-  { id: "all", label: "全部", icon: Layers },
-  { id: "cli", label: "CLI 工具", icon: Terminal },
-  { id: "design", label: "设计工具", icon: Palette },
-  { id: "analytics", label: "分析工具", icon: BarChart3 },
+  { id: "all", label: "All", icon: Layers },
+  { id: "cli", label: "CLI Tools", icon: Terminal },
+  { id: "design", label: "Design Tools", icon: Palette },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export default function ToolsPage() {
@@ -89,7 +95,7 @@ export default function ToolsPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      {/* 内容区域 - 受限宽度 */}
+      {/* Content Area - Constrained Width */}
       <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
@@ -209,49 +215,78 @@ export default function ToolsPage() {
         )}
       </div>
 
-      {/* Footer Links - 在线工具导航（分类布局） */}
+      {/* Footer Links - Online Tools Navigation (Categorized Layout) */}
       <FooterLinks
         categories={[
           {
-            title: "综合工具集",
+            title: "Tool Suites",
             links: [
-              { href: "https://www.jyshare.com/", label: "佳佳工具", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://www.jyshare.com/", label: "JyShare", icon: <Globe className="w-4 h-4" /> },
               { href: "https://tool.lu/", label: "Tool.lu", icon: <Code className="w-4 h-4" /> },
-              { href: "https://123.juzi.cn/", label: "123 工具集", icon: <Keyboard className="w-4 h-4" /> },
-              { href: "https://tools.qtool.cn/", label: "青工具", icon: <Globe className="w-4 h-4" /> },
-              { href: "https://toolkit.xinan.me/", label: "前端工具箱", icon: <Code className="w-4 h-4" /> },
+              { href: "https://123.juzi.cn/", label: "123 Tools", icon: <Keyboard className="w-4 h-4" /> },
+              { href: "https://tools.qtool.cn/", label: "QTool", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://toolkit.xinan.me/", label: "Frontend Toolkit", icon: <Code className="w-4 h-4" /> },
+              { href: "https://www.matools.com/", label: "MaTools", icon: <Keyboard className="w-4 h-4" /> },
+              { href: "https://www.toolnb.com/", label: "ToolNB", icon: <Globe className="w-4 h-4" /> },
             ],
           },
           {
-            title: "格式转换",
+            title: "File Conversion",
             links: [
               { href: "https://convertio.co/", label: "Convertio", icon: <ArrowRightLeft className="w-4 h-4" /> },
               { href: "https://www.online-convert.com/", label: "Online Convert", icon: <ArrowRightLeft className="w-4 h-4" /> },
+              { href: "https://cloudconvert.com/", label: "CloudConvert", icon: <ArrowRightLeft className="w-4 h-4" /> },
               { href: "https://www.ilovepdf.com/", label: "iLovePDF", icon: <FileText className="w-4 h-4" /> },
               { href: "https://smallpdf.com/", label: "Smallpdf", icon: <FileText className="w-4 h-4" /> },
+              { href: "https://pdf2go.com/", label: "PDF2Go", icon: <File className="w-4 h-4" /> },
+              { href: "https://www.pdf24.org/", label: "PDF24", icon: <File className="w-4 h-4" /> },
             ],
           },
           {
-            title: "图片工具",
+            title: "Image Tools",
             links: [
               { href: "https://tinypng.com/", label: "TinyPNG", icon: <ImageIcon className="w-4 h-4" /> },
               { href: "https://remove.bg/", label: "Remove.bg", icon: <ImageIcon className="w-4 h-4" /> },
+              { href: "https://compressor.io/", label: "Compressor", icon: <ImageIcon className="w-4 h-4" /> },
+              { href: "https://squoosh.app/", label: "Squoosh", icon: <ImageIcon className="w-4 h-4" /> },
+              { href: "https://www.iloveimg.com/", label: "iLoveIMG", icon: <ImageIcon className="w-4 h-4" /> },
             ],
           },
           {
-            title: "设计开发",
+            title: "Video & Audio",
+            links: [
+              { href: "https://www.convertio.co/video-converter/", label: "Video Converter", icon: <Video className="w-4 h-4" /> },
+              { href: "https://www.audio-convert.com/", label: "Audio Convert", icon: <AudioWaveform className="w-4 h-4" /> },
+              { href: "https://mp3cut.net/", label: "MP3 Cut", icon: <AudioWaveform className="w-4 h-4" /> },
+              { href: "https://www.123apps.com/", label: "123Apps", icon: <Video className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "Dev Tools",
             links: [
               { href: "https://carbon.now.sh/", label: "Carbon", icon: <Code className="w-4 h-4" /> },
               { href: "https://figma.com", label: "Figma", icon: <Palette className="w-4 h-4" /> },
               { href: "https://vercel.com", label: "Vercel", icon: <Globe className="w-4 h-4" /> },
               { href: "https://cli.dev", label: "CLI Tools", icon: <Terminal className="w-4 h-4" /> },
+              { href: "https://regex101.com/", label: "Regex101", icon: <Code className="w-4 h-4" /> },
+              { href: "https://jsonlint.com/", label: "JSON Lint", icon: <Code className="w-4 h-4" /> },
+              { href: "https://www.base64encode.org/", label: "Base64", icon: <Lock className="w-4 h-4" /> },
             ],
           },
           {
-            title: "字体排版",
+            title: "Typography",
             links: [
               { href: "https://fonts.google.com/", label: "Google Fonts", icon: <Type className="w-4 h-4" /> },
-              { href: "https://www.aigei.com/", label: "爱给网", icon: <Type className="w-4 h-4" /> },
+              { href: "https://www.fontsquirrel.com/", label: "Font Squirrel", icon: <Type className="w-4 h-4" /> },
+              { href: "https://www.dafont.com/", label: "DaFont", icon: <Type className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "Utilities",
+            links: [
+              { href: "https://www.browserstack.com/", label: "BrowserStack", icon: <Globe className="w-4 h-4" /> },
+              { href: "https://gtmetrix.com/", label: "GTmetrix", icon: <Activity className="w-4 h-4" /> },
+              { href: "https://pagespeed.web.dev/", label: "PageSpeed", icon: <Activity className="w-4 h-4" /> },
             ],
           },
         ]}

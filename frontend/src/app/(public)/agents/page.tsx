@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain, MessageSquare, Sparkles, Image, Code, Search, Wand2 } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain, MessageSquare, Sparkles, Image, Code, Search, Wand2, Video } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
@@ -10,11 +10,11 @@ import { FooterLinks } from "@/components/ui/FooterLinks";
 import { useState } from "react";
 
 const agentCategories = [
-  { id: "all", label: "全部", icon: Bot },
-  { id: "information", label: "信息处理", icon: Newspaper },
-  { id: "productivity", label: "效率提升", icon: Zap },
-  { id: "lifestyle", label: "生活健康", icon: Heart },
-  { id: "learning", label: "学习成长", icon: Brain },
+  { id: "all", label: "All", icon: Bot },
+  { id: "information", label: "Information", icon: Newspaper },
+  { id: "productivity", label: "Productivity", icon: Zap },
+  { id: "lifestyle", label: "Lifestyle", icon: Heart },
+  { id: "learning", label: "Learning", icon: Brain },
 ];
 
 interface AgentConfig {
@@ -79,7 +79,7 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      {/* 内容区域 - 受限宽度 */}
+      {/* Content Area - Constrained Width */}
       <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
@@ -181,32 +181,71 @@ export default function AgentsPage() {
         )}
       </div>
 
-      {/* Footer Links - AI 工具导航（分类布局） */}
+      {/* Footer Links - AI Tools Navigation (Categorized Layout) */}
       <FooterLinks
         categories={[
           {
-            title: "AI 导航",
+            title: "AI Navigators",
             links: [
-              { href: "https://ai-bot.cn/", label: "AI Bot.cn", icon: <Bot className="w-4 h-4" /> },
+              { href: "https://ai-bot.cn/", label: "AI Bot", icon: <Bot className="w-4 h-4" /> },
               { href: "https://futuretools.io/", label: "FutureTools", icon: <Zap className="w-4 h-4" /> },
               { href: "https://theresanaiforthat.com/", label: "There's An AI", icon: <Sparkles className="w-4 h-4" /> },
+              { href: "https://www.producthunt.com/topics/artificial-intelligence", label: "Product Hunt AI", icon: <Sparkles className="w-4 h-4" /> },
             ],
           },
           {
-            title: "大模型",
+            title: "LLM Providers",
             links: [
               { href: "https://openai.com/", label: "OpenAI", icon: <Brain className="w-4 h-4" /> },
               { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
               { href: "https://huggingface.co/", label: "Hugging Face", icon: <MessageSquare className="w-4 h-4" /> },
+              { href: "https://cohere.com/", label: "Cohere", icon: <Brain className="w-4 h-4" /> },
+              { href: "https://ai.google.dev/", label: "Google AI", icon: <Brain className="w-4 h-4" /> },
+              { href: "https://www.meta.ai/", label: "Meta AI", icon: <Bot className="w-4 h-4" /> },
             ],
           },
           {
-            title: "AI 工具",
+            title: "AI Writing",
             links: [
-              { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
+              { href: "https://www.jasper.ai/", label: "Jasper", icon: <MessageSquare className="w-4 h-4" /> },
+              { href: "https://www.copy.ai/", label: "Copy.ai", icon: <MessageSquare className="w-4 h-4" /> },
+              { href: "https://www.notion.so/", label: "Notion AI", icon: <BookOpen className="w-4 h-4" /> },
+              { href: "https://grammarly.com/", label: "Grammarly", icon: <CheckSquare className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "AI Art",
+            links: [
               { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
               { href: "https://stability.ai/", label: "Stability AI", icon: <Wand2 className="w-4 h-4" /> },
+              { href: "https://www.dreamstudio.ai/", label: "Dream Studio", icon: <Image className="w-4 h-4" /> },
+              { href: "https://leonardo.ai/", label: "Leonardo", icon: <Image className="w-4 h-4" /> },
+              { href: "https://runwayml.com/", label: "Runway", icon: <Video className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "AI Dev",
+            links: [
+              { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
+              { href: "https://www.llamaindex.ai/", label: "LlamaIndex", icon: <Code className="w-4 h-4" /> },
+              { href: "https://replit.com/", label: "Replit", icon: <Code className="w-4 h-4" /> },
+              { href: "https://www.cursor.com/", label: "Cursor", icon: <Code className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "AI Search",
+            links: [
               { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
+              { href: "https://you.com/", label: "You.com", icon: <Search className="w-4 h-4" /> },
+              { href: "https://www.phind.com/", label: "Phind", icon: <Search className="w-4 h-4" /> },
+            ],
+          },
+          {
+            title: "AI Platforms",
+            links: [
+              { href: "https://poe.com/", label: "Poe", icon: <Bot className="w-4 h-4" /> },
+              { href: "https://nat.dev/", label: "Nat.dev", icon: <Bot className="w-4 h-4" /> },
+              { href: "https://www.replicate.com/", label: "Replicate", icon: <Code className="w-4 h-4" /> },
             ],
           },
         ]}
