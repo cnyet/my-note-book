@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 
 interface FooterLinkProps {
   href: string;
   label: string;
+  icon?: React.ReactNode;
 }
-
 
 interface FooterLinksProps {
   title?: string;
@@ -16,39 +17,48 @@ interface FooterLinksProps {
 export function FooterLinks({ title, links }: FooterLinksProps) {
   return (
     <footer className="w-full bg-[#0A0A0F] border-t border-white/10">
-      {/* 链接区域 - 内容受限 */}
-      <div className="max-w-[1400px] mx-auto px-6 pt-8 pb-6">
-        <div className="flex flex-col items-center gap-6">
-          {/* LOGO */}
-          <div className="text-2xl font-black bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            MyNoteBook
-          </div>
-          {/* AI 导航链接 */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 bg-gray-900/50 border border-gray-800
-                           text-gray-400 text-sm rounded-lg
-                           hover:border-gray-600 hover:text-gray-300
-                           transition-colors duration-200"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+      {/* AI 导航链接区域 - 内容受限 */}
+      <div className="max-w-[1400px] mx-auto px-6 py-12">
+        <div className="flex flex-wrap justify-center gap-4">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-900/50 border border-gray-800
+                         text-gray-400 text-sm rounded-lg
+                         hover:border-gray-600 hover:text-gray-300
+                         transition-colors duration-200"
+            >
+              {link.icon || <ExternalLink className="w-4 h-4" />}
+              <span>{link.label}</span>
+            </Link>
+          ))}
         </div>
       </div>
 
-      {/* 版权条 */}
-      <div className="w-full border-t border-white/10 mt-6 pt-6 pb-8">
+      {/* 版权条 - 左右布局 */}
+      <div className="w-full border-t border-white/10 pt-8 pb-6">
         <div className="max-w-[1400px] mx-auto px-6">
-          <p className="text-center text-slate-500 text-sm">
-            &copy; {new Date().getFullYear()} MyNoteBook. All rights reserved.
-          </p>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            {/* 左侧：版权文字 */}
+            <p className="text-slate-500 text-sm">
+              &copy; {new Date().getFullYear()} MyNoteBook. All rights reserved.
+            </p>
+            {/* 右侧：链接 */}
+            <div className="flex items-center gap-6">
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
+                Privacy
+              </Link>
+              <Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">
+                Terms
+              </Link>
+              <Link href="/cookies" className="text-slate-400 hover:text-white text-sm transition-colors">
+                Cookies
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

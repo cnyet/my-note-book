@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain, ExternalLink, MessageSquare, Sparkles, Image, Code, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
@@ -184,13 +184,17 @@ export default function AgentsPage() {
       {/* Footer Links - External AI Navigation (全宽背景) */}
       <FooterLinks
         links={[
-          { href: "https://ai-bot.cn/", label: "AI Bot.cn" },
-          { href: "https://futuretools.io/", label: "FutureTools" },
-          { href: "https://theresanaiforthat.com/", label: "There's An AI" },
-          { href: "https://huggingface.co/", label: "Hugging Face" },
-          { href: "https://langchain.com/", label: "LangChain" },
-          { href: "https://openai.com/", label: "OpenAI" },
-          { href: "https://anthropic.com/", label: "Anthropic" },
+          // AI 工具导航
+          { href: "https://ai-bot.cn/", label: "AI Bot.cn", icon: <Bot className="w-4 h-4" /> },
+          { href: "https://futuretools.io/", label: "FutureTools", icon: <Zap className="w-4 h-4" /> },
+          { href: "https://theresanaiforthat.com/", label: "There's An AI", icon: <Sparkles className="w-4 h-4" /> },
+          { href: "https://huggingface.co/", label: "Hugging Face", icon: <MessageSquare className="w-4 h-4" /> },
+          { href: "https://openai.com/", label: "OpenAI", icon: <Brain className="w-4 h-4" /> },
+          { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
+          { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
+          { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
+          { href: "https://stability.ai/", label: "Stability AI", icon: <Sparkles className="w-4 h-4" /> },
+          { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
         ]}
       />
     </div>
