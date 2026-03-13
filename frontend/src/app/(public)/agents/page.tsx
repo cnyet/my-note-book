@@ -79,6 +79,7 @@ export default function AgentsPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      {/* 内容区域 - 受限宽度 */}
       <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
@@ -178,20 +179,20 @@ export default function AgentsPage() {
             </div>
           </ScrollReveal>
         )}
-
-        {/* Footer Links - External AI Navigation */}
-        <FooterLinks
-          links={[
-            { href: "https://ai-bot.cn/", label: "AI Bot.cn" },
-            { href: "https://futuretools.io/", label: "FutureTools" },
-            { href: "https://theresanaiforthat.com/", label: "There's An AI" },
-            { href: "https://huggingface.co/", label: "Hugging Face" },
-            { href: "https://langchain.com/", label: "LangChain" },
-            { href: "https://openai.com/", label: "OpenAI" },
-            { href: "https://anthropic.com/", label: "Anthropic" },
-          ]}
-        />
       </div>
+
+      {/* Footer Links - External AI Navigation (全宽背景) */}
+      <FooterLinks
+        links={[
+          { href: "https://ai-bot.cn/", label: "AI Bot.cn" },
+          { href: "https://futuretools.io/", label: "FutureTools" },
+          { href: "https://theresanaiforthat.com/", label: "There's An AI" },
+          { href: "https://huggingface.co/", label: "Hugging Face" },
+          { href: "https://langchain.com/", label: "LangChain" },
+          { href: "https://openai.com/", label: "OpenAI" },
+          { href: "https://anthropic.com/", label: "Anthropic" },
+        ]}
+      />
     </div>
   );
 }
