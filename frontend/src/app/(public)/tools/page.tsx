@@ -9,15 +9,6 @@ import {
   Wand2,
   Palette,
   BarChart3,
-  Bot,
-  Zap,
-  Brain,
-  MessageSquare,
-  Sparkles,
-  Image,
-  Code,
-  Search,
-  BookOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
@@ -210,19 +201,15 @@ export default function ToolsPage() {
         )}
       </div>
 
-      {/* Footer Links - External AI Navigation (全宽背景) */}
+      {/* Footer Links - 工具类导航 */}
       <FooterLinks
         links={[
-          { href: "https://ai-bot.cn/", label: "AI Bot.cn", icon: <Bot className="w-4 h-4" /> },
-          { href: "https://futuretools.io/", label: "FutureTools", icon: <Zap className="w-4 h-4" /> },
-          { href: "https://theresanaiforthat.com/", label: "There's An AI", icon: <Sparkles className="w-4 h-4" /> },
-          { href: "https://huggingface.co/", label: "Hugging Face", icon: <MessageSquare className="w-4 h-4" /> },
-          { href: "https://openai.com/", label: "OpenAI", icon: <Brain className="w-4 h-4" /> },
-          { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
-          { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
-          { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
-          { href: "https://stability.ai/", label: "Stability AI", icon: <Wand2 className="w-4 h-4" /> },
-          { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
+          { href: "https://www.jyshare.com/", label: "JyShare" },
+          { href: "https://tool.lu/", label: "Tool.lu" },
+          { href: "https://123.juzi.cn/", label: "123 工具集" },
+          { href: "https://cli.dev", label: "CLI Tools" },
+          { href: "https://figma.com", label: "Figma" },
+          { href: "https://vercel.com", label: "Vercel" },
         ]}
       />
     </div>
