@@ -5,7 +5,7 @@ import { Twitter, Github, Linkedin } from "lucide-react";
 
 interface FooterColumnProps {
   title: string;
-  links: { label: string; href: string }[];
+  links: { label: string; href: string; disabled?: boolean }[];
 }
 
 function FooterColumn({ title, links }: FooterColumnProps) {
@@ -17,12 +17,23 @@ function FooterColumn({ title, links }: FooterColumnProps) {
       <ul className="space-y-4">
         {links.map((link) => (
           <li key={link.label}>
-            <Link
-              href={link.href}
-              className="text-slate-400 hover:text-white text-[14px] font-medium transition-colors"
-            >
-              {link.label}
-            </Link>
+            {link.disabled ? (
+              <Link
+                href={link.href}
+                role="button"
+                aria-disabled="true"
+                className="text-slate-400 text-[14px] font-medium transition-colors cursor-not-allowed"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <Link
+                href={link.href}
+                className="text-slate-400 hover:text-white text-[14px] font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            )}
           </li>
         ))}
       </ul>
@@ -32,31 +43,31 @@ function FooterColumn({ title, links }: FooterColumnProps) {
 
 export function HomeFooter() {
   const productLinks = [
-    { label: "Features", href: "#" },
-    { label: "Solutions", href: "#" },
-    { label: "Pricing", href: "#" },
-    { label: "Enterprise", href: "#" },
+    { label: "Features", href: "#", disabled: true },
+    { label: "Solutions", href: "#", disabled: true },
+    { label: "Pricing", href: "#", disabled: true },
+    { label: "Enterprise", href: "#", disabled: true },
   ];
 
   const ecosystemLinks = [
-    { label: "Integrations", href: "#" },
-    { label: "Marketplace", href: "#" },
-    { label: "API Docs", href: "#" },
-    { label: "Community", href: "#" },
+    { label: "Integrations", href: "#", disabled: true },
+    { label: "Marketplace", href: "#", disabled: true },
+    { label: "API Docs", href: "#", disabled: true },
+    { label: "Community", href: "#", disabled: true },
   ];
 
   const studioLinks = [
-    { label: "Templates", href: "#" },
-    { label: "Components", href: "#" },
-    { label: "Examples", href: "#" },
-    { label: "Tutorials", href: "#" },
+    { label: "Templates", href: "#", disabled: true },
+    { label: "Components", href: "#", disabled: true },
+    { label: "Examples", href: "#", disabled: true },
+    { label: "Tutorials", href: "#", disabled: true },
   ];
 
   const companyLinks = [
-    { label: "About", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Press", href: "#" },
+    { label: "About", href: "#", disabled: true },
+    { label: "Careers", href: "#", disabled: true },
+    { label: "Contact", href: "#", disabled: true },
+    { label: "Press", href: "#", disabled: true },
   ];
 
   return (
@@ -78,13 +89,13 @@ export function HomeFooter() {
               © {new Date().getFullYear()} MyNoteBook. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Privacy
               </Link>
-              <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
+              <Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Terms
               </Link>
-              <Link href="#" onClick={(e) => e.preventDefault()} className="text-slate-400 hover:text-white text-sm transition-colors">
+              <Link href="/cookies" className="text-slate-400 hover:text-white text-sm transition-colors">
                 Cookies
               </Link>
               <div className="flex items-center gap-4 ml-4">
