@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Home",
+    "agents": "Agents",
+    "tools": "Tools",
+    "labs": "Labs",
+    "blogs": "Blogs"
+  },
+  "hero": {
+    "badge": "AI-Powered Workflow",
+    "title": "Build Beyond",
+    "titleHighlight": "Imagination",
+    "subtitle": "The ultimate notebook for the AI era. Orchestrate specialized agents and high-performance tools in one unified workspace.",
+    "ctaPrimary": "Launch Notebook",
+    "ctaSecondary": "Explore Ecosystem"
+  },
+  "socialProof": {
+    "g2Rating": "4.9/5 on G2",
+    "activeUsers": "10K+ Active Users",
+    "tasksAutomated": "200k+ Tasks Automated"
+  },
+  "stats": {
+    "activeUsers": "Active Users",
+    "uptime": "Uptime",
+    "efficiencyGain": "Efficiency Gain",
+    "aiProcessing": "AI Processing"
+  },
+  "features": {
+    "title": "Powerful Features",
+    "subtitle": "Everything you need to automate your workflow",
+    "aiPowered": "AI-Powered",
+    "aiPoweredDesc": "Intelligent automation powered by advanced AI models",
+    "secure": "Secure",
+    "secureDesc": "Enterprise-grade security with end-to-end encryption",
+    "fast": "Fast",
+    "fastDesc": "Lightning-fast processing with optimized infrastructure"
+  },
+  "footer": {
+    "product": "Product",
+    "ecosystem": "Ecosystem",
+    "studio": "Studio",
+    "company": "Company",
+    "features": "Features",
+    "solutions": "Solutions",
+    "pricing": "Pricing",
+    "enterprise": "Enterprise",
+    "integrations": "Integrations",
+    "marketplace": "Marketplace",
+    "apiDocs": "API Docs",
+    "community": "Community",
+    "templates": "Templates",
+    "components": "Components",
+    "examples": "Examples",
+    "tutorials": "Tutorials",
+    "about": "About",
+    "careers": "Careers",
+    "contact": "Contact",
+    "press": "Press"
+  },
+  "common": {
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies"
+  }
+}
