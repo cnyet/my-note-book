@@ -9,10 +9,11 @@
 | 需求 | 修改内容 | 文件 |
 |------|----------|------|
 | 1. Features Section 间距统一 | PerformanceSection、SecuritySection、MethodologySection 从 `py-12 lg:py-16` 改为 `py-16 lg:py-20` | 3 个文件 |
-| 2. Footer 全宽深色背景 | 已是 `w-full bg-[#0A0A0F]`，边框全宽 | HomeFooter.tsx |
+| 2. Footer 全宽深色背景 | HomeFooter 移到容器外 + `w-full bg-[#0A0A0F] border-t border-white/10` | HomeFooter.tsx, page.tsx |
 | 3. 导航栏左中右布局 + 功能图标 | Logo（左）、导航链接（中）、Globe + Sun/Moon（右） | Header.tsx |
 | 4. 英文字体和中文字体配置 | Inter（英文）+ Noto Sans SC（中文），默认 `lang="en"` | layout.tsx |
 | 5. Code Review 修复 | 简化 toggleLocale，移除多余花括号 | Header.tsx |
+| 6. Footer 容器 padding 修复 | px-6 移到内容区，Footer 全宽不受限 | page.tsx |
 
 ## Sprint 6.5: 其他页面优化
 
@@ -32,13 +33,17 @@
 6. `frontend/src/components/features/home/SecuritySection.tsx` - 间距统一
 7. `frontend/src/components/features/home/MethodologySection.tsx` - 间距统一
 8. `frontend/src/app/(public)/blog/page.tsx` - 列表宽度增加
+9. `frontend/src/components/ui/HomeFooter.tsx` - Footer 全宽背景和边框
+10. `frontend/src/app/(public)/page.tsx` - Footer 移到容器外部 + px-6 修复
 
 ## 待提交
+
+请手动执行以下命令完成提交：
 
 ```bash
 cd /Users/yet/ClaudeCode/my-note-book
 git add -A
-git commit -m "feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing"
+git commit -m "feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing, footer full-width"
 ```
 
 ---

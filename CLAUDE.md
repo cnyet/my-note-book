@@ -61,10 +61,25 @@
 |-----|------|-----|
 | 开始任何开发 | `superpowers:brainstorming` | 需求分析与方案设计 |
 | UI/UX 开发 | `ui-ux-pro-max:ui-ux-pro-max` | 设计指导与验证 |
+| 前端页面/组件开发 | `frontend-design` | 创建具有出色设计质量的 frontend 界面，避免通用 AI 美学 |
 | React 代码审查 | `react-best-practices` | 性能优化检查 |
 | Bug 修复 | `superpowers:systematic-debugging` | 系统化调试流程 |
 | 功能实现 | `superpowers:test-driven-development` | TDD 开发流程 |
 | 完成工作 | `superpowers:verification-before-completion` | 验证后提交 |
+
+### frontend-design 使用指南
+
+**触发场景**：
+- 创建新的前端页面、组件或应用
+- 开发着陆页、仪表盘、管理面板
+- 需要样式美化或 UI 重构
+- 创建 HTML/CSS 原型或交互组件
+
+**设计原则**：
+- 选择明确的美学方向（极客赛博/未来主义/精致极简等）
+- 避免通用 AI 美学（Inter 字体、紫色渐变、predictable 布局）
+- 重视排版、色彩、动效和空间构图的独特性
+- 代码实现需匹配美学愿景的复杂度
 
 ### 分支命名
 
