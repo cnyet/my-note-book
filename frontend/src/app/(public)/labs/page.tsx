@@ -117,19 +117,19 @@ export default function LabsPage() {
             <motion.div key={project.name} variants={createStaggerAnimation(0.08).item}>
               <div
                 className={`group relative backdrop-blur-md bg-gradient-to-br ${project.color}
-                  p-4 rounded-xl border border-white/5 ${project.borderColor}
+                  p-3 rounded-xl border border-white/5 ${project.borderColor}
                   transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden cursor-pointer
                   aspect-square flex flex-col`}
               >
                 {/* Background Icon */}
-                <div className="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <div className="w-24 h-24">
+                <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <div className="w-16 h-16">
                     {project.icon}
                   </div>
                 </div>
 
                 {/* Status Badge */}
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-start mb-3">
                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                     statusColorMap[project.status] || ""
                   }`}>
@@ -138,14 +138,14 @@ export default function LabsPage() {
                 </div>
 
                 {/* Icon Container */}
-                <div className={`w-12 h-12 rounded-lg ${project.bgColor} border border-white/10
-                  flex items-center justify-center mb-4`}>
+                <div className={`w-10 h-10 rounded-lg ${project.bgColor} border border-white/10
+                  flex items-center justify-center mb-3`}>
                   {project.icon}
                 </div>
 
                 {/* Content */}
-                <div className="mt-auto space-y-2">
-                  <h3 className="text-base font-black text-white">
+                <div className="mt-auto space-y-1.5">
+                  <h3 className="text-sm font-black text-white">
                     {project.name}
                   </h3>
                   <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
