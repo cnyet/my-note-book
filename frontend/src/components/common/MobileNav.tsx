@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 
 const navItems = [
+  { name: "Home", href: "/" },
   { name: "Agents", href: "/agents" },
   { name: "Tools", href: "/tools" },
   { name: "Labs", href: "/labs" },
@@ -51,13 +52,6 @@ export function MobileNav() {
                   {item.name}
                 </Link>
               ))}
-              {/* CTA 按钮 */}
-              <Link
-                href="/admin"
-                className="mx-4 mt-4 px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 text-white font-semibold text-center"
-              >
-                Admin Dashboard
-              </Link>
             </nav>
           </motion.div>
         )}

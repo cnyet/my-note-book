@@ -152,15 +152,15 @@ export default function BlogListPage() {
             </motion.div>
           ) : filteredPosts.length === 0 ? (
             <ScrollReveal direction="up">
-              <div className="flex flex-col items-center justify-center py-20">
+              <div className="flex flex-col items-center justify-center py-20 max-w-2xl mx-auto">
                 <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-primary/10 to-accent/10
                                 flex items-center justify-center">
                   <FileText className="w-12 h-12 text-gray-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">
+                <h2 className="text-2xl font-bold text-white mb-2 text-center">
                   No articles found
                 </h2>
-                <p className="text-slate-400">
+                <p className="text-slate-400 text-center">
                   Check back soon for new content
                 </p>
               </div>
