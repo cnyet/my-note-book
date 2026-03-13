@@ -4,18 +4,18 @@
 
 **完成日期**: 2026-03-13
 
-## Sprint 6.5: Home 页面优化
+## Sprint 6.5: Home 页面优化 ✅ 已完成并推送
 
-| 需求 | 修改内容 | 文件 |
-|------|----------|------|
-| 1. Features Section 间距统一 | PerformanceSection、SecuritySection、MethodologySection 从 `py-12 lg:py-16` 改为 `py-16 lg:py-20` | 3 个文件 |
-| 2. Footer 全宽深色背景 | HomeFooter 移到容器外 + `w-full bg-[#0A0A0F] border-t border-white/10` | HomeFooter.tsx, page.tsx |
-| 3. 导航栏左中右布局 + 功能图标 | Logo（左）、导航链接（中）、Globe + Sun/Moon（右） | Header.tsx |
-| 4. 英文字体和中文字体配置 | Inter（英文）+ Noto Sans SC（中文），默认 `lang="en"` | layout.tsx |
-| 5. Code Review 修复 | 简化 toggleLocale，移除多余花括号 | Header.tsx |
-| 6. Footer 容器 padding 修复 | px-6 移到内容区，Footer 全宽不受限 | page.tsx |
+| 需求 | 修改内容 | 文件 | 提交 |
+|------|----------|------|------|
+| 1. Features Section 间距统一 | PerformanceSection、SecuritySection、MethodologySection 从 `py-12 lg:py-16` 改为 `py-16 lg:py-20` | 3 个文件 | `2a20bd6` |
+| 2. Footer 全宽深色背景 | HomeFooter 移到容器外 + `w-full bg-[#0A0A0F] border-t border-white/10` | HomeFooter.tsx, page.tsx | `cb66517` |
+| 3. 导航栏左中右布局 + 功能图标 | Logo（左）、导航链接（中）、Globe + Sun/Moon（右） | Header.tsx | `2a20bd6` |
+| 4. 英文字体和中文字体配置 | Inter（英文）+ Noto Sans SC（中文），默认 `lang="en"` | layout.tsx | `2a20bd6` |
+| 5. Code Review 修复 | 简化 toggleLocale，移除多余花括号 | Header.tsx | `2a20bd6` |
+| 6. Footer 容器 padding 修复 | px-6 移到内容区，Footer 全宽不受限 | page.tsx | `cb66517` |
 
-## Sprint 6.5: 其他页面优化
+## Sprint 6.5: 其他页面优化 ✅ 已完成并推送
 
 | 页面 | 修改内容 | 文件 |
 |------|----------|------|
@@ -23,7 +23,7 @@
 | **Blogs** | 列表宽度 `max-w-7xl` → `max-w-[1600px]` | blog/page.tsx |
 | **Agents/Tools** | FlatCard 添加 `hover:-translate-y-1` 浮动效果 | FlatCard.tsx |
 
-## 修改文件清单
+## 修改文件清单（全部已推送）
 
 1. `frontend/src/app/layout.tsx` - 字体配置（Inter + Noto Sans SC）
 2. `frontend/src/app/providers.tsx` - I18nProvider 嵌套
@@ -35,16 +35,18 @@
 8. `frontend/src/app/(public)/blog/page.tsx` - 列表宽度增加
 9. `frontend/src/components/ui/HomeFooter.tsx` - Footer 全宽背景和边框
 10. `frontend/src/app/(public)/page.tsx` - Footer 移到容器外部 + px-6 修复
+11. `CLAUDE.md` - 添加 frontend-design 技能指南
 
-## 待提交
+## 提交历史
 
-请手动执行以下命令完成提交：
+| 提交 | 描述 |
+|------|------|
+| `cb66517` | feat(sprint-6.5): Footer full-width fix - move px-6 to content area |
+| `2a20bd6` | feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing |
 
-```bash
-cd /Users/yet/ClaudeCode/my-note-book
-git add -A
-git commit -m "feat(sprint-6.5): Home page UI optimizations - navbar, fonts, spacing, footer full-width"
-```
+## 推送状态
+
+✅ 已推送到 origin/main - 2026-03-13
 
 ---
 
