@@ -29,9 +29,9 @@ export function FooterLinks({ title, links, categories }: FooterLinksProps) {
           // 分类布局：每行一个类别（标题 + 链接在同一行）
           <div className="space-y-4">
             {categories.map((category) => (
-              <div key={category.title} className="flex items-center flex-wrap gap-3">
-                <h3 className="text-white font-bold text-base flex-shrink-0 whitespace-nowrap">{category.title}</h3>
-                <div className="flex flex-wrap items-center gap-3">
+              <div key={category.title} className="flex items-start flex-wrap gap-3">
+                <h3 className="text-white font-bold text-base w-32 flex-shrink-0 pt-2 whitespace-nowrap">{category.title}</h3>
+                <div className="flex flex-wrap items-center gap-3 flex-1">
                   {category.links.map((link) => (
                     <Link
                       key={link.href}
