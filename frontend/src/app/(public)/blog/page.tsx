@@ -182,11 +182,11 @@ export default function BlogListPage() {
                   variants={createStaggerAnimation(0.08).item}
                   className={`group cursor-pointer ${
                     viewMode === "list"
-                      ? "flex gap-6 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+                      ? "flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all"
                       : ""
                   }`}
                 >
-                  <Link href={`/blog/${post.slug}`} className={viewMode === "list" ? "flex gap-6" : ""}>
+                  <Link href={`/blog/${post.slug}`} className={viewMode === "list" ? "flex gap-4" : ""}>
                     {/* Cover Image */}
                     {viewMode === "grid" && (
                       <div className="overflow-hidden rounded-2xl mb-4 glass border border-white/10 aspect-video relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl">
