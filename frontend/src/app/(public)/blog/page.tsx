@@ -38,8 +38,6 @@ export default function BlogListPage() {
     },
   });
 
-  // 增加列表最大宽度到 max-w-[1600px]
-
   // Extract all unique tags
   const allTags = useMemo(() => {
     if (!posts) return [];
@@ -61,7 +59,8 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
-      <div className="max-w-[1600px] mx-auto px-6 flex-1">
+      {/* Content Area - Constrained Width */}
+      <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
           <div className="text-center mb-32">
@@ -93,7 +92,7 @@ export default function BlogListPage() {
                         : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    {tag === "all" ? "全部" : tag}
+                    {tag === "all" ? "All" : tag}
                   </button>
                 ))}
               </div>
@@ -276,20 +275,19 @@ export default function BlogListPage() {
             </motion.div>
           )}
         </div>
-
-        {/* Footer Links */}
-        <FooterLinks
-          title="Related Blogs & Resources"
-          links={[
-            { href: "https://vercel.com/blog", label: "Vercel Blog" },
-            { href: "https://nextjs.org/blog", label: "Next.js Blog" },
-            { href: "https://react.dev/blog", label: "React Blog" },
-            { href: "https://tailwindcss.com/blog", label: "Tailwind CSS" },
-            { href: "https://ui.shadcn.com", label: "shadcn/ui" },
-            { href: "https://www.framer.com/blog", label: "Framer" },
-          ]}
-        />
       </div>
+
+      {/* Footer Links - Full Width Background */}
+      <FooterLinks
+        links={[
+          { href: "https://vercel.com/blog", label: "Vercel Blog" },
+          { href: "https://nextjs.org/blog", label: "Next.js Blog" },
+          { href: "https://react.dev/blog", label: "React Blog" },
+          { href: "https://tailwindcss.com/blog", label: "Tailwind CSS" },
+          { href: "https://ui.shadcn.com", label: "shadcn/ui" },
+          { href: "https://www.framer.com/blog", label: "Framer" },
+        ]}
+      />
     </div>
   );
 }

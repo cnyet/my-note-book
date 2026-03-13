@@ -89,6 +89,7 @@ const statusColorMap: Record<string, string> = {
 export default function LabsPage() {
   return (
     <div className="min-h-screen pt-32 lg:pt-40 pb-0 flex flex-col">
+      {/* Content Area - Constrained Width */}
       <div className="max-w-[1400px] mx-auto px-6 flex-1">
         {/* Hero Section */}
         <ScrollReveal direction="up">
@@ -155,19 +156,19 @@ export default function LabsPage() {
             </motion.div>
           ))}
         </motion.div>
-
-        {/* Footer Links */}
-        <FooterLinks
-          links={[
-            { href: "https://openai.com/research", label: "OpenAI Research" },
-            { href: "https://deepmind.google/", label: "DeepMind" },
-            { href: "https://www.microsoft.com/en-us/research/", label: "Microsoft Research" },
-            { href: "https://research.google/", label: "Google Research" },
-            { href: "https://www.nature.com/", label: "Nature" },
-            { href: "https://arxiv.org/", label: "arXiv" },
-          ]}
-        />
       </div>
+
+      {/* Footer Links - Full Width Background */}
+      <FooterLinks
+        links={[
+          { href: "https://openai.com/research", label: "OpenAI Research" },
+          { href: "https://deepmind.google/", label: "DeepMind" },
+          { href: "https://www.microsoft.com/en-us/research/", label: "Microsoft Research" },
+          { href: "https://research.google/", label: "Google Research" },
+          { href: "https://www.nature.com/", label: "Nature" },
+          { href: "https://arxiv.org/", label: "arXiv" },
+        ]}
+      />
     </div>
   );
 }
