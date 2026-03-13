@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 
 interface FooterLinkProps {
   href: string;
@@ -31,7 +30,7 @@ export function FooterLinks({ title, links }: FooterLinksProps) {
                          hover:border-gray-600 hover:text-gray-300
                          transition-colors duration-200"
             >
-              {link.icon || <ExternalLink className="w-4 h-4" />}
+              {link.icon}
               <span>{link.label}</span>
             </Link>
           ))}
@@ -46,17 +45,17 @@ export function FooterLinks({ title, links }: FooterLinksProps) {
             <p className="text-slate-500 text-sm">
               &copy; {new Date().getFullYear()} MyNoteBook. All rights reserved.
             </p>
-            {/* 右侧：链接 */}
+            {/* 右侧：链接（disabled 状态，路径待实现） */}
             <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">
+              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
                 Privacy
-              </Link>
-              <Link href="/terms" className="text-slate-400 hover:text-white text-sm transition-colors">
+              </span>
+              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
                 Terms
-              </Link>
-              <Link href="/cookies" className="text-slate-400 hover:text-white text-sm transition-colors">
+              </span>
+              <span className="text-slate-500 text-sm cursor-not-allowed" title="Coming soon">
                 Cookies
-              </Link>
+              </span>
             </div>
           </div>
         </div>

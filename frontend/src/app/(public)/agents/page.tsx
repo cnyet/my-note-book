@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAgents } from "@/hooks/use-agents";
-import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain, ExternalLink, MessageSquare, Sparkles, Image, Code, Search } from "lucide-react";
+import { Newspaper, CheckSquare, Heart, BookOpen, Shirt, Loader2, Bot, Zap, Brain, MessageSquare, Sparkles, Image, Code, Search, Wand2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FlatCard } from "@/components/ui/FlatCard";
 import { ScrollReveal, createStaggerAnimation } from "@/components/ui/ScrollReveal";
@@ -193,7 +193,7 @@ export default function AgentsPage() {
           { href: "https://anthropic.com/", label: "Anthropic", icon: <BookOpen className="w-4 h-4" /> },
           { href: "https://langchain.com/", label: "LangChain", icon: <Code className="w-4 h-4" /> },
           { href: "https://midjourney.com/", label: "Midjourney", icon: <Image className="w-4 h-4" /> },
-          { href: "https://stability.ai/", label: "Stability AI", icon: <Sparkles className="w-4 h-4" /> },
+          { href: "https://stability.ai/", label: "Stability AI", icon: <Wand2 className="w-4 h-4" /> },
           { href: "https://www.perplexity.ai/", label: "Perplexity", icon: <Search className="w-4 h-4" /> },
         ]}
       />
