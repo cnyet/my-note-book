@@ -14,7 +14,7 @@ export function FlatCard({ children, className, hover = true }: FlatCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -8 }}
+      whileHover={{ y: -4 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4 }}
       className={cn(
