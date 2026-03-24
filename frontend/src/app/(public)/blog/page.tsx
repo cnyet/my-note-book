@@ -77,7 +77,7 @@ export default function BlogListPage() {
 
         {/* Controls Bar */}
         <ScrollReveal direction="up" delay={0.1}>
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+          <div className="flex sm:flex-row justify-between items-center gap-4 mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
             {/* Tag Filter */}
             <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0">
               <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
