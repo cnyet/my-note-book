@@ -7,6 +7,7 @@ import {
   DeleteOutlined,
   PlayCircleOutlined,
   StopOutlined,
+  DragOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -22,6 +23,7 @@ import {
   Col,
   Dropdown,
   type MenuProps,
+  InputNumber,
 } from "antd";
 import { ChangeEvent, useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -400,6 +402,26 @@ export default function AgentsPage() {
     }
   };
 
+  // Update sort order mutation
+  const updateSortOrderMutation = useMutation({
+    mutationFn: async ({ id, sortOrder }: { id: number; sortOrder: number }) => {
+      await agentsApi.update(id, { sort_order: sortOrder });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
+      message.success("Sort order updated");
+    },
+    onError: () => {
+      message.error("Failed to update sort order");
+    },
+  });
+
+  const handleSortOrderChange = (agent: Agent, value: number | null) => {
+    if (value !== null && value !== agent.sortOrder) {
+      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: value });
+    }
+  };
+
   const handleDelete = (agent: Agent) => {
     Modal.confirm({
       title: "Delete Agent",
@@ -477,6 +499,21 @@ export default function AgentsPage() {
       width: 120,
       render: (model: string) => (
         <Tag color="blue">{model || "Gemini"}</Tag>
+      ),
+    },
+    {
+      title: "Sort Order",
+      dataIndex: "sortOrder",
+      key: "sortOrder",
+      width: 100,
+      render: (sortOrder: number, agent) => (
+        <InputNumber
+          min={0}
+          max={9999}
+          value={sortOrder}
+          onChange={(value) => handleSortOrderChange(agent, value)}
+          className="w-full"
+        />
       ),
     },
     {

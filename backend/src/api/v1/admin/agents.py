@@ -44,6 +44,7 @@ class AgentUpdate(BaseModel):
     system_prompt: Optional[str] = Field(None, max_length=2000)
     model: Optional[str] = None
     is_active: Optional[bool] = None
+    sort_order: Optional[int] = None
 
 
 class AgentResponse(BaseModel):

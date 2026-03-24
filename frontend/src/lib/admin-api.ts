@@ -96,6 +96,7 @@ export interface AgentUpdate {
   system_prompt?: string;
   model?: string;
   is_active?: boolean;
+  sort_order?: number;
 }
 
 export const agentsApi = {
