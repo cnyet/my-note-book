@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session # Should probably remove if not used elsewhere, but keeping just in case.
+from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 
 from ....core.database import get_db
@@ -232,10 +232,12 @@ async def update_agent(
     更新智能体
 
     参数:
-        agent_id: 智能 体 ID
+        agent_id: 智能体 ID
         agent_data: 更新数据
         db: 数据库会话
     """
+    import json
+
     # 获取现有智能体
     agent = await agent_service.get_by_id(db, agent_id)
     if not agent:
@@ -255,9 +257,25 @@ async def update_agent(
                 detail=f"智能体 slug '{agent_data.slug}' 已被其他智能体使用"
             )
 
-    # 更新字段
+    # 如果需要更新 system_prompt 或 model，需要更新 config JSON
+    config = {}
+    config_changed = False
+
+    if "system_prompt" in update_dict or "model" in update_dict:
+        config = json.loads(agent.config) if agent.config else {}
+        if "system_prompt" in update_dict:
+            config["system_prompt"] = update_dict.pop("system_prompt")
+            config_changed = True
+        if "model" in update_dict:
+            config["model"] = update_dict.pop("model")
+            config_changed = True
+        if config_changed:
+            agent.config = json.dumps(config)
+
+    # 更新其他字段
     for field, value in update_dict.items():
-        setattr(agent, field, value)
+        if hasattr(agent, field):
+            setattr(agent, field, value)
 
     agent.updated_at = datetime.now(timezone.utc)
 
@@ -268,10 +286,27 @@ async def update_agent(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"更新智能体失败: {e}"
+            detail=f"更新智能体失败：{e}"
         )
 
-    return agent
+    # 从 config JSON 中提取 system_prompt 和 model
+    config = json.loads(agent.config) if agent.config else {}
+
+    return {
+        "id": agent.id,
+        "name": agent.name,
+        "slug": agent.slug,
+        "description": agent.description or "",
+        "icon_url": agent.icon_url or "",
+        "link": agent.link or "",
+        "category": agent.category,
+        "system_prompt": config.get("system_prompt", ""),
+        "model": config.get("model", "gpt-4"),
+        "is_active": agent.status != "offline",
+        "created_at": agent.created_at.isoformat(),
+        "updated_at": agent.updated_at.isoformat() if agent.updated_at else None,
+        "sort_order": agent.sort_order,
+    }
 
 
 @router.delete("/{agent_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -283,7 +318,7 @@ async def delete_agent(
     删除智能体
 
     参数:
-        agent_id: 智能 体 ID
+        agent_id: 智能体 ID
         db: 数据库会话
     """
     # 获取智能体
@@ -295,13 +330,13 @@ async def delete_agent(
         )
 
     try:
-        await agent_service.delete(db, agent_id) # Using agent_id instead of agent object for service call
+        await agent_service.delete(db, agent_id)
         return {"message": "智能体删除成功"}
     except Exception as e:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"删除智能体失败: {e}"
+            detail=f"删除智能体失败：{e}"
         )
 
 
@@ -314,7 +349,7 @@ async def toggle_agent_status(
     切换智能体状态（offline/spawning/idle/active）
 
     参数:
-        agent_id: 智能 体 ID
+        agent_id: 智能体 ID
         db: 数据库会话
     """
     # 获取现有智能体
@@ -340,7 +375,7 @@ async def toggle_agent_status(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"切换智能体状态失败: {e}"
+            detail=f"切换智能体状态失败：{e}"
         )
 
     return agent
@@ -440,7 +475,7 @@ async def spawn_agent(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"启动智能体失败: {e}"
+            detail=f"启动智能体失败：{e}"
         )
 
 
@@ -476,7 +511,7 @@ async def terminate_agent(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"终止智能体失败: {e}"
+            detail=f"终止智能体失败：{e}"
         )
 
 
@@ -514,7 +549,7 @@ async def get_agent_status(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取智能体状态失败: {e}"
+            detail=f"获取智能体状态失败：{e}"
         )
 
 
@@ -557,5 +592,5 @@ async def get_agent_sessions(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"获取会话历史失败: {e}"
+            detail=f"获取会话历史失败：{e}"
         )
