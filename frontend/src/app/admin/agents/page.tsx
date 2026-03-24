@@ -8,6 +8,8 @@ import {
   PlayCircleOutlined,
   StopOutlined,
   DragOutlined,
+  UpOutlined,
+  DownOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -23,15 +25,22 @@ import {
   Col,
   Dropdown,
   type MenuProps,
-  InputNumber,
 } from "antd";
-import { ChangeEvent, useState, useMemo, useEffect } from "react";
+import { ChangeEvent, useState, useMemo, useEffect, forwardRef } from "react";
 import { motion } from "framer-motion";
 import { Bot, MoreVertical, Activity, Clock, Server } from "lucide-react";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
 import { StatCard } from "@/components/ui/Card/StatCard";
+import {
+  DndContext,
+  DragEndEvent,
+  useDraggable,
+  DragOverlay,
+  defaultDropAnimation,
+} from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 
 const { Text } = Typography;
 
@@ -274,6 +283,36 @@ function EditAgentModal({
   );
 }
 
+// Draggable row component for table
+interface DraggableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  'data-row-key': string;
+  children: React.ReactNode;
+}
+
+const DraggableRow = forwardRef<HTMLTableRowElement, DraggableRowProps>(
+  ({ children, ...props }, ref) => {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useDraggable({
+      id: props['data-row-key'],
+    });
+
+    const style: React.CSSProperties = {
+      ...props.style,
+      transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      cursor: 'grab',
+    };
+
+    return (
+      <tr ref={setNodeRef} style={style} {...attributes} {...listeners} {...props}>
+        {children}
+      </tr>
+    );
+  }
+);
+
+DraggableRow.displayName = 'DraggableRow';
+
 export default function AgentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -422,6 +461,46 @@ export default function AgentsPage() {
     }
   };
 
+  const handleMoveUp = (agent: Agent) => {
+    const currentIndex = filteredAgents.findIndex((a) => a.id === agent.id);
+    if (currentIndex > 0) {
+      const prevAgent = filteredAgents[currentIndex - 1];
+      // Swap sort orders
+      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: prevAgent.sortOrder });
+      updateSortOrderMutation.mutate({ id: prevAgent.id, sortOrder: agent.sortOrder });
+    }
+  };
+
+  const handleMoveDown = (agent: Agent) => {
+    const currentIndex = filteredAgents.findIndex((a) => a.id === agent.id);
+    if (currentIndex < filteredAgents.length - 1) {
+      const nextAgent = filteredAgents[currentIndex + 1];
+      // Swap sort orders
+      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: nextAgent.sortOrder });
+      updateSortOrderMutation.mutate({ id: nextAgent.id, sortOrder: agent.sortOrder });
+    }
+  };
+
+  // Drag to reorder handlers
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = filteredAgents.findIndex((a) => a.id === active.id);
+      const newIndex = filteredAgents.findIndex((a) => a.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        // Get the sort order values and swap them
+        const oldAgent = filteredAgents[oldIndex];
+        const newAgent = filteredAgents[newIndex];
+
+        // Update sort orders for both agents
+        updateSortOrderMutation.mutate({ id: oldAgent.id, sortOrder: newAgent.sortOrder });
+        updateSortOrderMutation.mutate({ id: newAgent.id, sortOrder: oldAgent.sortOrder });
+      }
+    }
+  };
+
   const handleDelete = (agent: Agent) => {
     Modal.confirm({
       title: "Delete Agent",
@@ -469,6 +548,16 @@ export default function AgentsPage() {
   // Table columns
   const columns: ColumnsType<Agent> = [
     {
+      title: "",
+      key: "drag",
+      width: 50,
+      render: (_, agent) => (
+        <div className="cursor-grab active:cursor-grabbing text-duralux-text-muted hover:text-duralux-text-primary">
+          <DragOutlined />
+        </div>
+      ),
+    },
+    {
       title: "Agent",
       dataIndex: "name",
       key: "agent",
@@ -506,14 +595,25 @@ export default function AgentsPage() {
       dataIndex: "sortOrder",
       key: "sortOrder",
       width: 100,
-      render: (sortOrder: number, agent) => (
-        <InputNumber
-          min={0}
-          max={9999}
-          value={sortOrder}
-          onChange={(value) => handleSortOrderChange(agent, value)}
-          className="w-full"
-        />
+      render: (_: number, agent) => (
+        <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<UpOutlined />}
+            onClick={() => handleMoveUp(agent)}
+            disabled={filteredAgents.findIndex((a) => a.id === agent.id) === 0}
+            title="Move up"
+          />
+          <Button
+            type="text"
+            size="small"
+            icon={<DownOutlined />}
+            onClick={() => handleMoveDown(agent)}
+            disabled={filteredAgents.findIndex((a) => a.id === agent.id) === filteredAgents.length - 1}
+            title="Move down"
+          />
+        </Space>
       ),
     },
     {
@@ -640,17 +740,27 @@ export default function AgentsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Table<Agent>
-          columns={columns}
-          dataSource={filteredAgents}
-          rowKey="id"
-          loading={isLoading}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: false,
-          }}
-          className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
-        />
+        <DndContext onDragEnd={handleDragEnd}>
+          <Table<Agent>
+            columns={columns}
+            dataSource={filteredAgents}
+            rowKey="id"
+            loading={isLoading}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: false,
+            }}
+            className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
+            components={{
+              body: {
+                row: DraggableRow,
+              },
+            }}
+          />
+          <DragOverlay dropAnimation={defaultDropAnimation}>
+            {/* Overlay for dragging */}
+          </DragOverlay>
+        </DndContext>
       </motion.div>
 
       <EditAgentModal
