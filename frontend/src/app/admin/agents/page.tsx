@@ -8,8 +8,6 @@ import {
   PlayCircleOutlined,
   StopOutlined,
   DragOutlined,
-  UpOutlined,
-  DownOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -40,7 +38,6 @@ import {
   DragOverlay,
   defaultDropAnimation,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 
 const { Text } = Typography;
 
@@ -455,32 +452,6 @@ export default function AgentsPage() {
     },
   });
 
-  const handleSortOrderChange = (agent: Agent, value: number | null) => {
-    if (value !== null && value !== agent.sortOrder) {
-      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: value });
-    }
-  };
-
-  const handleMoveUp = (agent: Agent) => {
-    const currentIndex = filteredAgents.findIndex((a) => a.id === agent.id);
-    if (currentIndex > 0) {
-      const prevAgent = filteredAgents[currentIndex - 1];
-      // Swap sort orders
-      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: prevAgent.sortOrder });
-      updateSortOrderMutation.mutate({ id: prevAgent.id, sortOrder: agent.sortOrder });
-    }
-  };
-
-  const handleMoveDown = (agent: Agent) => {
-    const currentIndex = filteredAgents.findIndex((a) => a.id === agent.id);
-    if (currentIndex < filteredAgents.length - 1) {
-      const nextAgent = filteredAgents[currentIndex + 1];
-      // Swap sort orders
-      updateSortOrderMutation.mutate({ id: agent.id, sortOrder: nextAgent.sortOrder });
-      updateSortOrderMutation.mutate({ id: nextAgent.id, sortOrder: agent.sortOrder });
-    }
-  };
-
   // Drag to reorder handlers
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -588,32 +559,6 @@ export default function AgentsPage() {
       width: 120,
       render: (model: string) => (
         <Tag color="blue">{model || "Gemini"}</Tag>
-      ),
-    },
-    {
-      title: "Sort Order",
-      dataIndex: "sortOrder",
-      key: "sortOrder",
-      width: 100,
-      render: (_: number, agent) => (
-        <Space size="small">
-          <Button
-            type="text"
-            size="small"
-            icon={<UpOutlined />}
-            onClick={() => handleMoveUp(agent)}
-            disabled={filteredAgents.findIndex((a) => a.id === agent.id) === 0}
-            title="Move up"
-          />
-          <Button
-            type="text"
-            size="small"
-            icon={<DownOutlined />}
-            onClick={() => handleMoveDown(agent)}
-            disabled={filteredAgents.findIndex((a) => a.id === agent.id) === filteredAgents.length - 1}
-            title="Move down"
-          />
-        </Space>
       ),
     },
     {
