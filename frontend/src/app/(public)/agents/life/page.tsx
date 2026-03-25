@@ -5,15 +5,18 @@
 "use client";
 
 import { useState } from "react";
-import { useHealthMetrics, useSaveHealthMetrics, useGenerateSuggestion } from "@/hooks/use-life";
-import { ArrowLeft, Plus, Heart, Droplets, Moon, Activity } from "lucide-react";
+import { useHealthMetrics, useSaveHealthMetrics, useGenerateSuggestion, useGeneratePlan } from "@/hooks/use-life";
+import { ArrowLeft, Plus, Heart, Droplets, Moon, Activity, Utensils, Dumbbell } from "lucide-react";
 import Link from "next/link";
+import { DietPlanCard, ExercisePlanCard } from "@/components/life";
 
 export default function LifeAgentPage() {
   const [showForm, setShowForm] = useState(false);
+  const [showPlanResult, setShowPlanResult] = useState(false);
   const { data: metricsData, isLoading } = useHealthMetrics(1, 10);
   const saveMetrics = useSaveHealthMetrics();
   const generateSuggestion = useGenerateSuggestion();
+  const generatePlan = useGeneratePlan();
 
   const [formData, setFormData] = useState({
     height: "",
@@ -25,6 +28,34 @@ export default function LifeAgentPage() {
     water_intake: "",
     notes: "",
   });
+
+  // 处理 AI 计划生成
+  const handleGeneratePlan = () => {
+    const latestMetric = metricsData?.metrics[0];
+    if (!latestMetric) {
+      alert("请先保存健康数据");
+      return;
+    }
+
+    generatePlan.mutate(
+      {
+        metric_id: latestMetric.id,
+        plan_type: "both",
+        preferences: {
+          diet: latestMetric.diet_preference || undefined,
+        },
+      },
+      {
+        onSuccess: () => {
+          setShowPlanResult(true);
+        },
+        onError: (error) => {
+          console.error("生成计划失败:", error);
+          alert("生成计划失败，请稍后重试");
+        },
+      }
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +123,47 @@ export default function LifeAgentPage() {
             {showForm ? "取消" : "记录数据"}
           </button>
         </div>
+
+        {/* AI 计划生成按钮 */}
+        <div className="mb-8 flex justify-end gap-4">
+          <button
+            onClick={handleGeneratePlan}
+            disabled={generatePlan.isPending || !metricsData?.metrics?.length}
+            className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 shadow-lg shadow-emerald-500/25"
+          >
+            <Utensils size={20} />
+            <Dumbbell size={20} />
+            {generatePlan.isPending ? "生成中..." : "生成 AI 饮食健身计划"}
+          </button>
+          {showPlanResult && (
+            <button
+              onClick={() => setShowPlanResult(false)}
+              className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-all"
+            >
+              收起计划
+            </button>
+          )}
+        </div>
+
+        {/* AI 饮食健身计划展示 */}
+        {showPlanResult && generatePlan.data && (
+          <div className="mb-8 space-y-8">
+            {generatePlan.data.diet_plan && (
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <DietPlanCard
+                  breakfast={generatePlan.data.diet_plan.breakfast}
+                  lunch={generatePlan.data.diet_plan.lunch}
+                  dinner={generatePlan.data.diet_plan.dinner}
+                />
+              </div>
+            )}
+            {generatePlan.data.exercise_plan && (
+              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <ExercisePlanCard exercises={generatePlan.data.exercise_plan} />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
