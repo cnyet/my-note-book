@@ -8,6 +8,7 @@
 
 | 任务 | 状态 | 详情 |
 |------|------|------|
+| **Drag Sort 重构 - react-beautiful-dnd** | ✅ 已完成 | 使用 @hello-pangea/dnd 替代 HTML5 DnD |
 | **Agents 管理后台排序功能** | ✅ 已完成并推送 | 拖拽排序功能实现 |
 
 ## Sprint 6.6: 公共页面视觉优化 ✅ 已完成并推送
@@ -53,6 +54,14 @@
 ✅ 已推送到 origin/main - 2026-03-25
 
 ---
+
+## 2026-03-25: Drag Sort 重构 ✅
+
+| 修改 | 详情 | 文件 | 提交 |
+|------|------|------|------|
+| 安装 @hello-pangea/dnd | react-beautiful-dnd 的 React 19 兼容 fork | `package.json` | `95b70f4` |
+| 重构 DragSortTable 组件 | 使用 @hello-pangea/dnd 实现拖拽排序 | `DragSortTable.tsx` | `30fbcf6`, `9718f51` |
+| 验证构建 | 构建成功，无类型错误 | - | `9718f51` |
 
 ## 2026-03-25: Agents 管理后台排序功能 ✅
 
