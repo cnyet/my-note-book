@@ -45,6 +45,11 @@
 | 安装 @hello-pangea/dnd | ✅ | `95b70f4` |
 | 重构 DragSortTable 组件 | ✅ | `30fbcf6`, `9718f51` |
 | 构建验证 + 推送 | ✅ | `d4334c5` |
+| 样式修复：拖拽时行宽度变窄 | ✅ | `05b4837` |
+
+**技术要点**:
+- 问题：`draggableProps.style` 无条件应用导致 ghost 元素样式污染原 `<tr>`
+- 解决：只在 `isDragging` 时应用，添加 `display: table` 保持列宽约束
 
 ---
 

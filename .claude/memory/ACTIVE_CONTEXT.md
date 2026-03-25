@@ -8,8 +8,19 @@
 
 | 任务 | 状态 | 详情 |
 |------|------|------|
-| **Drag Sort 重构 - react-beautiful-dnd** | ✅ 已完成 | 使用 @hello-pangea/dnd 替代 HTML5 DnD |
+| **Drag Sort 重构 - @hello-pangea/dnd** | ✅ 已完成 | 使用 @hello-pangea/dnd 替代 HTML5 DnD |
 | **Agents 管理后台排序功能** | ✅ 已完成并推送 | 拖拽排序功能实现 |
+| **DragSortTable 样式修复** | ✅ 已完成并推送 | 修复拖拽时行宽度变窄问题 |
+
+### 最新提交 (2026-03-25)
+
+| 提交 | 描述 |
+|------|------|
+| `05b4837` | fix(drag-sort): 修复拖拽时行宽度变窄问题 |
+| `d4334c5` | docs: 更新开发上下文 - Drag Sort 重构完成 |
+| `9718f51` | feat(drag-sort): 修复 DragSortTable 类型错误 |
+| `30fbcf6` | feat(drag-sort): 使用 @hello-pangea/dnd 重构 DragSortTable |
+| `95b70f4` | chore(deps): 安装 @hello-pangea/dnd |
 
 ## Sprint 6.6: 公共页面视觉优化 ✅ 已完成并推送
 
