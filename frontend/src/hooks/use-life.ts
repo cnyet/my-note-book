@@ -163,3 +163,57 @@ export function useGenerateSuggestion() {
     },
   });
 }
+
+// AI 饮食健身计划生成相关
+
+export interface MealPlan {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  ingredients?: string[];
+}
+
+export interface ExercisePlanItem {
+  name: string;
+  sets: number;
+  reps?: number;
+  duration?: number;
+  description: string;
+  category: string;
+}
+
+export interface DietPlanResponse {
+  diet_plan?: {
+    breakfast: MealPlan;
+    lunch: MealPlan;
+    dinner: MealPlan;
+  };
+  exercise_plan?: ExercisePlanItem[];
+}
+
+export interface GeneratePlanRequest {
+  metric_id: string;
+  plan_type?: "diet" | "exercise" | "both";
+  preferences?: {
+    diet?: string;
+    exercise_level?: string;
+  };
+}
+
+async function generateHealthPlan(data: GeneratePlanRequest): Promise<DietPlanResponse> {
+  const res = await fetch(`${API_BASE}/life/generate-plan`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to generate health plan");
+  return res.json();
+}
+
+export function useGeneratePlan() {
+  return useMutation({
+    mutationFn: generateHealthPlan,
+  });
+}
