@@ -5,18 +5,24 @@
 "use client";
 
 import { useState } from "react";
-import { useTaskList, useTaskCategories, useCreateTask, useCompleteTask, useDeleteTask } from "@/hooks/use-task";
-import { Plus, CheckCircle2, Circle, Trash2, Calendar, Flag } from "lucide-react";
+import { useTaskList, useTaskCategories, useCreateTask, useCompleteTask, useDeleteTask, usePlanTasks, type PlannedTask } from "@/hooks/use-task";
+import { Plus, CheckCircle2, Circle, Trash2, Calendar, Flag, BrainCircuit } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { TaskPlanModal } from "@/components/task";
 
 export default function TaskAgentPage() {
   const [showForm, setShowForm] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [goalsInput, setGoalsInput] = useState("");
+  const [longTermGoals, setLongTermGoals] = useState<string[]>([]);
+
   const { data: tasksData, isLoading } = useTaskList(1, 50);
   const { data: categories } = useTaskCategories();
   const createTask = useCreateTask();
   const completeTask = useCompleteTask();
   const deleteTask = useDeleteTask();
+  const planTasks = usePlanTasks();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -24,6 +30,51 @@ export default function TaskAgentPage() {
     priority: "medium" as "low" | "medium" | "high",
     category_id: "",
   });
+
+  // 处理 AI 任务规划
+  const handlePlanTasks = () => {
+    if (!goalsInput.trim()) {
+      alert("请输入今日目标");
+      return;
+    }
+
+    planTasks.mutate(
+      {
+        goals: goalsInput,
+        long_term_goals: longTermGoals.length > 0 ? longTermGoals : undefined,
+      },
+      {
+        onSuccess: (data) => {
+          setShowPlanModal(true);
+        },
+        onError: (error) => {
+          console.error("任务规划失败:", error);
+          alert("任务规划失败，请稍后重试");
+        },
+      }
+    );
+  };
+
+  // 确认创建任务
+  const handleConfirmTasks = (plannedTasks: PlannedTask[]) => {
+    if (plannedTasks.length === 0) return;
+
+    // 批量创建任务
+    const createPromises = plannedTasks.map((task) =>
+      createTask.mutateAsync({
+        title: task.title,
+        description: task.description || undefined,
+        priority: task.priority,
+        category_id: undefined, // 可以根据 category 映射到分类 ID
+      })
+    );
+
+    Promise.all(createPromises).then(() => {
+      setShowPlanModal(false);
+      setGoalsInput("");
+      setLongTermGoals([]);
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +142,34 @@ export default function TaskAgentPage() {
             <Plus size={20} />
             {showForm ? "取消" : "新建任务"}
           </button>
+        </div>
+
+        {/* AI 任务规划区域 */}
+        <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 backdrop-blur-md">
+          <div className="flex items-center gap-3 mb-4">
+            <BrainCircuit className="w-6 h-6 text-cyan-400" />
+            <h2 className="text-xl font-bold text-white">AI 任务规划</h2>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">今日目标</label>
+              <textarea
+                value={goalsInput}
+                onChange={(e) => setGoalsInput(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-none"
+                placeholder="输入今日目标，例如：完成项目文档、准备会议材料、健身 30 分钟..."
+                rows={3}
+              />
+            </div>
+            <button
+              onClick={handlePlanTasks}
+              disabled={planTasks.isPending || !goalsInput.trim()}
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold hover:opacity-90 transition-all disabled:opacity-50"
+            >
+              <BrainCircuit size={20} />
+              {planTasks.isPending ? "AI 规划中..." : "AI 规划任务"}
+            </button>
+          </div>
         </div>
 
         {/* Create Task Form */}
@@ -216,6 +295,15 @@ export default function TaskAgentPage() {
           )}
         </div>
       </div>
+
+      {/* 任务规划确认弹窗 */}
+      <TaskPlanModal
+        isOpen={showPlanModal}
+        onClose={() => setShowPlanModal(false)}
+        plannedTasks={planTasks.data?.planned_tasks || []}
+        onConfirm={handleConfirmTasks}
+        isLoading={createTask.isPending}
+      />
     </div>
   );
 }
