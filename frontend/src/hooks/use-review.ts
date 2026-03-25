@@ -223,3 +223,41 @@ export function useCreatePreference() {
     },
   });
 }
+
+// Eisenhower Matrix 四象限分析相关
+
+export interface QuadrantTask {
+  title: string;
+  description: string;
+  reason: string;
+}
+
+export interface QuadrantAnalysis {
+  important_urgent: QuadrantTask[];
+  important_not_urgent: QuadrantTask[];
+  not_important_urgent: QuadrantTask[];
+  not_important_not_urgent: QuadrantTask[];
+}
+
+export interface TaskAnalysisInput {
+  title: string;
+  description: string;
+}
+
+async function analyzeQuadrants(
+  tasks: TaskAnalysisInput[]
+): Promise<QuadrantAnalysis> {
+  const res = await fetch(`${API_BASE}/review/analyze-quadrants`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tasks }),
+  });
+  if (!res.ok) throw new Error("Failed to analyze quadrants");
+  return res.json();
+}
+
+export function useAnalyzeQuadrants() {
+  return useMutation({
+    mutationFn: analyzeQuadrants,
+  });
+}
