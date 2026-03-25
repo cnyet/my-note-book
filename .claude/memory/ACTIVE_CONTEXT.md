@@ -4,6 +4,12 @@
 
 **完成日期**: 2026-03-13
 
+## 当前任务 (2026-03-25)
+
+| 任务 | 状态 | 详情 |
+|------|------|------|
+| **Agents 管理后台排序功能** | ✅ 已完成并推送 | 拖拽排序功能实现 |
+
 ## Sprint 6.6: 公共页面视觉优化 ✅ 已完成并推送
 
 | 修改 | 详情 | 文件 | 提交 |
@@ -44,4 +50,17 @@
 
 ## 推送状态
 
-✅ 已推送到 origin/main - 2026-03-13
+✅ 已推送到 origin/main - 2026-03-25
+
+---
+
+## 2026-03-25: Agents 管理后台排序功能 ✅
+
+| 修改 | 详情 | 文件 | 提交 |
+|------|------|------|------|
+| 修复 PUT API 500 错误 | `update_agent` 返回字典格式而非 SQLAlchemy 模型 | `backend/src/api/v1/admin/agents.py` | `743d6be` |
+| 添加 sort_order 字段 | `AgentUpdate` 支持排序更新 | 后端 + 前端类型 | `7ad5c0b` |
+| 初始排序列实现 | InputNumber 输入框 | `agents/page.tsx` | `7ad5c0b` |
+| 优化交互：按钮 + 拖拽 | ↑↓按钮交换，拖拽排序 | `agents/page.tsx` | `12c2826` |
+| 移除 Sort Order 列 | 只保留拖拽手柄图标 | `agents/page.tsx` | `56d9d26` |
+| Blog 页面样式修复 | 移除 `flex-col` 类 | `blog/page.tsx` | `9a81dc4` |
