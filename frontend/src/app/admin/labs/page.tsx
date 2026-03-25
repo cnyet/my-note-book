@@ -6,7 +6,6 @@ import {
   PlusOutlined,
   SearchOutlined,
   DeleteOutlined,
-
 } from "@ant-design/icons";
 import {
   Button,
@@ -21,8 +20,9 @@ import {
   Typography,
   message,
   Card,
+  Tag,
 } from "antd";
-import { useCallback, useMemo, memo, useState, useEffect, ChangeEvent } from "react";
+import { useCallback, useMemo, useState, useEffect, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import {
   Globe,
@@ -36,6 +36,9 @@ import {
 } from "lucide-react";
 import { labsApi, type Lab as ApiLab } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { ColumnsType } from "antd/es/table";
+import { StatCard } from "@/components/ui/Card/StatCard";
+import { DragSortTable } from "@/components/admin/DragSortTable";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -43,7 +46,7 @@ const { TextArea } = Input;
 /** Lab Status Types */
 export type LabStatus = "Experimental" | "Preview" | "Live" | "Archived";
 
-/** Lab Interface - 前端数据结构 */
+/** Lab Interface */
 interface Lab {
   id: number;
   name: string;
@@ -53,9 +56,10 @@ interface Lab {
   demoLink?: string;
   mediaAssets?: string[];
   onlineCount: number;
+  sortOrder: number;
 }
 
-/** 将后端 API Lab 转换为前端 Lab */
+/** Map API Lab to Frontend */
 function mapApiLabToFrontend(apiLab: ApiLab): Lab {
   let status: LabStatus = "Experimental";
   if (apiLab.status === "Archived") status = "Archived";
@@ -70,10 +74,11 @@ function mapApiLabToFrontend(apiLab: ApiLab): Lab {
     demoLink: apiLab.demo_url,
     mediaAssets: apiLab.media_urls,
     onlineCount: apiLab.online_count,
+    sortOrder: apiLab.sort_order || 0,
   };
 }
 
-/** 将前端 Lab 转换为后端 API 格式 */
+/** Map Frontend Lab to API */
 function mapFrontendLabToApi(lab: Lab): Partial<ApiLab> {
   return {
     name: lab.name,
@@ -83,89 +88,27 @@ function mapFrontendLabToApi(lab: Lab): Partial<ApiLab> {
     demo_url: lab.demoLink,
     media_urls: lab.mediaAssets || [],
     online_count: lab.onlineCount,
+    sort_order: lab.sortOrder,
   };
 }
 
-/** Status Badge Props Mapper - Duralux Style */
-function getStatusBadgeProps(status: LabStatus): { status: string; label: string; color: string; bgColor: string } {
+/** Status Badge Component */
+function getStatusBadgeProps(status: LabStatus): { color: string; text: string } {
   switch (status) {
     case "Experimental":
-      return {
-        status: "experimental",
-        label: "Experimental",
-        color: "var(--duralux-primary)",
-        bgColor: "var(--duralux-primary-transparent)"
-      };
+      return { color: "blue", text: "Experimental" };
     case "Preview":
-      return {
-        status: "preview",
-        label: "Preview",
-        color: "var(--duralux-info)",
-        bgColor: "var(--duralux-info-transparent)"
-      };
+      return { color: "cyan", text: "Preview" };
     case "Live":
-      return {
-        status: "live",
-        label: "Live",
-        color: "var(--duralux-success)",
-        bgColor: "var(--duralux-success-transparent)"
-      };
+      return { color: "green", text: "Live" };
     case "Archived":
-      return {
-        status: "archived",
-        label: "Archived",
-        color: "var(--duralux-text-muted)",
-        bgColor: "var(--duralux-bg-hover)"
-      };
+      return { color: "default", text: "Archived" };
   }
 }
 
-/** Status Badge Component - Duralux Style */
-function StatusBadge({ status, label }: { status: string; label: string }) {
-  const badgeProps = getStatusBadgeProps(status as LabStatus);
-
-  return (
-    <span
-      className="px-2.5 py-0.5 rounded-full text-xs font-medium border-0"
-      style={{
-        backgroundColor: badgeProps.bgColor,
-        color: badgeProps.color,
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
-/** Stat Card Component - Duralux Style */
-function StatCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-}) {
-  return (
-    <Card
-      bordered={false}
-      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-0.5 overflow-hidden"
-      styles={{ body: { padding: "1.25rem" } }}
-    >
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-xl bg-duralux-primary-transparent flex items-center justify-center text-duralux-primary">
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm text-duralux-text-muted mb-0.5">{label}</p>
-          <p className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
-            {value}
-          </p>
-        </div>
-      </div>
-    </Card>
-  );
+function StatusBadge({ status }: { status: LabStatus }) {
+  const { color, text } = getStatusBadgeProps(status);
+  return <Tag color={color}>{text}</Tag>;
 }
 
 /** Skeleton Stat Card */
@@ -187,96 +130,7 @@ function SkeletonStatCard() {
   );
 }
 
-/** Lab Card Component - Duralux Style */
-const LabCard = memo(function LabCard({ lab, onEdit, onDelete }: { lab: Lab; onEdit: (lab: Lab) => void; onDelete: (lab: Lab) => void }) {
-  const badgeProps = getStatusBadgeProps(lab.status);
-
-  const items: MenuProps["items"] = [
-    {
-      key: "view",
-      label: "View Demo",
-      icon: <EyeOutlined />,
-      disabled: !lab.demoLink,
-      onClick: () => lab.demoLink && window.open(lab.demoLink, "_blank"),
-    },
-    { key: "edit", label: "Edit", icon: <EditOutlined />, onClick: () => onEdit(lab) },
-    { type: "divider" },
-    { key: "delete", label: "Delete", danger: true, icon: <DeleteOutlined />, onClick: () => onDelete(lab) },
-  ];
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group relative h-full"
-    >
-      <div className="relative h-full rounded-2xl bg-white dark:bg-[#2b2c40] border border-[#eceef1] dark:border-[#444564] shadow-duralux-card hover:shadow-duralux-hover dark:shadow-duralux-card-dark dark:hover:shadow-duralux-hover-dark transition-all duration-200 overflow-hidden">
-        <div className="relative p-5 h-full flex flex-col">
-          {/* Header: Status Badge + Menu */}
-          <div className="flex justify-between items-start mb-4">
-            <StatusBadge status={lab.status} label={badgeProps.label} />
-            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <Dropdown menu={{ items }} placement="bottomRight" trigger={["click"]}>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-7 h-7 rounded-md flex items-center justify-center text-duralux-text-muted hover:text-duralux-primary hover:bg-duralux-bg-hover cursor-pointer transition-colors"
-                  aria-label="More options"
-                >
-                  <MoreVertical size={14} />
-                </motion.button>
-              </Dropdown>
-            </div>
-          </div>
-
-          {/* Lab Icon */}
-          <div className="relative mb-4 mx-auto">
-            <div className="w-16 h-16 rounded-full bg-duralux-primary-transparent p-[2px] shadow-md group-hover:shadow-lg transition-shadow duration-300">
-              <div className="w-full h-full rounded-full bg-white dark:bg-[#2b2c40] flex items-center justify-center">
-                <Beaker className="text-duralux-primary" size={28} />
-              </div>
-            </div>
-          </div>
-
-          {/* Lab Name */}
-          <h3 className="text-base font-bold text-center text-duralux-text-primary dark:text-duralux-text-dark-primary m-0 mb-2">
-            {lab.name}
-          </h3>
-
-          {/* Description */}
-          <p className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs text-center leading-relaxed mb-4 line-clamp-2 flex-grow">
-            {lab.description}
-          </p>
-
-          {/* Footer: Online Count + Demo */}
-          <div className="flex gap-2 pt-3 border-t border-[#eceef1] dark:border-[#444564] mt-auto">
-            <div className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg bg-duralux-bg-page dark:bg-[#323249]">
-              <Users size={14} className="text-duralux-text-muted" />
-              <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-xs font-semibold">
-                {lab.onlineCount}
-              </Text>
-            </div>
-            {lab.demoLink && (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => window.open(lab.demoLink, "_blank")}
-                className="flex-1 h-9 rounded-lg font-semibold text-xs bg-gradient-to-r from-duralux-primary to-duralux-primary-dark text-white hover:from-duralux-primary-dark hover:to-duralux-primary shadow-md shadow-duralux-primary/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none"
-              >
-                <Eye size={14} />
-                Demo
-              </motion.button>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-});
-
-/** Edit Lab Modal - Duralux Style */
+/** Edit Lab Modal */
 function EditLabModal({
   open,
   lab,
@@ -306,6 +160,7 @@ function EditLabModal({
         demoLink: form.demoLink,
         mediaAssets: form.mediaAssets,
         onlineCount: lab?.onlineCount || 0,
+        sortOrder: lab?.sortOrder || 0,
       });
       onCancel();
     }
@@ -466,22 +321,6 @@ function EditLabModal({
               />
             </div>
 
-            {/* Media Assets */}
-            <div>
-              <label className="block text-sm font-semibold text-duralux-text-primary dark:text-duralux-text-dark-primary mb-2">
-                Media Assets
-              </label>
-              <div className="border-2 border-dashed border-duralux-border-light dark:border-duralux-border-dark rounded-xl p-6 text-center hover:border-duralux-primary dark:hover:border-duralux-primary transition-colors cursor-pointer">
-                <Beaker size={24} className="text-duralux-text-muted mx-auto mb-2" />
-                <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary text-sm font-medium">
-                  Click to upload or drag and drop
-                </Text>
-                <div className="text-duralux-text-muted text-xs mt-1">
-                  PNG, JPG, GIF up to 10MB
-                </div>
-              </div>
-            </div>
-
             {/* Online Count (Read-only) */}
             {lab && (
               <div>
@@ -577,7 +416,7 @@ export default function LabsPage() {
 
   // Filter labs
   const filteredLabs = useMemo(() => {
-    let result = labs;
+    let result = [...labs];
 
     if (statusFilter !== "all") {
       result = result.filter((lab) => lab.status === statusFilter);
@@ -591,6 +430,9 @@ export default function LabsPage() {
           lab.description.toLowerCase().includes(query),
       );
     }
+
+    // Sort by sortOrder
+    result.sort((a, b) => a.sortOrder - b.sortOrder);
 
     return result;
   }, [labs, statusFilter, searchQuery]);
@@ -610,6 +452,120 @@ export default function LabsPage() {
     setEditingLab(null);
   };
 
+  // Update sort order mutation
+  const updateSortOrdersMutation = useMutation({
+    mutationFn: async (labsToUpdate: Lab[]) => {
+      const updates = labsToUpdate.map((lab) =>
+        labsApi.update(lab.id, { sort_order: lab.sortOrder })
+      );
+      await Promise.all(updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-labs"] });
+    },
+    onError: () => {
+      message.error("Failed to update sort order");
+    },
+  });
+
+  const handleSort = async (sortedData: Lab[]) => {
+    await updateSortOrdersMutation.mutateAsync(sortedData);
+  };
+
+  // Action menu for each row
+  const getMenuItems = (lab: Lab): MenuProps["items"] => [
+    {
+      key: "view",
+      label: "View Demo",
+      icon: <EyeOutlined />,
+      disabled: !lab.demoLink,
+      onClick: () => lab.demoLink && window.open(lab.demoLink, "_blank"),
+    },
+    {
+      key: "edit",
+      label: "Edit",
+      icon: <EditOutlined />,
+      onClick: () => handleEdit(lab),
+    },
+    { type: "divider" },
+    {
+      key: "delete",
+      label: "Delete",
+      danger: true,
+      icon: <DeleteOutlined />,
+      onClick: () => handleDeleteLab(lab),
+    },
+  ];
+
+  // Table columns
+  const columns: ColumnsType<Lab> = [
+    {
+      title: "Lab",
+      dataIndex: "name",
+      key: "lab",
+      width: 200,
+      render: (_, lab) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-duralux-primary-transparent flex items-center justify-center">
+            <Beaker className="text-duralux-primary" size={20} />
+          </div>
+          <div>
+            <div className="font-semibold text-duralux-text-primary">{lab.name}</div>
+            <div className="text-xs text-duralux-text-muted">{lab.slug}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      ellipsis: true,
+      render: (text) => (
+        <Text className="text-duralux-text-secondary dark:text-duralux-text-dark-secondary">
+          {text}
+        </Text>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status: LabStatus) => <StatusBadge status={status} />,
+    },
+    {
+      title: "Users",
+      dataIndex: "onlineCount",
+      key: "onlineCount",
+      width: 80,
+      render: (count: number) => (
+        <div className="flex items-center gap-1.5 text-duralux-text-secondary">
+          <Users size={14} className="text-duralux-text-muted" />
+          <span className="text-sm font-semibold">{count}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 100,
+      render: (_, lab) => (
+        <Dropdown
+          menu={{ items: getMenuItems(lab) }}
+          trigger={["click"]}
+          placement="bottomRight"
+        >
+          <Button
+            icon={<MoreVertical size={16} />}
+            size="small"
+            className="border-0 shadow-none"
+          />
+        </Dropdown>
+      ),
+    },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -617,7 +573,7 @@ export default function LabsPage() {
       className="space-y-6"
     >
       {/* Header Section */}
-      <Row gutter={[24, 24]} align="middle" className="">
+      <Row gutter={[24, 24]} align="middle">
         <Col xs={24} md={12}>
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-duralux-primary to-duralux-primary-dark flex items-center justify-center shadow-lg shadow-duralux-primary/30">
@@ -671,7 +627,7 @@ export default function LabsPage() {
       </Row>
 
       {/* Stats Row */}
-      <Row gutter={[24, 24]} className="">
+      <Row gutter={[24, 24]}>
         <Col xs={24} sm={12} md={6}>
           {isLoading ? (
             <SkeletonStatCard />
@@ -680,6 +636,7 @@ export default function LabsPage() {
               icon={<Beaker size={20} />}
               label="Total Labs"
               value={labs.length}
+              gradient="blue"
             />
           )}
         </Col>
@@ -691,6 +648,7 @@ export default function LabsPage() {
               icon={<Activity size={20} />}
               label="Experimental"
               value={labs.filter((l) => l.status === "Experimental").length}
+              gradient="green"
             />
           )}
         </Col>
@@ -702,6 +660,7 @@ export default function LabsPage() {
               icon={<Eye size={20} />}
               label="Preview"
               value={labs.filter((l) => l.status === "Preview").length}
+              gradient="cyan"
             />
           )}
         </Col>
@@ -713,19 +672,29 @@ export default function LabsPage() {
               icon={<Archive size={20} />}
               label="Archived"
               value={labs.filter((l) => l.status === "Archived").length}
+              gradient="orange"
             />
           )}
         </Col>
       </Row>
 
-      {/* Labs Grid */}
-      <Row gutter={[24, 24]}>
-        {filteredLabs.map((lab) => (
-          <Col xs={24} sm={12} lg={8} xl={6} key={lab.id}>
-            <LabCard lab={lab} onEdit={handleEdit} onDelete={handleDeleteLab} />
-          </Col>
-        ))}
-      </Row>
+      {/* Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <DragSortTable<Lab>
+          dataSource={filteredLabs}
+          columns={columns}
+          onSort={handleSort}
+          loading={isLoading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+          }}
+        />
+      </motion.div>
 
       {/* Empty State */}
       {filteredLabs.length === 0 && !isLoading && (

@@ -247,6 +247,7 @@ export interface Lab {
   description?: string;
   demo_url?: string;
   media_urls: string[];
+  sort_order: number;
   online_count: number;
   created_at: string;
   updated_at: string | null;
@@ -259,6 +260,7 @@ export interface LabCreate {
   description?: string;
   demo_url?: string;
   media_urls?: string[];
+  sort_order?: number;
   online_count?: number;
 }
 
@@ -269,6 +271,7 @@ export interface LabUpdate {
   description?: string;
   demo_url?: string;
   media_urls?: string[];
+  sort_order?: number;
   online_count?: number;
 }
 

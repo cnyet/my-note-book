@@ -21,7 +21,6 @@ import {
   Typography,
   message,
   Card,
-  Table,
   Tag,
   Dropdown,
   type MenuProps,
@@ -32,6 +31,8 @@ import { Wrench, Layers, Link2, MoreVertical } from "lucide-react";
 import { toolsApi, type Tool as ApiTool } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
+import { StatCard } from "@/components/ui/Card/StatCard";
+import { DragSortTable } from "@/components/admin/DragSortTable";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -104,46 +105,6 @@ function StatusBadge({ status }: { status: ToolStatus }) {
   };
   const config = badgeConfig[status] || badgeConfig.inactive;
   return <Tag color={config.color}>{config.text}</Tag>;
-}
-
-// Stat Card Component
-function StatCard({
-  icon,
-  label,
-  value,
-  gradient = "primary",
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  gradient?: "primary" | "success" | "info" | "warning";
-}) {
-  const gradientClasses = {
-    primary: "bg-duralux-primary-transparent text-duralux-primary",
-    success: "bg-duralux-success-transparent text-duralux-success",
-    info: "bg-duralux-info-transparent text-duralux-info",
-    warning: "bg-duralux-warning-transparent text-duralux-warning",
-  };
-
-  return (
-    <Card
-      bordered={false}
-      className="rounded-xl shadow-duralux-card dark:shadow-duralux-card-dark transition-all duration-200 hover:shadow-duralux-hover dark:hover:shadow-duralux-hover-dark hover:-translate-y-0.5 overflow-hidden"
-      styles={{ body: { padding: "1.25rem" } }}
-    >
-      <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${gradientClasses[gradient]}`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm text-duralux-text-muted mb-0.5">{label}</p>
-          <p className="text-2xl font-bold text-duralux-text-primary dark:text-duralux-text-dark-primary">
-            {value}
-          </p>
-        </div>
-      </div>
-    </Card>
-  );
 }
 
 // Skeleton Stat Card
@@ -514,6 +475,26 @@ export default function ToolsManagementPage() {
     return result;
   }, [tools, activeCategory, searchQuery]);
 
+  // Update sort order mutation
+  const updateSortOrdersMutation = useMutation({
+    mutationFn: async (toolsToUpdate: Tool[]) => {
+      const updates = toolsToUpdate.map((tool) =>
+        toolsApi.update(tool.id, { sort_order: tool.sortOrder })
+      );
+      await Promise.all(updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-tools"] });
+    },
+    onError: () => {
+      message.error("Failed to update sort order");
+    },
+  });
+
+  const handleSort = async (sortedData: Tool[]) => {
+    await updateSortOrdersMutation.mutateAsync(sortedData);
+  };
+
   // Action menu for each row
   const getMenuItems = (tool: Tool): MenuProps["items"] => [
     {
@@ -538,7 +519,7 @@ export default function ToolsManagementPage() {
     },
   ];
 
-  // Table columns
+  // Table columns (without drag handle - added by DragSortTable)
   const columns: ColumnsType<Tool> = [
     {
       title: "Tool",
@@ -675,7 +656,7 @@ export default function ToolsManagementPage() {
               icon={<Layers size={20} />}
               label="Total Tools"
               value={tools.length}
-              gradient="primary"
+              gradient="blue"
             />
           )}
         </Col>
@@ -687,7 +668,7 @@ export default function ToolsManagementPage() {
               icon={<div className="w-2.5 h-2.5 rounded-full bg-duralux-success animate-pulse" />}
               label="Active"
               value={tools.filter((t) => t.status === "active").length}
-              gradient="success"
+              gradient="green"
             />
           )}
         </Col>
@@ -699,7 +680,7 @@ export default function ToolsManagementPage() {
               icon={<span className="text-duralux-primary font-bold text-sm">Dev</span>}
               label="Dev Tools"
               value={tools.filter((t) => t.category === "Dev").length}
-              gradient="primary"
+              gradient="blue"
             />
           )}
         </Col>
@@ -711,7 +692,7 @@ export default function ToolsManagementPage() {
               icon={<Link2 size={20} />}
               label="Categories"
               value={4}
-              gradient="info"
+              gradient="cyan"
             />
           )}
         </Col>
@@ -723,16 +704,15 @@ export default function ToolsManagementPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Table<Tool>
-          columns={columns}
+        <DragSortTable<Tool>
           dataSource={filteredTools}
-          rowKey="id"
+          columns={columns}
+          onSort={handleSort}
           loading={isLoading}
           pagination={{
             pageSize: 10,
             showSizeChanger: false,
           }}
-          className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
         />
       </motion.div>
 

@@ -120,6 +120,7 @@ class Lab(Base):
     demo_url = Column(String(500), nullable=True)
     media_urls = Column(Text, nullable=True)
     status = Column(String(20), nullable=False, default="experimental")
+    sort_order = Column(Integer, default=0, nullable=False)
     online_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate="current_timestamp")

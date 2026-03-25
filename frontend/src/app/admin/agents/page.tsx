@@ -7,11 +7,9 @@ import {
   DeleteOutlined,
   PlayCircleOutlined,
   StopOutlined,
-  DragOutlined,
 } from "@ant-design/icons";
 import {
   Button,
-  Table,
   Input,
   Select,
   Tag,
@@ -24,20 +22,14 @@ import {
   Dropdown,
   type MenuProps,
 } from "antd";
-import { ChangeEvent, useState, useMemo, useEffect, forwardRef } from "react";
+import { ChangeEvent, useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bot, MoreVertical, Activity, Clock, Server } from "lucide-react";
 import { agentsApi, type Agent as ApiAgent } from "@/lib/admin-api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ColumnsType } from "antd/es/table";
 import { StatCard } from "@/components/ui/Card/StatCard";
-import {
-  DndContext,
-  DragEndEvent,
-  useDraggable,
-  DragOverlay,
-  defaultDropAnimation,
-} from "@dnd-kit/core";
+import { DragSortTable } from "@/components/admin/DragSortTable";
 
 const { Text } = Typography;
 
@@ -280,36 +272,6 @@ function EditAgentModal({
   );
 }
 
-// Draggable row component for table
-interface DraggableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  'data-row-key': string;
-  children: React.ReactNode;
-}
-
-const DraggableRow = forwardRef<HTMLTableRowElement, DraggableRowProps>(
-  ({ children, ...props }, ref) => {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useDraggable({
-      id: props['data-row-key'],
-    });
-
-    const style: React.CSSProperties = {
-      ...props.style,
-      transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
-      transition,
-      opacity: isDragging ? 0.5 : 1,
-      cursor: 'grab',
-    };
-
-    return (
-      <tr ref={setNodeRef} style={style} {...attributes} {...listeners} {...props}>
-        {children}
-      </tr>
-    );
-  }
-);
-
-DraggableRow.displayName = 'DraggableRow';
-
 export default function AgentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -401,6 +363,9 @@ export default function AgentsPage() {
       );
     }
 
+    // Sort by sortOrder
+    result.sort((a, b) => a.sortOrder - b.sortOrder);
+
     return result;
   }, [agents, statusFilter, searchQuery]);
 
@@ -438,38 +403,24 @@ export default function AgentsPage() {
     }
   };
 
-  // Update sort order mutation
-  const updateSortOrderMutation = useMutation({
-    mutationFn: async ({ id, sortOrder }: { id: number; sortOrder: number }) => {
-      await agentsApi.update(id, { sort_order: sortOrder });
+  // Update sort order for all agents
+  const updateSortOrdersMutation = useMutation({
+    mutationFn: async (agentsToUpdate: Agent[]) => {
+      const updates = agentsToUpdate.map((agent) =>
+        agentsApi.update(agent.id, { sort_order: agent.sortOrder })
+      );
+      await Promise.all(updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-agents"] });
-      message.success("Sort order updated");
     },
     onError: () => {
       message.error("Failed to update sort order");
     },
   });
 
-  // Drag to reorder handlers
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = filteredAgents.findIndex((a) => a.id === active.id);
-      const newIndex = filteredAgents.findIndex((a) => a.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        // Get the sort order values and swap them
-        const oldAgent = filteredAgents[oldIndex];
-        const newAgent = filteredAgents[newIndex];
-
-        // Update sort orders for both agents
-        updateSortOrderMutation.mutate({ id: oldAgent.id, sortOrder: newAgent.sortOrder });
-        updateSortOrderMutation.mutate({ id: newAgent.id, sortOrder: oldAgent.sortOrder });
-      }
-    }
+  const handleSort = async (sortedData: Agent[]) => {
+    await updateSortOrdersMutation.mutateAsync(sortedData);
   };
 
   const handleDelete = (agent: Agent) => {
@@ -516,18 +467,8 @@ export default function AgentsPage() {
     },
   ];
 
-  // Table columns
+  // Table columns (without drag handle - added by DragSortTable)
   const columns: ColumnsType<Agent> = [
-    {
-      title: "",
-      key: "drag",
-      width: 50,
-      render: (_, agent) => (
-        <div className="cursor-grab active:cursor-grabbing text-duralux-text-muted hover:text-duralux-text-primary">
-          <DragOutlined />
-        </div>
-      ),
-    },
     {
       title: "Agent",
       dataIndex: "name",
@@ -685,27 +626,16 @@ export default function AgentsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <DndContext onDragEnd={handleDragEnd}>
-          <Table<Agent>
-            columns={columns}
-            dataSource={filteredAgents}
-            rowKey="id"
-            loading={isLoading}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: false,
-            }}
-            className="dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden"
-            components={{
-              body: {
-                row: DraggableRow,
-              },
-            }}
-          />
-          <DragOverlay dropAnimation={defaultDropAnimation}>
-            {/* Overlay for dragging */}
-          </DragOverlay>
-        </DndContext>
+        <DragSortTable<Agent>
+          dataSource={filteredAgents}
+          columns={columns}
+          onSort={handleSort}
+          loading={isLoading}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: false,
+          }}
+        />
       </motion.div>
 
       <EditAgentModal

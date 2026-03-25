@@ -29,6 +29,7 @@ class LabBase(BaseModel):
     description: Optional[str] = Field(None, max_length=1000, description="实验室描述")
     demo_url: Optional[str] = Field(None, description="演示链接")
     media_urls: List[str] = Field(default_factory=list, description="媒体 URL 列表")
+    sort_order: int = Field(default=0, description="排序顺序，数字越小越靠前")
     online_count: int = Field(default=0, ge=0, description="在线用户数")
 
     @field_validator('status')
@@ -53,6 +54,7 @@ class LabUpdate(BaseModel):
     description: Optional[str] = Field(None, max_length=1000, description="实验室描述")
     demo_url: Optional[str] = Field(None, description="演示链接")
     media_urls: Optional[List[str]] = Field(None, description="媒体 URL 列表")
+    sort_order: Optional[int] = Field(None, description="排序顺序")
     online_count: Optional[int] = Field(None, ge=0, description="在线用户数")
 
     @field_validator('status')
@@ -98,7 +100,7 @@ async def list_labs(
         filters=filters,
         skip=skip,
         limit=limit,
-        order_by="created_at",
+        order_by="sort_order",
         order_desc=True
     )
     return result
