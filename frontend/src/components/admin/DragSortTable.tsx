@@ -137,6 +137,9 @@ export function DragSortTable<T extends DragSortItem>({
             ref={draggableProvided.innerRef}
             {...draggableProvided.draggableProps}
             {...draggableProvided.dragHandleProps}
+            role="option"
+            aria-roledescription="可排序行"
+            aria-grabbed={draggableSnapshot.isDragging}
             style={{
               ...rowProps.style,
               // Only apply draggableProps.style when dragging (for the ghost element)
@@ -165,6 +168,8 @@ export function DragSortTable<T extends DragSortItem>({
           <div
             ref={droppableProvided.innerRef}
             {...droppableProvided.droppableProps}
+            role="listbox"
+            aria-label="可排序表格"
           >
             <Table<T>
               {...tableProps}
