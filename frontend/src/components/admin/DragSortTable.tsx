@@ -17,7 +17,7 @@ export interface DragSortItem {
 }
 
 export interface DragSortTableProps<T extends DragSortItem>
-  extends Omit<TableProps<T>, "components"> {
+  extends Omit<TableProps<T>, "components" | "dataSource"> {
   /** 数据源 */
   dataSource: T[];
   /** 拖拽排序回调 */
@@ -88,7 +88,7 @@ export function DragSortTable<T extends DragSortItem>({
       onHeaderCell: () => ({
         style: { cursor: "default" },
       }),
-      render: (_, record, index) => (
+      render: (_, record) => (
         <span
           className="drag-handle cursor-grab active:cursor-grabbing text-duralux-text-muted hover:text-duralux-text-primary transition-colors flex items-center justify-center"
           style={{ touchAction: "none" }}
@@ -100,59 +100,89 @@ export function DragSortTable<T extends DragSortItem>({
     ...columns,
   ];
 
+  // Custom row component
+  const RowComponent = ({
+    index,
+    record,
+    children,
+    ...rowProps
+  }: {
+    index: number;
+    record: T;
+    children: React.ReactNode;
+  } & any) => {
+    return (
+      <Draggable
+        key={record.id}
+        draggableId={String(record.id)}
+        index={index}
+        disableInteractiveElementBlocking
+      >
+        {(draggableProvided, draggableSnapshot) => (
+          <tr
+            {...rowProps}
+            ref={draggableProvided.innerRef}
+            {...draggableProvided.draggableProps}
+            {...draggableProvided.dragHandleProps}
+            style={{
+              ...rowProps.style,
+              ...draggableProvided.draggableProps.style,
+              background: draggableSnapshot.isDragging
+                ? "rgba(99, 102, 241, 0.1)"
+                : undefined,
+              cursor: "grab",
+            }}
+          >
+            {children}
+          </tr>
+        )}
+      </Draggable>
+    );
+  };
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="table-rows" direction="vertical">
-        {(provided) => (
-          <Table<T>
-            {...tableProps}
-            dataSource={data}
-            columns={columnsWithDrag}
-            rowKey="id"
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: false,
-              ...tableProps.pagination,
-            }}
-            className={`dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden ${tableProps.className || ""}`}
-            components={{
-              body: {
-                row: (rowProps: any) => {
-                  const record = rowProps["data-row-key"];
-                  const index = data.findIndex((item) => item.id.toString() === record);
-                  return (
-                    <Draggable
-                      key={record}
-                      draggableId={record}
-                      index={index}
-                      disableInteractiveElementBoundaries
-                    >
-                      {(draggableProvided, draggableSnapshot) => (
-                        <tr
-                          {...rowProps}
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.draggableProps}
-                          {...draggableProvided.dragHandleProps}
-                          style={{
-                            ...rowProps.style,
-                            ...draggableProvided.draggableProps.style,
-                            background: draggableSnapshot.isDragging
-                              ? "rgba(99, 102, 241, 0.1)"
-                              : undefined,
-                          }}
-                          className={`${rowProps.className || ""} ${
-                            draggableSnapshot.isDragging ? "dragging-row" : ""
-                          }`}
-                        />
-                      )}
-                    </Draggable>
-                  );
+        {(droppableProvided) => (
+          <div
+            ref={droppableProvided.innerRef}
+            {...droppableProvided.droppableProps}
+          >
+            <Table<T>
+              {...tableProps}
+              dataSource={data}
+              columns={columnsWithDrag}
+              rowKey="id"
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: false,
+                ...tableProps.pagination,
+              }}
+              className={`dark:bg-duralux-bg-dark-card rounded-lg overflow-hidden ${
+                tableProps.className || ""
+              }`}
+              components={{
+                body: {
+                  row: (props: any) => {
+                    const { "data-row-key": key } = props;
+                    const index = data.findIndex(
+                      (item) => String(item.id) === String(key)
+                    );
+                    if (index === -1) {
+                      return <tr {...props} />;
+                    }
+                    return (
+                      <RowComponent
+                        index={index}
+                        record={data[index]}
+                        {...props}
+                      />
+                    );
+                  },
                 },
-              },
-            }}
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          />
+              }}
+            />
+          </div>
         )}
       </Droppable>
     </DragDropContext>
