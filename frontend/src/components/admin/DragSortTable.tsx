@@ -37,11 +37,23 @@ export function DragSortTable<T extends DragSortItem>({
   ...tableProps
 }: DragSortTableProps<T>) {
   const [data, setData] = useState<T[]>(dataSource);
+  const [pendingData, setPendingData] = React.useState<T[] | null>(null);
 
   // Sync with external data source changes
   React.useEffect(() => {
-    setData(dataSource);
-  }, [dataSource]);
+    // Only sync if no pending drag updates
+    if (!pendingData) {
+      setData(dataSource);
+    }
+  }, [dataSource, pendingData]);
+
+  // Apply pending data after drag ends
+  React.useEffect(() => {
+    if (pendingData) {
+      setData(pendingData);
+      setPendingData(null);
+    }
+  }, [pendingData]);
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) {
@@ -66,15 +78,16 @@ export function DragSortTable<T extends DragSortItem>({
       sortOrder: index,
     }));
 
-    setData(updatedData);
+    // Set pending data to avoid updating during drag cleanup
+    setPendingData(updatedData);
 
     try {
       await onSort(updatedData);
       message.success("排序已更新");
     } catch (error) {
       message.error("排序更新失败");
-      // Revert on error
-      setData(dataSource);
+      // Revert on error - will sync from dataSource on next effect
+      setPendingData(null);
     }
   };
 
