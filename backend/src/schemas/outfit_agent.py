@@ -60,3 +60,22 @@ class GenerateOutfitRequest(BaseModel):
     recommend_date: date = Field(..., description="推荐日期")
     schedule_input: Optional[str] = Field(None, description="日程输入")
     weather_data: Optional[dict] = Field(None, description="天气数据")
+
+
+# Nano Banana Pro 图片生成相关 Schema
+
+class GenerateOutfitWithImageRequest(BaseModel):
+    """生成穿搭图片请求"""
+    recommend_date: date = Field(..., description="推荐日期")
+    schedule_input: Optional[str] = Field(None, description="日程输入")
+    weather_data: Optional[dict] = Field(None, description="天气数据")
+    style_prompt: Optional[str] = Field(None, description="风格描述")
+
+
+class OutfitWithImageResponse(BaseModel):
+    """穿搭图片生成响应"""
+    id: str
+    recommend_date: date
+    outfit_description: str
+    outfit_image_url: Optional[str]
+    is_generated: bool

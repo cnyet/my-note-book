@@ -16,9 +16,12 @@ from ....schemas.outfit_agent import (
     OutfitRecommendationUpdate,
     OutfitRecommendationResponse,
     OutfitRecommendationListResponse,
-    GenerateOutfitRequest
+    GenerateOutfitRequest,
+    GenerateOutfitWithImageRequest,
+    OutfitWithImageResponse,
 )
 from ....agents.outfit.agent import OutfitAgent
+from ....services.ai.nano_banana import NanoBananaService
 
 logger = logging.getLogger(__name__)
 
@@ -164,3 +167,105 @@ async def generate_outfit_recommendation(
     )
 
     return result
+
+
+@router.post("/generate-with-image", response_model=OutfitWithImageResponse)
+async def generate_outfit_with_image(
+    request: GenerateOutfitWithImageRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    生成穿搭图片 - 使用 Nano Banana Pro 生成穿搭效果图
+
+    1. 先创建穿搭推荐
+    2. 调用 Nano Banana Pro 生成图片
+    3. 保存图片并更新推荐记录
+    """
+    # 从环境变量获取 Nano Banana API key
+    import os
+
+    api_key = os.getenv("NANO_BANANA_API_KEY")
+    base_url = os.getenv("NANO_BANANA_BASE_URL")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="NANO_BANANA_API_KEY 未配置"
+        )
+
+    agent = await get_outfit_agent(db)
+
+    # 检查是否已存在
+    existing = await agent.get_recommendation(request.recommend_date)
+    if existing:
+        raise HTTPException(status_code=409, detail="该日期的穿搭推荐已存在")
+
+    # 构建穿搭描述
+    outfit_description = f"根据日程安排：{request.schedule_input or '日常穿搭'}"
+
+    # 创建穿搭推荐记录
+    result = await agent.create_recommendation(
+        recommend_date=request.recommend_date,
+        outfit_description=outfit_description,
+        weather_data=request.weather_data,
+        schedule_input=request.schedule_input,
+        is_generated=True,
+        ai_notes="待生成图片"
+    )
+
+    if not result:
+        raise HTTPException(status_code=500, detail="创建穿搭推荐失败")
+
+    # 生成图片 prompt
+    weather_desc = ""
+    if request.weather_data:
+        temp = request.weather_data.get("temperature", 20)
+        condition = request.weather_data.get("condition", "晴朗")
+        weather_desc = f"天气：{condition}，温度：{temp}°C。"
+
+    schedule_desc = request.schedule_input or "日常休闲"
+
+    prompt = f"""一位时尚年轻人的{schedule_desc}穿搭。{weather_desc}
+    要求：
+    - 穿搭风格时尚、协调
+    - 适合当日天气和场合
+    - 色彩搭配和谐
+    - 展示全身穿搭效果
+    --ar 3:4 --style raw --v 6"""
+
+    try:
+        # 调用 Nano Banana Pro 生成图片
+        nano_banana = NanoBananaService(api_key=api_key, base_url=base_url)
+        image_result = await nano_banana.generate_image(
+            prompt=prompt,
+            size="1024x1536",  # 竖版穿搭展示
+        )
+
+        image_url = image_result.get("image_url")
+
+        # 更新穿搭推荐记录
+        if image_url:
+            await agent.update_recommendation(
+                recommendation_id=result.id,
+                outfit_image_url=image_url,
+                outfit_description=outfit_description,
+                ai_notes=f"图片由 Nano Banana Pro 生成：{prompt[:100]}..."
+            )
+
+        return OutfitWithImageResponse(
+            id=result.id,
+            recommend_date=result.recommend_date,
+            outfit_description=outfit_description,
+            outfit_image_url=image_url,
+            is_generated=True,
+        )
+    except Exception as e:
+        logger.error(f"穿搭图片生成失败：{e}")
+        # 返回不带图片的结果
+        return OutfitWithImageResponse(
+            id=result.id,
+            recommend_date=result.recommend_date,
+            outfit_description=outfit_description,
+            outfit_image_url=None,
+            is_generated=True,
+        )
