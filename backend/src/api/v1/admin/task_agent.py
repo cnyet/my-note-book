@@ -15,9 +15,13 @@ from ....schemas.task_agent import (
     TaskResponse,
     TaskListResponse,
     TaskCategoryCreate,
-    TaskCategoryResponse
+    TaskCategoryResponse,
+    TaskPlanRequest,
+    TaskPlanResponse,
+    PlannedTask,
 )
 from ....agents.task.agent import TaskAgent
+from ....services.ai.task_planner import TaskPlanner
 
 logger = logging.getLogger(__name__)
 
@@ -185,3 +189,56 @@ async def delete_category(
         raise HTTPException(status_code=404, detail="分类不存在")
     
     return {"message": "分类已删除"}
+
+
+@router.post("/plan", response_model=TaskPlanResponse)
+async def plan_tasks(
+    request: TaskPlanRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    AI 任务规划 - 根据用户目标生成可执行任务
+
+    使用 LLM 分析用户输入的目标，拆解为具体可执行的任务。
+    考虑长期目标拆解和历史任务模式推荐。
+    """
+    # 从环境变量获取 Anthropic API key
+    import os
+
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="ANTHROPIC_API_KEY 未配置"
+        )
+
+    # 创建任务规划服务实例
+    planner = TaskPlanner(api_key=api_key)
+
+    try:
+        # 调用 AI 生成任务计划
+        planned_tasks = await planner.plan(
+            goals=request.goals,
+            long_term_goals=request.long_term_goals,
+            date=request.date,
+        )
+
+        # 转换为响应格式
+        return TaskPlanResponse(
+            planned_tasks=[
+                PlannedTask(
+                    title=task["title"],
+                    description=task.get("description", ""),
+                    priority=task["priority"],
+                    category=task["category"],
+                )
+                for task in planned_tasks
+            ]
+        )
+    except ValueError as e:
+        logger.error(f"任务规划解析失败：{e}")
+        raise HTTPException(status_code=500, detail=f"AI 分析失败：{str(e)}")
+    except Exception as e:
+        logger.error(f"任务规划失败：{e}")
+        raise HTTPException(status_code=500, detail=f"任务规划失败：{str(e)}")

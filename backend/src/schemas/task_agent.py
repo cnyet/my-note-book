@@ -80,3 +80,25 @@ class TaskListResponse(BaseModel):
     page: int
     page_size: int
     has_more: bool
+
+
+# AI 任务规划相关 Schema
+
+class TaskPlanRequest(BaseModel):
+    """AI 任务规划请求"""
+    goals: str = Field(..., description="今日目标，多个目标用逗号分隔")
+    long_term_goals: Optional[List[str]] = Field(None, description="长期目标列表")
+    date: Optional[str] = Field(None, description="目标日期 YYYY-MM-DD")
+
+
+class PlannedTask(BaseModel):
+    """规划的任务"""
+    title: str
+    description: str
+    priority: str  # high, medium, low
+    category: str  # work, personal, health, learning, other
+
+
+class TaskPlanResponse(BaseModel):
+    """AI 任务规划响应"""
+    planned_tasks: List[PlannedTask]
