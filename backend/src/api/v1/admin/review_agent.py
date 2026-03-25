@@ -18,9 +18,12 @@ from ....schemas.review_agent import (
     DailyReviewListResponse,
     UserPreferenceCreate,
     UserPreferenceUpdate,
-    UserPreferenceResponse
+    UserPreferenceResponse,
+    TaskAnalysisRequest,
+    QuadrantAnalysisResponse,
 )
 from ....agents.review.agent import ReviewAgent
+from ....services.ai.quadrant_analyzer import QuadrantAnalyzer
 
 logger = logging.getLogger(__name__)
 
@@ -243,3 +246,64 @@ async def delete_preference(
         raise HTTPException(status_code=404, detail="偏好不存在")
 
     return {"message": "偏好已删除"}
+
+
+@router.post("/analyze-quadrants", response_model=QuadrantAnalysisResponse)
+async def analyze_quadrants(
+    request: TaskAnalysisRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    分析任务优先级 - Eisenhower Matrix 四象限分析
+
+    使用 AI 分析任务的重要性和紧急性，将任务分类到四个象限：
+    - 重要且紧急：立即做
+    - 重要不紧急：计划做
+    - 不重要紧急：授权做
+    - 不重要不紧急：少做
+    """
+    # 从环境变量获取 Anthropic API key
+    import os
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="ANTHROPIC_API_KEY 未配置"
+        )
+
+    # 创建分析服务实例
+    analyzer = QuadrantAnalyzer(api_key=api_key)
+
+    # 转换输入格式
+    tasks = [{"title": t.title, "description": t.description} for t in request.tasks]
+
+    try:
+        # 调用 AI 分析
+        result = await analyzer.analyze(tasks)
+
+        # 转换为响应格式
+        return QuadrantAnalysisResponse(
+            important_urgent=[
+                QuadrantTask(title=t["title"], description=t.get("description", ""), reason=t.get("reason", ""))
+                for t in result.get("important_urgent", [])
+            ],
+            important_not_urgent=[
+                QuadrantTask(title=t["title"], description=t.get("description", ""), reason=t.get("reason", ""))
+                for t in result.get("important_not_urgent", [])
+            ],
+            not_important_urgent=[
+                QuadrantTask(title=t["title"], description=t.get("description", ""), reason=t.get("reason", ""))
+                for t in result.get("not_important_urgent", [])
+            ],
+            not_important_not_urgent=[
+                QuadrantTask(title=t["title"], description=t.get("description", ""), reason=t.get("reason", ""))
+                for t in result.get("not_important_not_urgent", [])
+            ],
+        )
+    except ValueError as e:
+        logger.error(f"四象限分析解析失败：{e}")
+        raise HTTPException(status_code=500, detail=f"AI 分析失败：{str(e)}")
+    except Exception as e:
+        logger.error(f"四象限分析失败：{e}")
+        raise HTTPException(status_code=500, detail=f"分析失败：{str(e)}")

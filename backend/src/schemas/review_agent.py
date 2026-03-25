@@ -94,3 +94,31 @@ class UserPreferenceListResponse(BaseModel):
     """用户偏好列表响应"""
     preferences: List[UserPreferenceResponse]
     total: int
+
+
+# Eisenhower Matrix 四象限分析相关 Schema
+
+class TaskAnalysisInput(BaseModel):
+    """任务分析输入"""
+    title: str = Field(..., description="任务标题")
+    description: str = Field(..., description="任务描述")
+
+
+class TaskAnalysisRequest(BaseModel):
+    """四象限分析请求"""
+    tasks: List[TaskAnalysisInput] = Field(..., description="待分析的任务列表")
+
+
+class QuadrantTask(BaseModel):
+    """象限中的任务"""
+    title: str
+    description: str
+    reason: str = Field(..., description="分类理由")
+
+
+class QuadrantAnalysisResponse(BaseModel):
+    """四象限分析响应"""
+    important_urgent: List[QuadrantTask] = Field(..., description="重要且紧急")
+    important_not_urgent: List[QuadrantTask] = Field(..., description="重要不紧急")
+    not_important_urgent: List[QuadrantTask] = Field(..., description="不重要紧急")
+    not_important_not_urgent: List[QuadrantTask] = Field(..., description="不重要不紧急")
