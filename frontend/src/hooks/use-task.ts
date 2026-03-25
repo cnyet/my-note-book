@@ -184,3 +184,38 @@ export function useDeleteTask() {
     },
   });
 }
+
+// AI 任务规划相关
+
+export interface PlannedTask {
+  title: string;
+  description: string;
+  priority: "high" | "medium" | "low";
+  category: "work" | "personal" | "health" | "learning" | "other";
+}
+
+export interface TaskPlanRequest {
+  goals: string;
+  long_term_goals?: string[];
+  date?: string;
+}
+
+export interface TaskPlanResponse {
+  planned_tasks: PlannedTask[];
+}
+
+async function planTasks(data: TaskPlanRequest): Promise<TaskPlanResponse> {
+  const res = await fetch(`${API_BASE}/task/plan`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to plan tasks");
+  return res.json();
+}
+
+export function usePlanTasks() {
+  return useMutation({
+    mutationFn: planTasks,
+  });
+}
