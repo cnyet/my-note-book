@@ -76,3 +76,38 @@ class HealthMetricsListResponse(BaseModel):
 class GenerateSuggestionRequest(BaseModel):
     """生成 AI 建议请求"""
     metric_id: str = Field(..., description="健康指标 ID")
+
+
+# AI 饮食健身计划生成相关 Schema
+
+class DietPlanRequest(BaseModel):
+    """AI 饮食计划生成请求"""
+    metric_id: str = Field(..., description="健康指标 ID")
+    plan_type: str = Field(default="both", description="计划类型：diet/exercise/both")
+    preferences: Optional[dict] = Field(None, description="偏好设置")
+
+
+class MealPlan(BaseModel):
+    """餐食计划"""
+    name: str
+    calories: int
+    protein: int
+    carbs: int
+    fat: int
+    ingredients: Optional[List[str]] = None
+
+
+class ExercisePlan(BaseModel):
+    """运动计划"""
+    name: str
+    sets: int
+    reps: Optional[int] = None
+    duration: Optional[int] = None  # 秒
+    description: str
+    category: str  # warmup, strength, cardio, stretch
+
+
+class DietPlanResponse(BaseModel):
+    """AI 饮食健身计划响应"""
+    diet_plan: Optional[dict] = None  # 包含 breakfast, lunch, dinner
+    exercise_plan: Optional[List[ExercisePlan]] = None

@@ -16,9 +16,14 @@ from ....schemas.life_agent import (
     HealthMetricsListResponse,
     HealthSuggestionCreate,
     HealthSuggestionResponse,
-    GenerateSuggestionRequest
+    GenerateSuggestionRequest,
+    DietPlanRequest,
+    DietPlanResponse,
+    ExercisePlan,
 )
 from ....agents.life.agent import LifeAgent
+from ....services.ai.diet_generator import DietGenerator
+from ....services.ai.exercise_generator import ExerciseGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -155,3 +160,95 @@ async def get_health_suggestions(
     agent = await get_life_agent(db)
     suggestions = await agent.get_suggestions(metrics_id)
     return suggestions
+
+
+@router.post("/generate-plan", response_model=DietPlanResponse)
+async def generate_health_plan(
+    request: DietPlanRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    AI 饮食健身计划生成
+
+    使用 LLM 根据用户健康数据生成个性化的三餐食谱和健身计划
+    """
+    # 从环境变量获取 Anthropic API key
+    import os
+
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+
+    if not api_key:
+        raise HTTPException(
+            status_code=500,
+            detail="ANTHROPIC_API_KEY 未配置"
+        )
+
+    # 获取健康指标详情
+    agent = await get_life_agent(db)
+    metrics = await agent.get_metrics(request.metric_id)
+
+    if not metrics:
+        raise HTTPException(status_code=404, detail="健康指标不存在")
+
+    result = DietPlanResponse()
+
+    # 生成饮食计划
+    if request.plan_type in ["diet", "both"]:
+        diet_generator = DietGenerator(api_key=api_key)
+
+        # 构建健康数据
+        health_data = {
+            "weight": metrics.weight,
+            "height": metrics.height,
+            "health_status": metrics.health_status,
+            "goal": "健康维持",
+        }
+
+        try:
+            diet_plan = await diet_generator.generate_plan(
+                health_data=health_data,
+                preferences=request.preferences or {},
+            )
+            result.diet_plan = diet_plan
+        except Exception as e:
+            logger.error(f"饮食计划生成失败：{e}")
+
+    # 生成健身计划
+    if request.plan_type in ["exercise", "both"]:
+        exercise_generator = ExerciseGenerator(api_key=api_key)
+
+        # 构建健康数据
+        health_data = {
+            "weight": metrics.weight,
+            "height": metrics.height,
+            "health_status": metrics.health_status,
+        }
+
+        # 确定健身水平
+        exercise_level = "beginner"
+        if metrics.exercise_frequency:
+            if "每周" in metrics.exercise_frequency and "3" in metrics.exercise_frequency:
+                exercise_level = "intermediate"
+            elif "每天" in metrics.exercise_frequency:
+                exercise_level = "advanced"
+
+        try:
+            exercises = await exercise_generator.generate_plan(
+                health_data=health_data,
+                exercise_level=exercise_level,
+            )
+            result.exercise_plan = [
+                ExercisePlan(
+                    name=ex["name"],
+                    sets=ex["sets"],
+                    reps=ex.get("reps"),
+                    duration=ex.get("duration"),
+                    description=ex.get("description", ""),
+                    category=ex.get("category", "strength"),
+                )
+                for ex in exercises
+            ]
+        except Exception as e:
+            logger.error(f"健身计划生成失败：{e}")
+
+    return result
