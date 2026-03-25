@@ -126,11 +126,16 @@ export function DragSortTable<T extends DragSortItem>({
             {...draggableProvided.dragHandleProps}
             style={{
               ...rowProps.style,
-              ...draggableProvided.draggableProps.style,
+              // Only apply draggableProps.style when dragging (for the ghost element)
+              ...(draggableSnapshot.isDragging
+                ? draggableProvided.draggableProps.style
+                : {}),
               background: draggableSnapshot.isDragging
                 ? "rgba(99, 102, 241, 0.1)"
                 : undefined,
-              cursor: "grab",
+              // Preserve original cell widths when dragging
+              display: draggableSnapshot.isDragging ? "table" : undefined,
+              cursor: draggableSnapshot.isDragging ? "grabbing" : "grab",
             }}
           >
             {children}
