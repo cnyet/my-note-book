@@ -188,3 +188,42 @@ export function useGenerateOutfitRecommendation() {
     },
   });
 }
+
+// Nano Banana Pro 穿搭图片生成相关
+
+export interface OutfitWithImage {
+  id: string;
+  recommend_date: string;
+  outfit_description: string;
+  outfit_image_url: string | null;
+  is_generated: boolean;
+}
+
+export interface GenerateOutfitWithImageRequest {
+  recommend_date: string;
+  schedule_input?: string;
+  weather_data?: {
+    temperature?: number;
+    humidity?: number;
+    condition?: string;
+  };
+  style_prompt?: string;
+}
+
+async function generateOutfitWithImage(
+  data: GenerateOutfitWithImageRequest
+): Promise<OutfitWithImage> {
+  const res = await fetch(`${API_BASE}/outfit/generate-with-image`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to generate outfit with image");
+  return res.json();
+}
+
+export function useGenerateOutfitWithImage() {
+  return useMutation({
+    mutationFn: generateOutfitWithImage,
+  });
+}

@@ -71,12 +71,9 @@ export function QuadrantCard({
           </div>
         ) : (
           tasks.map((task, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`rounded-lg ${variant.badge} p-3 text-sm`}
+              className={`rounded-lg ${variant.badge} p-3 text-sm cursor-grab active:cursor-grabbing`}
               draggable
               onDragStart={(e) => {
                 e.dataTransfer.setData(
@@ -85,16 +82,22 @@ export function QuadrantCard({
                 );
               }}
             >
-              <div className="font-medium">{task.title}</div>
-              {task.description && (
-                <div className="mt-1 text-xs opacity-70">{task.description}</div>
-              )}
-              {task.reason && (
-                <div className="mt-2 text-xs italic opacity-50">
-                  💡 {task.reason}
-                </div>
-              )}
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="font-medium">{task.title}</div>
+                {task.description && (
+                  <div className="mt-1 text-xs opacity-70">{task.description}</div>
+                )}
+                {task.reason && (
+                  <div className="mt-2 text-xs italic opacity-50">
+                    💡 {task.reason}
+                  </div>
+                )}
+              </motion.div>
+            </div>
           ))
         )}
       </div>

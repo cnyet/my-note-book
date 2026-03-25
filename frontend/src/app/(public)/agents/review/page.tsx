@@ -6,7 +6,7 @@
 
 import { useState } from "react";
 import { useTodayReview, useReviews, useCreateReview, useUpdateReview, useAnalyzeQuadrants, type TaskAnalysisInput } from "@/hooks/use-review";
-import { useTasks } from "@/hooks/use-task";
+import { useTaskList } from "@/hooks/use-task";
 import { ArrowLeft, Star, TrendingUp, Target, BookOpen, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { EisenhowerMatrix } from "@/components/review";
@@ -16,7 +16,7 @@ export default function ReviewAgentPage() {
   const [showQuadrantAnalysis, setShowQuadrantAnalysis] = useState(false);
   const { data: todayReview, isLoading: isLoadingToday } = useTodayReview();
   const { data: reviewsData } = useReviews(1, 7);
-  const { data: tasksData } = useTasks(1, 100); // 获取今日任务用于分析
+  const { data: tasksData } = useTaskList(1, 100); // 获取今日任务用于分析
   const createReview = useCreateReview();
   const updateReview = useUpdateReview();
   const analyzeQuadrants = useAnalyzeQuadrants();

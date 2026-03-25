@@ -5,17 +5,25 @@
 "use client";
 
 import { useState } from "react";
-import { useTodayOutfit, useOutfitRecommendations, useCreateOutfitRecommendation, useGenerateOutfitRecommendation } from "@/hooks/use-outfit";
-import { ArrowLeft, Sun, Cloud, CloudRain, Shirt, RefreshCw } from "lucide-react";
+import {
+  useTodayOutfit,
+  useOutfitRecommendations,
+  useCreateOutfitRecommendation,
+  useGenerateOutfitRecommendation,
+  useGenerateOutfitWithImage
+} from "@/hooks/use-outfit";
+import { ArrowLeft, Sun, Cloud, CloudRain, Shirt, RefreshCw, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function OutfitAgentPage() {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [scheduleInput, setScheduleInput] = useState("");
   const { data: todayOutfit, isLoading: isLoadingToday } = useTodayOutfit();
   const { data: outfitsData } = useOutfitRecommendations(1, 7);
   const createOutfit = useCreateOutfitRecommendation();
   const generateOutfit = useGenerateOutfitRecommendation();
+  const generateOutfitWithImage = useGenerateOutfitWithImage();
 
   const handleGenerate = () => {
     setIsGenerating(true);
@@ -31,6 +39,26 @@ export default function OutfitAgentPage() {
         },
         onError: () => {
           setIsGenerating(false);
+        },
+      }
+    );
+  };
+
+  const handleGenerateWithImage = () => {
+    setIsGeneratingImage(true);
+    generateOutfitWithImage.mutate(
+      {
+        recommend_date: new Date().toISOString().split("T")[0],
+        schedule_input: scheduleInput || undefined,
+      },
+      {
+        onSuccess: () => {
+          setIsGeneratingImage(false);
+          setScheduleInput("");
+        },
+        onError: (error) => {
+          console.error("生成穿搭图片失败:", error);
+          setIsGeneratingImage(false);
         },
       }
     );
@@ -77,14 +105,24 @@ export default function OutfitAgentPage() {
             </p>
           </div>
 
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating || generateOutfit.isPending}
-            className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <RefreshCw size={20} className={isGenerating ? "animate-spin" : ""} />
-            {isGenerating || generateOutfit.isPending ? "生成中..." : "生成穿搭"}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating || generateOutfit.isPending}
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-orange-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw size={20} className={isGenerating ? "animate-spin" : ""} />
+              {isGenerating || generateOutfit.isPending ? "生成中..." : "生成穿搭"}
+            </button>
+            <button
+              onClick={handleGenerateWithImage}
+              disabled={isGeneratingImage || generateOutfitWithImage.isPending}
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-pink-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ImageIcon size={20} className={isGeneratingImage ? "animate-pulse" : ""} />
+              {isGeneratingImage || generateOutfitWithImage.isPending ? "生成中..." : "生成穿搭图片"}
+            </button>
+          </div>
         </div>
 
         {/* Today's Outfit Card */}
@@ -101,8 +139,8 @@ export default function OutfitAgentPage() {
           ) : todayOutfit ? (
             <div className="p-8 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 backdrop-blur-md">
               <div className="flex flex-col md:flex-row gap-8">
-                {/* Outfit Image Placeholder */}
-                <div className="w-full md:w-64 h-64 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/30 flex items-center justify-center">
+                {/* Outfit Image */}
+                <div className="w-full md:w-64 h-64 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-500/20 border border-orange-500/30 flex items-center justify-center overflow-hidden">
                   {todayOutfit.outfit_image_url ? (
                     <img
                       src={todayOutfit.outfit_image_url}
@@ -177,13 +215,22 @@ export default function OutfitAgentPage() {
                   placeholder="告诉我今天的日程安排（可选）..."
                 />
               </div>
-              <button
-                onClick={handleGenerate}
-                disabled={generateOutfit.isPending}
-                className="px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold hover:opacity-90 transition-all disabled:opacity-50"
-              >
-                {generateOutfit.isPending ? "生成中..." : "AI 生成穿搭"}
-              </button>
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={handleGenerate}
+                  disabled={generateOutfit.isPending}
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold hover:opacity-90 transition-all disabled:opacity-50"
+                >
+                  {generateOutfit.isPending ? "生成中..." : "AI 生成穿搭"}
+                </button>
+                <button
+                  onClick={handleGenerateWithImage}
+                  disabled={generateOutfitWithImage.isPending}
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold hover:opacity-90 transition-all disabled:opacity-50"
+                >
+                  {generateOutfitWithImage.isPending ? "生成中..." : "AI 生成穿搭图片"}
+                </button>
+              </div>
             </div>
           )}
         </div>
