@@ -16,6 +16,8 @@
 
 | 提交 | 描述 |
 |------|------|
+| `a8ef43f` | fix(drag-sort): 修复 @hello-pangea/dnd 虚拟列表警告 |
+| `7d355e0` | docs(memory): 更新 Drag Sort 重构完成状态 |
 | `05b4837` | fix(drag-sort): 修复拖拽时行宽度变窄问题 |
 | `d4334c5` | docs: 更新开发上下文 - Drag Sort 重构完成 |
 | `9718f51` | feat(drag-sort): 修复 DragSortTable 类型错误 |
