@@ -187,3 +187,58 @@ c0aa31f feat(agents): 替换静态图片为动态 workflow 展示
 - ESLint: ✅ 通过 (仅 warnings)
 - 浏览器测试：✅ 所有页面正常显示
 - Git 推送：✅ 已推送到 origin/main
+
+---
+
+# Session Summary - Drag Sort 重构 (2026-03-25)
+
+**任务**: 管理后台拖拽排序功能重构
+**状态**: ✅ 已完成并推送
+
+## 需求
+用户要求重构 `/admin/agents`, `/admin/tools`, `/admin/labs` 三个管理页面的表格拖拽排序功能。
+
+## 关键决策
+
+### 方案选择
+| 方案 | 库 | 状态 | 选择 |
+|------|------|------|------|
+| 方案 A | `react-beautiful-dnd` | ✅ 已采用 | 专为列表排序设计 |
+| 方案 B | `@dnd-kit/sortable` | ❌ 放弃 | 之前实现有 Actions 菜单冲突 Bug |
+| 方案 C | `react-draggable` | ❌ 放弃 | 底层库，不支持列表排序 |
+
+### 依赖调整
+- 原计划：`react-beautiful-dnd`
+- 实际使用：`@hello-pangea/dnd@18.0.1`
+- 原因：`react-beautiful-dnd` 只支持 React 16-18，不支持项目的 React 19
+- `@hello-pangea/dnd` 是 `react-beautiful-dnd` 的社区 fork，API 完全兼容，支持 React 19
+
+## 修改文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| `frontend/package.json` | 新增 `@hello-pangea/dnd@18.0.1` |
+| `frontend/src/components/admin/DragSortTable.tsx` | 使用 `@hello-pangea/dnd` 重构拖拽组件 |
+| `.claude/memory/ACTIVE_CONTEXT.md` | 更新开发上下文 |
+| `docs/plans/2026-03-25-drag-sort-refactor-design.md` | 设计文档 |
+| `docs/plans/2026-03-25-drag-sort-refactor.md` | 实现计划 |
+
+## 提交历史
+
+| 提交 | 描述 |
+|------|------|
+| `95b70f4` | chore(deps): 安装 @hello-pangea/dnd |
+| `30fbcf6` | feat(drag-sort): 使用 @hello-pangea/dnd 重构 DragSortTable |
+| `9718f51` | feat(drag-sort): 修复类型错误 |
+| `d4334c5` | docs: 更新开发上下文 |
+
+## 验证
+
+- ✅ TypeScript 编译通过
+- ✅ 构建成功
+- ✅ 已推送到 origin/main
+
+## 坑点记录
+
+1. `react-beautiful-dnd` 不支持 React 19，需要使用 `@hello-pangea/dnd`
+2. `components.body.row` 类型定义严格，需要用自定义组件包裹 `Draggable`
