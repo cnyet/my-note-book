@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@remotion/cli": "^4.0.441",
+    "framer-motion": "^12.38.0",
+    "remotion": "^4.0.441"
+  }
+}
