@@ -223,7 +223,10 @@ my-note-book/
 │   ├── e2e/               # 端到端测试
 │   ├── integration/       # 集成测试
 │   └── unit/              # 单元测试
-└── logs/                  # 运行日志
+├── logs/                  # 运行日志
+├── DESIGN.md              # 设计系统 (Genesis Design System)
+├── CLAUDE.md              # 工程规范 (Development Guidelines)
+└── AGENTS.md              # 逻辑准则 (Agentic Run-time Specs)
 ```
 
 ## 📝 开发进度

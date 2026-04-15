@@ -1,46 +1,72 @@
-# Active Context - Sprint 6.6 ✅ 已完成
+# Active Context - Sprint 6.8 AI Features ✅ 已完成
 
-**状态**: ✅ Sprint 6.6 已完成并推送
+**状态**: ✅ Sprint 6.8 AI Features 已完成并合并到 main
+**完成日期**: 2026-03-26
 
-**完成日期**: 2026-03-13
-
-## 当前任务 (2026-03-25)
+## 当前任务状态
 
 | 任务 | 状态 | 详情 |
 |------|------|------|
-| **Drag Sort 重构 - @hello-pangea/dnd** | ✅ 已完成 | 使用 @hello-pangea/dnd 替代 HTML5 DnD |
-| **Agents 管理后台排序功能** | ✅ 已完成并推送 | 拖拽排序功能实现 |
-| **DragSortTable 样式修复** | ✅ 已完成并推送 | 修复拖拽时行宽度变窄问题 |
-| **DragSortTable 可访问性修复** | ✅ 已完成并推送 | 添加 ARIA 属性减少控制台警告 |
+| **Sprint 6.8: 4 个 AI 功能实现** | ✅ 已完成 | P0-P3 优先级全部完成并合并 |
 
-### 最新提交 (2026-03-25)
+## Sprint 6.8: AI 功能实现 (2026-03-26) ✅
 
-| 提交 | 描述 |
-|------|------|
-| `6d88ea1` | a11y(drag-sort): 添加可访问性属性减少控制台警告 |
-| `a8ef43f` | fix(drag-sort): 修复 @hello-pangea/dnd 虚拟列表警告 |
-| `7d355e0` | docs(memory): 更新 Drag Sort 重构完成状态 |
-| `05b4837` | fix(drag-sort): 修复拖拽时行宽度变窄问题 |
-| `d4334c5` | docs: 更新开发上下文 - Drag Sort 重构完成 |
-| `9718f51` | feat(drag-sort): 修复 DragSortTable 类型错误 |
-| `30fbcf6` | feat(drag-sort): 使用 @hello-pangea/dnd 重构 DragSortTable |
-| `95b70f4` | chore(deps): 安装 @hello-pangea/dnd |
+| 优先级 | 功能 | 状态 | 提交 |
+|--------|------|------|------|
+| P0 | Review Agent - 四象限复盘 | ✅ 完成 | `fbd3e70` + `9359f9d` |
+| P1 | Task Agent - AI 任务规划 | ✅ 完成 | `dfa18e3` + `3fa7aa5` + `5f56450` |
+| P2 | Life Agent - 饮食健身计划 | ✅ 完成 | `9ed0b7f` + `7b8f4bb` + `be4cff3` |
+| P3 | Outfit Agent - 穿搭图片生成 | ✅ 完成 | `a675ce3` + `a5ff46a` |
 
-## Sprint 6.6: 公共页面视觉优化 ✅ 已完成并推送
+### 技术实现要点
 
-| 修改 | 详情 | 文件 | 提交 |
-|------|------|------|------|
-| FlatCard hover 效果 | `whileHover={{ y: -4 }}` 向上浮动 | FlatCard.tsx | `1a16821` |
-| Footer 全宽深色背景 | `w-full bg-[#0A0A0F]`，内容区域受限 | FooterLinks.tsx | `b510209` |
-| Agents Footer AI 导航 | 添加 7 类 AI 工具链接 | agents/page.tsx | `b510209` |
-| Footer 社交图标 | 添加 Twitter/Github/Linkedin | FooterLinks.tsx | `1a16821` |
-| Agents 页面 fetch 修复 | 改用 apiClient 替代原生 fetch | use-agents.ts | `4c02a66` |
-| Blog 空状态宽度 | 与导航栏同宽 `max-w-7xl` | blog/page.tsx | `ce39034` |
-| Blog list 间距统一 | `gap-6` → `gap-4` | blog/page.tsx | `8b50dd1` |
-| Labs 页面间距优化 | `gap-4` → `gap-2`，移除 `min-h-[600px]` | labs/page.tsx | `8f5af7f`, `70ec121` |
-| Labs 卡片内部间距 | `p-4` → `p-3`，图标缩小 | labs/page.tsx | `cdff1ca` |
+| 模块 | 关键实现 |
+|------|---------|
+| AI 服务层 | `services/ai/base.py` 抽象基类，统一 Anthropic API 调用 |
+| 四象限分析 | `QuadrantAnalyzer` 使用 Anthropic API 分析任务优先级 |
+| 任务规划 | `TaskPlanner` 拆解手动/长期目标为可执行任务 |
+| 饮食计划 | `DietGenerator` + Spoonacular API 生成三餐计划 |
+| 健身计划 | `ExerciseGenerator` + Exercise DB API 生成训练计划 |
+| 穿搭图片 | `NanoBananaService` 调用 Nano Banana Pro 生成穿搭图 |
 
-## 待开始任务 (Sprint 6.7 候选)
+### 修复问题
+
+| 问题 | 解决方案 | 提交 |
+|------|---------|------|
+| review 页面导入错误 | useTasks → useTaskList | `a5ff46a` |
+| QuadrantCard drag 类型冲突 | 使用原生 div + draggable 替代 motion.div | `a5ff46a` |
+
+### 提交历史 (14 个提交)
+
+```
+a5ff46a feat(outfit): 集成穿搭图片生成功能
+a675ce3 feat(api): 添加穿搭图片生成 API 端点
+be4cff3 feat(life): 集成 AI 饮食健身计划功能到 Life 页面
+7b8f4bb feat(life): 添加饮食健身计划 Hook 和组件
+9ed0b7f feat(api): 添加 AI 饮食健身计划生成 API 端点
+5f56450 feat(task): 集成 AI 任务规划功能到 Task 页面
+3fa7aa5 feat(task): 添加任务规划 Hook 和组件
+dfa18e3 feat(api): 添加 AI 任务规划 API 端点
+9359f9d feat(review): 集成四象限分析功能到 Review 页面
+fbd3e70 feat(components): 添加四象限可视化组件
+0af2854 feat(hook): 添加四象限分析 React Query hook
+52129c2 feat(api): 添加四象限分析 API 端点
+630fe74 feat(services): 创建 AI 服务层基础模块
+007c8fa chore(env): 添加 AI 服务环境变量配置
+```
+
+### 验证结果
+
+- ✅ 前端构建通过
+- ✅ 后端 API 模块导入成功
+- ✅ AI 服务模块导入成功
+- ✅ 已合并到 main 并推送到远程
+
+### 推送状态
+
+✅ 已合并到 main 并推送到 origin/main - 2026-03-26
+
+## 待开始任务 (Sprint 6.9 候选)
 
 | 任务 | 优先级 | 预计时间 | 详情 |
 |------|--------|----------|------|
@@ -48,16 +74,12 @@
 | **E2E 测试** | P2 | 1-2 天 | Playwright + Testing Library |
 | **性能优化** | P3 | 持续 | 代码分割、缓存优化、懒加载 |
 
-## 推送状态
-
-✅ 已推送到 origin/main - 2026-03-25
-
 ---
 
-## Drag Sort 重构技术要点 (2026-03-25) ✅
+## Sprint 6.6: Drag Sort 重构 (2026-03-25) ✅ (归档)
 
 | 问题 | 解决方案 | 提交 |
-|------|------|------|
-| 行宽度变窄 | 只在 isDragging 时应用 draggableProps.style，添加 display: table | `05b4837` |
-| 虚拟列表警告 | 使用 pendingData 延迟更新，避免 drag cleanup 期间修改 Draggable | `a8ef43f` |
-| 可访问性警告 | 添加 role="listbox/option" 和 aria-grabbed 属性 | `6d88ea1` |
+|------|----------|------|
+| 行宽度变窄 | 只在 isDragging 时应用 draggableProps.style | `05b4837` |
+| 虚拟列表警告 | 使用 pendingData 延迟更新 | `a8ef43f` |
+| 可访问性警告 | 添加 role="listbox/option" 和 aria-grabbed | `6d88ea1` |
